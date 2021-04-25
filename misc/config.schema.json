@@ -1,0 +1,21 @@
+{
+    "properties": {
+        "port": {
+            "type": "number",
+            "examples": [22023, 22523]
+        },
+        "anticheat": {
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+        
+                    }
+                },
+                {
+                    "type": "boolean"
+                }
+            ]
+        }
+    }
+}

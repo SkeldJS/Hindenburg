@@ -9,7 +9,12 @@
                 {
                     "type": "object",
                     "properties": {
-        
+                        "banIp": {
+                            "type": "boolean"
+                        },
+                        "checkSettings": {
+                            "type": "boolean"
+                        }
                     }
                 },
                 {

@@ -1,0 +1,266 @@
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"warn","message":"Client with ID %s attempted to identify with an invalid version (%s)"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"warn","message":"Client with ID %s attempted to identify with an invalid version (%s)"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"warn","message":"Client with ID %s attempted to identify with an invalid version (%s)"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"warn","message":"Client with ID %s attempted to identify with an invalid version (%s)"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"message":"Client 127.0.0.1:58616 sent a malformed packet.","level":"info"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"message":"Client 127.0.0.1:62432 sent a malformed packet.","level":"info"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"message":"Client 127.0.0.1:62438 sent a malformed packet.","level":"info"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"message":"Client 127.0.0.1:64269 sent a malformed packet.","level":"info"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"message":"Client 127.0.0.1:61328 sent a malformed packet.","level":"info"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"message":"Client 127.0.0.1:62822 sent a malformed packet.","level":"info"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"message":"Client 127.0.0.1:59296 sent a malformed packet.","level":"info"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"warn","message":"Client with ID %s is behind %s packets."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with % impostors and %s max players."}
+{"level":"info","message":"Listening on *:22023"}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s disconnected."}
+{"level":"info","message":"Created client from %s:%s with ID %s"}
+{"level":"info","message":"Client with ID %s identified as %s (version %s)"}
+{"level":"info","message":"Client with ID %s created game %s on %s with %s impostors and %s max players."}
+{"level":"info","message":"Client with ID %s disconnected."}

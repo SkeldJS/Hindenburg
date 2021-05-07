@@ -10,15 +10,22 @@ import {
 
 import dgram from "dgram";
 
-import { HindenburgServer } from "./HindenburgServer";
+import { AnticheatConfig, AnticheatValue, HindenburgNode, ModInfo } from "./Node";
 import { Room } from "./Room";
+import { formatSeconds } from "./util/format-seconds";
+import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
+import { ClientDisconnectEvent } from "./events";
 
 export interface SentPacket {
     nonce: number;
     acked: boolean;
 }
 
-export class Client {
+export type ClientEvents = ExtractEventTypes<[
+    ClientDisconnectEvent
+]>;
+
+export class Client extends EventEmitter<ClientEvents> {
     identified: boolean;
     username!: string;
     version!: VersionInfo;
@@ -26,22 +33,27 @@ export class Client {
     disconnected: boolean;
 
     private _incr_nonce: number;
+    last_nonce: number;
 
     received: number[];
     sent: SentPacket[];
 
     room: Room|null;
 
+    mods?: ModInfo[];
+
     constructor(
-        private server: HindenburgServer,
+        private server: HindenburgNode,
         public readonly remote: dgram.RemoteInfo,
         public readonly clientid: number
     ) {
-        this.identified = false;
+        super();
 
+        this.identified = false;
         this.disconnected = false;
 
         this._incr_nonce = 0;
+        this.last_nonce = 0;
         this.received = [];
         this.sent = [];
 
@@ -50,6 +62,58 @@ export class Client {
 
     get address() {
         return this.remote.address + ":" + this.remote.port;
+    }
+    
+    async emit<Event extends ClientEvents[keyof ClientEvents]>(
+        event: Event
+    ): Promise<Event> {
+        this.server.emit(event);
+
+        return super.emit(event);
+    }
+    
+    async ban(seconds: number) {
+        this.disconnect(
+            DisconnectReason.Custom,
+            this.server.config.anticheat.banMessage
+                .replace("%s", formatSeconds(seconds))
+        );
+    
+        await this.server.redis.set("bans." + this.remote.address, new Date(Date.now() + (seconds * 1000)).toString());
+        this.server.redis.expire("bans." + this.remote.address, seconds);
+    }
+
+    async penalize(infraction: keyof AnticheatConfig) {
+        const config = this.server.config.anticheat[infraction] as boolean|AnticheatValue;
+
+        if (config) {
+            if (typeof config === "boolean") {
+                this.disconnect(DisconnectReason.Hacking);
+                this.server.logger.warn("Client with ID %s was disconnected for anticheat rule %s.", this.clientid, infraction);
+            } else if (config.penalty !== "ignore") {
+                if (config.strikes) {
+                    const strikes = await this.server.redis.incr("infractions." + this.server.ip + "." + this.clientid + "." + infraction);
+                    this.server.logger.warn("Client with ID %s is on %s strike(s) for anticheat rule %s.", this.clientid, strikes, infraction);
+    
+                    if (strikes < config.strikes) {
+                        return false;
+                    }
+                }
+
+                if (config.penalty === "disconnect") {
+                    this.disconnect(DisconnectReason.Hacking);
+                    this.server.logger.warn("Client with ID %s was disconnected for anticheat rule %s.", this.clientid, infraction);
+                } else if (config.penalty === "ban") {
+                    await this.ban(config.banDuration || 3600);
+                    this.server.logger.warn(
+                        "Client with ID %s was banned for anticheat rule %s for %s.",
+                        this.clientid, infraction, formatSeconds(config.banDuration || 3600)
+                    );
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     async ack(nonce: number) {
@@ -90,10 +154,17 @@ export class Client {
         if (this.disconnected)
             return;
 
-        this.room?.handleLeave(this);
+        this.room?.handleRemoteLeave(this);
         this.disconnected = true;
 
-        await this.send(
+        await this.emit(
+            new ClientDisconnectEvent(
+                this,
+                reason || DisconnectReason.None
+            )
+        );
+
+        this.send(
             new DisconnectPacket(
                 reason,
                 message,
@@ -102,18 +173,18 @@ export class Client {
         );
 
         if (reason) {
-            this.server.logger.log(
-                "info",
+            this.server.logger.info(
                 "Client with ID %s disconnected. Reason: %s",
                 this.clientid, DisconnectReason[reason]
             );
         } else {
-            this.server.logger.log(
-                "info",
+            this.server.logger.info(
                 "Client with ID %s disconnected.",
                 this.clientid
             );
         }
+
+        this.server.clients.delete(this.remote.address + ":" + this.remote.port);
     }
 
     async joinError(

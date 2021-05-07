@@ -1,136 +1,74 @@
 import dgram from "dgram";
-import winston from "winston";
 
 import {
-    AcknowledgePacket,
-    DisconnectPacket,
+    BaseRootMessage,
+    DataMessage,
+    DespawnMessage,
+    GameDataMessage,
+    GameDataToMessage,
+    GameOptions,
     HelloPacket,
     HostGameMessage,
     JoinGameMessage,
     MessageDirection,
-    PacketDecoder,
-    PingPacket,
     ReliablePacket,
-    Serializable
+    RpcMessage,
+    SceneChangeMessage,
+    SpawnMessage
 } from "@skeldjs/protocol";
 
-import { Code2Int, HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
-import { DisconnectReason, GameMap, GameState, RootMessageTag, SendOption } from "@skeldjs/constant";
+import {
+    DisconnectReason,
+    GameMap,
+    GameState,
+    SendOption
+} from "@skeldjs/constant";
+
+import { Code2Int, HazelReader } from "@skeldjs/util";
+import { SpawnPrefabs } from "@skeldjs/core";
 
 import { Room } from "./Room";
-import { Client } from "./Client";
+import { HindenburgConfig, HindenburgNode } from "./Node";
+import { Client, ClientEvents } from "./Client";
 
-export interface HindenburgServerConfig {
-    port: number;
-    anticheat: {
-        checkSettings: boolean;
-    },
-    versions: string[]
-}
-
-export interface ReliableSerializable extends Serializable {
-    nonce: number;
-}
-
-export class HindenburgServer {
-    logger: winston.Logger;
-
-    decoder: PacketDecoder<Client>;
-    socket: dgram.Socket;
-
-    config: HindenburgServerConfig;
-
-    clients: Map<string, Client>;
+export class HindenburgServer extends HindenburgNode<ClientEvents> {
     rooms: Map<number, Room>;
 
-    allowed_versions: VersionInfo[];
+    constructor(config: Partial<HindenburgConfig>) {
+        super(config);
 
-    private _incr_clientid: number;
-
-    constructor(config: Partial<HindenburgServerConfig>) {
-        this.logger = winston.createLogger({
-            transports: [
-                new winston.transports.Console({
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.colorize(),
-                        winston.format.simple()
-                    ),
-                }),
-                new winston.transports.File({ filename: "logs.txt" })
-            ]
-        });
-
-        this.decoder = new PacketDecoder;
-        this.socket = dgram.createSocket("udp4");
-
-        this.config = {
-            port: 22023,
-            versions: ["2020.4.2"],
-            ...config,
-            anticheat: {
-                checkSettings: true,
-                ...config.anticheat
-            }
-        };
-
-        this.clients = new Map;
         this.rooms = new Map;
-        
-        this._incr_clientid = 0;
 
-        this.allowed_versions = this.config.versions.map(version => VersionInfo.from(version));
-
-        this.decoder.on([ ReliablePacket, HelloPacket, PingPacket ], (message, direction, client) => {
-            client.received.unshift(message.nonce);
-            client.received.splice(8);
-            client.ack(message.nonce);
-        });
-
-        this.decoder.on(HelloPacket, (message, direction, client) => {
-            const versions = this.allowed_versions.map(version => version.encode());
-            if (versions.includes(message.clientver.encode())) {
-                client.identified = true;
-                client.username = message.username;
-                client.version = message.clientver;
-
-                this.logger.log(
-                    "info",
-                    "Client with ID %s identified as %s (version %s)",
-                    client.clientid, client.username, client.version
+        this.decoder.on(HelloPacket, async (message, direction, client) => {
+            const was_redirected = await this.redis.hget("redirected." + client.remote.address + "." + client.username, "num");
+            
+            if (!was_redirected) {
+                client.disconnect(
+                    DisconnectReason.Custom,
+                    "Please connect through the master server."
                 );
+                return;
+            }
+
+            if (was_redirected === "1") {
+                await this.redis.del("redirected." + client.remote.address + "." + client.username);
             } else {
-                client.disconnect(DisconnectReason.IncorrectVersion);
-
-                this.logger.log(
-                    "warn",
-                    "Client with ID %s attempted to identify with an invalid version (%s)",
-                    client.clientid, message.clientver
-                )
-            }
-        });
-
-        this.decoder.on(DisconnectPacket, (message, direction, client) => {
-            client.disconnect();
-        });
-
-        this.decoder.on(AcknowledgePacket, (message, direction, client) => {
-            for (const sent of client.sent) {
-                if (sent.nonce === message.nonce) {
-                    sent.acked = true;
-                }
-            }
-
-            for (const missing of message.missingPackets) {
-                // client.ack(client.received[missing]);
+                await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", -1);
             }
         });
 
         this.decoder.on(HostGameMessage, (message, direction, client) => {
-            if (this.config.anticheat.checkSettings) {
-                // todo: use GameOptions.isValid
-            }
+            if (!this.checkMods(client))
+                return;
 
+            if (this.config.anticheat.checkSettings && !GameOptions.isValid(message.options)) {
+                this.logger.warn("Client with ID %s created game with invalid settings.", client.clientid);
+
+                if (client.penalize("checkSettings")) {
+                    return;
+                }
+            }
+            
             const chars = [];
             for (let i = 0; i < 6; i++) {
                 chars.push(~~(Math.random() * 26) + 65);
@@ -143,8 +81,9 @@ export class HindenburgServer {
             room.setCode(code);
             this.rooms.set(code, room);
 
-            this.logger.log(
-                "info",
+            this.redis.set("room." + name, this.ip + ":" + this.ip)
+
+            this.logger.info(
                 "Client with ID %s created game %s on %s with %s impostors and %s max players.",
                 client.clientid, name,
                 GameMap[message.options.map], message.options.numImpostors, message.options.maxPlayers
@@ -161,6 +100,9 @@ export class HindenburgServer {
         });
 
         this.decoder.on(JoinGameMessage, (message, direction, client) => {
+            if (!this.checkMods(client))
+                return;
+            
             const room = this.rooms.get(message.code);
 
             if (!room)
@@ -172,112 +114,143 @@ export class HindenburgServer {
             if (room.state === GameState.Started)
                 client.joinError(DisconnectReason.GameStarted);
 
-            room.handleJoin(client);
+            room.handleRemoteJoin(client);
+        });
+
+        this.decoder.on([ DataMessage, RpcMessage, DespawnMessage ], (message, direction, client) => {
+            if (!client.room)
+                return;
+
+            const player = client.room.players.get(client.clientid);
+
+            if (!player)
+                return;
+
+            const component = client.room.netobjects.get(message.netid);
+
+            if (!component)
+                return;
+                
+            if (
+                component.ownerid !== client.clientid
+                && !(component.ownerid === -2 && player.ishost)
+            ) {
+                if (client.penalize("checkObjectOwnership")) {
+                    return;
+                }
+            }
+
+            client.room.decoder.emitDecoded(message, direction, client);
+        });
+
+        this.decoder.on(SpawnMessage, (message, direction, client) => {
+            if (!client.room)
+                return;
+
+            const player = client.room.players.get(client.clientid);
+
+            if (!player)
+                return;
+
+            if (!player.ishost) {
+                if (client.penalize("hostChecks")) {
+                    return;
+                }
+            }
+
+            const prefab = SpawnPrefabs[message.spawnType];
+            if (prefab) {
+                if (prefab.length !== message.components.length) {
+                    client.penalize("malformedPackets")
+                    return;
+                }
+            }
+
+            client.room.decoder.emitDecoded(message, direction, client);
+        });
+
+        this.decoder.on(GameDataToMessage, (message, direction, client) => {
+            if (!client.room)
+                return;
+
+            const player = client.room.players.get(client.clientid);
+            const recipient = client.room.players.get(message.recipientid);
+
+            if (!recipient || !player)
+                return;
+
+            if (!recipient?.ishost) {
+                return;
+            }
+        });
+
+        this.on("client.disconnect", async disconnect => {
+            const connections = await this.redis.get("connections." + disconnect.client.remote.address);
+
+            if (connections === "1") {
+                this.redis.del("connections." + disconnect.client.remote.address);
+            } else {
+                this.redis.decr("connections." + disconnect.client.remote.address);
+            }
+            
+            const infraction_keys = await this.redis.keys("infractions." + this.ip + "." + disconnect.client.clientid + ".*");
+
+            this.redis.del(infraction_keys);
         });
     }
 
+    get ip() {
+        return this.config.node.ip;
+    }
+
     listen() {
-        this.socket.bind(this.config.port);
+        this.socket.bind(this.config.node.port);
 
         this.socket.on("listening", () => {
-            this.logger.log("info", "Listening on *:" + this.config.port);
+            this.logger.info("Listening on *:%s", this.config.node.port);
         });
 
         this.socket.on("message", this.onMessage.bind(this));
     }
-    
-    getNextClientID() {
-        this._incr_clientid++;
 
-        return this._incr_clientid;
-    }
+    async graceful() {
+        this.logger.info(
+            "Performing graceful shutdown on %s room(s) and %s client(s)..",
+            this.rooms.size, this.clients.size
+        );
 
-    private _send(remote: dgram.RemoteInfo, message: Buffer) {
-        return new Promise<number>((resolve, reject) => {
-            this.socket.send(message, remote.port, remote.address, (err, bytes) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                resolve(bytes);
-            });
-        });
-    }
-
-    async send(client: Client, message: Serializable) {
-        const writer = HazelWriter.alloc(512);
-        writer.uint8(message.tag);
-        writer.write(message, MessageDirection.Clientbound, this.decoder);
-        writer.realloc(writer.cursor);
-
-        if ("nonce" in message) {
-            const reliable = message as ReliableSerializable;
-            const bytes = await this._send(client.remote, writer.buffer);
-            
-            const sent = {
-                nonce: reliable.nonce,
-                acked: false
-            };
-
-            client.sent.push(sent);
-            client.sent.splice(8);
-            
-            let attempts = 0;
-            const interval: NodeJS.Timeout = setInterval(async () => {
-                if (sent.acked) {
-                    return clearInterval(interval);
-                } else {
-                    if (
-                        !client.sent.find(
-                            (packet) => sent.nonce === packet.nonce
-                        )
-                    ) {
-                        return clearInterval(interval);
-                    }
-
-                    if (++attempts > 8) {
-                        await client.disconnect();
-                        clearInterval(interval);
-                    }
-
-                    if (
-                        (await this._send(client.remote, writer.buffer)) ===
-                        null
-                    ) {
-                        await client.disconnect();
-                    }
-                }
-            }, 1500);
-
-            return bytes;
-        } else {
-            return await this._send(client.remote, writer.buffer);
+        for (const [ , room ] of this.rooms) {
+            await room.destroy();
         }
+
+        for (const [ , client ] of this.clients) {
+            await client.disconnect(DisconnectReason.Custom, "Server is shutting down.");
+        }
+
+        this.socket.close();
+
+        this.logger.info(
+            "Gracefully shutdown server, goodbye."
+        );
     }
 
-    onMessage(message: Buffer, remote: dgram.RemoteInfo) {
-        const reader = HazelReader.from(message);
+    async handleInitial(parsed: BaseRootMessage, client: Client) {
+        const num_connections = await this.redis.incr("connections." + client.remote.address);
+
+        if (num_connections && this.config.anticheat.maxConnectionsPerIp > 0) {
+            if (num_connections > this.config.anticheat.maxConnectionsPerIp) {
+                client.disconnect(
+                    DisconnectReason.Custom,
+                    "Too many connections coming from your IP."
+                );
+                return;
+            }
+        }
 
         try {
-            const parsed = this.decoder.parse(reader, MessageDirection.Serverbound);
-            const client = this.clients.get(remote.address + ":" + remote.port);
-
-            if (client) {
-                this.decoder.emitDecoded(parsed, MessageDirection.Serverbound, client);
-            } else if (parsed.tag !== SendOption.Disconnect) {
-                const new_client = new Client(this, remote, this.getNextClientID());
-                this.clients.set(remote.address + ":" + remote.port, new_client);
-
-                this.logger.log(
-                    "info",
-                    "Created client from %s:%s with ID %s",
-                    remote.address, remote.port, new_client.clientid
-                );
-
-                this.decoder.emitDecoded(parsed, MessageDirection.Serverbound, new_client);
-            }
+            this.decoder.emitDecoded(parsed, MessageDirection.Serverbound, client);
         } catch (e) {
-            this.logger.info("Client " + remote.address + ":" + remote.port + " sent a malformed packet.");
+            this.logger.error("%s", e.stack);
         }
     }
 }

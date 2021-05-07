@@ -1,4 +1,9 @@
-import { DisconnectReason, GameOverReason, GameState } from "@skeldjs/constant";
+import {
+    DisconnectReason,
+    GameOverReason,
+    GameState
+} from "@skeldjs/constant";
+
 import {
     BaseGameDataMessage,
     BaseRootMessage,
@@ -13,16 +18,19 @@ import {
     RemoveGameMessage,
     RemovePlayerMessage,
     StartGameMessage,
+    UnreliablePacket,
     WaitForHostMessage
 } from "@skeldjs/protocol";
-import { Code2Int } from "@skeldjs/util";
+
+import { Code2Int, Int2Code } from "@skeldjs/util";
+
+import { Hostable, PlayerData } from "@skeldjs/core";
 
 import { Client } from "./Client";
 import { HindenburgServer } from "./HindenburgServer";
 
-export class Room {
+export class Room extends Hostable {
     code: number;
-    host!: Client;
     clients: Map<number, Client>;
     settings: GameOptions;
     state: GameState;
@@ -30,6 +38,8 @@ export class Room {
     waiting: Set<Client>;
 
     constructor(private server: HindenburgServer) {
+        super({ doFixedUpdate: false });
+
         this.code = 0;
         this.clients = new Map;
         this.settings = new GameOptions;
@@ -37,39 +47,55 @@ export class Room {
         this.waiting = new Set;
     }
 
+    get name() {
+        return Int2Code(this.code);
+    }
+
     get destroyed() {
         return this.state === GameState.Destroyed;
     }
 
     async destroy() {
-        await this.broadcast([], [
+        await this.broadcast([], true, null, [
             new RemoveGameMessage(DisconnectReason.Destroy)
         ]);
 
         this.state = GameState.Destroyed;
         this.server.rooms.delete(this.code);
+
+        this.server.redis.del("room." + this.name);
     }
 
-    async broadcast(gamedata: BaseGameDataMessage[], payloads: BaseRootMessage[] = [], recipient?: Client/*, exclude: Client[] = []*/) {
+    async broadcast(
+        messages: BaseGameDataMessage[],
+        reliable: boolean = true,
+        recipient: PlayerData | null = null,
+        payloads: BaseRootMessage[] = []
+    ) {
         if (recipient) {
-            await recipient.send(
-                new ReliablePacket(
-                    recipient.getNextNonce(),
-                    [
-                        new GameDataToMessage(
-                            this.code,
-                            recipient.clientid,
-                            gamedata
-                        ),
-                        ...payloads
-                    ]
-                )
-            );
+            const remote = this.clients.get(recipient.id);
+
+            if (remote) {
+                const children = [
+                    new GameDataToMessage(
+                        this.code,
+                        remote.clientid,
+                        messages
+                    ),
+                    ...payloads
+                ];
+
+                await remote.send(
+                    reliable
+                        ? new ReliablePacket(remote.getNextNonce(), children)
+                        : new UnreliablePacket(children)
+                );
+            }
         } else {
-            const messages = [
+            const children = [
                 new GameDataMessage(
                     this.code,
-                    gamedata
+                    messages
                 ),
                 ...payloads
             ];
@@ -79,10 +105,9 @@ export class Room {
                     // .filter(([, client]) => !exclude.includes(client))
                     .map(([, client]) => {
                         return client.send(
-                            new ReliablePacket(
-                                client.getNextNonce(),
-                                messages
-                            )
+                            reliable
+                                ? new ReliablePacket(client.getNextNonce(), children)
+                                : new UnreliablePacket(children)
                         )
                     })
             );
@@ -96,13 +121,13 @@ export class Room {
 
         this.code = code;
 
-        await this.broadcast([], [
+        await this.broadcast([], true, null, [
             new HostGameMessage(code)
         ]);
     }
 
     async updateHost(client: Client) {
-        await this.broadcast([], [
+        await this.broadcast([], true, null, [
             new JoinGameMessage(
                 this.code,
                 -1,
@@ -117,15 +142,19 @@ export class Room {
         ]);
     }
 
-    async setHost(client: Client) {
-        this.host = client;
+    async setHost(player: PlayerData) {
+        const remote = this.clients.get(player.id);
 
-        if (this.state === GameState.Ended && this.waiting.has(client)) {
-            await this.handleJoin(client);
+        await super.setHost(player);
+
+        if (remote && this.state === GameState.Ended && this.waiting.has(remote)) {
+            await this.handleRemoteJoin(remote);
         }
     }
 
-    async handleLeave(client: Client, reason: DisconnectReason = DisconnectReason.None) {
+    async handleRemoteLeave(client: Client, reason: DisconnectReason = DisconnectReason.None) {
+        await super.handleLeave(client.clientid);
+
         this.clients.delete(client.clientid);
 
         if (this.clients.size === 0) {
@@ -133,32 +162,36 @@ export class Room {
             return;
         }
 
-        await this.setHost([...this.clients.values()][0]);
+        await this.setHost([...this.players.values()][0]);
 
-        await this.broadcast([], [
+        await this.broadcast([], true, null, [
             new RemovePlayerMessage(
                 this.code,
                 client.clientid,
                 reason,
-                this.host.clientid
+                this.host.id
             )
         ]);
     }
 
-    async handleJoin(client: Client) {
+    async handleRemoteJoin(client: Client) {
+        const player = await super.handleJoin(client.clientid);
+
         if (!this.host)
-            await this.setHost(client);
+            await this.setHost(player);
+
+        client.room = this;
 
         if (this.state === GameState.Ended) {
-            await this.broadcast([], [
+            await this.broadcast([], true, null, [
                 new JoinGameMessage(
                     this.code,
                     client.clientid,
-                    this.host.clientid
+                    this.host.id
                 )
-            ], undefined);
+            ]);
 
-            if (client === this.host) {
+            if (client.clientid === this.hostid) {
                 this.state = GameState.NotStarted;
                 
                 for (const [ , client ] of this.clients) {
@@ -173,7 +206,7 @@ export class Room {
                             new JoinedGameMessage(
                                 this.code,
                                 client.clientid,
-                                this.host.clientid,
+                                this.host.id,
                                 [...this.clients]
                                     .map(([, client]) => client.clientid)
                             )
@@ -204,7 +237,7 @@ export class Room {
                     new JoinedGameMessage(
                         this.code,
                         client.clientid,
-                        this.host.clientid,
+                        this.host.id,
                         [...this.clients]
                             .map(([, client]) => client.clientid)
                     )
@@ -212,13 +245,13 @@ export class Room {
             )
         );
 
-        await this.broadcast([], [
+        await this.broadcast([], true, null, [
             new JoinGameMessage(
                 this.code,
                 client.clientid,
-                this.host.clientid
+                this.host.id
             )
-        ], undefined);
+        ]);
         
         this.clients.set(client.clientid, client);
     }
@@ -226,7 +259,7 @@ export class Room {
     async handleStart() {
         this.state = GameState.Started;
 
-        await this.broadcast([], [
+        await this.broadcast([], true, null, [
             new StartGameMessage(this.code)
         ]);
     }
@@ -235,7 +268,7 @@ export class Room {
         this.waiting.clear();
         this.state = GameState.Ended;
 
-        await this.broadcast([], [
+        await this.broadcast([], true, null, [
             new EndGameMessage(this.code, reason, false)
         ]);
     }

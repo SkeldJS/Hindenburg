@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/node,yarn
-# Edit at https://www.toptal.com/developers/gitignore?templates=node,yarn
+# Created by https://www.toptal.com/developers/gitignore/api/node,yarn,redis
+# Edit at https://www.toptal.com/developers/gitignore?templates=node,yarn,redis
 
 ### Node ###
 # Logs
@@ -128,6 +128,11 @@ dist/
 tmp/
 temp/
 
+### Redis ###
+# Ignore redis binary dump (dump.rdb) files
+
+*.rdb
+
 ### yarn ###
 # https://yarnpkg.com/advanced/qa#which-files-should-be-gitignored
 
@@ -144,6 +149,6 @@ temp/
 # and uncomment the following lines
 # .pnp.*
 
-# End of https://www.toptal.com/developers/gitignore/api/node,yarn
+# End of https://www.toptal.com/developers/gitignore/api/node,yarn,redis
 
-config.json
+logs.txt

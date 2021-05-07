@@ -1,26 +1,167 @@
 {
-    "properties": {
-        "port": {
-            "type": "number",
-            "examples": [22023, 22523]
-        },
-        "anticheat": {
+    "definitions": {
+        "anticheat.value": {
             "anyOf": [
+                {
+                    "type": "boolean"
+                },
                 {
                     "type": "object",
                     "properties": {
-                        "banIp": {
-                            "type": "boolean"
+                        "penalty": {
+                            "type": "string",
+                            "enum": [
+                                "ban",
+                                "disconnect",
+                                "ignore"
+                            ],
+                            "description": "The penalty that a player who breaks this rule will receive."
                         },
-                        "checkSettings": {
-                            "type": "boolean"
+                        "strikes": {
+                            "type": "number",
+                            "description": "The number of strikes to break this rule before the player is penalized."
+                        },
+                        "banDuration": {
+                            "type": "number",
+                            "description": "Number of seconds to ban a player who breaks this rule for."
+                        }
+                    }
+                }
+            ]
+        }
+    },  
+    "properties": {
+        "serverName": {
+            "type": "string",
+            "description": "The name of this Hindenburg server instance."
+        },
+        "serverVersion": {
+            "type": "string",
+            "description": "The version that this server is currently running."
+        },
+        "reactor": {
+            "anyOf": [
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "mods": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "anticheat": {
+            "type": "object",
+            "properties": {
+                "checkSettings": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Whether or not to act on invalid settings when creating a game or when updating settings in a game."
+                },
+                "checkObjectOwnership": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Whether or not to act on invalid ownership of object components."
+                },
+                "hostChecks": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Whether or not to check that the player is a host before accepting certain packets."
+                },
+                "malformedPackets": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Whether or not to act on invalid packets."
+                },
+                "massivePackets": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Whether or not to act on large packets received from clients."
+                },
+                "maxConnectionsPerIp": {
+                    "type": "number",
+                    "description": "The maximum number of connections that any one IP can have."
+                },
+                "versions": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "banMessage": {
+                    "type": "string"
+                }
+            }
+        },
+        "node": {
+            "type": "object",
+            "properties": {
+                "ip": {
+                    "type": "string",
+                    "description": "The IP address of this node."
+                },
+                "port": {
+                    "type": "number",
+                    "examples": [22023, 22523],
+                    "description": "The port for Hindenburg to listen on."
+                }
+            }
+        },
+        "master": {
+            "type": "object",
+            "properties": {
+                "nodes": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "ip": {
+                                "type": "string",
+                                "description": "The IP address of this node."
+                            },
+                            "port": {
+                                "type": "number",
+                                "description": "The port of this node."
+                            }
                         }
                     }
                 },
-                {
-                    "type": "boolean"
+                "port": {
+                    "type": "number",
+                    "description": "The port for the master server to listen on."
                 }
-            ]
+            }
+        },
+        "redis": {
+            "type": "object",
+            "properties": {
+                "host": {
+                    "type": "string",
+                    "description": "The hostname of the redis server."
+                },
+                "port": {
+                    "type": "number",
+                    "description": "The port of the redis server."
+                },
+                "password": {
+                    "type": "string",
+                    "description": "The password for the redis server."
+                }
+            }
         }
     }
 }

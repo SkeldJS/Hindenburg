@@ -3,10 +3,13 @@
   "scripts": {
     "build": "tsc -p ./",
     "watch": "tsc -w -p ./",
-    "dev": "ts-node ./bin/index",
-    "serve": "ts-node-dev ./bin/index",
-    "start": "node ./dist/bin/index",
-    "set-server": "node ./bin/set-server"
+    "set-server": "node ./bin/set-server",
+    "dev:node": "ts-node ./bin/index.ts",
+    "serve:node": "ts-node-dev ./bin/index.ts",
+    "start:node": "node ./dist/bin/index.js",
+    "dev:load-balancer": "ts-node ./bin/load-balancer.ts",
+    "serve:load-balancer": "ts-node-dev ./bin/bin/load-balancer.ts",
+    "start:load-balancer": "node ./dist/bin/load-balancer.js"
   },
   "dependencies": {
     "@skeldjs/constant": "^2.9.1",

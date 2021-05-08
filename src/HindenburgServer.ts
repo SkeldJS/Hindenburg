@@ -2,6 +2,7 @@ import {
     BaseRootMessage,
     DataMessage,
     DespawnMessage,
+    GameDataMessage,
     GameDataToMessage,
     GameOptions,
     HelloPacket,
@@ -10,13 +11,16 @@ import {
     MessageDirection,
     ReliablePacket,
     RpcMessage,
+    SetNameMessage,
     SpawnMessage
 } from "@skeldjs/protocol";
 
 import {
     DisconnectReason,
+    GameDataMessageTag,
     GameMap,
-    GameState
+    GameState,
+    RpcMessageTag
 } from "@skeldjs/constant";
 
 import { Code2Int } from "@skeldjs/util";
@@ -40,7 +44,7 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             if (!was_redirected) {
                 client.disconnect(
                     DisconnectReason.Custom,
-                    "Please connect through the master server."
+                    "Please connect through the main server."
                 );
                 return;
             }
@@ -176,14 +180,36 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
                 
             if (
                 component.ownerid !== client.clientid
-                && !(component.ownerid === -2 && player.ishost)
+                && !player.ishost
+                && client.penalize("checkObjectOwnership")
             ) {
-                if (client.penalize("checkObjectOwnership")) {
-                    return;
-                }
+                return;
             }
 
             client.room.decoder.emitDecoded(message, direction, client);
+        });
+
+        this.decoder.on(GameDataMessage, (message, direction, client) => {
+            // todo: anti-cheat on Rpc messages
+
+            if (!client.room)
+                return;
+
+            client.room.decoder.emitDecoded(message, direction, client);
+
+            for (const [ , cl ] of client.room.clients) {
+                cl.send(
+                    new ReliablePacket(
+                        client.getNextNonce(),
+                        [
+                            new GameDataMessage(
+                                client.room.code,
+                                message.children
+                            )
+                        ]
+                    )
+                );
+            }
         });
 
         this.decoder.on(SpawnMessage, (message, direction, client) => {
@@ -195,16 +221,13 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             if (!player)
                 return;
 
-            if (!player.ishost) {
-                if (client.penalize("hostChecks")) {
-                    return;
-                }
+            if (!player.ishost && client.penalize("hostChecks")) {
+                return;
             }
 
             const prefab = SpawnPrefabs[message.spawnType];
             if (prefab) {
-                if (prefab.length !== message.components.length) {
-                    client.penalize("malformedPackets")
+                if (prefab.length !== message.components.length && client.penalize("malformedPackets")) {
                     return;
                 }
             }
@@ -219,12 +242,67 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             const player = client.room.players.get(client.clientid);
             const recipient = client.room.players.get(message.recipientid);
 
-            if (!recipient || !player)
+            const recipclient = client.room.clients.get(message.recipientid);
+
+            if (!recipient || !player || !recipclient)
                 return;
 
-            if (!recipient?.ishost) {
-                return;
+            for (const gamedata of message._children) {
+                switch (gamedata.tag) {
+                    case GameDataMessageTag.Data:
+                        if (!player.ishost && client.penalize("hostChecks")) {
+                            return;
+                        }
+                        break;
+                    case GameDataMessageTag.RPC:
+                        const rpc = gamedata as RpcMessage;
+                        switch (rpc.data.tag) {
+                            case RpcMessageTag.CheckName:
+                            case RpcMessageTag.CheckColor:
+                            case RpcMessageTag.CastVote:
+                            case RpcMessageTag.CloseDoorsOfType:
+                            case RpcMessageTag.RepairSystem:
+                                if (!recipient.ishost && client.penalize("invalidFlow")) {
+                                    return;
+                                }
+                                break;
+                            case RpcMessageTag.Exiled:
+                            case RpcMessageTag.ClearVote:
+                                if (!player.ishost && client.penalize("hostChecks")) {
+                                    return;
+                                }
+                                break;
+                        }
+                        break;
+                    case GameDataMessageTag.Spawn:
+                        if ((!player.ishost && !recipient.spawned) && client.penalize("hostChecks")) {
+                            return;
+                        }
+                        break;
+                    case GameDataMessageTag.SceneChange:
+                        if ((!recipient.ishost || player.spawned) && client.penalize("invalidFlow")) {
+                            return;
+                        }
+                        break;
+                    default:
+                        if (client.penalize("invalidFlow")) {
+                            return;
+                        }
+                }
             }
+
+            recipclient.send(
+                new ReliablePacket(
+                    recipclient.getNextNonce(),
+                    [
+                        new GameDataToMessage(
+                            client.room.code,
+                            recipclient.clientid,
+                            message._children
+                        )
+                    ]
+                )
+            );
         });
 
         this.on("client.disconnect", async disconnect => {

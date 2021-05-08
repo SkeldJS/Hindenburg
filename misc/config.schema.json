@@ -104,6 +104,10 @@
                     "$ref": "#/definitions/anticheat.value",
                     "description": "Whether or not to act on invalid packets."
                 },
+                "invalidFlow": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Whether or not to act on an invalid flow of packets."
+                },
                 "massivePackets": {
                     "$ref": "#/definitions/anticheat.value",
                     "description": "Whether or not to act on large packets received from clients."
@@ -143,7 +147,7 @@
                 }
             }
         },
-        "master": {
+        "loadbalancer": {
             "type": "object",
             "properties": {
                 "clusters": {
@@ -169,7 +173,7 @@
                 },
                 "port": {
                     "type": "number",
-                    "description": "The port for the master server to listen on."
+                    "description": "The port for the load balancer to listen on."
                 }
             }
         },

@@ -26,7 +26,7 @@ export class HindenburgLoadBalancer extends HindenburgNode {
             if (!this.checkMods(client))
                 return;
             
-            const random = this.config.master.nodes[~~(Math.random() * this.config.master.nodes.length)];
+            const random = this.config.loadbalancer.nodes[~~(Math.random() * this.config.loadbalancer.nodes.length)];
 
             const redirected = await this.redis.hgetall("redirected." + client.remote.address + "." + client.username);
 
@@ -35,7 +35,7 @@ export class HindenburgLoadBalancer extends HindenburgNode {
                 if (Date.now() < delete_at) {
                     const ms = delete_at - Date.now();
                     this.logger.info(
-                        "Client from %s still connecting to slave server, waiting %sms for client with ID %s to be redirected.",
+                        "Client from %s still connecting to node, waiting %sms for client with ID %s to be redirected.",
                         client.remote.address, ms, client.clientid
                     );
                     await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", 1);
@@ -62,7 +62,7 @@ export class HindenburgLoadBalancer extends HindenburgNode {
             );
 
             this.logger.info(
-                "Redirected client with ID %s to slave server %s:%s.",
+                "Redirected client with ID %s to node at %s:%s.",
                 client.clientid, random.ip, random.port
             );
         });
@@ -93,22 +93,22 @@ export class HindenburgLoadBalancer extends HindenburgNode {
             );
             
             this.logger.info(
-                "Redirected client with ID %s joining room %s to slave server %s:%s.",
+                "Redirected client with ID %s joining room %s to node at %s:%s.",
                 client.clientid, name, ip, port
             );
         });
     }
 
     get ip() {
-        return this.config.master.ip;
+        return this.config.loadbalancer.ip;
     }
 
     listen() {
         return new Promise<void>(resolve => {
-            this.socket.bind(this.config.master.port);
+            this.socket.bind(this.config.loadbalancer.port);
     
             this.socket.on("listening", () => {
-                this.logger.info("Listening on *:%s", this.config.master.port);
+                this.logger.info("Listening on *:%s", this.config.loadbalancer.port);
                 resolve();
             });
             

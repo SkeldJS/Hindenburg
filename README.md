@@ -20,7 +20,7 @@ There is a small amount of configuration required to achieve this, and the defau
 
 The following template can be added to your config.json and extended to fit your needs.
 ```json
-"master": {
+"loadbalancer": {
     "clusters": [
         {
             "ip": "127.0.0.1",
@@ -34,7 +34,7 @@ The following template can be added to your config.json and extended to fit your
 }
 ```
 
-The master IP being the IP address of the server that the load server is running on, and
+The load balancer IP being the IP address of the server that the load server is running on, and
 each node IP being the IP address of the server that that node is running on.
 
 ### Cluster

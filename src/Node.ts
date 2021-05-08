@@ -5,7 +5,6 @@ import picomatch from "picomatch";
 
 import {
     AcknowledgePacket,
-    BaseRootPacket,
     DisconnectPacket,
     HelloPacket,
     MessageDirection,
@@ -18,8 +17,12 @@ import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 import { EventData, EventEmitter } from "@skeldjs/events";
 
 import { Client } from "./Client";
-import { ModdedHelloPacket, ReactorHandshakeMessage, ReactorMessage, ReactorMessageTag } from "./packets";
-import { ReactorModDeclarationMessage } from "./packets/ReactorModDeclaration";
+import {
+    ModdedHelloPacket,
+    ReactorHandshakeMessage,
+    ReactorMessage,
+    ReactorModDeclarationMessage
+} from "./packets";
 
 export interface ReliableSerializable extends Serializable {
     nonce: number;
@@ -44,6 +47,7 @@ export interface AnticheatConfig {
     checkObjectOwnership: boolean|AnticheatValue;
     hostChecks: boolean|AnticheatValue;
     malformedPackets: boolean|AnticheatValue;
+    invalidFlow: boolean|AnticheatValue;
     massivePackets: boolean|AnticheatValue;
 }
 
@@ -58,7 +62,7 @@ export interface HindenburgNodeConfig {
     port: number;
 }
 
-export interface HindenburgMasterServerConfig {
+export interface HindenburgLoadBalancerServerConfig {
     nodes: {
         ip: string;
         port: number;
@@ -89,7 +93,7 @@ export interface HindenburgConfig {
     serverVersion: string;
     anticheat: AnticheatConfig;
     node: HindenburgNodeConfig;
-    master: HindenburgMasterServerConfig;
+    loadbalancer: HindenburgLoadBalancerServerConfig;
     redis: RedisServerConfig;
 }
 
@@ -128,6 +132,7 @@ export class HindenburgNode<T extends EventData = any> extends EventEmitter<T> {
                 checkSettings: true,
                 checkObjectOwnership: true,
                 hostChecks: true,
+                invalidFlow: true,
                 malformedPackets: false,
                 massivePackets: {
                     penalty: "disconnect",
@@ -135,7 +140,7 @@ export class HindenburgNode<T extends EventData = any> extends EventEmitter<T> {
                 },
                 ...config.anticheat
             },
-            master: {
+            loadbalancer: {
                 nodes: [
                     {
                         ip: "127.0.0.1",
@@ -144,7 +149,7 @@ export class HindenburgNode<T extends EventData = any> extends EventEmitter<T> {
                 ],
                 ip: "127.0.0.1",
                 port: 22023,
-                ...config.master
+                ...config.loadbalancer
             },
             node: {
                 ip: "127.0.0.1",

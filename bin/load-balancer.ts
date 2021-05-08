@@ -12,7 +12,7 @@ import { HindenburgConfig, HindenburgLoadBalancer } from "../src";
 
         const nodes = [];
 
-        for (const cluster of config.master.clusters) {
+        for (const cluster of config.loadbalancer.clusters) {
             nodes.push(...cluster.ports.map((port: number) => {
                 return {
                     ip: cluster.ip,
@@ -24,12 +24,12 @@ import { HindenburgConfig, HindenburgLoadBalancer } from "../src";
         const server = new HindenburgLoadBalancer({
             ...config,
             node: {
-                ip: config.master.ip,
-                port: config.master.port
+                ip: config.loadbalancer.ip,
+                port: config.loadbalancer.port
             },
-            master: {
-                ip: config.master.ip,
-                port: config.master.port,
+            loadbalancer: {
+                ip: config.loadbalancer.ip,
+                port: config.loadbalancer.port,
                 nodes
             }
         });
@@ -40,45 +40,45 @@ import { HindenburgConfig, HindenburgLoadBalancer } from "../src";
             console.log("No config file detected, writing default config..");
     
             const config = `{
-        "$schema": "./misc/config.schema.json",
-        "serverName": "Hindenburg",
-        "serverVersion": "1.0.0",
-        "reactor": false,
-        "anticheat": {
-            "checkSettings": true,
-            "maxConnectionsPerIp": 2,
-            "checkObjectOwnership": true,
-            "hostChecks": true,
-            "malformedPackets": true,
-            "massivePackets": {
-                "penalty": "disconnect",
-                "strikes": 3
-            },
-            "versions": ["2021.4.2"]
+    "$schema": "./misc/config.schema.json",
+    "serverName": "Hindenburg",
+    "serverVersion": "1.0.0",
+    "reactor": false,
+    "anticheat": {
+        "checkSettings": true,
+        "maxConnectionsPerIp": 2,
+        "checkObjectOwnership": true,
+        "hostChecks": true,
+        "malformedPackets": true,
+        "massivePackets": {
+            "penalty": "disconnect",
+            "strikes": 3
         },
-        "clusters": {
-            "ip": "127.0.0.1",
-            "ports": [
-                22123
-            ]
-        },
-        "master": {
-            "clusters": [
-                {
-                    "ip": "127.0.0.1",
-                    "ports": [
-                        22123
-                    ]
-                }
-            ],
-            "ip": "127.0.0.1",
-            "port": 22023
-        },
-        "redis": {
-            "host": "127.0.0.1",
-            "port": 6379
-        }
-    }`;
+        "versions": ["2021.4.2"]
+    },
+    "clusters": {
+        "ip": "127.0.0.1",
+        "ports": [
+            22123
+        ]
+    },
+    "loadbalancer": {
+        "clusters": [
+            {
+                "ip": "127.0.0.1",
+                "ports": [
+                    22123
+                ]
+            }
+        ],
+        "ip": "127.0.0.1",
+        "port": 22023
+    },
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379
+    }
+}`;
     
             await fs.writeFile(config_path, config, "utf8");
             

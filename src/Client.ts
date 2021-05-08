@@ -1,3 +1,6 @@
+import dgram from "dgram";
+import util from "util";
+
 import { DisconnectReason } from "@skeldjs/constant";
 import { VersionInfo } from "@skeldjs/util";
 
@@ -5,16 +8,16 @@ import {
     AcknowledgePacket,
     DisconnectPacket,
     JoinGameMessage,
+    ReliablePacket,
     Serializable
 } from "@skeldjs/protocol";
-
-import dgram from "dgram";
 
 import { AnticheatConfig, AnticheatValue, HindenburgNode, ModInfo } from "./Node";
 import { Room } from "./Room";
 import { formatSeconds } from "./util/format-seconds";
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { ClientDisconnectEvent } from "./events";
+import { DisconnectMessages } from "@skeldjs/data";
 
 export interface SentPacket {
     nonce: number;
@@ -149,10 +152,15 @@ export class Client extends EventEmitter<ClientEvents> {
 
     async disconnect(
         reason?: DisconnectReason,
-        message?: string
-    ) {
+        message?: string,
+        ...fmt: any[]
+    ): Promise<void> {
         if (this.disconnected)
             return;
+
+        if (fmt.length) {
+            return this.disconnect(reason, util.format(message, ...fmt));
+        }
 
         this.room?.handleRemoteLeave(this);
         this.disconnected = true;
@@ -174,8 +182,11 @@ export class Client extends EventEmitter<ClientEvents> {
 
         if (reason) {
             this.server.logger.info(
-                "Client with ID %s disconnected. Reason: %s",
-                this.clientid, DisconnectReason[reason]
+                "Client with ID %s disconnected. Reason: %s (%s)",
+                this.clientid, DisconnectReason[reason],
+                reason === DisconnectReason.Custom
+                    ? message || "(No message)"
+                    : (DisconnectMessages as any)[reason]
             );
         } else {
             this.server.logger.info(
@@ -189,16 +200,41 @@ export class Client extends EventEmitter<ClientEvents> {
 
     async joinError(
         reason: DisconnectReason,
-        message?: string
-    ) {
+        message?: string,
+        ...fmt: any[]
+    ): Promise<void> {
         if (this.disconnected)
             return;
+            
+        if (fmt.length) {
+            return this.joinError(reason, util.format(message, ...fmt));
+        }
 
         await this.send(
-            new JoinGameMessage(
-                reason,
-                message
+            new ReliablePacket(
+                this.getNextNonce(),
+                [
+                    new JoinGameMessage(
+                        reason,
+                        message
+                    )
+                ]
             )
         );
+        
+        if (reason) {
+            this.server.logger.info(
+                "Client with ID %s failed to host or join game. Reason: %s (%s)",
+                this.clientid, DisconnectReason[reason],
+                reason === DisconnectReason.Custom
+                    ? message || "(No message)"
+                    : (DisconnectMessages as any)[reason]
+            );
+        } else {
+            this.server.logger.info(
+                "Client with ID %s disconnected.",
+                this.clientid
+            );
+        }
     }
 }

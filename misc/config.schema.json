@@ -28,6 +28,17 @@
                     }
                 }
             ]
+        },
+        "mod.info": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
         }
     },
     "properties": {
@@ -48,20 +59,33 @@
                     "type": "object",
                     "properties": {
                         "mods": {
-                            "type": "array",
-                            "items": [
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
+                            "type": "object",
+                            "patternProperties": {
+                                ".+": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "required": {
+                                                    "type": "boolean"
+                                                },
+                                                "banned": {
+                                                    "type": "boolean"
+                                                }
+                                            }
                                         },
-                                        "version": {
+                                        {
                                             "type": "string"
                                         }
-                                    }
+                                    ]
                                 }
-                            ]
+                            }
+                        },
+                        "allowExtraMods": {
+                            "type": "boolean"
                         }
                     }
                 }

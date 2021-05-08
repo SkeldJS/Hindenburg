@@ -70,6 +70,8 @@ export class HindenburgLoadBalancer extends HindenburgNode {
         this.decoder.on(JoinGameMessage, (message, direction, client) => {
             if (!this.checkMods(client))
                 return;
+
+            
         });
     }
 

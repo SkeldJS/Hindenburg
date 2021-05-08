@@ -113,6 +113,7 @@ export class Cluster {
                 const node = new ClusterNode(port, i);
                 await node.start();
                 this.logger.info("Node %s ready.", i);
+                this.nodes[i] = node;
             })();
         }
     }

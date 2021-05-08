@@ -1,6 +1,7 @@
 import dgram from "dgram";
 import winston from "winston";
 import ioredis from "ioredis";
+import picomatch from "picomatch";
 
 import {
     AcknowledgePacket,
@@ -22,6 +23,11 @@ import { ReactorModDeclarationMessage } from "./packets/ReactorModDeclaration";
 
 export interface ReliableSerializable extends Serializable {
     nonce: number;
+}
+
+export interface ModInfo {
+    id: string;
+    version: string;
 }
 
 export interface AnticheatValue {
@@ -61,13 +67,19 @@ export interface HindenburgMasterServerConfig {
     port: number;
 }
 
-export interface ModInfo {
-    id: string;
+export interface ModConfig {
     version: string;
+    required: boolean;
+    banned: boolean;
+}
+
+export interface ReactorModConfig {
+    [key: string]: string|ModConfig;
 }
 
 export interface ReactorConfig {
-    mods: ModInfo[];
+    mods: ReactorModConfig;
+    allowExtraMods: boolean;
 }
 
 export interface HindenburgConfig {
@@ -296,48 +308,66 @@ export class HindenburgNode<T extends EventData = any> extends EventEmitter<T> {
     }
 
     checkMods(client: Client) {
-        if (this.config.reactor) {
+        if (typeof this.config.reactor === "object") {
             if (client.mods) {
-                if (typeof this.config.reactor !== "boolean" && this.config.reactor.mods) {
-                    for (const mod of client.mods) {
-                        const found = this.config.reactor.mods.find(m => m.id === mod.id);
-                        if (found) {
-                            if (found.version !== mod.version) {
-                                this.logger.warn(
-                                    "Client with ID %s attempted to connect with invalid version of mod " + mod.id + " (" + mod.version + ").",
-                                    client.clientid
-                                );
-                                client.disconnect(DisconnectReason.Custom, "Invalid version for mod " + mod.id + " loaded: " + mod.version + ".");
-                                return false;
-                            }
-                        } else {
-                            this.logger.warn(
-                                "Client with ID %s attempted to connect with invalid mod " + mod.id + " (" + mod.version + ").",
-                                client.clientid
+                const entries = Object.entries(this.config.reactor.mods);
+
+                for (const [ id, info ] of entries) {
+                    const version = typeof info === "string"
+                        ? info
+                        : info.version;
+
+                    const found = client.mods.find(mod =>
+                        mod.id === id
+                    );
+
+                    if (found) {
+                        if (typeof info !== "string" && info.banned) {
+                            client.joinError(
+                                DisconnectReason.Custom,
+                                "Invalid mod loaded: %s (%s).",
+                                found.id, found.version
                             );
-                            client.disconnect(DisconnectReason.Custom, "Invalid mod loaded: " + mod.id + " (" + mod.version + ").");
                             return false;
                         }
-                    }
-                    for (const mod of this.config.reactor.mods) {
-                        const found = client.mods.find(m => m.id === mod.id);
-                        if (!found) {
-                            this.logger.warn(
-                                "Client with ID %s has missing mod " + mod.id + ".",
-                                client.clientid
+
+                        if (!picomatch.isMatch(found.version, version)) {
+                            client.joinError(
+                                DisconnectReason.Custom,
+                                "Invalid version for mod %s: %s (Needs %s).",
+                                found.id, found.version, version
                             );
-                            client.disconnect(DisconnectReason.Custom, "Missing mod: " + mod.id + " (" + mod.version + ").");
+                            return false;
+                        }
+                    } else {
+                        if (typeof info === "string" || info.required) {
+                            client.joinError(
+                                DisconnectReason.Custom,
+                                "Missing mod: %s (%s).",
+                                id, version
+                            );
                             return false;
                         }
                     }
 
+                    if (!this.config.reactor.allowExtraMods) {
+                        for (const mod of client.mods) {
+                            if (!this.config.reactor.mods[mod.id]) {
+                                client.joinError(
+                                    DisconnectReason.Custom,
+                                    "Invalid mod loaded: %s (%s).",
+                                    mod.id, mod.version
+                                );
+                                return false;
+                            }
+                        }
+                    }
                 }
             } else {
-                this.logger.warn(
-                    "Client with ID %s failed to declare mods.",
-                    client.clientid
+                client.disconnect(
+                    DisconnectReason.Custom,
+                    "Failed to declare mods."
                 );
-                client.disconnect(DisconnectReason.Custom, "Failed to declare mods.");
                 return false;
             }
         }

@@ -21,10 +21,12 @@ There is a small amount of configuration required to achieve this, and the defau
 The following template can be added to your config.json and extended to fit your needs.
 ```json
 "master": {
-    "nodes": [
+    "clusters": [
         {
-            "ip": "0.0.0.0",
-            "port": 22123
+            "ip": "127.0.0.1",
+            "ports": [
+                22123
+            ]
         }
     ],
     "ip": "127.0.0.1",
@@ -35,27 +37,29 @@ The following template can be added to your config.json and extended to fit your
 The master IP being the IP address of the server that the load server is running on, and
 each node IP being the IP address of the server that that node is running on.
 
-### Node
-If the current server is running as a single node, you will have to configure the IP and
-port.
+### Cluster
+If the current server is running as a node cluster, you will have to configure the IP and
+ports to use.
 
 The following template can be used.
 ```json
 "node": {
     "ip": "0.0.0.0",
-    "port": 22123
+    "ports": [
+        22123
+    ]
 }
 ```
 
-The node IP being the IP address of the server that the node is running on.
+The cluster IP being the IP address of the server that the cluster is running on.
 
 ### Running
 In a development environment, you can run both
-`yarn serve:load-balancer` and `yarn serve:node` to run the load balancer and the node
+`yarn serve:load-balancer` and `yarn serve:cluster` to run the load balancer and the cluster
 respectively. 
 
 In a production environment, you can run both
-`yarn start:load-balancer` and `yarn start:node` to run the load balacner and the node
+`yarn start:load-balancer` and `yarn start:cluster` to run the load balacner and the cluster
 respectively. You can use a tool like [pm2](https://npmjs.com/package/pm2) to run these
 concurrently and keep them both alive in case of crashes. Make sure that you run `yarn build`
 beforehand.

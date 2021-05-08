@@ -76,7 +76,7 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             room.setCode(code);
             this.rooms.set(code, room);
 
-            this.redis.set("room." + name, this.ip + ":" + this.ip)
+            this.redis.set("room." + name, this.ip + ":" + this.config.node.port);
 
             this.logger.info(
                 "Client with ID %s created game %s on %s with %s impostors and %s max players.",
@@ -104,10 +104,58 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
                 return client.joinError(DisconnectReason.GameNotFound);
 
             if (room.clients.size >= room.settings.maxPlayers)
-                client.joinError(DisconnectReason.GameFull);
+                return client.joinError(DisconnectReason.GameFull);
 
             if (room.state === GameState.Started)
-                client.joinError(DisconnectReason.GameStarted);
+            return client.joinError(DisconnectReason.GameStarted);
+
+            const host = room.clients.get(room.hostid);
+
+            if (typeof this.config.reactor === "object") {
+                if (host?.mods && this.config.reactor.requireHostMods) {
+                    if (!client.mods)
+                        return;
+
+                    if (host.mods.length !== client.mods.length)
+                        return;
+
+                    for (const cmod of client.mods) {
+                        const found = host.mods
+                            .find(mod => mod.id === cmod.id);
+
+                        
+                        if (found) {
+                            if (found.version !== cmod.version) {
+                                return client.joinError(
+                                    DisconnectReason.Custom,
+                                    "Invalid version for mod %s: %s (Needs %s).",
+                                    cmod.id, cmod.version, found.version
+                                );
+                            }
+                        } else {
+                            return client.joinError(
+                                DisconnectReason.Custom,
+                                "Invalid mod loaded: %s (%s)",
+                                cmod.id, cmod.version
+                            );
+                        }
+                    }
+                    
+                    for (const hmod of host.mods) {
+                        const found = client.mods
+                            .find(mod => mod.id === hmod.id);
+
+                        
+                        if (!found) {
+                            return client.joinError(
+                                DisconnectReason.Custom,
+                                "Missing mod: %s (%s)",
+                                hmod.id, hmod.version
+                            );
+                        }
+                    }
+                }
+            }
 
             room.handleRemoteJoin(client);
         });

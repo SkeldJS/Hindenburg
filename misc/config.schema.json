@@ -28,17 +28,6 @@
                     }
                 }
             ]
-        },
-        "mod.info": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
         }
     },
     "properties": {
@@ -85,7 +74,12 @@
                             }
                         },
                         "allowExtraMods": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Whether or not clients can join with mods not required by the server."
+                        },
+                        "requireHostMods": {
+                            "type": "boolean",
+                            "description": "Whether or not joining clients are required to have the same mods as the host of the room."
                         }
                     }
                 }

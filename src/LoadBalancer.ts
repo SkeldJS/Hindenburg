@@ -10,7 +10,7 @@ import {
 } from "@skeldjs/protocol";
 
 import { DisconnectReason, SendOption } from "@skeldjs/constant";
-import { HazelReader, sleep } from "@skeldjs/util";
+import { HazelReader, Int2Code, sleep } from "@skeldjs/util";
 
 import { HindenburgNode, HindenburgConfig } from "./Node";
 import { Client } from "./Client";
@@ -67,11 +67,35 @@ export class HindenburgLoadBalancer extends HindenburgNode {
             );
         });
 
-        this.decoder.on(JoinGameMessage, (message, direction, client) => {
+        this.decoder.on(JoinGameMessage, async(message, direction, client) => {
             if (!this.checkMods(client))
                 return;
 
+            const name = Int2Code(message.code);
+
+            const address = await this.redis.get("room." + name);
+
+            if (!address)
+                return client.joinError(DisconnectReason.GameNotFound);
+
+            const [ ip, port ] = address.split(":");
+
+            client.send(
+                new ReliablePacket(
+                    client.getNextNonce(),
+                    [
+                        new RedirectMessage(
+                            ip,
+                            parseInt(port)
+                        )
+                    ]
+                )
+            );
             
+            this.logger.info(
+                "Redirected client with ID %s joining room %s to slave server %s:%s.",
+                client.clientid, name, ip, port
+            );
         });
     }
 

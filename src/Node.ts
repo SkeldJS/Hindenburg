@@ -80,6 +80,7 @@ export interface ReactorModConfig {
 export interface ReactorConfig {
     mods: ReactorModConfig;
     allowExtraMods: boolean;
+    requireHostMods: boolean;
 }
 
 export interface HindenburgConfig {

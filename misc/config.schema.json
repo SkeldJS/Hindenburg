@@ -29,7 +29,7 @@
                 }
             ]
         }
-    },  
+    },
     "properties": {
         "serverName": {
             "type": "string",
@@ -107,24 +107,28 @@
                 }
             }
         },
-        "node": {
+        "cluster": {
             "type": "object",
             "properties": {
                 "ip": {
                     "type": "string",
                     "description": "The IP address of this node."
                 },
-                "port": {
-                    "type": "number",
-                    "examples": [22023, 22523],
-                    "description": "The port for Hindenburg to listen on."
+                "ports": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "description": "Every port that this cluster listens on."
                 }
             }
         },
         "master": {
             "type": "object",
             "properties": {
-                "nodes": {
+                "clusters": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -133,9 +137,14 @@
                                 "type": "string",
                                 "description": "The IP address of this node."
                             },
-                            "port": {
-                                "type": "number",
-                                "description": "The port of this node."
+                            "ports": {
+                                "type": "array",
+                                "items": [
+                                    {
+                                        "type": "number"
+                                    }
+                                ],
+                                "description": "Every port that this cluster is listening on."
                             }
                         }
                     }

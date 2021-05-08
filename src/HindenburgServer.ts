@@ -1,10 +1,7 @@
-import dgram from "dgram";
-
 import {
     BaseRootMessage,
     DataMessage,
     DespawnMessage,
-    GameDataMessage,
     GameDataToMessage,
     GameOptions,
     HelloPacket,
@@ -13,18 +10,16 @@ import {
     MessageDirection,
     ReliablePacket,
     RpcMessage,
-    SceneChangeMessage,
     SpawnMessage
 } from "@skeldjs/protocol";
 
 import {
     DisconnectReason,
     GameMap,
-    GameState,
-    SendOption
+    GameState
 } from "@skeldjs/constant";
 
-import { Code2Int, HazelReader } from "@skeldjs/util";
+import { Code2Int } from "@skeldjs/util";
 import { SpawnPrefabs } from "@skeldjs/core";
 
 import { Room } from "./Room";
@@ -204,13 +199,16 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
     }
 
     listen() {
-        this.socket.bind(this.config.node.port);
-
-        this.socket.on("listening", () => {
-            this.logger.info("Listening on *:%s", this.config.node.port);
+        return new Promise<void>(resolve => {
+            this.socket.bind(this.config.node.port);
+    
+            this.socket.on("listening", () => {
+                this.logger.info("Listening on *:%s", this.config.node.port);
+                resolve();
+            });
+    
+            this.socket.on("message", this.onMessage.bind(this));
         });
-
-        this.socket.on("message", this.onMessage.bind(this));
     }
 
     async graceful() {

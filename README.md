@@ -36,10 +36,8 @@ The master IP being the IP address of the server that the load server is running
 each node IP being the IP address of the server that that node is running on.
 
 ### Node
-If the current server is running as a single node,
-
-The config also requires you to configure the IP and port if the server is running
-a node server.
+If the current server is running as a single node, you will have to configure the IP and
+port.
 
 The following template can be used.
 ```json

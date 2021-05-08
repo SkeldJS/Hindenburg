@@ -47,7 +47,7 @@ export interface RedisServerConfig {
     password?: string;
 }
 
-export interface HindenburgServerConfig {
+export interface HindenburgNodeConfig {
     ip: string;
     port: number;
 }
@@ -75,10 +75,14 @@ export interface HindenburgConfig {
     serverName: string;
     serverVersion: string;
     anticheat: AnticheatConfig;
-    node: HindenburgServerConfig;
+    node: HindenburgNodeConfig;
     master: HindenburgMasterServerConfig;
     redis: RedisServerConfig;
 }
+
+type DeepPartial<T> = {
+    [P in keyof T]?: DeepPartial<T[P]>;
+};
 
 export class HindenburgNode<T extends EventData = any> extends EventEmitter<T> {
     logger: winston.Logger;
@@ -98,26 +102,6 @@ export class HindenburgNode<T extends EventData = any> extends EventEmitter<T> {
 
     constructor(config: Partial<HindenburgConfig>) {
         super();
-
-        this.logger = winston.createLogger({
-            transports: [
-                new winston.transports.Console({
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.colorize(),
-                        winston.format.simple(),
-                        winston.format.label({ label: "Hindenburg" }),
-                    ),
-                }),
-                new winston.transports.File({
-                    filename: "logs.txt",
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.simple()
-                    )
-                })
-            ]
-        });
 
         this.config = {
             reactor: false,
@@ -160,6 +144,28 @@ export class HindenburgNode<T extends EventData = any> extends EventEmitter<T> {
                 ...config.redis
             }
         }
+        
+        this.logger = winston.createLogger({
+            transports: [
+                new winston.transports.Console({
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.label({ label: ":" + this.config.node.port }),
+                        winston.format.printf(info => {
+                            return `[${info.label}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
 
         this.decoder = new PacketDecoder;
         this.socket = dgram.createSocket("udp4");

@@ -78,13 +78,16 @@ export class HindenburgLoadBalancer extends HindenburgNode {
     }
 
     listen() {
-        this.socket.bind(this.config.master.port);
-
-        this.socket.on("listening", () => {
-            this.logger.info("Listening on *:%s", this.config.master.port);
+        return new Promise<void>(resolve => {
+            this.socket.bind(this.config.master.port);
+    
+            this.socket.on("listening", () => {
+                this.logger.info("Listening on *:%s", this.config.master.port);
+                resolve();
+            });
+            
+            this.socket.on("message", this.onMessage.bind(this));
         });
-        
-        this.socket.on("message", this.onMessage.bind(this));
     }
 
     async handleInitial(parsed: Serializable, client: Client) {

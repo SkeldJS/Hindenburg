@@ -4,9 +4,9 @@
     "build": "tsc -p ./",
     "watch": "tsc -w -p ./",
     "set-server": "node ./bin/set-server",
-    "dev:node": "ts-node ./bin/index.ts",
-    "serve:node": "ts-node-dev ./bin/index.ts",
-    "start:node": "node ./dist/bin/index.js",
+    "dev:cluster": "ts-node ./bin/cluster.ts",
+    "serve:cluster": "ts-node-dev ./bin/cluster.ts",
+    "start:cluster": "node ./dist/bin/cluster.js",
     "dev:load-balancer": "ts-node ./bin/load-balancer.ts",
     "serve:load-balancer": "ts-node-dev ./bin/bin/load-balancer.ts",
     "start:load-balancer": "node ./dist/bin/load-balancer.js"

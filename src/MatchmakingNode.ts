@@ -89,8 +89,8 @@ export class MatchmakingNode<T extends EventData = any> extends Node<T> {
                             [
                                 new ReactorMessage(
                                     new ReactorHandshakeMessage(
-                                        this.config.serverName,
-                                        this.config.serverVersion,
+                                        "Hindenburg",
+                                        process.env.npm_package_version || "1.0.0",
                                         0
                                     )
                                 )

@@ -39,8 +39,6 @@ export interface ReactorConfig {
 
 export interface HindenburgConfig {
     reactor: boolean|ReactorConfig;
-    serverName: string;
-    serverVersion: string;
     anticheat: AnticheatConfig;
     cluster: HindenburgClusterConfig;
     loadbalancer: HindenburgLoadBalancerServerConfig;
@@ -57,8 +55,6 @@ export class Node<T extends EventData = any> extends EventEmitter<T> {
 
         this.config = {
             reactor: false,
-            serverName: "Hindenburg",
-            serverVersion: "1.0.0",
             ...config,
             anticheat: {
                 versions: ["2020.4.2"],

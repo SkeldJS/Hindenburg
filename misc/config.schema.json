@@ -31,14 +31,6 @@
         }
     },
     "properties": {
-        "serverName": {
-            "type": "string",
-            "description": "The name of this Hindenburg server instance."
-        },
-        "serverVersion": {
-            "type": "string",
-            "description": "The version that this server is currently running."
-        },
         "reactor": {
             "anyOf": [
                 {

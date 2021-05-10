@@ -39,6 +39,7 @@ export interface ReactorConfig {
 
 export interface HindenburgConfig {
     reactor: boolean|ReactorConfig;
+    versions: string[];
     anticheat: AnticheatConfig;
     cluster: HindenburgClusterConfig;
     loadbalancer: HindenburgLoadBalancerServerConfig;
@@ -55,9 +56,9 @@ export class Node<T extends EventData = any> extends EventEmitter<T> {
 
         this.config = {
             reactor: false,
+            versions: ["2020.4.2"],
             ...config,
             anticheat: {
-                versions: ["2020.4.2"],
                 banMessage: "You were banned for %s for hacking.",
                 maxConnectionsPerIp: 2,
                 checkSettings: true,

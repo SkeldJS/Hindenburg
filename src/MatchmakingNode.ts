@@ -52,7 +52,7 @@ export class MatchmakingNode<T extends EventData = any> extends Node<T> {
         this.socket = dgram.createSocket("udp4");
 
         this.clients = new Map;
-        this.allowed_versions = this.config.anticheat.versions.map(version => VersionInfo.from(version));
+        this.allowed_versions = this.config.versions.map(version => VersionInfo.from(version));
 
         this._incr_clientid = 0;
 
@@ -198,7 +198,7 @@ export class MatchmakingNode<T extends EventData = any> extends Node<T> {
                             return false;
                         }
 
-                        if (!picomatch.isMatch(found.version, version)) {
+                        if (found.version && !picomatch.isMatch(found.version, version)) {
                             client.joinError(
                                 DisconnectReason.Custom,
                                 "Invalid version for mod %s: %s (Needs %s).",

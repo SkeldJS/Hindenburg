@@ -19,7 +19,6 @@ export interface AnticheatValue {
 }
 
 export interface AnticheatConfig {
-    versions: string[];
     banMessage: string;
     maxConnectionsPerIp: number;
     checkSettings: boolean|AnticheatValue;

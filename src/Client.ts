@@ -76,11 +76,12 @@ export class Client extends EventEmitter<ClientEvents> {
         return super.emit(event);
     }
     
-    async ban(seconds: number) {
+    async ban(infraction: keyof AnticheatConfig, seconds: number) {
         this.disconnect(
             DisconnectReason.Custom,
             this.server.config.anticheat.banMessage
-                .replace("%s", formatSeconds(seconds))
+                .replace("%s", formatSeconds(seconds)
+                .replace("%i", infraction))
         );
     
         await this.server.redis.set("bans." + this.remote.address, new Date(Date.now() + (seconds * 1000)).toString());
@@ -98,7 +99,7 @@ export class Client extends EventEmitter<ClientEvents> {
                     this.clientid, infraction
                 );
             } else if (config.penalty !== "ignore") {
-                if (config.strikes) {
+                if (config.strikes && config.strikes > 1) {
                     const strikes = await this.server.redis.incr("infractions." + this.server.ip + "." + this.clientid + "." + infraction);
                     this.server.logger.warn(
                         "Client with ID %s is on %s strike(s) for anticheat rule %s.",
@@ -110,17 +111,17 @@ export class Client extends EventEmitter<ClientEvents> {
                     }
                 }
 
-                if (config.penalty === "disconnect") {
+                if (config.penalty === "ban") {
+                    await this.ban(infraction, config.banDuration || 3600);
+                    this.server.logger.warn(
+                        "Client with ID %s was banned for anticheat rule %s for %s.",
+                        this.clientid, infraction, formatSeconds(config.banDuration || 3600)
+                    );
+                } else {
                     this.disconnect(DisconnectReason.Hacking);
                     this.server.logger.warn(
                         "Client with ID %s was disconnected for anticheat rule %s.",
                         this.clientid, infraction
-                    );
-                } else if (config.penalty === "ban") {
-                    await this.ban(config.banDuration || 3600);
-                    this.server.logger.warn(
-                        "Client with ID %s was banned for anticheat rule %s for %s.",
-                        this.clientid, infraction, formatSeconds(config.banDuration || 3600)
                     );
                 }
                 return true;

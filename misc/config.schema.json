@@ -31,6 +31,14 @@
         }
     },
     "properties": {
+        "versions": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "string"
+                }
+            ]
+        },
         "reactor": {
             "anyOf": [
                 {
@@ -111,14 +119,6 @@
                 "maxConnectionsPerIp": {
                     "type": "number",
                     "description": "The maximum number of connections that any one IP can have."
-                },
-                "versions": {
-                    "type": "array",
-                    "items": [
-                        {
-                            "type": "string"
-                        }
-                    ]
                 },
                 "banMessage": {
                     "type": "string"

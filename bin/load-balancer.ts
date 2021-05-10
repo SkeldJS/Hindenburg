@@ -22,6 +22,7 @@ import { HindenburgLoadBalancer } from "../src";
     "serverName": "Hindenburg",
     "serverVersion": "1.0.0",
     "reactor": false,
+    "versions": ["2021.4.2"],
     "anticheat": {
         "checkSettings": true,
         "maxConnectionsPerIp": 2,
@@ -31,8 +32,7 @@ import { HindenburgLoadBalancer } from "../src";
         "massivePackets": {
             "penalty": "disconnect",
             "strikes": 3
-        },
-        "versions": ["2021.4.2"]
+        }
     },
     "clusters": {
         "ip": "127.0.0.1",

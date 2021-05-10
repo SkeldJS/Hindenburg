@@ -12,19 +12,23 @@
     "start:load-balancer": "node ./dist/bin/load-balancer.js"
   },
   "dependencies": {
-    "@skeldjs/constant": "^2.9.1",
-    "@skeldjs/core": "^2.9.1",
-    "@skeldjs/events": "^2.9.1",
-    "@skeldjs/protocol": "^2.9.1",
-    "@skeldjs/util": "^2.9.1",
+    "@skeldjs/constant": "^2.9.2",
+    "@skeldjs/core": "^2.9.2",
+    "@skeldjs/events": "^2.9.2",
+    "@skeldjs/protocol": "^2.9.2",
+    "@skeldjs/util": "^2.9.2",
+    "chalk": "^4.1.1",
     "ioredis": "^4.27.2",
     "picomatch": "^2.2.3",
+    "uuid": "^8.3.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
     "@types/ioredis": "^4.26.1",
     "@types/node": "^14.14.41",
     "@types/picomatch": "^2.2.4",
+    "@types/uuid": "^8.3.0",
     "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.6",
     "typescript": "4.2.*"

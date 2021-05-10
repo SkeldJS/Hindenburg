@@ -11,13 +11,14 @@ import {
     ReliablePacket,
     Serializable
 } from "@skeldjs/protocol";
+import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
+import { DisconnectMessages } from "@skeldjs/data";
 
-import { AnticheatConfig, AnticheatValue, HindenburgNode, ModInfo } from "./Node";
+import { MatchmakingNode, ModInfo } from "./MatchmakingNode";
 import { Room } from "./Room";
 import { formatSeconds } from "./util/format-seconds";
-import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { ClientDisconnectEvent } from "./events";
-import { DisconnectMessages } from "@skeldjs/data";
+import { AnticheatConfig, AnticheatValue } from "./Anticheat";
 
 export interface SentPacket {
     nonce: number;
@@ -46,7 +47,7 @@ export class Client extends EventEmitter<ClientEvents> {
     mods?: ModInfo[];
 
     constructor(
-        private server: HindenburgNode,
+        private server: MatchmakingNode,
         public readonly remote: dgram.RemoteInfo,
         public readonly clientid: number
     ) {
@@ -92,11 +93,17 @@ export class Client extends EventEmitter<ClientEvents> {
         if (config) {
             if (typeof config === "boolean") {
                 this.disconnect(DisconnectReason.Hacking);
-                this.server.logger.warn("Client with ID %s was disconnected for anticheat rule %s.", this.clientid, infraction);
+                this.server.logger.warn(
+                    "Client with ID %s was disconnected for anticheat rule %s.",
+                    this.clientid, infraction
+                );
             } else if (config.penalty !== "ignore") {
                 if (config.strikes) {
                     const strikes = await this.server.redis.incr("infractions." + this.server.ip + "." + this.clientid + "." + infraction);
-                    this.server.logger.warn("Client with ID %s is on %s strike(s) for anticheat rule %s.", this.clientid, strikes, infraction);
+                    this.server.logger.warn(
+                        "Client with ID %s is on %s strike(s) for anticheat rule %s.",
+                        this.clientid, strikes, infraction
+                    );
     
                     if (strikes < config.strikes) {
                         return false;
@@ -105,7 +112,10 @@ export class Client extends EventEmitter<ClientEvents> {
 
                 if (config.penalty === "disconnect") {
                     this.disconnect(DisconnectReason.Hacking);
-                    this.server.logger.warn("Client with ID %s was disconnected for anticheat rule %s.", this.clientid, infraction);
+                    this.server.logger.warn(
+                        "Client with ID %s was disconnected for anticheat rule %s.",
+                        this.clientid, infraction
+                    );
                 } else if (config.penalty === "ban") {
                     await this.ban(config.banDuration || 3600);
                     this.server.logger.warn(

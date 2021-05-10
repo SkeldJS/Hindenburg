@@ -20,50 +20,61 @@ import {
     GameDataMessageTag,
     GameMap,
     GameState,
-    RpcMessageTag
+    RpcMessageTag,
+    SpawnType
 } from "@skeldjs/constant";
 
 import { Code2Int } from "@skeldjs/util";
 import { SpawnPrefabs } from "@skeldjs/core";
 
 import { Room } from "./Room";
-import { HindenburgConfig, HindenburgNode } from "./Node";
+import { HindenburgConfig } from "./Node";
+import { MatchmakingNode } from "./MatchmakingNode";
 import { Client, ClientEvents } from "./Client";
+import { ModdedHelloPacket } from "./packets";
 
-export class HindenburgServer extends HindenburgNode<ClientEvents> {
+import { fmtName } from "./util/format-name";
+
+export class WorkerNode extends MatchmakingNode<ClientEvents> {
     rooms: Map<number, Room>;
+    nodeid: number;
 
-    constructor(config: Partial<HindenburgConfig>) {
-        super(config);
+    constructor(config: Partial<HindenburgConfig>, nodeid: number) {
+        super(config.cluster!.name + ":" + config.cluster!.ports[nodeid], config);
 
         this.rooms = new Map;
+        this.nodeid = nodeid;
 
-        this.decoder.on(HelloPacket, async (message, direction, client) => {
-            const was_redirected = await this.redis.hget("redirected." + client.remote.address + "." + client.username, "num");
+        this.decoder.on([ HelloPacket, ModdedHelloPacket ], async (message, direction, client) => {
+            if (this.config.loadbalancer) {
+                const was_redirected = await this.redis.hget("redirected." + client.remote.address + "." + client.username, "num");
             
-            if (!was_redirected) {
-                client.disconnect(
-                    DisconnectReason.Custom,
-                    "Please connect through the main server."
-                );
-                return;
-            }
+                if (!was_redirected) {
+                    client.disconnect(
+                        DisconnectReason.Custom,
+                        "Please connect through the main server."
+                    );
+                    return;
+                }
 
-            if (was_redirected === "1") {
-                await this.redis.del("redirected." + client.remote.address + "." + client.username);
-            } else {
-                await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", -1);
+                console.log(was_redirected);
+    
+                if (was_redirected === "1") {
+                    await this.redis.del("redirected." + client.remote.address + "." + client.username);
+                } else {
+                    await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", -1);
+                }
             }
         });
 
-        this.decoder.on(HostGameMessage, (message, direction, client) => {
+        this.decoder.on(HostGameMessage, async (message, direction, client) => {
             if (!this.checkMods(client))
                 return;
 
             if (this.config.anticheat.checkSettings && !GameOptions.isValid(message.options)) {
-                this.logger.warn("Client with ID %s created game with invalid settings.", client.clientid);
+                this.logger.warn("Client with ID %s created room with invalid settings.", client.clientid);
 
-                if (client.penalize("checkSettings")) {
+                if (await client.penalize("checkSettings")) {
                     return;
                 }
             }
@@ -80,12 +91,12 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             room.setCode(code);
             this.rooms.set(code, room);
 
-            this.redis.set("room." + name, this.ip + ":" + this.config.node.port);
+            this.redis.set("room." + name, this.ip + ":" + this.port);
 
             this.logger.info(
-                "Client with ID %s created game %s on %s with %s impostors and %s max players.",
+                "Client with ID %s created room %s on %s with %s impostors and %s max players (%s).",
                 client.clientid, name,
-                GameMap[message.options.map], message.options.numImpostors, message.options.maxPlayers
+                GameMap[message.options.map], message.options.numImpostors, message.options.maxPlayers, room.uuid
             );
 
             client.send(
@@ -164,7 +175,7 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             room.handleRemoteJoin(client);
         });
 
-        this.decoder.on([ DataMessage, RpcMessage, DespawnMessage ], (message, direction, client) => {
+        this.decoder.on([ DataMessage, RpcMessage, DespawnMessage ], async (message, direction, client) => {
             if (!client.room)
                 return;
 
@@ -176,43 +187,56 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             const component = client.room.netobjects.get(message.netid);
 
             if (!component)
-                return;
+                return message.cancel();
                 
             if (
                 component.ownerid !== client.clientid
                 && !player.ishost
-                && client.penalize("checkObjectOwnership")
             ) {
-                return;
-            }
+                client.room.logger.warn(
+                    "Player %s had data for or despawned %s but was not its owner.",
+                    fmtName(player), message.netid
+                );
 
-            client.room.decoder.emitDecoded(message, direction, client);
+                if (await client.penalize("checkObjectOwnership")) {
+                    if (message.tag === GameDataMessageTag.RPC) {
+                        message.data.cancel();
+                    }
+                    return message.cancel();
+                }
+            }
         });
 
-        this.decoder.on(GameDataMessage, (message, direction, client) => {
-            // todo: anti-cheat on Rpc messages
+        this.decoder.on(RpcMessage, async (message, direction, client) => {
+            if (message.canceled || message.data.canceled)
+                return;
 
             if (!client.room)
                 return;
 
-            client.room.decoder.emitDecoded(message, direction, client);
+            const player = client.room.players.get(client.clientid);
 
-            for (const [ , cl ] of client.room.clients) {
-                cl.send(
-                    new ReliablePacket(
-                        client.getNextNonce(),
-                        [
-                            new GameDataMessage(
-                                client.room.code,
-                                message.children
-                            )
-                        ]
-                    )
+            if (!player)
+                return;
+            
+            const component = client.room.netobjects.get(message.netid);
+
+            if (!component) {
+                client.room.logger.warn(
+                    "Player %s had an Rpc for component with netid %s but it did not exist.",
+                    fmtName(player), message.netid
                 );
+                return message.cancel();
             }
+
+            await client.room.anticheat.emitDecoded(message.data, direction, {
+                component,
+                player,
+                client
+            });
         });
 
-        this.decoder.on(SpawnMessage, (message, direction, client) => {
+        this.decoder.on(SpawnMessage, async (message, direction, client) => {
             if (!client.room)
                 return;
 
@@ -221,21 +245,70 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             if (!player)
                 return;
 
-            if (!player.ishost && client.penalize("hostChecks")) {
-                return;
+            if (!player.ishost) {
+                client.room.logger.warn(
+                    "Player %s spawned object %s but isn't the host.",
+                    fmtName(player), SpawnType[message.spawnType]
+                );
+
+                if (await client.penalize("hostChecks")) {
+                    return message.cancel();
+                }
             }
 
             const prefab = SpawnPrefabs[message.spawnType];
             if (prefab) {
-                if (prefab.length !== message.components.length && client.penalize("malformedPackets")) {
-                    return;
+                if (prefab.length !== message.components.length) {
+                    client.room.logger.warn(
+                        "Player %s spawned object %s with invalid components (%s).",
+                        fmtName(player), SpawnType[message.spawnType], message.components.length
+                    );
+                }
+
+                if (await client.penalize("malformedPackets")) {
+                    return message.cancel();
                 }
             }
-
-            client.room.decoder.emitDecoded(message, direction, client);
         });
 
-        this.decoder.on(GameDataToMessage, (message, direction, client) => {
+        this.decoder.on(GameDataMessage, async (message, direction, client) => {
+            if (!client.room)
+                return;
+                
+            const player = client.room.players.get(client.clientid);
+
+            if (!player)
+                return;
+                
+            const children = message.children
+                .filter(child => !child.canceled);
+
+            if (!children.length)
+                return;
+
+            for (const child of children) {
+                await client.room.decoder.emitDecoded(child, direction, client);
+            }
+
+            for (const [ , cl ] of client.room.clients) {
+                if (cl === client)
+                    continue;
+
+                cl.send(
+                    new ReliablePacket(
+                        client.getNextNonce(),
+                        [
+                            new GameDataMessage(
+                                client.room.code,
+                                children
+                            )
+                        ]
+                    )
+                );
+            }
+        });
+
+        this.decoder.on(GameDataToMessage, async (message, direction, client) => {
             if (!client.room)
                 return;
 
@@ -250,8 +323,8 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             for (const gamedata of message._children) {
                 switch (gamedata.tag) {
                     case GameDataMessageTag.Data:
-                        if (!player.ishost && client.penalize("hostChecks")) {
-                            return;
+                        if (!player.ishost && await client.penalize("hostChecks")) {
+                            return message.cancel();
                         }
                         break;
                     case GameDataMessageTag.RPC:
@@ -262,31 +335,77 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
                             case RpcMessageTag.CastVote:
                             case RpcMessageTag.CloseDoorsOfType:
                             case RpcMessageTag.RepairSystem:
-                                if (!recipient.ishost && client.penalize("invalidFlow")) {
-                                    return;
+                                if (!recipient.ishost) {
+                                    client.room.logger.warn(
+                                        "Player %s tried to send Rpc %s but the recipient wasn't the host.",
+                                        fmtName(player), RpcMessageTag[rpc.data.tag]
+                                    );
+
+                                    if (await client.penalize("invalidFlow")) {
+                                        return message.cancel();
+                                    }
                                 }
                                 break;
                             case RpcMessageTag.Exiled:
                             case RpcMessageTag.ClearVote:
-                                if (!player.ishost && client.penalize("hostChecks")) {
-                                    return;
+                                if (!player.ishost) {
+                                    client.room.logger.warn(
+                                        "Player %s tried to send Rpc %s but they weren't the host.",
+                                        fmtName(player), RpcMessageTag[rpc.data.tag]
+                                    );
+
+                                    if (await client.penalize("hostChecks")) {
+                                        return message.cancel();
+                                    }
                                 }
                                 break;
                         }
                         break;
                     case GameDataMessageTag.Spawn:
-                        if ((!player.ishost && !recipient.spawned) && client.penalize("hostChecks")) {
-                            return;
+                        if (!player.ishost) {
+                            client.room.logger.warn(
+                                "Player %s tried to send a spawn but they weren't the host.",
+                                fmtName(player)
+                            );
+
+                            if (recipient.spawned) {
+                                client.room.logger.warn(
+                                    "Player %s tried to send a spawn but the recipient had already spawned.",
+                                    fmtName(player)
+                                );
+
+                                if (await client.penalize("hostChecks")) {
+                                    return message.cancel();
+                                }
+                            }
                         }
                         break;
                     case GameDataMessageTag.SceneChange:
-                        if ((!recipient.ishost || player.spawned) && client.penalize("invalidFlow")) {
-                            return;
+                        if (!recipient.ishost) {
+                            client.room.logger.warn(
+                                "Player %s tried to change scene but the recipient wasn't the host.",
+                                fmtName(player)
+                            );
+
+                            if (player.spawned) {
+                                client.room.logger.warn(
+                                    "Player %s tried to change scene but they had already spawned.",
+                                    fmtName(player)
+                                );
+
+                                if (await client.penalize("invalidFlow")) {
+                                    return message.cancel();
+                                }
+                            }
                         }
                         break;
                     default:
-                        if (client.penalize("invalidFlow")) {
-                            return;
+                        client.room.logger.warn(
+                            "Player %s sent a message with tag %s that is never sent in GameDataTo messages.",
+                            fmtName(player), message.tag
+                        );
+                        if (await client.penalize("invalidFlow")) {
+                            return message.cancel();
                         }
                 }
             }
@@ -316,20 +435,24 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
             
             const infraction_keys = await this.redis.keys("infractions." + this.ip + "." + disconnect.client.clientid + ".*");
 
-            this.redis.del(infraction_keys);
+            if (infraction_keys.length) this.redis.del(infraction_keys);
         });
     }
 
     get ip() {
-        return this.config.node.ip;
+        return this.config.cluster.ip;
+    }
+
+    get port() {
+        return this.config.cluster.ports[this.nodeid];
     }
 
     listen() {
         return new Promise<void>(resolve => {
-            this.socket.bind(this.config.node.port);
+            this.socket.bind(this.port);
     
             this.socket.on("listening", () => {
-                this.logger.info("Listening on *:%s", this.config.node.port);
+                this.logger.info("Listening on *:%s", this.port);
                 resolve();
             });
     
@@ -337,7 +460,7 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
         });
     }
 
-    async graceful() {
+    async gracefulShutdown() {
         this.logger.info(
             "Performing graceful shutdown on %s room(s) and %s client(s)..",
             this.rooms.size, this.clients.size
@@ -372,7 +495,7 @@ export class HindenburgServer extends HindenburgNode<ClientEvents> {
         }
 
         try {
-            this.decoder.emitDecoded(parsed, MessageDirection.Serverbound, client);
+            await this.emitDecoded(parsed, MessageDirection.Serverbound, client);
         } catch (e) {
             this.logger.error("%s", e.stack);
         }

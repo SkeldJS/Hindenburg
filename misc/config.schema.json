@@ -75,11 +75,11 @@
                         },
                         "allowExtraMods": {
                             "type": "boolean",
-                            "description": "Whether or not clients can join with mods not required by the server."
+                            "description": "Whether clients can join with mods that are not required by the server."
                         },
                         "requireHostMods": {
                             "type": "boolean",
-                            "description": "Whether or not joining clients are required to have the same mods as the host of the room."
+                            "description": "Whether joining clients are required to have the same mods as the host of the room."
                         }
                     }
                 }
@@ -90,27 +90,31 @@
             "properties": {
                 "checkSettings": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Whether or not to act on invalid settings when creating a game or when updating settings in a game."
+                    "description": "Check for invalid settings when creating a game or when updating settings in a game."
                 },
                 "checkObjectOwnership": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Whether or not to act on invalid ownership of object components."
+                    "description": "Check for invalid ownership of object components."
                 },
                 "hostChecks": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Whether or not to check that the player is a host before accepting certain packets."
+                    "description": "Check that the player is a host before accepting certain packets."
                 },
                 "malformedPackets": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Whether or not to act on invalid packets."
+                    "description": "Check if packets are invalid."
                 },
                 "invalidFlow": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Whether or not to act on an invalid flow of packets."
+                    "description": "Check if a player is doing something that doesn't normally happen."
+                },
+                "invalidName": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Check if a player has the correct name."
                 },
                 "massivePackets": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Whether or not to act on large packets received from clients."
+                    "description": "Check for packets that are far bigger than normal."
                 },
                 "maxConnectionsPerIp": {
                     "type": "number",

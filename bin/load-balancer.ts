@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs/promises";
 
-import { HindenburgConfig, HindenburgLoadBalancer } from "../src";
+import { HindenburgLoadBalancer } from "../src";
 
 
 (async () => {
@@ -10,29 +10,7 @@ import { HindenburgConfig, HindenburgLoadBalancer } from "../src";
     try {
         const config = JSON.parse(await fs.readFile(config_path, "utf8"));
 
-        const nodes = [];
-
-        for (const cluster of config.loadbalancer.clusters) {
-            nodes.push(...cluster.ports.map((port: number) => {
-                return {
-                    ip: cluster.ip,
-                    port
-                }
-            }));
-        }
-
-        const server = new HindenburgLoadBalancer({
-            ...config,
-            node: {
-                ip: config.loadbalancer.ip,
-                port: config.loadbalancer.port
-            },
-            loadbalancer: {
-                ip: config.loadbalancer.ip,
-                port: config.loadbalancer.port,
-                nodes
-            }
-        });
+        const server = new HindenburgLoadBalancer(config);
 
         server.listen();
     } catch (e) {

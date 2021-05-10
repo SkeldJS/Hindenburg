@@ -1,4 +1,8 @@
+import winston from "winston";
+import * as uuid from "uuid";
+
 import {
+    Color,
     DisconnectReason,
     GameOverReason,
     GameState
@@ -27,9 +31,15 @@ import { Code2Int, Int2Code } from "@skeldjs/util";
 import { Hostable, PlayerData } from "@skeldjs/core";
 
 import { Client } from "./Client";
-import { HindenburgServer } from "./HindenburgServer";
+import { WorkerNode } from "./WorkerNode";
+import { Anticheat } from "./Anticheat";
+import { fmtName } from "./util/format-name";
 
 export class Room extends Hostable {
+    logger: winston.Logger;
+
+    uuid: string;
+
     code: number;
     clients: Map<number, Client>;
     settings: GameOptions;
@@ -37,14 +47,56 @@ export class Room extends Hostable {
     
     waiting: Set<Client>;
 
-    constructor(private server: HindenburgServer) {
+    anticheat: Anticheat;
+
+    constructor(private server: WorkerNode) {
         super({ doFixedUpdate: false });
+
+        this.uuid = uuid.v4();
 
         this.code = 0;
         this.clients = new Map;
         this.settings = new GameOptions;
         this.state = GameState.NotStarted;
+        
         this.waiting = new Set;
+
+        this.anticheat = new Anticheat(this.server, this);
+        
+        this.logger = winston.createLogger({
+            transports: [
+                new winston.transports.Console({
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.printf(info => {
+                            return `[${this.name}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs/" + this.uuid + ".txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
+
+        this.on("player.setname", setname => {
+            this.logger.info(
+                "Player %s set their name to %s.",
+                fmtName(setname.player), setname.name
+            );
+        });
+        
+        this.on("player.setcolor", setcolor => {
+            this.logger.info(
+                "Player %s set their color to %s.",
+                fmtName(setcolor.player), Color[setcolor.color]
+            );
+        });
     }
 
     get name() {
@@ -63,7 +115,7 @@ export class Room extends Hostable {
         this.state = GameState.Destroyed;
         this.server.rooms.delete(this.code);
 
-        this.server.redis.del("room." + this.name);
+        await this.server.redis.del("room." + this.name);
     }
 
     async broadcast(
@@ -77,13 +129,16 @@ export class Room extends Hostable {
 
             if (remote) {
                 const children = [
-                    new GameDataToMessage(
+                    ...(messages?.length ? [new GameDataToMessage(
                         this.code,
                         remote.clientid,
                         messages
-                    ),
+                    )] : []),
                     ...payloads
                 ];
+                
+                if (!children.length)
+                    return;
 
                 await remote.send(
                     reliable
@@ -93,12 +148,15 @@ export class Room extends Hostable {
             }
         } else {
             const children = [
-                new GameDataMessage(
+                ...(messages?.length ? [new GameDataMessage(
                     this.code,
                     messages
-                ),
+                )] : []),
                 ...payloads
             ];
+
+            if (!children.length)
+                return;
 
             await Promise.all(
                 [...this.clients]
@@ -119,7 +177,14 @@ export class Room extends Hostable {
             return this.setCode(Code2Int(code));
         }
 
-        this.code = code;
+        if (this.code) {
+            this.logger.info(
+                "Game code changed to [%s]",
+                Int2Code(code) 
+            );
+        }
+
+        super.setCode(code);
 
         await this.broadcast([], true, null, [
             new HostGameMessage(code)
@@ -150,6 +215,11 @@ export class Room extends Hostable {
         if (remote && this.state === GameState.Ended && this.waiting.has(remote)) {
             await this.handleRemoteJoin(remote);
         }
+
+        this.logger.info(
+            "Host changed to %s",
+            fmtName(player)
+        );
     }
 
     async handleRemoteLeave(client: Client, reason: DisconnectReason = DisconnectReason.None) {
@@ -172,6 +242,11 @@ export class Room extends Hostable {
                 this.host.id
             )
         ]);
+
+        this.logger.info(
+            "Client with ID %s left or was removed.",
+            client.clientid
+        );
     }
 
     async handleRemoteJoin(client: Client) {
@@ -254,6 +329,11 @@ export class Room extends Hostable {
         ]);
         
         this.clients.set(client.clientid, client);
+
+        this.logger.info(
+            "Client with ID %s joined the game.",
+            client.clientid
+        );
     }
 
     async handleStart() {

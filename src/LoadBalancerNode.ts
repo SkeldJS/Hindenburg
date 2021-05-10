@@ -1,5 +1,3 @@
-import dgram from "dgram";
-
 import {
     HostGameMessage,
     JoinGameMessage,
@@ -9,16 +7,18 @@ import {
     Serializable
 } from "@skeldjs/protocol";
 
-import { DisconnectReason, SendOption } from "@skeldjs/constant";
-import { HazelReader, Int2Code, sleep } from "@skeldjs/util";
+import { DisconnectReason } from "@skeldjs/constant";
+import { Int2Code, sleep } from "@skeldjs/util";
 
-import { HindenburgNode, HindenburgConfig } from "./Node";
+import { MatchmakingNode } from "./MatchmakingNode";
+import { HindenburgConfig } from "./Node";
 import { Client } from "./Client";
+
 import { formatSeconds } from "./util/format-seconds";
 
-export class HindenburgLoadBalancer extends HindenburgNode {
+export class HindenburgLoadBalancer extends MatchmakingNode {
     constructor(config: Partial<HindenburgConfig>) {
-        super(config);
+        super(":" + config.loadbalancer?.port, config);
 
         this.redis.flushdb();
 
@@ -26,7 +26,8 @@ export class HindenburgLoadBalancer extends HindenburgNode {
             if (!this.checkMods(client))
                 return;
             
-            const random = this.config.loadbalancer.nodes[~~(Math.random() * this.config.loadbalancer.nodes.length)];
+            const cluster = this.config.loadbalancer.clusters[~~(Math.random() * this.config.loadbalancer.clusters.length)];
+            const port = cluster.ports[~~(Math.random() * cluster.ports.length)];
 
             const redirected = await this.redis.hgetall("redirected." + client.remote.address + "." + client.username);
 
@@ -54,16 +55,16 @@ export class HindenburgLoadBalancer extends HindenburgNode {
                     client.getNextNonce(),
                     [
                         new RedirectMessage(
-                            random.ip,
-                            random.port
+                            cluster.ip,
+                            port
                         )
                     ]
                 )
             );
 
             this.logger.info(
-                "Redirected client with ID %s to node at %s:%s.",
-                client.clientid, random.ip, random.port
+                "Redirected client with ID %s to cluster %s at %s:%s.",
+                client.clientid, cluster.name, cluster.ip, port
             );
         });
 
@@ -144,7 +145,7 @@ export class HindenburgLoadBalancer extends HindenburgNode {
         }
 
         try {
-            this.decoder.emitDecoded(parsed, MessageDirection.Serverbound, client);
+            await this.emitDecoded(parsed, MessageDirection.Serverbound, client);
         } catch (e) {
             this.logger.error("%s", e.stack);
         }

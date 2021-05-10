@@ -118,7 +118,7 @@ version or version glob if it was installed.
 ### `reactor.mods.*.version`
 The version of the mod that this server requires, if the mod is installed.
 
-**Default:** `*` (Any version)
+**Default:** `"*"` (Any version)
 
 ### `reactor.mods.*.required`
 Whether this mod is required to play.
@@ -182,7 +182,7 @@ Will be seen as
 Although it's recommended not to include the reason for why the client was
 banned.
 
-**Default:** `You were banned for %s for hacking."`
+**Default:** `"You were banned for %s for hacking."`
 
 ### Anticheat Rules
 Every other property passed to the `anticheat` object is an anti-cheat rule that
@@ -203,7 +203,7 @@ The penalty that the client receives for breaking this rule. Can be one of
 | `disconnect` | Disconnects the client immediately and kicks them from their room. |
 | `ignore` | Ignore the rule. |
 
-**Default:** `disconnnect`
+**Default:** `"disconnnect"`
 
 ### `anticheat.*.strikes`
 The number of strikes before the client is penalised. Set to `0` to have no
@@ -232,7 +232,7 @@ A list of rules and their default scan be found in this table.
 ### `cluster.name`
 The name of the cluster, used as a general identifier.
 
-**Default:** `Cluster`
+**Default:** `"Cluster"`
 
 ### `cluster.ip`
 The IP address of the cluster.
@@ -252,7 +252,7 @@ An array of [clusters](#Cluster) that the load-balancer can redirect clients to 
 ### `loadbalancer.ip`
 The IP address of the load balancer.
 
-**Default:** `127.0.0.1`
+**Default:** `"127.0.0.1"`
 
 ### `loadbalancer.port`
 The port that the load balancer listens on.
@@ -274,7 +274,7 @@ The port that the load balancer listens on.
 ### `redis.host`
 The hostname for the redis node to connect to.
 
-**Default:** `127.0.0.1`
+**Default:** `"127.0.0.1"`
 
 ### `redis.port`
 The port of the redis node to connect to.

@@ -216,30 +216,16 @@ How long to ban the client for in seconds if the penalty is set to `ban`.
 
 **Default:** `3600` (1 Hour)
 
-### `anticheat.checkSettings`
-Whether to check the settings for when a room is created or when room settings
-are updated.
-
-**Default:** `true`
-
-A list of rules can be found in this table.
-| Rule | Description |
-|--|--|
-| `checkSettings` | Whether to check for invalid settings when creating a room
-or when updating room settings. |
-| `checkObjectOwnership` | Whether to act on clients that don't own the objects
-they use. |
-| `hostChecks` | Whether to check for clients doing host actions when they aren't
-the host. |
-| `malformedPackets` | Whether to check for packets that result in errors that do
-not come naturally from official clients. |
-| `invalidFlow` | Whether to act on clients doing things in the wrong order, or
-doing something that doesn't naturally happen.
-| `invalidName` | Whether to act on clients settings their name different to
-what they identified as, or if their name is too long or contains invalid
-characters. |
-| `massivePackets` | Whether to check for packets that are too large to come from
-an official client. |
+A list of rules and their default scan be found in this table.
+| Rule | Description | Default |
+|--|--|--|
+| `checkSettings` | Whether to check for invalid settings when creating a room or when updating room settings. | `true` |
+| `checkObjectOwnership` | Whether to act on clients that don't own the objects they use. | `true` |
+| `hostChecks` | Whether to check for clients doing host actions when they aren't the host. | `true` |
+| `malformedPackets` | Whether to check for packets that result in errors that do not come naturally from official clients. | `false` |
+| `invalidFlow` | Whether to act on clients doing things in the wrong order, or doing something that doesn't naturally happen. | `true` |
+| `invalidName` | Whether to act on clients settings their name different to what they identified as, or if their name is too long or contains invalid characters. | `true` |
+| `massivePackets` | Whether to check for packets that are too large to come from an official client. | `{ "penalty": "disconnect", "strikes": 3 }` |
 
 ## Cluster
 
@@ -261,7 +247,7 @@ An array of ports that the cluster spawns nodes to listen on.
 ## Load Balancer
 
 ### `loadbalancer.clusters`
-An array of [clusters](#Cluster) that the loadbalancer can redirect clients to equally.
+An array of [clusters](#Cluster) that the load-balancer can redirect clients to equally.
 
 ### `loadbalancer.ip`
 The IP address of the load balancer.

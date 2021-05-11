@@ -294,7 +294,7 @@ export class WorkerNode extends MatchmakingNode<ClientEvents> {
 
                 cl.send(
                     new ReliablePacket(
-                        client.getNextNonce(),
+                        cl.getNextNonce(),
                         [
                             new GameDataMessage(
                                 client.room.code,
@@ -423,14 +423,11 @@ export class WorkerNode extends MatchmakingNode<ClientEvents> {
         });
 
         this.on("client.disconnect", async disconnect => {
-            const connections = await this.redis.get("connections." + disconnect.client.remote.address);
+            await this.redis.srem(
+                "connections." + disconnect.client.remote.address,
+                disconnect.client.remote.address + ":" + disconnect.client.remote.port
+            );
 
-            if (connections === "1") {
-                this.redis.del("connections." + disconnect.client.remote.address);
-            } else {
-                this.redis.decr("connections." + disconnect.client.remote.address);
-            }
-            
             const infraction_keys = await this.redis.keys("infractions." + this.ip + "." + disconnect.client.clientid + ".*");
 
             if (infraction_keys.length) this.redis.del(infraction_keys);
@@ -480,7 +477,12 @@ export class WorkerNode extends MatchmakingNode<ClientEvents> {
     }
 
     async handleInitial(parsed: BaseRootMessage, client: Client) {
-        const num_connections = await this.redis.incr("connections." + client.remote.address);
+        await this.redis.sadd(
+            "connections." + client.remote.address,
+            client.remote.address + ":" + client.remote.port
+        );
+        
+        const num_connections = await this.redis.scard("connections." + client.remote.address);
 
         if (num_connections && this.config.anticheat.maxConnectionsPerIp > 0) {
             if (num_connections > this.config.anticheat.maxConnectionsPerIp) {

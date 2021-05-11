@@ -25,7 +25,7 @@ export class HindenburgLoadBalancer extends MatchmakingNode {
         this.decoder.on(HostGameMessage, async (message, direction, client) => {
             if (!this.checkMods(client))
                 return;
-            
+        
             const cluster = this.config.loadbalancer.clusters[~~(Math.random() * this.config.loadbalancer.clusters.length)];
             const port = cluster.ports[~~(Math.random() * cluster.ports.length)];
 
@@ -41,7 +41,7 @@ export class HindenburgLoadBalancer extends MatchmakingNode {
                     );
                     await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", 1);
                     await sleep(ms);
-                }
+                }    
             }
 
             await this.redis.hmset("redirected." + client.remote.address + "." + client.username, {
@@ -78,6 +78,27 @@ export class HindenburgLoadBalancer extends MatchmakingNode {
 
             if (!address)
                 return client.joinError(DisconnectReason.GameNotFound);
+            
+            const redirected = await this.redis.hgetall("redirected." + client.remote.address + "." + client.username);
+
+            if (redirected) {
+                const delete_at = new Date(redirected.date).getTime() + (parseInt(redirected.num) * 6000);
+                if (Date.now() < delete_at) {
+                    const ms = delete_at - Date.now();
+                    this.logger.info(
+                        "Client from %s still connecting to node, waiting %sms for client with ID %s to be redirected.",
+                        client.remote.address, ms, client.clientid
+                    );
+                    await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", 1);
+                    await sleep(ms);
+                }    
+            }
+
+            await this.redis.hmset("redirected." + client.remote.address + "." + client.username, {
+                date: new Date().toString(),
+                num: "1"
+            });
+            this.redis.expire("redirected." + client.remote.address + "." + client.username, 6);
 
             const [ ip, port ] = address.split(":");
 
@@ -131,11 +152,10 @@ export class HindenburgLoadBalancer extends MatchmakingNode {
             return;
         }
 
-        const num_connections = await this.redis.get("connections." + client.remote.address);
+        const num_connections = await this.redis.scard("connections." + client.remote.address);
         
         if (num_connections && this.config.anticheat.maxConnectionsPerIp > 0) {
-            const connections = parseInt(num_connections);
-            if (connections >= this.config.anticheat.maxConnectionsPerIp) {
+            if (num_connections >= this.config.anticheat.maxConnectionsPerIp) {
                 client.disconnect(
                     DisconnectReason.Custom,
                     "Too many connections coming from your IP."

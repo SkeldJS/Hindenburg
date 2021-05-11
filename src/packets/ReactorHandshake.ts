@@ -1,4 +1,3 @@
-import { MessageDirection, PacketDecoder } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 
 import { BaseReactorMessage } from "./BaseReactorMessage";

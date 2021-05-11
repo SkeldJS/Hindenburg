@@ -57,8 +57,6 @@ export class WorkerNode extends MatchmakingNode<ClientEvents> {
                     return;
                 }
 
-                console.log(was_redirected);
-    
                 if (was_redirected === "1") {
                     await this.redis.del("redirected." + client.remote.address + "." + client.username);
                 } else {

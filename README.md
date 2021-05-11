@@ -36,7 +36,7 @@ If you are running for the first time and are yet to add a config file, run
 `yarn serve:load-balancer` to write the default one.
 
 ### Redis
-Currently, Hindenburg requires you to have a running instance of [Redis](https://https://redis.io/),
+Currently, Hindenburg requires you to have a running instance of [Redis](https://redis.io),
 this limitation is expected to go in the future.
 
 ### Load Balancer
@@ -109,7 +109,7 @@ or to require clients to use it.
 ```json
 "com.andruzzzhka.customserversclient": {
     "version": "1.7.0",
-    "require": true
+    "required": true
 }
 ```
 Omitting `required` would make the mod optional, although require a specific

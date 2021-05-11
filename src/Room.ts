@@ -108,6 +108,8 @@ export class Room extends Hostable {
     }
 
     async destroy() {
+        super.destroy();
+
         await this.broadcast([], true, null, [
             new RemoveGameMessage(DisconnectReason.Destroy)
         ]);
@@ -116,6 +118,8 @@ export class Room extends Hostable {
         this.server.rooms.delete(this.code);
 
         await this.server.redis.del("room." + this.name);
+
+        this.logger.info("Room was destroyed.");
     }
 
     async broadcast(

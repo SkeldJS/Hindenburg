@@ -267,6 +267,8 @@ export class WorkerNode extends MatchmakingNode<ClientEvents> {
                     return message.cancel();
                 }
             }
+            client.room.decoder.emitDecoded(message, direction, client);
+            message.cancel();
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, client) => {
@@ -285,7 +287,7 @@ export class WorkerNode extends MatchmakingNode<ClientEvents> {
                 return;
 
             for (const child of children) {
-                await client.room.decoder.emitDecoded(child, direction, client);
+                client.room.decoder.emitDecoded(child, direction, client);
             }
 
             for (const [ , cl ] of client.room.clients) {

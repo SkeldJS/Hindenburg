@@ -131,7 +131,7 @@ Whether this mod is forbidden.
 **Default:** `false`
 
 ### `reactor.allowExtraMods`
-Whether to allow clients to join with mods that are not defined in the `reactor.mod`
+Whether to allow clients to join with mods that are not defined in the `reactor.mods`
 record.
 
 ### `reactor.requireHostMods`

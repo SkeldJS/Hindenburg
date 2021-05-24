@@ -20,7 +20,6 @@
     "@skeldjs/protocol": "^2.9.2",
     "@skeldjs/util": "^2.9.2",
     "chalk": "^4.1.1",
-    "discord.js": "^12.5.3",
     "ioredis": "^4.27.2",
     "picomatch": "^2.2.3",
     "uuid": "^8.3.2",

@@ -4,7 +4,8 @@
   "scripts": {
     "build": "tsc -p ./",
     "watch": "tsc -w -p ./",
-    "set-server": "node ./bin/set-server",
+    "add-server": "node ./bin/add-server",
+    "remove-server": "node ./bin/remove-server",
     "dev:cluster": "ts-node ./bin/cluster.ts",
     "serve:cluster": "ts-node-dev ./bin/cluster.ts",
     "start:cluster": "node ./dist/bin/cluster.js",

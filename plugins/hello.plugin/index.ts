@@ -1,4 +1,4 @@
-import { WorkerNode } from "../src";
+import { WorkerNode } from "../../src";
 
 export function getPluginInfo() {
     return {
@@ -8,6 +8,6 @@ export function getPluginInfo() {
 
 export function loadPlugin(node: WorkerNode, config: any) {
     node.on("player.chat", chat => {
-        node.logger.info("player said", chat.message);
+        node.logger.info("player said %s", chat.message);
     });
 }

@@ -28,7 +28,7 @@ import {
 
 import { Code2Int, Int2Code } from "@skeldjs/util";
 
-import { Hostable, PlayerData } from "@skeldjs/core";
+import { Hostable, HostableEvents, PlayerData } from "@skeldjs/core";
 
 import { Client } from "./Client";
 import { WorkerNode } from "./WorkerNode";
@@ -105,6 +105,12 @@ export class Room extends Hostable {
 
     get destroyed() {
         return this.state === GameState.Destroyed;
+    }
+    
+    emit<Event extends HostableEvents[keyof HostableEvents]>(event: Event): Promise<Event> {
+        this.server.emit(event);
+
+        return super.emit(event);
     }
 
     async destroy() {

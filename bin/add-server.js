@@ -4,10 +4,9 @@ const fs = require("fs");
 const regionInfoPath = path.resolve(process.env.APPDATA, "..\\LocalLow\\Innersloth\\Among Us\\regionInfo.json");
 
 const args = process.argv.slice(2);
-const regions = [];
 
 if (!args.length) {
-    console.log("Usage: set-server reset\nOR\nUsage: set-server <region ip> <region port> <region name> [<region ip> <region port> <region name>]...")
+    console.log("Usage: add-server reset\nOR\nUsage: set-server <region ip> <region port> <region name> [<region ip> <region port> <region name>]...")
     return;
 }
 
@@ -44,6 +43,8 @@ if (args[0] === "reset") {
     return;
 }
 
+const regions = JSON.parse(fs.readFileSync(regionInfoPath));
+
 for (let i = 0; i < args.length;) {
     const ip = args[i++];
     const port = parseInt(args[i++]);
@@ -61,20 +62,15 @@ for (let i = 0; i < args.length;) {
         throw new Error("Expected region name.");
     }
 
-    regions.push({ ip, port, name });
+    regions.Regions.push({
+        $type: "DnsRegionInfo, Assembly-CSharp",
+        Fqdn: ip,
+        DefaultIp: ip,
+        Port: port,
+        Name: name,
+        TranslateName: 1003
+    });
 }
 
-const regionInfo = {
-    CurrentRegionIdx: 0,
-    Regions: regions.map(region => ({
-        $type: "DnsRegionInfo, Assembly-CSharp",
-        Fqdn: region.ip,
-        DefaultIp: region.ip,
-        Port: region.port,
-        Name: region.name,
-        TranslateName: 1003
-    }))
-};
-
-fs.writeFileSync(regionInfoPath, JSON.stringify(regionInfo), "utf8");
+fs.writeFileSync(regionInfoPath, JSON.stringify(regions), "utf8");
 

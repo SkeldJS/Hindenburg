@@ -468,7 +468,11 @@ export class WorkerNode extends MatchmakingNode<ClientEvents & HostableEvents> {
         const entries = Object.entries(this.config.cluster.plugins);
 
         for (const [ pluginName, pluginConfig ] of entries) {
-            if (!await this.pluginLoader.loadPlugin(pluginName + ".plugin", pluginConfig)) {
+            try {
+                if (!await this.pluginLoader.loadPlugin(pluginName + ".plugin", pluginConfig)) {
+                    this.logger.warn("Could not load plugin defined in config: %s", pluginName);
+                }
+            } catch (e) {
                 this.logger.warn("Could not load plugin defined in config: %s", pluginName);
             }
         }

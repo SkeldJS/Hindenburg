@@ -6,8 +6,8 @@ export function getPluginInfo() {
     };
 }
 
-export function loadPlugin(node: WorkerNode, config: any) {
-    node.on("player.chat", chat => {
-        node.logger.info("player said %s", chat.message);
+export function loadPlugin(server: WorkerNode, config: any) {
+    server.on("player.chat", chat => {
+        server.logger.info("player said %s", chat.message);
     });
 }

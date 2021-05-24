@@ -9,11 +9,13 @@ import { sleep } from "@skeldjs/util";
     if (!process.env.NODE_ID || !process.env.CLUSTER_NAME)
         throw new Error("Please launch this script through the cluster script.");
 
-    const config = JSON.parse(await fs.readFile(path.resolve(process.cwd(), "./config.json"), "utf8"));
+    const data = await fs.readFile(path.resolve(process.cwd(), "./config.json"), "utf8");
+    const config = JSON.parse(data);
 
     const server = new WorkerNode(config, parseInt(process.env.NODE_ID));
 
     await server.listen();
+    await server.loadPlugins();
 
     process.send?.(MessageOpcode.Ready);
 

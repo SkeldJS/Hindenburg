@@ -25,7 +25,9 @@ import {
 } from "@skeldjs/constant";
 
 import { Code2Int } from "@skeldjs/util";
-import { SpawnPrefabs } from "@skeldjs/core";
+import { HostableEvents, SpawnPrefabs } from "@skeldjs/core";
+
+import path from "path";
 
 import { Room } from "./Room";
 import { HindenburgConfig } from "./Node";
@@ -34,16 +36,21 @@ import { Client, ClientEvents } from "./Client";
 import { ModdedHelloPacket } from "./packets";
 
 import { fmtName } from "./util/format-name";
+import { PluginLoader } from "./PluginLoader";
 
-export class WorkerNode extends MatchmakingNode<ClientEvents> {
+export class WorkerNode extends MatchmakingNode<ClientEvents & HostableEvents> {
     rooms: Map<number, Room>;
     nodeid: number;
+
+    pluginLoader: PluginLoader;
 
     constructor(config: Partial<HindenburgConfig>, nodeid: number) {
         super(config.cluster!.name + ":" + config.cluster!.ports[nodeid], config);
 
         this.rooms = new Map;
         this.nodeid = nodeid;
+
+        this.pluginLoader = new PluginLoader(this, path.resolve(process.cwd(), "plugins"));
 
         this.decoder.on([ HelloPacket, ModdedHelloPacket ], async (message, direction, client) => {
             if (this.config.loadbalancer) {
@@ -455,6 +462,16 @@ export class WorkerNode extends MatchmakingNode<ClientEvents> {
     
             this.socket.on("message", this.onMessage.bind(this));
         });
+    }
+
+    async loadPlugins() {
+        const entries = Object.entries(this.config.cluster.plugins);
+
+        for (const [ pluginName, pluginConfig ] of entries) {
+            if (!await this.pluginLoader.loadPlugin(pluginName + ".plugin", pluginConfig)) {
+                this.logger.warn("Could not load plugin defined in config: %s", pluginName);
+            }
+        }
     }
 
     async gracefulShutdown() {

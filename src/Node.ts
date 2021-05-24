@@ -13,10 +13,17 @@ export interface HindenburgClusterConfig {
     name: string;
     ip: string;
     ports: number[];
+    plugins: Record<string, any>;
+}
+
+export interface HindenburgLoadBalancerClusterConfig {
+    name: string;
+    ip: string;
+    ports: number[];
 }
 
 export interface HindenburgLoadBalancerServerConfig {
-    clusters: HindenburgClusterConfig[];
+    clusters: HindenburgLoadBalancerClusterConfig[];
     ip: string;
     port: number;
 }
@@ -89,6 +96,7 @@ export class Node<T extends EventData = any> extends EventEmitter<T> {
                 name: "Cluster",
                 ip: "127.0.0.1",
                 ports: [ 22123 ],
+                plugins: {},
                 ...config.cluster
             },
             redis: {

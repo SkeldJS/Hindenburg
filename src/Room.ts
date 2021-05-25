@@ -249,7 +249,7 @@ export class Room extends Hostable {
                 this.code,
                 client.clientid,
                 reason,
-                this.host.id
+                this.hostid
             )
         ]);
 

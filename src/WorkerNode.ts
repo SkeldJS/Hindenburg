@@ -11,7 +11,6 @@ import {
     MessageDirection,
     ReliablePacket,
     RpcMessage,
-    SetNameMessage,
     SpawnMessage
 } from "@skeldjs/protocol";
 
@@ -24,21 +23,22 @@ import {
     SpawnType
 } from "@skeldjs/constant";
 
-import { Code2Int } from "@skeldjs/util";
+import { Code2Int, Int2Code } from "@skeldjs/util";
 import { HostableEvents, SpawnPrefabs } from "@skeldjs/core";
 
 import path from "path";
 
 import { Room } from "./Room";
 import { HindenburgConfig } from "./Node";
-import { MatchmakingNode } from "./MatchmakingNode";
+import { MatchmakingEvents, MatchmakingNode } from "./MatchmakingNode";
 import { Client, ClientEvents } from "./Client";
 import { ModdedHelloPacket } from "./packets";
 
 import { fmtName } from "./util/format-name";
 import { PluginLoader } from "./PluginLoader";
+import { BeforeCreateEvent, BeforeJoinEvent } from "./events";
 
-export class WorkerNode extends MatchmakingNode<ClientEvents & HostableEvents> {
+export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents & HostableEvents> {
     rooms: Map<number, Room>;
     nodeid: number;
 
@@ -91,93 +91,55 @@ export class WorkerNode extends MatchmakingNode<ClientEvents & HostableEvents> {
             const name = String.fromCharCode(...chars);
             const code = Code2Int(name);
 
-            const room = new Room(this);
-            room.settings.patch(message.options);
-            room.setCode(code);
-            this.rooms.set(code, room);
-
-            this.redis.set("room." + name, this.ip + ":" + this.port);
-
-            this.logger.info(
-                "Client with ID %s created room %s on %s with %s impostors and %s max players (%s).",
-                client.clientid, name,
-                GameMap[message.options.map], message.options.numImpostors, message.options.maxPlayers, room.uuid
+            const ev = await this.emit(
+                new BeforeCreateEvent(client, message.options, code)
             );
 
-            client.send(
-                new ReliablePacket(
-                    client.getNextNonce(),
-                    [
-                        new HostGameMessage(code)
-                    ]
-                )
-            );
+            if (!ev.canceled) {
+                const room = await this.createRoom(ev.gameCode, ev.gameOptions);
+                
+                this.logger.info(
+                    "Client with ID %s created room %s on %s with %s impostors and %s max players (%s).",
+                    client.clientid, name,
+                    GameMap[message.options.map], message.options.numImpostors, message.options.maxPlayers, room.uuid
+                );
+
+                client.send(
+                    new ReliablePacket(
+                        client.getNextNonce(),
+                        [
+                            new HostGameMessage(code)
+                        ]
+                    )
+                );
+            }
         });
 
-        this.decoder.on(JoinGameMessage, (message, direction, client) => {
+        this.decoder.on(JoinGameMessage, async (message, direction, client) => {
             if (!this.checkMods(client))
                 return;
             
-            const room = this.rooms.get(message.code);
+            const foundRoom = this.rooms.get(message.code);
 
-            if (!room)
-                return client.joinError(DisconnectReason.GameNotFound);
+            const ev = await this.emit(
+                new BeforeJoinEvent(client, message.code, foundRoom)
+            );
 
-            if (room.clients.size >= room.settings.maxPlayers)
-                return client.joinError(DisconnectReason.GameFull);
-
-            if (room.state === GameState.Started)
-            return client.joinError(DisconnectReason.GameStarted);
-
-            const host = room.clients.get(room.hostid);
-
-            if (typeof this.config.reactor === "object") {
-                if (host?.mods && this.config.reactor.requireHostMods) {
-                    if (!client.mods)
-                        return;
-
-                    if (host.mods.length !== client.mods.length)
-                        return;
-
-                    for (const cmod of client.mods) {
-                        const found = host.mods
-                            .find(mod => mod.id === cmod.id);
-
-                        
-                        if (found) {
-                            if (found.version !== cmod.version) {
-                                return client.joinError(
-                                    DisconnectReason.Custom,
-                                    "Invalid version for mod %s: %s (Needs %s).",
-                                    cmod.id, cmod.version, found.version
-                                );
-                            }
-                        } else {
-                            return client.joinError(
-                                DisconnectReason.Custom,
-                                "Invalid mod loaded: %s (%s)",
-                                cmod.id, cmod.version
-                            );
-                        }
-                    }
-                    
-                    for (const hmod of host.mods) {
-                        const found = client.mods
-                            .find(mod => mod.id === hmod.id);
-
-                        
-                        if (!found) {
-                            return client.joinError(
-                                DisconnectReason.Custom,
-                                "Missing mod: %s (%s)",
-                                hmod.id, hmod.version
-                            );
-                        }
-                    }
-                }
+            if (!ev.canceled) {
+                const room = ev.foundRoom;
+                if (!room)
+                    return client.joinError(DisconnectReason.GameNotFound);
+    
+                if (room.clients.size >= room.settings.maxPlayers)
+                    return client.joinError(DisconnectReason.GameFull);
+    
+                if (room.state === GameState.Started)
+                    return client.joinError(DisconnectReason.GameStarted);
+    
+                const host = room.clients.get(room.hostid);
+    
+                room.handleRemoteJoin(client);
             }
-
-            room.handleRemoteJoin(client);
         });
 
         this.decoder.on([ DataMessage, RpcMessage, DespawnMessage ], async (message, direction, client) => {
@@ -522,5 +484,20 @@ export class WorkerNode extends MatchmakingNode<ClientEvents & HostableEvents> {
         } catch (e) {
             this.logger.error("%s", e.stack);
         }
+    }
+
+    async createRoom(code: number, options: GameOptions) {
+        const roomName = Int2Code(code);
+        if (this.rooms.has(code)) {
+            throw new Error("There is already a room with code " + roomName + ".");
+        }
+
+        const room = new Room(this);
+        room.settings.patch(options);
+        room.setCode(code);
+        this.rooms.set(code, room);
+
+        this.redis.set("room." + roomName, this.ip + ":" + this.port);
+        return room;
     }
 }

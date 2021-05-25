@@ -10,13 +10,13 @@ import {
 import { DisconnectReason } from "@skeldjs/constant";
 import { Int2Code, sleep } from "@skeldjs/util";
 
-import { MatchmakingNode } from "./MatchmakingNode";
+import { MatchmakingEvents, MatchmakingNode } from "./MatchmakingNode";
 import { HindenburgConfig } from "./Node";
 import { Client } from "./Client";
 
 import { formatSeconds } from "./util/format-seconds";
 
-export class HindenburgLoadBalancer extends MatchmakingNode {
+export class HindenburgLoadBalancer extends MatchmakingNode<MatchmakingEvents> {
     constructor(config: Partial<HindenburgConfig>) {
         super(":" + config.loadbalancer?.port, config);
 

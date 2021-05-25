@@ -1,6 +1,4 @@
 import dgram from "dgram";
-import winston from "winston";
-import ioredis from "ioredis";
 import picomatch from "picomatch";
 
 import {
@@ -14,7 +12,7 @@ import {
 import { DisconnectReason, SendOption } from "@skeldjs/constant";
 import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 
-import { EventData, EventEmitter } from "@skeldjs/events";
+import { EventData, ExtractEventTypes } from "@skeldjs/events";
 
 import { Client } from "./Client";
 import {
@@ -25,6 +23,9 @@ import {
 } from "./packets";
 
 import { HindenburgConfig, Node } from "./Node";
+import { BeforeCreateEvent, BeforeJoinEvent } from "./events";
+
+export type MatchmakingEvents = ExtractEventTypes<[ BeforeCreateEvent, BeforeJoinEvent ]>;
 
 export interface ReliableSerializable extends Serializable {
     nonce: number;

@@ -240,14 +240,17 @@ An array of ports that the cluster spawns nodes to listen on.
 **Default:** `[ 22123 ]`
 
 ### `cluster.plugins`
-A record of plugin name to plugin configuration to use.
+A record of plugin name to plugin configuration to use, you can also set the
+plugin config to `false` to disable the plugin entirely, or set it to `true`
+to use the plugin's default configuration.
 
 **Default:** `{}`
 
 ## Load Balancer
 
 ### `loadbalancer.clusters`
-An array of [clusters](#Cluster) that the load-balancer can redirect clients to equally.
+An array of [clusters](#Cluster) that the load-balancer can redirect clients
+to equally.
 
 ### `loadbalancer.ip`
 The IP address of the load balancer.

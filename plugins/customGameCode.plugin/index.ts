@@ -29,7 +29,6 @@ export function loadPlugin(server: LoadBalancerNode|WorkerNode, config: any) {
                 const [ cluster, nodePort ] = server.selectRandomNode();
     
                 ev.cancel();
-                console.log("Redirect ya boy to ", cluster.ip, nodePort);
                 await server.redirectClient(ev.client, cluster.ip, nodePort);
             }
         });

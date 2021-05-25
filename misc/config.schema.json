@@ -76,10 +76,6 @@
                         "allowExtraMods": {
                             "type": "boolean",
                             "description": "Whether clients can join with mods that are not required by the server."
-                        },
-                        "requireHostMods": {
-                            "type": "boolean",
-                            "description": "Whether joining clients are required to have the same mods as the host of the room."
                         }
                     }
                 }

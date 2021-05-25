@@ -83,8 +83,7 @@ Below shows valid configuration properties and their default values.
             "tk.peasplayer.somemod": "1.0.0",
             "gg.reactor.api": "*"
         },
-        "allowExtraMods": true,
-        "requireHostMods": true
+        "allowExtraMods": true
     }
 }
 ```
@@ -133,10 +132,6 @@ Whether this mod is forbidden.
 ### `reactor.allowExtraMods`
 Whether to allow clients to join with mods that are not defined in the `reactor.mods`
 record.
-
-### `reactor.requireHostMods`
-Whether or not to require clients that are joining a room to have the exact same
-mods and mod versions as the host of the room.
 
 ## Anticheat
 
@@ -244,6 +239,11 @@ An array of ports that the cluster spawns nodes to listen on.
 
 **Default:** `[ 22123 ]`
 
+### `cluster.plugins`
+A record of plugin name to plugin configuration to use.
+
+**Default:** `{}`
+
 ## Load Balancer
 
 ### `loadbalancer.clusters`
@@ -295,8 +295,7 @@ authentication.
         "mods": {
             "gg.reactor.api": "*"
         },
-        "allowExtraMods": true,
-        "requireHostMods": true
+        "allowExtraMods": true
     },
     "versions": ["2021.4.2"],
     "anticheat": {
@@ -317,7 +316,10 @@ authentication.
         "ip": "127.0.0.1",
         "ports": [
             22123
-        ]
+        ],
+        "plugins": {
+            "requireHostMods": {}
+        }
     },
     "loadbalancer": {
         "clusters": [

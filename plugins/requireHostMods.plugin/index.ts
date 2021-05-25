@@ -3,7 +3,7 @@ import { WorkerNode } from "../../src";
 
 export function getPluginInfo() {
     return {
-        name: "forceHostMods"
+        name: "requireHostMods"
     };
 }
 

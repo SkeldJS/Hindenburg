@@ -12,10 +12,10 @@ import { sleep } from "@skeldjs/util";
     const data = await fs.readFile(path.resolve(process.cwd(), "./config.json"), "utf8");
     const config = JSON.parse(data);
 
-    const server = new WorkerNode(config, parseInt(process.env.NODE_ID));
+    const server = new WorkerNode(config, parseInt(process.env.NODE_ID), path.resolve(__dirname, "../plugins"));
 
     await server.listen();
-    await server.loadPlugins();
+    await server.pluginLoader.loadFromDirectory();
 
     process.send?.(MessageOpcode.Ready);
 

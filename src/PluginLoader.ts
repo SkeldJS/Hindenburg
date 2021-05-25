@@ -6,6 +6,8 @@ import { WorkerNode } from "./WorkerNode";
 
 export interface PluginInfo {
     name: string;
+    description?: string;
+    defaultConfig?: any;
 }
 
 export interface GetPluginInfoFunction {
@@ -37,45 +39,80 @@ export class PluginLoader {
     plugins: Map<string, LoadedPlugin>;
 
     constructor(
-        public readonly node: WorkerNode,
+        public readonly server: WorkerNode,
         public readonly directory: string
     ) {
         this.plugins = new Map;
     }
 
-    async loadPlugin(filename: string, config: any) {
-        const pathname = path.resolve(this.directory, filename);
+    resolveConfig(pluginId: string, info: PluginInfo) {
+        const pluginsConfig = this.server.config.cluster.plugins;
+
+        const resolvedConfig = pluginsConfig[pluginId.replace(".plugin", "")]
+            ?? pluginsConfig[pluginId]
+            ?? info.defaultConfig
+            ?? {};
+
+        if (resolvedConfig === true) { // Yes this is necessary
+            return {};
+        }
+
+        return resolvedConfig;
+    }
+
+    async loadPlugin(pluginId: string) {
+        const pathname = path.resolve(this.directory, pluginId);
         const { getPluginInfo, loadPlugin, unloadPlugin } = await import(pathname) as ExportedPlugin;
 
         const info = await getPluginInfo();
 
         if (!info || !info.name) {
-            this.node.logger.error(
-                "PluginLoader: Failed to load plugin at %s because the information it provided was invalid.",
+            this.server.logger.error(
+                "Failed to load plugin at %s because the information it provided was invalid.",
                 path.relative(process.cwd(), pathname)
             );
+            throw new Error("Invalid plugin information: missing 'name' field.");
+        }
+
+        const resolvedConfig = this.resolveConfig(pluginId, info);
+
+        if (!resolvedConfig) {
             return false;
         }
         
         try {
-            await loadPlugin(this.node, config);
+            await loadPlugin(this.server, resolvedConfig);
         } catch (e) {
-            this.node.logger.error(
-                "PluginLoader: Failed to load plugin %s because the plugin's load function failed.",
+            this.server.logger.error(
+                "Failed to load plugin %s because the plugin's load function failed.",
                 info.name,
                 e
             );
-            return false;
+            throw e;
         }
 
         const plugin = new LoadedPlugin(info, unloadPlugin);
         this.plugins.set(info.name, plugin);
 
-        this.node.logger.info(
-            "PluginLoader: Loaded plugin %s.",
+        this.server.logger.info(
+            "Loaded plugin %s.",
             info.name
         );
 
         return true;
+    }
+
+    async loadFromDirectory() {
+        const filenames = await fs.readdir(this.directory);
+
+        for (const filename of filenames) {
+            if (/\.plugin(\.(t|j)s)?$/.test(filename)) {
+                try {
+                    await this.loadPlugin(filename)
+                } catch (e) {
+                    this.server.logger.warn("Could not load plugin '%s'", filename);
+                }
+            }
+        }
     }
 }

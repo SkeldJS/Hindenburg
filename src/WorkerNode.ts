@@ -44,13 +44,13 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
 
     pluginLoader: PluginLoader;
 
-    constructor(config: Partial<HindenburgConfig>, nodeid: number) {
+    constructor(config: Partial<HindenburgConfig>, nodeid: number, pluginDirectory: string) {
         super(config.cluster!.name + ":" + config.cluster!.ports[nodeid], config);
 
         this.rooms = new Map;
         this.nodeid = nodeid;
 
-        this.pluginLoader = new PluginLoader(this, path.resolve(process.cwd(), "plugins"));
+        this.pluginLoader = new PluginLoader(this, pluginDirectory);
 
         this.decoder.on([ HelloPacket, ModdedHelloPacket ], async (message, direction, client) => {
             if (this.config.loadbalancer) {
@@ -424,20 +424,6 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
     
             this.socket.on("message", this.onMessage.bind(this));
         });
-    }
-
-    async loadPlugins() {
-        const entries = Object.entries(this.config.cluster.plugins);
-
-        for (const [ pluginName, pluginConfig ] of entries) {
-            try {
-                if (!await this.pluginLoader.loadPlugin(pluginName + ".plugin", pluginConfig)) {
-                    this.logger.warn("Could not load plugin defined in config: %s", pluginName);
-                }
-            } catch (e) {
-                this.logger.warn("Could not load plugin defined in config: %s", pluginName);
-            }
-        }
     }
 
     async gracefulShutdown() {

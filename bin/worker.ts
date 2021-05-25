@@ -14,14 +14,14 @@ import { sleep } from "@skeldjs/util";
 
     const server = new WorkerNode(config, parseInt(process.env.NODE_ID), path.resolve(__dirname, "../plugins"));
 
-    await server.listen();
+    await server.beginListen();
     await server.pluginLoader.loadFromDirectory();
 
     process.send?.(MessageOpcode.Ready);
 
     process.on("message", async (message: string) => {
         if (message === MessageOpcode.Shutdown) {
-            await server.gracefulShutdown();
+            await server.beginGracefulShutdown();
             await sleep(200);
             process.send?.(MessageOpcode.ShutdownDone);
         }

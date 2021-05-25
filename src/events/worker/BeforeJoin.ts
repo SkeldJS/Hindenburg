@@ -1,10 +1,10 @@
 import { CancelableEvent } from "@skeldjs/events";
-import { Client } from "../Client";
-import { Room } from "../Room";
+import { Client } from "../../Client";
+import { Room } from "../../Room";
 
-export class BeforeJoinEvent extends CancelableEvent {
-    static eventName = "room.beforejoin" as const;
-    eventName = "room.beforejoin" as const;
+export class WorkerBeforeJoinEvent extends CancelableEvent {
+    static eventName = "worker.beforejoin" as const;
+    eventName = "worker.beforejoin" as const;
 
     client: Client;
     gameCode: number;
@@ -22,7 +22,7 @@ export class BeforeJoinEvent extends CancelableEvent {
         this.foundRoom = foundRoom;
     }
 
-    setRoom(room: Room) {
+    setRoom(room?: Room) {
         this.foundRoom = room;
     }
 }

@@ -3,12 +3,13 @@ import { WorkerNode } from "../../src";
 
 export function getPluginInfo() {
     return {
-        name: "requireHostMods"
+        name: "RequireHostMods",
+        description: "Forces players joining a room to have the same mods as the host of the room."
     };
 }
 
 export function loadPlugin(server: WorkerNode, config: any) {
-    server.on("room.beforejoin", ev => {
+    server.on("worker.beforejoin", ev => {
         if (!ev.foundRoom)
             return;
 

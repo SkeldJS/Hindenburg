@@ -26,31 +26,32 @@ import {
 import { Code2Int, Int2Code } from "@skeldjs/util";
 import { HostableEvents, SpawnPrefabs } from "@skeldjs/core";
 
-import path from "path";
+import { ExtractEventTypes } from "@skeldjs/events";
 
 import { Room } from "./Room";
 import { HindenburgConfig } from "./Node";
-import { MatchmakingEvents, MatchmakingNode } from "./MatchmakingNode";
+import { MatchmakerNodeEvents, MatchmakerNode } from "./MatchmakerNode";
 import { Client, ClientEvents } from "./Client";
 import { ModdedHelloPacket } from "./packets";
 
 import { fmtName } from "./util/format-name";
-import { PluginLoader } from "./PluginLoader";
-import { BeforeCreateEvent, BeforeJoinEvent } from "./events";
+import { WorkerBeforeCreateEvent, WorkerBeforeJoinEvent } from "./events";
+import { LoadBalancerNode } from "./LoadBalancerNode";
 
-export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents & HostableEvents> {
+export type WorkerNodeEvents = ExtractEventTypes<[
+    WorkerBeforeCreateEvent,
+    WorkerBeforeJoinEvent
+]>;
+
+export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNodeEvents & ClientEvents & HostableEvents> {
     rooms: Map<number, Room>;
     nodeid: number;
 
-    pluginLoader: PluginLoader;
-
     constructor(config: Partial<HindenburgConfig>, nodeid: number, pluginDirectory: string) {
-        super(config.cluster!.name + ":" + config.cluster!.ports[nodeid], config);
+        super(config.cluster!.name + ":" + config.cluster!.ports[nodeid], config, pluginDirectory);
 
         this.rooms = new Map;
         this.nodeid = nodeid;
-
-        this.pluginLoader = new PluginLoader(this, pluginDirectory);
 
         this.decoder.on([ HelloPacket, ModdedHelloPacket ], async (message, direction, client) => {
             if (this.config.loadbalancer) {
@@ -73,7 +74,7 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
         });
 
         this.decoder.on(HostGameMessage, async (message, direction, client) => {
-            if (!this.checkMods(client))
+            if (!this.checkClientMods(client))
                 return;
 
             if (this.config.anticheat.checkSettings && !GameOptions.isValid(message.options)) {
@@ -92,7 +93,7 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
             const code = Code2Int(name);
 
             const ev = await this.emit(
-                new BeforeCreateEvent(client, message.options, code)
+                new WorkerBeforeCreateEvent(client, message.options, code)
             );
 
             if (!ev.canceled) {
@@ -116,13 +117,13 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
         });
 
         this.decoder.on(JoinGameMessage, async (message, direction, client) => {
-            if (!this.checkMods(client))
+            if (!this.checkClientMods(client))
                 return;
             
             const foundRoom = this.rooms.get(message.code);
 
             const ev = await this.emit(
-                new BeforeJoinEvent(client, message.code, foundRoom)
+                new WorkerBeforeJoinEvent(client, message.code, foundRoom)
             );
 
             if (!ev.canceled) {
@@ -135,8 +136,6 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
     
                 if (room.state === GameState.Started)
                     return client.joinError(DisconnectReason.GameStarted);
-    
-                const host = room.clients.get(room.hostid);
     
                 room.handleRemoteJoin(client);
             }
@@ -396,29 +395,33 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
         this.on("client.disconnect", async disconnect => {
             await this.redis.srem(
                 "connections." + disconnect.client.remote.address,
-                disconnect.client.remote.address + ":" + disconnect.client.remote.port
+                disconnect.client.address
             );
 
-            const infraction_keys = await this.redis.keys("infractions." + this.ip + "." + disconnect.client.clientid + ".*");
+            const infraction_keys = await this.redis.keys("infractions." + this.listeningIp + "." + disconnect.client.clientid + ".*");
 
             if (infraction_keys.length) this.redis.del(infraction_keys);
         });
     }
 
-    get ip() {
+    get listeningIp() {
         return this.config.cluster.ip;
     }
 
-    get port() {
+    get listeningPort() {
         return this.config.cluster.ports[this.nodeid];
     }
 
-    listen() {
+    isLoadBalancer(): this is LoadBalancerNode {
+        return false;
+    }
+
+    beginListen() {
         return new Promise<void>(resolve => {
-            this.socket.bind(this.port);
+            this.socket.bind(this.listeningPort);
     
             this.socket.on("listening", () => {
-                this.logger.info("Listening on *:%s", this.port);
+                this.logger.info("Listening on *:%s", this.listeningPort);
                 resolve();
             });
     
@@ -426,7 +429,7 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
         });
     }
 
-    async gracefulShutdown() {
+    async beginGracefulShutdown() {
         this.logger.info(
             "Performing graceful shutdown on %s room(s) and %s client(s)..",
             this.rooms.size, this.clients.size
@@ -447,10 +450,10 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
         );
     }
 
-    async handleInitial(parsed: BaseRootMessage, client: Client) {
+    async handleInitialMessage(parsed: BaseRootMessage, client: Client) {
         await this.redis.sadd(
             "connections." + client.remote.address,
-            client.remote.address + ":" + client.remote.port
+            client.address
         );
         
         const num_connections = await this.redis.scard("connections." + client.remote.address);
@@ -483,7 +486,7 @@ export class WorkerNode extends MatchmakingNode<MatchmakingEvents & ClientEvents
         room.setCode(code);
         this.rooms.set(code, room);
 
-        this.redis.set("room." + roomName, this.ip + ":" + this.port);
+        this.redis.set("room." + roomName, this.listeningIp + ":" + this.listeningPort);
         return room;
     }
 }

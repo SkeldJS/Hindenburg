@@ -14,7 +14,7 @@ import {
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { DisconnectMessages } from "@skeldjs/data";
 
-import { MatchmakingNode, ModInfo } from "./MatchmakingNode";
+import { MatchmakerNode, ModInfo } from "./MatchmakerNode";
 import { Room } from "./Room";
 import { formatSeconds } from "./util/format-seconds";
 import { ClientDisconnectEvent } from "./events";
@@ -47,7 +47,7 @@ export class Client extends EventEmitter<ClientEvents> {
     mods?: ModInfo[];
 
     constructor(
-        private server: MatchmakingNode,
+        private server: MatchmakerNode,
         public readonly remote: dgram.RemoteInfo,
         public readonly clientid: number
     ) {
@@ -100,7 +100,7 @@ export class Client extends EventEmitter<ClientEvents> {
                 );
             } else if (config.penalty !== "ignore") {
                 if (config.strikes && config.strikes > 1) {
-                    const strikes = await this.server.redis.incr("infractions." + this.server.ip + "." + this.clientid + "." + infraction);
+                    const strikes = await this.server.redis.incr("infractions." + this.server.listeningIp + "." + this.clientid + "." + infraction);
                     this.server.logger.warn(
                         "Client with ID %s is on %s strike(s) for anticheat rule %s.",
                         this.clientid, strikes, infraction
@@ -206,7 +206,7 @@ export class Client extends EventEmitter<ClientEvents> {
             );
         }
 
-        this.server.clients.delete(this.remote.address + ":" + this.remote.port);
+        this.server.clients.delete(this.address);
     }
 
     async joinError(

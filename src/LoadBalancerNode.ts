@@ -10,122 +10,82 @@ import {
 import { DisconnectReason } from "@skeldjs/constant";
 import { Int2Code, sleep } from "@skeldjs/util";
 
-import { MatchmakingEvents, MatchmakingNode } from "./MatchmakingNode";
-import { HindenburgConfig } from "./Node";
+import { ExtractEventTypes } from "@skeldjs/events";
+
+import { MatchmakerNodeEvents, MatchmakerNode } from "./MatchmakerNode";
+import { HindenburgConfig, HindenburgLoadBalancerClusterConfig } from "./Node";
 import { Client } from "./Client";
 
 import { formatSeconds } from "./util/format-seconds";
+import { LoadBalancerBeforeCreateEvent, LoadBalancerBeforeJoinEvent } from "./events";
 
-export class HindenburgLoadBalancer extends MatchmakingNode<MatchmakingEvents> {
-    constructor(config: Partial<HindenburgConfig>) {
-        super(":" + config.loadbalancer?.port, config);
+export type LoadBalancerNodeEvents = ExtractEventTypes<[
+    LoadBalancerBeforeCreateEvent,
+    LoadBalancerBeforeJoinEvent
+]>;
+
+export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & MatchmakerNodeEvents> {
+    constructor(config: Partial<HindenburgConfig>, pluginDirectory: string) {
+        super(":" + config.loadbalancer?.port, config, pluginDirectory);
 
         this.redis.flushdb();
 
         this.decoder.on(HostGameMessage, async (message, direction, client) => {
-            if (!this.checkMods(client))
+            if (!this.checkClientMods(client))
                 return;
-        
-            const cluster = this.config.loadbalancer.clusters[~~(Math.random() * this.config.loadbalancer.clusters.length)];
-            const port = cluster.ports[~~(Math.random() * cluster.ports.length)];
 
-            const redirected = await this.redis.hgetall("redirected." + client.remote.address + "." + client.username);
+            const [ cluster, nodePort ] = this.selectRandomNode();
 
-            if (redirected) {
-                const delete_at = new Date(redirected.date).getTime() + (parseInt(redirected.num) * 6000);
-                if (Date.now() < delete_at) {
-                    const ms = delete_at - Date.now();
-                    this.logger.info(
-                        "Client from %s still connecting to node, waiting %sms for client with ID %s to be redirected.",
-                        client.remote.address, ms, client.clientid
-                    );
-                    await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", 1);
-                    await sleep(ms);
-                }    
-            }
-
-            await this.redis.hmset("redirected." + client.remote.address + "." + client.username, {
-                date: new Date().toString(),
-                num: "1"
-            });
-            this.redis.expire("redirected." + client.remote.address + "." + client.username, 6);
-
-            client.send(
-                new ReliablePacket(
-                    client.getNextNonce(),
-                    [
-                        new RedirectMessage(
-                            cluster.ip,
-                            port
-                        )
-                    ]
+            const ev = await this.emit(
+                new LoadBalancerBeforeCreateEvent(
+                    client,
+                    message.options,
+                    cluster.ip,
+                    nodePort
                 )
             );
 
-            this.logger.info(
-                "Redirected client with ID %s to cluster %s at %s:%s.",
-                client.clientid, cluster.name, cluster.ip, port
-            );
+            if (!ev.canceled) {
+                await this.redirectClient(client, ev.redirectIp, ev.redirectPort);
+            }
         });
 
         this.decoder.on(JoinGameMessage, async(message, direction, client) => {
-            if (!this.checkMods(client))
+            if (!this.checkClientMods(client))
                 return;
 
             const name = Int2Code(message.code);
-
             const address = await this.redis.get("room." + name);
-
-            if (!address)
-                return client.joinError(DisconnectReason.GameNotFound);
             
-            const redirected = await this.redis.hgetall("redirected." + client.remote.address + "." + client.username);
+            const parts = address ? address.split(":") : [];
 
-            if (redirected) {
-                const delete_at = new Date(redirected.date).getTime() + (parseInt(redirected.num) * 6000);
-                if (Date.now() < delete_at) {
-                    const ms = delete_at - Date.now();
-                    this.logger.info(
-                        "Client from %s still connecting to node, waiting %sms for client with ID %s to be redirected.",
-                        client.remote.address, ms, client.clientid
-                    );
-                    await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", 1);
-                    await sleep(ms);
-                }    
-            }
-
-            await this.redis.hmset("redirected." + client.remote.address + "." + client.username, {
-                date: new Date().toString(),
-                num: "1"
-            });
-            this.redis.expire("redirected." + client.remote.address + "." + client.username, 6);
-
-            const [ ip, port ] = address.split(":");
-
-            client.send(
-                new ReliablePacket(
-                    client.getNextNonce(),
-                    [
-                        new RedirectMessage(
-                            ip,
-                            parseInt(port)
-                        )
-                    ]
+            const ev = await this.emit(
+                new LoadBalancerBeforeJoinEvent(
+                    client,
+                    message.code,
+                    parts[0],
+                    parts[1] ? parseInt(parts[1]) : undefined
                 )
             );
-            
-            this.logger.info(
-                "Redirected client with ID %s joining room %s to node at %s:%s.",
-                client.clientid, name, ip, port
-            );
+
+            if (!ev.canceled) {
+                if (!ev.redirectIp || !ev.redirectPort)
+                    return client.joinError(DisconnectReason.GameNotFound);
+
+                await this.redirectClient(client, ev.redirectIp, ev.redirectPort);
+            }
         });
     }
 
-    get ip() {
+    get listeningIp() {
         return this.config.loadbalancer.ip;
     }
 
-    listen() {
+    isLoadBalancer(): this is LoadBalancerNode {
+        return true;
+    }
+
+    beginListen() {
         return new Promise<void>(resolve => {
             this.socket.bind(this.config.loadbalancer.port);
     
@@ -138,7 +98,7 @@ export class HindenburgLoadBalancer extends MatchmakingNode<MatchmakingEvents> {
         });
     }
 
-    async handleInitial(parsed: Serializable, client: Client) {
+    async handleInitialMessage(parsed: Serializable, client: Client) {
         const banned = await this.redis.get("ban." + client.remote.address);
         if (banned) {
             const banned_time = new Date(banned).getTime();
@@ -169,5 +129,52 @@ export class HindenburgLoadBalancer extends MatchmakingNode<MatchmakingEvents> {
         } catch (e) {
             this.logger.error("%s", e.stack);
         }
+    }
+
+    selectRandomNode(): [ HindenburgLoadBalancerClusterConfig, number ] {
+        const cluster = this.config.loadbalancer.clusters[Math.floor(Math.random() * this.config.loadbalancer.clusters.length)];
+        const nodePort = cluster.ports[Math.floor(Math.random() * cluster.ports.length)];
+
+        return [ cluster, nodePort ];
+    }
+
+    async redirectClient(client: Client, nodeIp: string, nodePort: number) {
+        const redirected = await this.redis.hgetall("redirected." + client.remote.address + "." + client.username);
+
+        if (redirected) {
+            const delete_at = new Date(redirected.date).getTime() + (parseInt(redirected.num) * 6000);
+            if (Date.now() < delete_at) {
+                const ms = delete_at - Date.now();
+                this.logger.info(
+                    "Client from %s still connecting to node, waiting %sms for client with ID %s to be redirected.",
+                    client.remote.address, ms, client.clientid
+                );
+                await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", 1);
+                await sleep(ms);
+            }    
+        }
+
+        await this.redis.hmset("redirected." + client.remote.address + "." + client.username, {
+            date: new Date().toString(),
+            num: "1"
+        });
+        this.redis.expire("redirected." + client.remote.address + "." + client.username, 6);
+
+        client.send(
+            new ReliablePacket(
+                client.getNextNonce(),
+                [
+                    new RedirectMessage(
+                        nodeIp,
+                        nodePort
+                    )
+                ]
+            )
+        );
+        
+        this.logger.info(
+            "Redirected client with ID %s to node at %s:%s.",
+            client.clientid, nodeIp, nodePort
+        );
     }
 }

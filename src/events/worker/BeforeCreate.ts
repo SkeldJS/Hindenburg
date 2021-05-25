@@ -1,11 +1,11 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { AllGameOptions, GameOptions } from "@skeldjs/protocol";
 import { Code2Int } from "@skeldjs/util";
-import { Client } from "../Client";
+import { Client } from "../../Client";
 
-export class BeforeCreateEvent extends CancelableEvent {
-    static eventName = "room.beforecreate" as const;
-    eventName = "room.beforecreate" as const;
+export class WorkerBeforeCreateEvent extends CancelableEvent {
+    static eventName = "worker.beforecreate" as const;
+    eventName = "worker.beforecreate" as const;
 
     client: Client;
     gameOptions: GameOptions;
@@ -23,7 +23,7 @@ export class BeforeCreateEvent extends CancelableEvent {
         this.gameCode = gameCode;
     }
 
-    setOptions(options: Partial<AllGameOptions>) {
+    setGameOptions(options: Partial<AllGameOptions>) {
         this.gameOptions.patch(options);
     }
 

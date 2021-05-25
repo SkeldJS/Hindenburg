@@ -68,6 +68,7 @@ export class ClusterNode {
                 if (message === MessageOpcode.ShutdownDone) {
                     resolve();
                     proc.off("message", onMessage);
+                    proc.kill(0);
                 }
             });
         });

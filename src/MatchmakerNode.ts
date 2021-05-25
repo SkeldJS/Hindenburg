@@ -15,6 +15,7 @@ import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 import { EventData, ExtractEventTypes } from "@skeldjs/events";
 
 import { Client } from "./Client";
+
 import {
     ModdedHelloPacket,
     ReactorHandshakeMessage,
@@ -22,10 +23,11 @@ import {
     ReactorModDeclarationMessage
 } from "./packets";
 
-import { HindenburgConfig, Node } from "./Node";
-import { BeforeCreateEvent, BeforeJoinEvent } from "./events";
+import { HindenburgConfig, ConfigurableNode } from "./Node";
+import { LoadBalancerNode } from "./LoadBalancerNode";
+import { PluginLoader } from "./PluginLoader";
 
-export type MatchmakingEvents = ExtractEventTypes<[ BeforeCreateEvent, BeforeJoinEvent ]>;
+export type MatchmakerNodeEvents = ExtractEventTypes<[]>;
 
 export interface ReliableSerializable extends Serializable {
     nonce: number;
@@ -36,7 +38,7 @@ export interface ModInfo {
     version: string;
 }
 
-export class MatchmakingNode<T extends EventData = any> extends Node<T> {
+export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<T> {
     socket: dgram.Socket;
 
     decoder: PacketDecoder<Client>;
@@ -44,12 +46,15 @@ export class MatchmakingNode<T extends EventData = any> extends Node<T> {
 
     allowed_versions: VersionInfo[];
     
+    pluginLoader: PluginLoader;
+    
     private _incr_clientid: number;
 
-    constructor(label: string, config: Partial<HindenburgConfig>) {
+    constructor(label: string, config: Partial<HindenburgConfig>, pluginDirectory: string) {
         super(label, config);
 
         this.decoder = new PacketDecoder;
+        this.pluginLoader = new PluginLoader(this, pluginDirectory);
         this.socket = dgram.createSocket("udp4");
 
         this.clients = new Map;
@@ -171,11 +176,19 @@ export class MatchmakingNode<T extends EventData = any> extends Node<T> {
         });
     }
 
-    get ip() {
+    get listeningIp() {
         return "";
     }
 
-    checkMods(client: Client) {
+    isLoadBalancer(): this is LoadBalancerNode {
+        return false;
+    }
+
+    beginListen() {
+        return;
+    }
+
+    checkClientMods(client: Client) {
         if (typeof this.config.reactor === "object") {
             if (client.mods) {
                 const entries = Object.entries(this.config.reactor.mods);
@@ -312,7 +325,7 @@ export class MatchmakingNode<T extends EventData = any> extends Node<T> {
         }
     }
 
-    async handleInitial(parsed: Serializable, client: Client) {
+    async handleInitialMessage(parsed: Serializable, client: Client) {
         void parsed, client;
     }
 
@@ -399,7 +412,7 @@ export class MatchmakingNode<T extends EventData = any> extends Node<T> {
                     new_client.remote.address, new_client.remote.port, new_client.clientid
                 );
                 
-                await this.handleInitial(parsed, new_client);
+                await this.handleInitialMessage(parsed, new_client);
             }
         } catch (e) {
             this.logger.info("Client " + remote.address + ":" + remote.port + " sent a malformed packet.");

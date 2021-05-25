@@ -1,13 +1,13 @@
 import fs from "fs/promises";
 import path from "path";
-import winston from "winston";
 
-import { WorkerNode } from "./WorkerNode";
+import { MatchmakerNode } from "./MatchmakerNode";
 
 export interface PluginInfo {
     name: string;
     description?: string;
     defaultConfig?: any;
+    loadBalancer: boolean;
 }
 
 export interface GetPluginInfoFunction {
@@ -15,7 +15,7 @@ export interface GetPluginInfoFunction {
 }
 
 export interface PluginLoadFunction {
-    (server: WorkerNode, config: any): Promise<void>|void;
+    (server: MatchmakerNode, config: any): Promise<void>|void;
 }
 
 export interface PluginUnloadFunction {
@@ -39,7 +39,7 @@ export class PluginLoader {
     plugins: Map<string, LoadedPlugin>;
 
     constructor(
-        public readonly server: WorkerNode,
+        public readonly server: MatchmakerNode,
         public readonly directory: string
     ) {
         this.plugins = new Map;
@@ -72,6 +72,14 @@ export class PluginLoader {
                 path.relative(process.cwd(), pathname)
             );
             throw new Error("Invalid plugin information: missing 'name' field.");
+        }
+
+        if (!info.loadBalancer && this.server.isLoadBalancer()) {
+            this.server.logger.warn(
+                "Skipping plugin %s because it is not enabled for load balancer.",
+                info.name
+            );
+            return false;
         }
 
         const resolvedConfig = this.resolveConfig(pluginId, info);

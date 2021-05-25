@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs/promises";
 
-import { HindenburgLoadBalancer } from "../src";
+import { LoadBalancerNode } from "../src";
 
 
 (async () => {
@@ -10,9 +10,10 @@ import { HindenburgLoadBalancer } from "../src";
     try {
         const config = JSON.parse(await fs.readFile(config_path, "utf8"));
 
-        const server = new HindenburgLoadBalancer(config);
+        const server = new LoadBalancerNode(config, path.resolve(__dirname, "../plugins"));
 
-        server.listen();
+        await server.beginListen();
+        await server.pluginLoader.loadFromDirectory();
     } catch (e) {
         if (e.code === "ENOENT") {
             console.log("No config file detected, writing default config..");

@@ -52,7 +52,7 @@ export interface HindenburgConfig {
     loadbalancer: HindenburgLoadBalancerServerConfig;
     redis: RedisServerConfig;
 }
-export class Node<T extends EventData = any> extends EventEmitter<T> {
+export class ConfigurableNode<T extends EventData = any> extends EventEmitter<T> {
     redis: ioredis.Redis;
     logger: winston.Logger;
 

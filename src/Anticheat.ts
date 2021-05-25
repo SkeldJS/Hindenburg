@@ -9,7 +9,7 @@ import {
 import { Networkable, PlayerData } from "@skeldjs/core";
 
 import { Client } from "./Client";
-import { MatchmakingNode } from "./MatchmakingNode";
+import { MatchmakerNode } from "./MatchmakerNode";
 import { Room } from "./Room";
 
 export interface AnticheatValue {
@@ -39,7 +39,7 @@ export interface AnticheatContext {
 export class Anticheat {
     decoder: PacketDecoder<AnticheatContext>;
 
-    constructor(private server: MatchmakingNode, private room: Room) {
+    constructor(private server: MatchmakerNode, private room: Room) {
         this.decoder = new PacketDecoder;
 
         this.decoder.on(SetNameMessage, async (message, direction, { component, player, client }) => {

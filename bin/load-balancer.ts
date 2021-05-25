@@ -39,7 +39,8 @@ import { HindenburgLoadBalancer } from "../src";
     "ip": "127.0.0.1",
     "ports": [
         22123
-    ]
+    ],
+    "plugins": {}
 },
 "loadbalancer": {
     "clusters": [

@@ -1,5 +1,5 @@
 import { SendOption } from "@skeldjs/constant";
-import { BaseRootPacket, MessageDirection, PacketDecoder } from "@skeldjs/protocol";
+import { BaseRootPacket, HelloPacket, MessageDirection, PacketDecoder } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 
 export class ModdedHelloPacket extends BaseRootPacket {
@@ -10,25 +10,29 @@ export class ModdedHelloPacket extends BaseRootPacket {
     clientver!: VersionInfo;
     username!: string;
     token!: number;
-    protocolver!: number;
-    modcount!: number;
+    protocolver?: number;
+    modcount?: number;
 
     constructor(
         nonce: number,
         clientver: VersionInfo,
         username: string,
         token: number,
-        protocolver: number,
-        modcount: number,
+        protocolver?: number,
+        modcount?: number,
     ) {
         super();
 
-        this.nonce = nonce as number;
-        this.clientver = clientver as VersionInfo;
-        this.username = username as string;
-        this.token = token as number;
-        this.protocolver = protocolver as number;
-        this.modcount = modcount as number;
+        this.nonce = nonce;
+        this.clientver = clientver;
+        this.username = username;
+        this.token = token;
+        this.protocolver = protocolver;
+        this.modcount = modcount;
+    }
+
+    isNormalHello(): this is HelloPacket {
+        return this.protocolver === undefined;
     }
 
     static Deserialize(reader: HazelReader) {
@@ -37,17 +41,27 @@ export class ModdedHelloPacket extends BaseRootPacket {
         const clientver = reader.read(VersionInfo);
         const username = reader.string();
         const token = reader.uint32();
-        const protocolversion = reader.uint8();
-        const modcount = reader.packed();
 
-        return new ModdedHelloPacket(
-            nonce,
-            clientver,
-            username,
-            token,
-            protocolversion,
-            modcount
-        );
+        if (reader.left) {
+            const protocolversion = reader.uint8();
+            const modcount = reader.packed();
+    
+            return new ModdedHelloPacket(
+                nonce,
+                clientver,
+                username,
+                token,
+                protocolversion,
+                modcount
+            );
+        } else {
+            return new ModdedHelloPacket(
+                nonce,
+                clientver,
+                username,
+                token
+            );
+        }
     }
 
     Serialize(writer: HazelWriter) {
@@ -55,9 +69,7 @@ export class ModdedHelloPacket extends BaseRootPacket {
         writer.write(this.clientver);
         writer.string(this.username);
         writer.uint32(this.token);
-        writer.uint8(this.protocolver);
-        writer.packed(this.modcount);
-        writer.uint8(this.protocolver);
-        writer.packed(this.modcount);
+        writer.uint8(this.protocolver || 0);
+        writer.packed(this.modcount || 0);
     }
 }

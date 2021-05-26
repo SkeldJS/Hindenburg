@@ -41,7 +41,7 @@ export interface ReactorModConfig {
 export interface ReactorConfig {
     mods: ReactorModConfig;
     allowExtraMods: boolean;
-    requireHostMods: boolean;
+    optional: boolean;
 }
 
 export interface HindenburgConfig {

@@ -76,6 +76,10 @@
                         "allowExtraMods": {
                             "type": "boolean",
                             "description": "Whether clients can join with mods that are not required by the server."
+                        },
+                        "optional": {
+                            "type": "boolean",
+                            "description": "Whether having reactor loaded is optional - making this just a way to support both normal and modded clients."
                         }
                     }
                 }

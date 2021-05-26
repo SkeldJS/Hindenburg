@@ -78,6 +78,16 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                 if (client.identified)
                     return;
 
+                if (typeof this.config.reactor == "object" && !this.config.reactor.optional) {
+                    if (message.isNormalHello()) {
+                        this.logger.warn(
+                            "Client with ID %s identified as a non-reactor client.",
+                            client.clientid
+                        );
+                        return client.disconnect(DisconnectReason.Custom, "Server requires reactor to be loaded, see <link=https://reactor.gg>reactor.gg</link> for more information.");
+                    }
+                }
+
                 const versions = this.allowed_versions.map(version => version.encode());
                 if (versions.includes(message.clientver.encode())) {
                     client.identified = true;
@@ -191,7 +201,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
     checkClientMods(client: Client) {
         if (typeof this.config.reactor === "object") {
             if (client.mods) {
-                const entries = Object.entries(this.config.reactor.mods);
+                const entries = Object.entries(this.config.reactor.mods || {});
 
                 for (const [ id, info ] of entries) {
                     const version = typeof info === "string"

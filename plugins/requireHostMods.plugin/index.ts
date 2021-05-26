@@ -15,7 +15,7 @@ export function loadPlugin(server: WorkerNode, config: any) {
 
         const host = ev.foundRoom.clients.get(ev.foundRoom.hostid);
 
-        if (server.config.reactor) {
+        if (server.config.reactor && ev.client.isUsingReactor) {
             if (host?.mods) {
                 if (!ev.client.mods) {
                     ev.cancel();

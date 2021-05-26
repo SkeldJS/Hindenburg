@@ -5,8 +5,8 @@ import { ColorCodes, PlayerData } from "@skeldjs/core";
 
 const chalk = new ch.Instance({ level: 2 });
 
-export function fmtName(player?: PlayerData) {
-	if (!player) return chalk.grey("<No Data>");
+export function fmtPlayer(player?: PlayerData) {
+	if (!player) return chalk.grey("<No Player>");
 
 	const has_data = !!player.data;
 	const colour = has_data ? player.data.color : Color.Grey;

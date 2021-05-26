@@ -133,6 +133,11 @@ Whether this mod is forbidden.
 Whether to allow clients to join with mods that are not defined in the `reactor.mods`
 record.
 
+### `reactor.optional`
+Whether to make having reactor loaded optional.
+
+**Default:** `true`
+
 ## Anticheat
 
 ## Example

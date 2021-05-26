@@ -11,6 +11,7 @@ import { Networkable, PlayerData } from "@skeldjs/core";
 import { Client } from "./Client";
 import { MatchmakerNode } from "./MatchmakerNode";
 import { Room } from "./Room";
+import { fmtClient } from "./util/format-client";
 
 export interface AnticheatValue {
     penalty?: "ban"|"disconnect"|"ignore";
@@ -46,8 +47,8 @@ export class Anticheat {
             if (player.ishost) {
                 if (component.ownerid === player.id && message.name !== client.username) {
                     this.server.logger.warn(
-                        "Client with ID %s set their name to %s while they identified as %s.",
-                        client.clientid, message.name, client.username
+                        "%s set their name to %s while they identified as %s.",
+                        fmtClient(client), message.name, client.username
                     );
                     if (await client.penalize("invalidName")) {
                         return message.cancel();
@@ -55,8 +56,8 @@ export class Anticheat {
                 }
             } else {
                 this.server.logger.warn(
-                    "Client with ID %s set their name while they weren't the host.",
-                    client.clientid
+                    "%s set their name while they weren't the host.",
+                    fmtClient(client)
                 );
                 if (await client.penalize("hostChecks")) {
                     return message.cancel();
@@ -67,8 +68,8 @@ export class Anticheat {
         this.decoder.on(CheckNameMessage, async (message, direction, { client }) => {
             if (message.name !== client.username) {
                 this.server.logger.warn(
-                    "Client with ID %s asked the host to set their name to %s while they identified as %s.",
-                    client.clientid, message.name, client.username
+                    "%s asked the host to set their name to %s while they identified as %s.",
+                    fmtClient(client), message.name, client.username
                 );
                 if (await client.penalize("invalidName")) {
                     return message.cancel();

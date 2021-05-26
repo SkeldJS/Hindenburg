@@ -34,9 +34,10 @@ import { MatchmakerNodeEvents, MatchmakerNode } from "./MatchmakerNode";
 import { Client, ClientEvents } from "./Client";
 import { ModdedHelloPacket } from "./packets";
 
-import { fmtName } from "./util/format-name";
+import { fmtPlayer } from "./util/format-player";
 import { WorkerBeforeCreateEvent, WorkerBeforeJoinEvent } from "./events";
 import { LoadBalancerNode } from "./LoadBalancerNode";
+import { fmtClient } from "./util/format-client";
 
 export type WorkerNodeEvents = ExtractEventTypes<[
     WorkerBeforeCreateEvent,
@@ -78,7 +79,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                 return;
 
             if (this.config.anticheat.checkSettings && !GameOptions.isValid(message.options)) {
-                this.logger.warn("Client with ID %s created room with invalid settings.", client.clientid);
+                this.logger.warn("%s created room with invalid settings.", fmtClient(client));
 
                 if (await client.penalize("checkSettings")) {
                     return;
@@ -100,8 +101,8 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                 const room = await this.createRoom(ev.gameCode, ev.gameOptions);
                 
                 this.logger.info(
-                    "Client with ID %s created room %s on %s with %s impostors and %s max players (%s).",
-                    client.clientid, name,
+                    "%s created room %s on %s with %s impostors and %s max players (%s).",
+                    fmtClient(client), name,
                     GameMap[message.options.map], message.options.numImpostors, message.options.maxPlayers, room.uuid
                 );
 
@@ -161,7 +162,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
             ) {
                 client.room.logger.warn(
                     "Player %s had data for or despawned %s but was not its owner.",
-                    fmtName(player), message.netid
+                    fmtPlayer(player), message.netid
                 );
 
                 if (await client.penalize("checkObjectOwnership")) {
@@ -190,7 +191,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
             if (!component) {
                 client.room.logger.warn(
                     "Player %s had an Rpc for component with netid %s but it did not exist.",
-                    fmtName(player), message.netid
+                    fmtPlayer(player), message.netid
                 );
                 return message.cancel();
             }
@@ -214,7 +215,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
             if (!player.ishost) {
                 client.room.logger.warn(
                     "Player %s spawned object %s but isn't the host.",
-                    fmtName(player), SpawnType[message.spawnType]
+                    fmtPlayer(player), SpawnType[message.spawnType]
                 );
 
                 if (await client.penalize("hostChecks")) {
@@ -227,7 +228,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                 if (prefab.length !== message.components.length) {
                     client.room.logger.warn(
                         "Player %s spawned object %s with invalid components (%s).",
-                        fmtName(player), SpawnType[message.spawnType], message.components.length
+                        fmtPlayer(player), SpawnType[message.spawnType], message.components.length
                     );
                 }
 
@@ -306,7 +307,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                                 if (!recipient.ishost) {
                                     client.room.logger.warn(
                                         "Player %s tried to send Rpc %s but the recipient wasn't the host.",
-                                        fmtName(player), RpcMessageTag[rpc.data.tag]
+                                        fmtPlayer(player), RpcMessageTag[rpc.data.tag]
                                     );
 
                                     if (await client.penalize("invalidFlow")) {
@@ -319,7 +320,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                                 if (!player.ishost) {
                                     client.room.logger.warn(
                                         "Player %s tried to send Rpc %s but they weren't the host.",
-                                        fmtName(player), RpcMessageTag[rpc.data.tag]
+                                        fmtPlayer(player), RpcMessageTag[rpc.data.tag]
                                     );
 
                                     if (await client.penalize("hostChecks")) {
@@ -333,13 +334,13 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                         if (!player.ishost) {
                             client.room.logger.warn(
                                 "Player %s tried to send a spawn but they weren't the host.",
-                                fmtName(player)
+                                fmtPlayer(player)
                             );
 
                             if (recipient.spawned) {
                                 client.room.logger.warn(
                                     "Player %s tried to send a spawn but the recipient had already spawned.",
-                                    fmtName(player)
+                                    fmtPlayer(player)
                                 );
 
                                 if (await client.penalize("hostChecks")) {
@@ -352,13 +353,13 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                         if (!recipient.ishost) {
                             client.room.logger.warn(
                                 "Player %s tried to change scene but the recipient wasn't the host.",
-                                fmtName(player)
+                                fmtPlayer(player)
                             );
 
                             if (player.spawned) {
                                 client.room.logger.warn(
                                     "Player %s tried to change scene but they had already spawned.",
-                                    fmtName(player)
+                                    fmtPlayer(player)
                                 );
 
                                 if (await client.penalize("invalidFlow")) {
@@ -370,7 +371,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                     default:
                         client.room.logger.warn(
                             "Player %s sent a message with tag %s that is never sent in GameDataTo messages.",
-                            fmtName(player), message.tag
+                            fmtPlayer(player), message.tag
                         );
                         if (await client.penalize("invalidFlow")) {
                             return message.cancel();

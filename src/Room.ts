@@ -33,7 +33,8 @@ import { Hostable, HostableEvents, PlayerData } from "@skeldjs/core";
 import { Client } from "./Client";
 import { WorkerNode } from "./WorkerNode";
 import { Anticheat } from "./Anticheat";
-import { fmtName } from "./util/format-name";
+import { fmtPlayer } from "./util/format-player";
+import { fmtClient } from "./util/format-client";
 
 export class Room extends Hostable {
     logger: winston.Logger;
@@ -87,14 +88,14 @@ export class Room extends Hostable {
         this.on("player.setname", setname => {
             this.logger.info(
                 "Player %s set their name to %s.",
-                fmtName(setname.player), setname.name
+                fmtPlayer(setname.player), setname.name
             );
         });
         
         this.on("player.setcolor", setcolor => {
             this.logger.info(
                 "Player %s set their color to %s.",
-                fmtName(setcolor.player), Color[setcolor.color]
+                fmtPlayer(setcolor.player), Color[setcolor.color]
             );
         });
     }
@@ -228,7 +229,7 @@ export class Room extends Hostable {
 
         this.logger.info(
             "Host changed to %s",
-            fmtName(player)
+            fmtPlayer(player)
         );
     }
 
@@ -254,8 +255,8 @@ export class Room extends Hostable {
         ]);
 
         this.logger.info(
-            "Client with ID %s left or was removed.",
-            client.clientid
+            "%s left or was removed.",
+            fmtClient(client)
         );
     }
 
@@ -341,8 +342,8 @@ export class Room extends Hostable {
         this.clients.set(client.clientid, client);
 
         this.logger.info(
-            "Client with ID %s joined the game.",
-            client.clientid
+            "%s joined the game.",
+            fmtClient(client)
         );
     }
 

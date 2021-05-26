@@ -18,6 +18,7 @@ import { Client } from "./Client";
 
 import { formatSeconds } from "./util/format-seconds";
 import { LoadBalancerBeforeCreateEvent, LoadBalancerBeforeJoinEvent } from "./events";
+import { fmtClient } from "./util/format-client";
 
 export type LoadBalancerNodeEvents = ExtractEventTypes<[
     LoadBalancerBeforeCreateEvent,
@@ -146,8 +147,8 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
             if (Date.now() < delete_at) {
                 const ms = delete_at - Date.now();
                 this.logger.info(
-                    "Client from %s still connecting to node, waiting %sms for client with ID %s to be redirected.",
-                    client.remote.address, ms, client.clientid
+                    "Client from %s still connecting to node, waiting %sms for %s to be redirected.",
+                    client.remote.address, ms, fmtClient(client)
                 );
                 await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", 1);
                 await sleep(ms);
@@ -173,8 +174,8 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
         );
         
         this.logger.info(
-            "Redirected client with ID %s to node at %s:%s.",
-            client.clientid, nodeIp, nodePort
+            "Redirected %s to node at %s:%s.",
+            fmtClient(client), nodeIp, nodePort
         );
     }
 }

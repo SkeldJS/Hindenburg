@@ -19,6 +19,7 @@ import { Room } from "./Room";
 import { formatSeconds } from "./util/format-seconds";
 import { ClientDisconnectEvent } from "./events";
 import { AnticheatConfig, AnticheatValue } from "./Anticheat";
+import { fmtClient } from "./util/format-client";
 
 export interface SentPacket {
     nonce: number;
@@ -44,6 +45,7 @@ export class Client extends EventEmitter<ClientEvents> {
 
     room: Room|null;
 
+    isUsingReactor: boolean;
     mods?: ModInfo[];
 
     constructor(
@@ -62,6 +64,8 @@ export class Client extends EventEmitter<ClientEvents> {
         this.sent = [];
 
         this.room = null;
+
+        this.isUsingReactor = false;
     }
 
     get address() {
@@ -95,15 +99,15 @@ export class Client extends EventEmitter<ClientEvents> {
             if (typeof config === "boolean") {
                 this.disconnect(DisconnectReason.Hacking);
                 this.server.logger.warn(
-                    "Client with ID %s was disconnected for anticheat rule %s.",
-                    this.clientid, infraction
+                    "%s was disconnected for anticheat rule %s.",
+                    fmtClient(this), infraction
                 );
             } else if (config.penalty !== "ignore") {
                 if (config.strikes && config.strikes > 1) {
                     const strikes = await this.server.redis.incr("infractions." + this.server.listeningIp + "." + this.clientid + "." + infraction);
                     this.server.logger.warn(
-                        "Client with ID %s is on %s strike(s) for anticheat rule %s.",
-                        this.clientid, strikes, infraction
+                        "%s is on %s strike(s) for anticheat rule %s.",
+                        fmtClient(this), strikes, infraction
                     );
     
                     if (strikes < config.strikes) {
@@ -114,14 +118,14 @@ export class Client extends EventEmitter<ClientEvents> {
                 if (config.penalty === "ban") {
                     await this.ban(infraction, config.banDuration || 3600);
                     this.server.logger.warn(
-                        "Client with ID %s was banned for anticheat rule %s for %s.",
-                        this.clientid, infraction, formatSeconds(config.banDuration || 3600)
+                        "%s was banned for anticheat rule %s for %s.",
+                        fmtClient(this), infraction, formatSeconds(config.banDuration || 3600)
                     );
                 } else {
                     this.disconnect(DisconnectReason.Hacking);
                     this.server.logger.warn(
-                        "Client with ID %s was disconnected for anticheat rule %s.",
-                        this.clientid, infraction
+                        "%s was disconnected for anticheat rule %s.",
+                        fmtClient(this), infraction
                     );
                 }
                 return true;
@@ -138,8 +142,8 @@ export class Client extends EventEmitter<ClientEvents> {
         if (unacked.length) {
             this.server.logger.log(
                 "warn",
-                "Client with ID %s is behind %s packets.",
-                this.clientid, unacked.length
+                "ID %s is behind %s packets.",
+                fmtClient(this), unacked.length
             );
         }*/
 
@@ -193,16 +197,16 @@ export class Client extends EventEmitter<ClientEvents> {
 
         if (reason) {
             this.server.logger.info(
-                "Client with ID %s disconnected. Reason: %s (%s)",
-                this.clientid, DisconnectReason[reason],
+                "%s disconnected. Reason: %s (%s)",
+                fmtClient(this), DisconnectReason[reason],
                 reason === DisconnectReason.Custom
                     ? message || "(No message)"
                     : (DisconnectMessages as any)[reason]
             );
         } else {
             this.server.logger.info(
-                "Client with ID %s disconnected.",
-                this.clientid
+                "%s disconnected.",
+                fmtClient(this)
             );
         }
 
@@ -235,16 +239,16 @@ export class Client extends EventEmitter<ClientEvents> {
         
         if (reason) {
             this.server.logger.info(
-                "Client with ID %s failed to host or join game. Reason: %s (%s)",
-                this.clientid, DisconnectReason[reason],
+                "%s failed to host or join game. Reason: %s (%s)",
+                fmtClient(this), DisconnectReason[reason],
                 reason === DisconnectReason.Custom
                     ? message || "(No message)"
                     : (DisconnectMessages as any)[reason]
             );
         } else {
             this.server.logger.info(
-                "Client with ID %s disconnected.",
-                this.clientid
+                "%s disconnected.",
+                fmtClient(this)
             );
         }
     }

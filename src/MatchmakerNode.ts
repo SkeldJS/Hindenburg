@@ -1,5 +1,6 @@
 import dgram from "dgram";
 import picomatch from "picomatch";
+import chalk from "chalk";
 
 import {
     AcknowledgePacket,
@@ -26,6 +27,7 @@ import {
 import { HindenburgConfig, ConfigurableNode } from "./Node";
 import { LoadBalancerNode } from "./LoadBalancerNode";
 import { PluginLoader } from "./PluginLoader";
+import { fmtClient } from "./util/format-client";
 
 export type MatchmakerNodeEvents = ExtractEventTypes<[]>;
 
@@ -78,11 +80,11 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                 if (client.identified)
                     return;
 
-                if (typeof this.config.reactor == "object" && !this.config.reactor.optional) {
+                if (typeof this.config.reactor == "object" && !(this.config.reactor.optional ?? true)) {
                     if (message.isNormalHello()) {
                         this.logger.warn(
-                            "Client with ID %s identified as a non-reactor client.",
-                            client.clientid
+                            "%s identified without reactor loaded.",
+                            fmtClient(client)
                         );
                         return client.disconnect(DisconnectReason.Custom, "Server requires reactor to be loaded, see <link=https://reactor.gg>reactor.gg</link> for more information.");
                     }
@@ -95,8 +97,8 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                     client.version = message.clientver;
 
                     this.logger.info(
-                        "Client with ID %s identified as %s (version %s) (%s mods)",
-                        client.clientid, client.username, client.version, message.modcount
+                        "%s identified as %s (version %s) (%s mods)",
+                        fmtClient(client), client.username, client.version, message.modcount || 0
                     );
 
                     client.send(
@@ -117,8 +119,8 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                     client.disconnect(DisconnectReason.IncorrectVersion);
 
                     this.logger.info(
-                        "Client with ID %s attempted to identify with an invalid version (%s)",
-                        client.clientid, message.clientver
+                        "%s attempted to identify with an invalid version (%s)",
+                        fmtClient(client), message.clientver
                     )
                 }
             });
@@ -133,8 +135,8 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                 });
 
                 this.logger.info(
-                    "Got mod from client with ID %s: %s (%s)",
-                    client.clientid, message.modid, message.version
+                    "Got mod from %s: %s (%s)",
+                    fmtClient(client), chalk.green(message.modid), message.version
                 );
             });
         } else {
@@ -155,15 +157,15 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                     client.version = message.clientver;
 
                     this.logger.info(
-                        "Client with ID %s identified as %s (version %s)",
-                        client.clientid, client.username, client.version
+                        "%s identified as %s (version %s)",
+                        fmtClient(client), client.username, client.version
                     );
                 } else {
                     client.disconnect(DisconnectReason.IncorrectVersion);
 
                     this.logger.info(
-                        "Client with ID %s attempted to identify with an invalid version (%s)",
-                        client.clientid, message.clientver
+                        "%s attempted to identify with an invalid version (%s)",
+                        fmtClient(client), message.clientver
                     )
                 }
             });

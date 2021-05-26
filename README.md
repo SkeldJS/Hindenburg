@@ -134,7 +134,7 @@ Whether to allow clients to join with mods that are not defined in the `reactor.
 record.
 
 ### `reactor.optional`
-Whether to make having reactor loaded optional.
+Whether to allow non-modded clients to connect.
 
 **Default:** `true`
 

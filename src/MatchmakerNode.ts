@@ -95,6 +95,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                     client.identified = true;
                     client.username = message.username;
                     client.version = message.clientver;
+                    client.isUsingReactor = !message.isNormalHello();
 
                     this.logger.info(
                         "%s identified as %s (version %s) (%s mods)",
@@ -201,7 +202,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
     }
 
     checkClientMods(client: Client) {
-        if (typeof this.config.reactor === "object") {
+        if (typeof this.config.reactor === "object" && client.isUsingReactor) {
             if (client.mods) {
                 const entries = Object.entries(this.config.reactor.mods || {});
 
@@ -259,7 +260,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
             } else {
                 client.disconnect(
                     DisconnectReason.Custom,
-                    "Failed to declare mods."
+                    "Expected mods to be loaded, make sure you have the latest version of Reactor."
                 );
                 return false;
             }

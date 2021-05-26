@@ -136,7 +136,7 @@ record.
 ### `reactor.optional`
 Whether to allow non-modded clients to connect.
 
-**Default:** `true`
+**Default:** `false`
 
 ## Anticheat
 

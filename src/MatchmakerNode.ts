@@ -80,7 +80,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                 if (client.identified)
                     return;
 
-                if (typeof this.config.reactor == "object" && !(this.config.reactor.optional ?? true)) {
+                if (typeof this.config.reactor == "object" && !this.config.reactor.optional) {
                     if (message.isNormalHello()) {
                         this.logger.warn(
                             "%s identified without reactor loaded.",

@@ -1,11 +1,12 @@
 import { EventEmitter } from "@skeldjs/events";
-import { Deserializable, Serializable } from "@skeldjs/protocol";
+import { Deserializable, PacketDecoder, Serializable } from "@skeldjs/protocol";
+import { Client } from "../../Client";
 
 import { LoadBalancerNode } from "../../LoadBalancerNode";
 import { WorkerNode } from "../../WorkerNode";
 import { PluginMetadata } from "../Plugin";
 import { EventHandlers, GlobalEventListener, GlobalEvents } from "./OnEvent";
-import { RegisteredPackets } from "./OnPacket";
+import { PacketHandlers as MessageHandlers, PacketListener, MessagesToRegister, MessageHandlerDecl } from "./OnMessage";
 
 export interface DeclarePlugin {
     server: LoadBalancerNode|WorkerNode;
@@ -26,7 +27,9 @@ export function DeclarePlugin(info: PluginMetadata) {
             
             meta: PluginMetadata;
 
-            loadedEvents: Map<keyof GlobalEvents, Set<GlobalEventListener>>;
+            registeredMessages: Set<Deserializable>;
+            loadedEventListeners: Map<keyof GlobalEvents, Set<GlobalEventListener>>;
+            loadedMessageListeners: Map<Deserializable, Set<PacketListener<Deserializable>>>;
     
             constructor(...args: any) {
                 super(...args);
@@ -36,7 +39,9 @@ export function DeclarePlugin(info: PluginMetadata) {
 
                 this.meta = info;
 
-                this.loadedEvents = new Map;
+                this.registeredMessages = new Set;
+                this.loadedEventListeners = new Map;
+                this.loadedMessageListeners = new Map;
             }
 
             onPluginLoad() {
@@ -45,18 +50,50 @@ export function DeclarePlugin(info: PluginMetadata) {
                 if (eventListeners) {
                     for (const [ eventName, eventHandlers ] of eventListeners) {
                         const loadedEventHandlers: Set<GlobalEventListener> = new Set;
-                        this.loadedEvents.set(eventName, loadedEventHandlers);
+                        this.loadedEventListeners.set(eventName, loadedEventHandlers);
                         for (const handler of eventHandlers) {
-                            (this.server as EventEmitter<GlobalEvents>).on(eventName, (this as any)[handler].bind(this));
+                            const fn = (this as any)[handler].bind(this) as GlobalEventListener;
+                            (this.server as EventEmitter<GlobalEvents>).on(eventName, fn);
+                            loadedEventHandlers.add(fn);   
+                        }
+                    }
+                }
+
+                const messagesToRegister = constructor.prototype[MessagesToRegister] as Set<Deserializable>;
+
+                if (messagesToRegister) {
+                    for (const message of messagesToRegister) {
+                        if (!this.server.decoder.listeners.has(message))
+                            this.server.decoder.register(message);
+                    }
+                }
+
+                const messageListeners = constructor.prototype[MessageHandlers] as Map<Deserializable, Set<MessageHandlerDecl>>;
+
+                if (messageListeners) {
+                    for (const [ messageClass, messageHandlers ] of messageListeners) {
+                        const loadedMessageHandlers: Set<PacketListener<Deserializable>> = new Set;
+                        this.loadedMessageListeners.set(messageClass, loadedMessageHandlers);
+                        for (const handler of messageHandlers) {
+                            if (handler.options.override) this.server.decoder.listeners.get(messageClass)?.clear();
+                            const fn = (this as any)[handler.propertyName].bind(this) as PacketListener<Deserializable>;
+                            this.server.decoder.on(messageClass, fn);
+                            loadedMessageHandlers.add(fn);
                         }
                     }
                 }
             }
 
             onPluginUnload() {
-                for (const [ eventName, eventHandlers ] of this.loadedEvents) {
+                for (const [ eventName, eventHandlers ] of this.loadedEventListeners) {
                     for (const handler of eventHandlers) {
                         (this.server as EventEmitter<GlobalEvents>).off(eventName, handler);
+                    }
+                }
+                
+                for (const [ messageClass, packetHandlers ] of this.loadedMessageListeners) {
+                    for (const handler of packetHandlers) {
+                        this.server.decoder.off(messageClass, handler);
                     }
                 }
             }

@@ -100,7 +100,7 @@ For example,
 ```ts
 @OnMessage(HelloPacket, { override: true })
 onHelloPacket(message: HelloPacket, direction: MessageDirection, sender: Client) {
-    client.disconnect(DisconnectReason.Custom, "Sorry you can't play :///");
+    client.disconnect("Sorry you can't play :///");
 }
 ```
 

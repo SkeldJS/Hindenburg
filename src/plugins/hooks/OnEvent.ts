@@ -16,7 +16,7 @@ export const EventHandlers = Symbol("EventHandlers");
 
 export type GlobalEventListener<key extends keyof GlobalEvents = keyof GlobalEvents> = (ev: GlobalEvents[key]) => any;
 
-export function Listener<T extends keyof GlobalEvents>(eventName: T) {
+export function OnEvent<T extends keyof GlobalEvents>(eventName: T) {
     return function (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<GlobalEventListener<T>>) {
         target[EventHandlers] ||= new Map;
 

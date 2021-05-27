@@ -1,7 +1,7 @@
 import { LoadBalancerNode } from "../LoadBalancerNode";
 import { WorkerNode } from "../WorkerNode";
 
-export interface PluginInfo {
+export interface PluginMetadata {
     /**
      * The unique identifier for this plugin. (Usually reverse domain name format, e.g. com.example.mypackage)
      */
@@ -34,7 +34,7 @@ export interface PluginInfo {
 }
 
 export abstract class HindenburgPlugin {
-    meta!: PluginInfo;
+    meta!: PluginMetadata;
 
     constructor(public readonly server: LoadBalancerNode|WorkerNode, public readonly config?: object) {}
 

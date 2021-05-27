@@ -11,8 +11,7 @@ import {
 import { LoadBalancerNode } from "../../src/LoadBalancerNode";
 import { WorkerNode } from "../../src/WorkerNode";
 import { DeclarePlugin } from "../../src/plugins/hooks/DeclarePlugin";
-import { Listener } from "../../src/plugins/hooks/Listener";
-import { PluginInfo } from "../../src/plugins/Plugin";
+import { OnEvent } from "../../src/plugins/hooks/OnEvent";
 
 @DeclarePlugin({
     id: "hb.customgamecode.plugin",
@@ -23,11 +22,9 @@ import { PluginInfo } from "../../src/plugins/Plugin";
     loadBalancer: true
 })
 export default class CustomGameCodePlugin {
-    meta!: PluginInfo;
-
     constructor(public readonly server: LoadBalancerNode|WorkerNode, public readonly config: any) {};
 
-    @Listener("loadbalancer.beforecreate")
+    @OnEvent("loadbalancer.beforecreate")
     async loadBalancerBeforeCreate(ev: LoadBalancerBeforeCreateEvent) {
         ev.cancel();
         const redisKey = `customgamecode.${ev.client.remote.address}.${ev.client.version}.${ev.client.username}`;
@@ -36,7 +33,7 @@ export default class CustomGameCodePlugin {
         ev.client.joinError(DisconnectReason.Custom, "Enter custom game code in the join game section, or enter CANCEL to stop.");
     }
 
-    @Listener("loadbalancer.beforejoin")
+    @OnEvent("loadbalancer.beforejoin")
     async loadBalancerBeforeJoin(ev: LoadBalancerBeforeJoinEvent) {
         if (!this.server.isLoadBalancer())
             return;
@@ -52,7 +49,7 @@ export default class CustomGameCodePlugin {
         }
     }
 
-    @Listener("worker.beforejoin")
+    @OnEvent("worker.beforejoin")
     async workerBeforeJoin(ev: WorkerBeforeJoinEvent) {
         if (this.server.isLoadBalancer())
             return;
@@ -73,7 +70,7 @@ export default class CustomGameCodePlugin {
 
         if (Int2Code(ev.gameCode) === "CANCEL") {
             ev.cancel();
-            ev.client.joinError(DisconnectReason.None);
+            ev.client.disconnect(DisconnectReason.None);
             return;
         }
 

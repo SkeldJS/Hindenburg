@@ -1,6 +1,5 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { AllGameOptions, GameOptions } from "@skeldjs/protocol";
-import { Code2Int } from "@skeldjs/util";
 import { Client } from "../../Client";
 
 export class LoadBalancerBeforeCreateEvent extends CancelableEvent {

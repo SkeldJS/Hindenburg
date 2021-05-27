@@ -1,8 +1,11 @@
 import { EventEmitter } from "@skeldjs/events";
+import { Deserializable, Serializable } from "@skeldjs/protocol";
+
 import { LoadBalancerNode } from "../../LoadBalancerNode";
 import { WorkerNode } from "../../WorkerNode";
-import { PluginInfo as PluginMetadata } from "../Plugin";
-import { EventHandlers, GlobalEventListener, GlobalEvents } from "./Listener";
+import { PluginMetadata } from "../Plugin";
+import { EventHandlers, GlobalEventListener, GlobalEvents } from "./OnEvent";
+import { RegisteredPackets } from "./OnPacket";
 
 export interface DeclarePlugin {
     server: LoadBalancerNode|WorkerNode;
@@ -37,16 +40,15 @@ export function DeclarePlugin(info: PluginMetadata) {
             }
 
             onPluginLoad() {
-                const listeners = constructor.prototype[EventHandlers] as Map<keyof GlobalEvents, Set<string>>;
+                const eventListeners = constructor.prototype[EventHandlers] as Map<keyof GlobalEvents, Set<string>>;
 
-                if (!listeners)
-                    return;
-
-                for (const [ eventName, eventHandlers ] of listeners) {
-                    const loadedEventHandlers: Set<GlobalEventListener> = new Set;
-                    this.loadedEvents.set(eventName, loadedEventHandlers);
-                    for (const handler of eventHandlers) {
-                        (this.server as EventEmitter<GlobalEvents>).on(eventName, (this as any)[handler].bind(this));
+                if (eventListeners) {
+                    for (const [ eventName, eventHandlers ] of eventListeners) {
+                        const loadedEventHandlers: Set<GlobalEventListener> = new Set;
+                        this.loadedEvents.set(eventName, loadedEventHandlers);
+                        for (const handler of eventHandlers) {
+                            (this.server as EventEmitter<GlobalEvents>).on(eventName, (this as any)[handler].bind(this));
+                        }
                     }
                 }
             }

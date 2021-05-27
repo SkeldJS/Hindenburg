@@ -1,10 +1,12 @@
-import { DisconnectReason } from "@skeldjs/constant";
+import { Color, DisconnectReason, RpcMessageTag } from "@skeldjs/constant";
+import { PlayerChatEvent } from "@skeldjs/core";
+import { GameDataMessage, RpcMessage, SendChatMessage, SetColorMessage, SetNameMessage } from "@skeldjs/protocol";
 
 import { WorkerBeforeJoinEvent } from "../../src/events";
 
 import { DeclarePlugin } from "../../src/plugins/hooks/DeclarePlugin";
-import { Listener } from "../../src/plugins/hooks/Listener";
-import { PluginInfo } from "../../src/plugins/Plugin";
+import { OnEvent } from "../../src/plugins/hooks/OnEvent";
+import { PluginMetadata } from "../../src/plugins/Plugin";
 import { WorkerNode } from "../../src/WorkerNode";
 
 @DeclarePlugin({
@@ -16,10 +18,10 @@ import { WorkerNode } from "../../src/WorkerNode";
     loadBalancer: true
 })
 export default class CustomGameCodePlugin {
-    meta!: PluginInfo;
+    meta!: PluginMetadata;
     server!: WorkerNode;
 
-    @Listener("worker.beforejoin")
+    @OnEvent("worker.beforejoin")
     async workerBeforeJoin(ev: WorkerBeforeJoinEvent) {
         if (!ev.foundRoom)
             return;
@@ -77,5 +79,41 @@ export default class CustomGameCodePlugin {
                 }
             }
         }
+    }
+    
+    @OnEvent("player.chat")
+    onPlayerChat(ev: PlayerChatEvent) {
+        if (!ev.player.data)
+            return; // Exit early if the player does not have any game data.
+
+        ev.room.broadcast(
+            [
+                new RpcMessage(
+                    ev.player.control.netid,
+                    RpcMessageTag.SetName,
+                    new SetNameMessage("[Server]")
+                ),
+                new RpcMessage(
+                    ev.player.control.netid,
+                    RpcMessageTag.SetColor,
+                    new SetColorMessage(Color.Blue)
+                ),
+                new RpcMessage(
+                    ev.player.control.netid,
+                    RpcMessageTag.SendChat,
+                    new SendChatMessage("Hello, world!")
+                ),
+                new RpcMessage(
+                    ev.player.control.netid,
+                    RpcMessageTag.SetName,
+                    new SetNameMessage(ev.player.data.name)
+                ),
+                new RpcMessage(
+                    ev.player.control.netid,
+                    RpcMessageTag.SetColor,
+                    new SetColorMessage(ev.player.data.color)
+                )
+            ]
+        );
     }
 }

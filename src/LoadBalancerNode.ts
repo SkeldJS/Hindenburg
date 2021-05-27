@@ -106,7 +106,6 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
             const seconds = (banned_time - Date.now()) / 1000;
 
             client.disconnect(
-                DisconnectReason.Custom,
                 this.config.anticheat.banMessage
                     .replace("%s", formatSeconds(~~seconds))
             );
@@ -118,7 +117,6 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
         if (num_connections && this.config.anticheat.maxConnectionsPerIp > 0) {
             if (num_connections >= this.config.anticheat.maxConnectionsPerIp) {
                 client.disconnect(
-                    DisconnectReason.Custom,
                     "Too many connections coming from your IP."
                 );
                 return;

@@ -89,7 +89,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                             "%s identified without reactor loaded.",
                             fmtClient(client)
                         );
-                        return client.disconnect(DisconnectReason.Custom, "Server requires reactor to be loaded, see <link=https://reactor.gg>reactor.gg</link> for more information.");
+                        return client.disconnect("Server requires reactor to be loaded, see <link=https://reactor.gg>reactor.gg</link> for more information.");
                     }
                 }
 
@@ -242,7 +242,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                     if (found) {
                         if (typeof info !== "string" && info.banned) {
                             client.joinError(
-                                DisconnectReason.Custom,
                                 "Invalid mod loaded: %s (%s).",
                                 found.id, found.version
                             );
@@ -251,7 +250,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
 
                         if (found.version && !picomatch.isMatch(found.version, version)) {
                             client.joinError(
-                                DisconnectReason.Custom,
                                 "Invalid version for mod %s: %s (Needs %s).",
                                 found.id, found.version, version
                             );
@@ -260,7 +258,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                     } else {
                         if (typeof info === "string" || info.required) {
                             client.joinError(
-                                DisconnectReason.Custom,
                                 "Missing mod: %s (%s).",
                                 id, version
                             );
@@ -272,7 +269,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                         for (const mod of client.mods) {
                             if (!this.config.reactor.mods[mod.id]) {
                                 client.joinError(
-                                    DisconnectReason.Custom,
                                     "Invalid mod loaded: %s (%s).",
                                     mod.id, mod.version
                                 );
@@ -283,7 +279,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                 }
             } else {
                 client.disconnect(
-                    DisconnectReason.Custom,
                     "Expected mods to be loaded, make sure you have the latest version of Reactor."
                 );
                 return false;

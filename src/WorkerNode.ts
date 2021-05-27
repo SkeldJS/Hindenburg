@@ -60,7 +60,6 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
             
                 if (!was_redirected) {
                     client.disconnect(
-                        DisconnectReason.Custom,
                         "Please connect through the main server."
                     );
                     return;
@@ -441,7 +440,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
         }
 
         for (const [ , client ] of this.clients) {
-            await client.disconnect(DisconnectReason.Custom, "Server is shutting down.");
+            await client.disconnect("Server is shutting down.");
         }
 
         this.socket.close();
@@ -461,10 +460,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
 
         if (num_connections && this.config.anticheat.maxConnectionsPerIp > 0) {
             if (num_connections > this.config.anticheat.maxConnectionsPerIp) {
-                client.disconnect(
-                    DisconnectReason.Custom,
-                    "Too many connections coming from your IP."
-                );
+                client.disconnect("Too many connections coming from your IP.");
                 return;
             }
         }

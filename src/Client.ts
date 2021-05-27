@@ -166,42 +166,40 @@ export class Client extends EventEmitter<ClientEvents> {
     }
 
     async disconnect(
-        reason?: DisconnectReason,
-        message?: string,
+        reason?: DisconnectReason|string,
         ...fmt: any[]
     ): Promise<void> {
         if (this.disconnected)
             return;
-
-        if (fmt.length) {
-            return this.disconnect(reason, util.format(message, ...fmt));
+            
+        if (typeof reason === "string" && fmt.length) {
+            return this.disconnect(reason, util.format(reason, ...fmt));
         }
-
+        
         this.room?.handleRemoteLeave(this);
         this.disconnected = true;
 
-        await this.emit(
-            new ClientDisconnectEvent(
-                this,
-                reason || DisconnectReason.None
-            )
-        );
+        const dcReason = typeof reason === "string"
+            ? DisconnectReason.Custom
+            : reason;
+
+        const dcMessage = typeof reason === "string" ? reason : undefined;
 
         this.send(
             new DisconnectPacket(
-                reason,
-                message,
+                dcReason,
+                dcMessage,
                 true
             )
         );
 
-        if (reason) {
+        if (dcReason) {
             this.server.logger.info(
                 "%s disconnected. Reason: %s (%s)",
-                fmtClient(this), DisconnectReason[reason],
-                reason === DisconnectReason.Custom
-                    ? message || "(No message)"
-                    : (DisconnectMessages as any)[reason]
+                fmtClient(this), DisconnectReason[dcReason],
+                dcReason === DisconnectReason.Custom
+                    ? dcMessage || "(No message)"
+                    : (DisconnectMessages as any)[dcReason]
             );
         } else {
             this.server.logger.info(
@@ -214,36 +212,41 @@ export class Client extends EventEmitter<ClientEvents> {
     }
 
     async joinError(
-        reason: DisconnectReason,
-        message?: string,
+        reason: DisconnectReason|string,
         ...fmt: any[]
     ): Promise<void> {
         if (this.disconnected)
             return;
             
-        if (fmt.length) {
-            return this.joinError(reason, util.format(message, ...fmt));
+        if (typeof reason === "string" && fmt.length) {
+            return this.joinError(reason, util.format(reason, ...fmt));
         }
+
+        const dcReason = typeof reason === "string"
+            ? DisconnectReason.Custom
+            : reason;
+
+        const dcMessage = typeof reason === "string" ? reason : undefined;
 
         await this.send(
             new ReliablePacket(
                 this.getNextNonce(),
                 [
                     new JoinGameMessage(
-                        reason,
-                        message
+                        dcReason,
+                        dcMessage
                     )
                 ]
             )
         );
         
-        if (reason) {
+        if (dcReason) {
             this.server.logger.info(
                 "%s failed to host or join game. Reason: %s (%s)",
-                fmtClient(this), DisconnectReason[reason],
-                reason === DisconnectReason.Custom
-                    ? message || "(No message)"
-                    : (DisconnectMessages as any)[reason]
+                fmtClient(this), DisconnectReason[dcReason],
+                dcReason === DisconnectReason.Custom
+                    ? dcMessage || "(No message)"
+                    : (DisconnectMessages as any)[dcReason]
             );
         } else {
             this.server.logger.info(

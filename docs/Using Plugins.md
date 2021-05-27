@@ -69,23 +69,38 @@ server to join a room.
 * `worker.beforejoin` - Emitted before a player joins a room that was created on
 this worker server.
 
-## Custom Packets (Coming soon)
-Plugins also allow you to register custom packets and listen to them easily.
+## Custom Protocol Messages
+Plugins also allow you to register custom protocol messages and listen to them easily.
 Hindenburg also naturally inherits [SkeldJS'](https://skeldjs.github.io/SkeldJS/modules/protocol.html)
 [PacketDecoder](https://skeldjs.github.io/SkeldJS/classes/protocol.packetdecoder.html)
-class and thus custom packets can be created using the same API.
+class and thus custom messages can be created using the same API.
 
 See [here](https://skeldjs.github.io/SkeldJS/pages/Guides/Writing%20Custom%20Protocol%20Messages.html)
-for information regarding how to write packets.
+for information regarding how to write messages.
 
-### Declaring a custom packet
-Packets are registered automatically when they are listened to using the `@OnPacket`
+### Declaring a custom message
+Messages are registered automatically when they are listened to using the `@OnMessage`
 decorator.
 
 ```ts
-@OnPacket(MyFavouritePacket)
-onMyFavouritePacket(message: MyFavouritePacket, direction: MessageDirection, sender: Client) {
-    console.log("Got my favourite packet from %s.", client.id);
+@OnMessage(MyFavouriteMessage)
+onMyFavouriteMessage(message: MyFavouriteMessage, direction: MessageDirection, sender: Client) {
+    console.log("Got my favourite message from %s.", client.id);
+}
+```
+
+### Advanced Usage
+The `@OnMessage` decorator also takes in additional options.
+
+|  Option  |                    Description                   | Default |
+|----------|--------------------------------------------------|---------|
+| override | Override all existing listeners for this message | `false` |
+
+For example,
+```ts
+@OnMessage(HelloPacket, { override: true })
+onHelloPacket(message: HelloPacket, direction: MessageDirection, sender: Client) {
+    client.disconnect(DisconnectReason.Custom, "Sorry you can't play :///");
 }
 ```
 

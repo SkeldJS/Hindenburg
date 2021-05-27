@@ -30,7 +30,7 @@ export default class CustomGameCodePlugin {
         const redisKey = `customgamecode.${ev.client.remote.address}.${ev.client.version}.${ev.client.username}`;
         await this.server.redis.set(redisKey, JSON.stringify(ev.gameOptions)); // Mark this client as creating a game.
         await this.server.redis.expire(redisKey, 60); // Expire in 60 seconds if they haven't already created a game.
-        ev.client.joinError(DisconnectReason.Custom, "Enter custom game code in the join game section, or enter CANCEL to stop.");
+        ev.client.joinError("Enter custom game code in the join game section, or enter CANCEL to stop.");
     }
 
     @OnEvent("loadbalancer.beforejoin")
@@ -45,7 +45,7 @@ export default class CustomGameCodePlugin {
         if (pendingCreateGameOptions) { // Only if they're trying to create a game.
             if (ev.redirectIp) { // A room already exists with the code that the client selected.
                 ev.cancel();
-                ev.client.joinError(DisconnectReason.Custom, "A room with that code already exists, please select another or enter CANCEL to stop.");
+                ev.client.joinError("A room with that code already exists, please select another or enter CANCEL to stop.");
                 return;
             }
 

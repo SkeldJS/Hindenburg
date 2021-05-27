@@ -30,7 +30,6 @@ export default class CustomGameCodePlugin {
             if (!ev.client.mods) { // Exit if the client is not using reactor.
                 ev.cancel();
                 return ev.client.joinError(
-                    DisconnectReason.Custom,
                     "Missing required mods: %s.",
                     host.mods.map(mod => mod.id).join(", ")
                 );
@@ -45,7 +44,6 @@ export default class CustomGameCodePlugin {
                     if (found.version !== cmod.version) { // Check if the version of the mod is invalid.
                         ev.cancel();
                         return ev.client.joinError(
-                            DisconnectReason.Custom,
                             "Invalid version for mod %s: %s (Needs %s).",
                             cmod.id, cmod.version, found.version
                         );
@@ -53,7 +51,6 @@ export default class CustomGameCodePlugin {
                 } else {
                     ev.cancel(); // Host does not have this mod
                     return ev.client.joinError(
-                        DisconnectReason.Custom,
                         "Invalid mod loaded for this room: %s (%s)",
                         cmod.id, cmod.version
                     );
@@ -67,7 +64,6 @@ export default class CustomGameCodePlugin {
                 if (!found) {
                     ev.cancel(); // Joining client does not have this mod.
                     return ev.client.joinError(
-                        DisconnectReason.Custom,
                         "Missing mod for this room: %s (%s)",
                         hmod.id, hmod.version
                     );

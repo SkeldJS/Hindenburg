@@ -65,136 +65,108 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
 
         this._incr_clientid = 0;
 
-        if (this.config.reactor) {
-            this.decoder.register(
-                ModdedHelloPacket,
-                ReactorMessage,
-                ReactorHandshakeMessage,
-                ReactorModDeclarationMessage
-            );
-            
-            this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], (message, direction, client) => {
-                client.received.unshift(message.nonce);
-                client.received.splice(8);
-                client.ack(message.nonce);
-            });
-            
-            this.decoder.on(ModdedHelloPacket, (message, direction, client) => {
-                if (client.identified)
-                    return;
-
-                if (typeof this.config.reactor == "object" && !this.config.reactor.optional) {
-                    if (message.isNormalHello()) {
-                        this.logger.warn(
-                            "%s identified without reactor loaded.",
-                            fmtClient(client)
-                        );
-                        return client.disconnect("Server requires reactor to be loaded, see <link=https://reactor.gg>reactor.gg</link> for more information.");
-                    }
-                }
-
-                const versions = this.allowed_versions.map(version => version.encode());
-                if (versions.includes(message.clientver.encode())) {
-                    client.identified = true;
-                    client.username = message.username;
-                    client.version = message.clientver;
-                    client.isUsingReactor = !message.isNormalHello();
-
-                    this.logger.info(
-                        "%s identified as %s (version %s) (%s mods)",
-                        fmtClient(client), client.username, client.version, message.modcount || 0
+        this.decoder.register(
+            ModdedHelloPacket,
+            ReactorMessage,
+            ReactorHandshakeMessage,
+            ReactorModDeclarationMessage
+        );
+        
+        this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], (message, direction, client) => {
+            client.received.unshift(message.nonce);
+            client.received.splice(8);
+            client.ack(message.nonce);
+        });
+        
+        this.decoder.on(ModdedHelloPacket, (message, direction, client) => {
+            if (client.identified)
+                return;
+                
+            if (message.isNormalHello()) {
+                if (this.config.reactor && (typeof this.config.reactor === "boolean" || !this.config.reactor.optional)) {
+                    this.logger.warn(
+                        "%s identified without reactor loaded.",
+                        fmtClient(client)
                     );
+                    return client.disconnect("Server requires reactor to be loaded, see <link=\"https://reactor.gg\">reactor.gg</link> for more information.");
+                }
+            } else {
+                if (!this.config.reactor) {
+                    return client.disconnect("This server does not support reactor.");
+                }
+            }
 
+            const versions = this.allowed_versions.map(version => version.encode());
+            if (versions.includes(message.clientver.encode())) {
+                client.identified = true;
+                client.username = message.username;
+                client.version = message.clientver;
+                client.isUsingReactor = !message.isNormalHello();
+
+                this.logger.info(
+                    "%s identified as %s (version %s) (%s mods)",
+                    fmtClient(client), client.username, client.version, message.modcount || 0
+                );
+
+                client.send(
+                    new ReliablePacket(
+                        client.getNextNonce(),
+                        [
+                            new ReactorMessage(
+                                new ReactorHandshakeMessage(
+                                    "Hindenburg",
+                                    process.env.npm_package_version || "1.0.0",
+                                    this.pluginLoader.plugins.size
+                                )
+                            )
+                        ]
+                    )
+                );
+
+                const entries = [...this.pluginLoader.plugins.entries()];
+                for (let i = 0; i < entries.length; i++) {
+                    const [, plugin] = entries[i];
+                    
                     client.send(
                         new ReliablePacket(
                             client.getNextNonce(),
                             [
                                 new ReactorMessage(
-                                    new ReactorHandshakeMessage(
-                                        "Hindenburg",
-                                        process.env.npm_package_version || "1.0.0",
-                                        this.pluginLoader.plugins.size
+                                    new ReactorModDeclarationMessage(
+                                        0,
+                                        plugin.meta.id,
+                                        plugin.meta.version || "1.0.0",
+                                        plugin.meta.clientSide ? PluginSide.Both : PluginSide.Clientside
                                     )
                                 )
                             ]
                         )
-                    );
-
-                    const entries = [...this.pluginLoader.plugins.entries()];
-                    for (let i = 0; i < entries.length; i++) {
-                        const [, plugin] = entries[i];
-                        
-                        client.send(
-                            new ReliablePacket(
-                                client.getNextNonce(),
-                                [
-                                    new ReactorMessage(
-                                        new ReactorModDeclarationMessage(
-                                            0,
-                                            plugin.meta.id,
-                                            plugin.meta.version || "1.0.0",
-                                            plugin.meta.clientSide ? PluginSide.Both : PluginSide.Clientside
-                                        )
-                                    )
-                                ]
-                            )
-                        )
-                    }
-                } else {
-                    client.disconnect(DisconnectReason.IncorrectVersion);
-
-                    this.logger.info(
-                        "%s attempted to identify with an invalid version (%s)",
-                        fmtClient(client), message.clientver
                     )
                 }
-            });
-
-            this.decoder.on(ReactorModDeclarationMessage, (message, direction, client) => {
-                if (!client.mods)
-                    client.mods = [];
-
-                client.mods.push({
-                    id: message.modid,
-                    version: message.version
-                });
+            } else {
+                client.disconnect(DisconnectReason.IncorrectVersion);
 
                 this.logger.info(
-                    "Got mod from %s: %s (%s)",
-                    fmtClient(client), chalk.green(message.modid), message.version
-                );
-            });
-        } else {
-            this.decoder.on([ ReliablePacket, HelloPacket, PingPacket ], (message, direction, client) => {
-                client.received.unshift(message.nonce);
-                client.received.splice(8);
-                client.ack(message.nonce);
-            });
-            
-            this.decoder.on(HelloPacket, (message, direction, client) => {
-                if (client.identified)
-                    return;
+                    "%s attempted to identify with an invalid version (%s)",
+                    fmtClient(client), message.clientver
+                )
+            }
+        });
 
-                const versions = this.allowed_versions.map(version => version.encode());
-                if (versions.includes(message.clientver.encode())) {
-                    client.identified = true;
-                    client.username = message.username;
-                    client.version = message.clientver;
+        this.decoder.on(ReactorModDeclarationMessage, (message, direction, client) => {
+            if (!client.mods)
+                client.mods = [];
 
-                    this.logger.info(
-                        "%s identified as %s (version %s)",
-                        fmtClient(client), client.username, client.version
-                    );
-                } else {
-                    client.disconnect(DisconnectReason.IncorrectVersion);
-
-                    this.logger.info(
-                        "%s attempted to identify with an invalid version (%s)",
-                        fmtClient(client), message.clientver
-                    )
-                }
+            client.mods.push({
+                id: message.modid,
+                version: message.version
             });
-        }
+
+            this.logger.info(
+                "Got mod from %s: %s (%s)",
+                fmtClient(client), chalk.green(message.modid), message.version
+            );
+        });
 
         this.decoder.on(DisconnectPacket, (message, direction, client) => {
             client.disconnect();

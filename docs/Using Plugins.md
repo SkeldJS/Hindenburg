@@ -1,5 +1,4 @@
 # Writing Plugins
-
 Since Hindenburg is built upon [SkeldJS](https://github.com/skeldjs/SkeldJS),
 it inherits much of the same API and so much of the documentation can be found
 [there](https://skeldjs.github.io/SkeldJS).
@@ -13,7 +12,6 @@ from splitting your logic and other utilities into several other files to keep
 readability.
 
 ## Skeleton
-
 A very simple plugin that does absolutely nothing would look something along
 the lines of this:
 
@@ -35,7 +33,6 @@ export default class {
 ```
 
 ## Events
-
 Plugins use a short and simple syntax in order to declare event listeners. Using
 special decorators, they are also automatically removed if the plugin were to ever
 be unloaded.
@@ -43,7 +40,6 @@ be unloaded.
 ##### Note: Currently the syntax used for events is slightly more verbose than would be ideal, follow https://github.com/Microsoft/TypeScript/issues/4881 for more information on this.
 
 ### Declaring an event listener
-
 You can use the `@OnEvent` decorator to mark a function as an event listener for
 a specific event.
 
@@ -55,37 +51,34 @@ onPlayerChat(ev: PlayerChatEvent) {
 ```
 
 ### Event to listen to
-
 A Hindenburg server naturally inherits [all core events from SkeldJS](https://skeldjs.github.io/SkeldJS/pages/Information/Events.html#event-list)
 as well as some additional ones listed below:
 
 #### Client
-
 * `client.disconnect` - Emitted when a client disconnects or is disconnected
 from the server.
 
 #### Load Balancer
-
 * `loadbalancer.beforecreate` - Emitted before a client is redirected to a worker
 server to create a room.
 * `loadbalancer.beforejoin` - Emitted before a client is redirected to a worker
 server to join a room.
 
 #### Worker
-
 * `worker.beforecreate` - Emitted before a room is created on this worker server.
 * `worker.beforejoin` - Emitted before a player joins a room that was created on
 this worker server.
 
 ## Custom Packets (Coming soon)
-
 Plugins also allow you to register custom packets and listen to them easily.
 Hindenburg also naturally inherits [SkeldJS'](https://skeldjs.github.io/SkeldJS/modules/protocol.html)
 [PacketDecoder](https://skeldjs.github.io/SkeldJS/classes/protocol.packetdecoder.html)
 class and thus custom packets can be created using the same API.
 
-### Declaring a custom packet
+See [here](https://skeldjs.github.io/SkeldJS/pages/Guides/Writing%20Custom%20Protocol%20Messages.html)
+for information regarding how to write packets.
 
+### Declaring a custom packet
 Packets are registered automatically when they are listened to using the `@OnPacket`
 decorator.
 
@@ -97,6 +90,5 @@ onMyFavouritePacket(message: MyFavouritePacket, direction: MessageDirection, sen
 ```
 
 ## Examples
-
 Examples of some plugins can be found [here](https://github.com/edqx/Hindenburg/tree/master/plugins)
 and show both simple and advanced usages of the plugin API.

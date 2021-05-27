@@ -28,21 +28,35 @@ export default class CustomGameCodePlugin {
     async loadBalancerBeforeCreate(ev: LoadBalancerBeforeCreateEvent) {
         ev.cancel();
         const redisKey = `customgamecode.${ev.client.remote.address}.${ev.client.version}.${ev.client.username}`;
-        await this.server.redis.set(redisKey, JSON.stringify(ev.gameOptions));
-        await this.server.redis.expire(redisKey, 60);
+        await this.server.redis.set(redisKey, JSON.stringify(ev.gameOptions)); // Mark this client as creating a game.
+        await this.server.redis.expire(redisKey, 60); // Expire in 60 seconds if they haven't already created a game.
         ev.client.joinError(DisconnectReason.Custom, "Enter custom game code in the join game section, or enter CANCEL to stop.");
     }
 
     @OnEvent("loadbalancer.beforejoin")
     async loadBalancerBeforeJoin(ev: LoadBalancerBeforeJoinEvent) {
+        // Normally the load balancer would 
         if (!this.server.isLoadBalancer())
             return;
 
         const redisKey = `customgamecode.${ev.client.remote.address}.${ev.client.version}.${ev.client.username}`;
         const pendingCreateGameOptions = await this.server.redis.get(redisKey);
 
-        if (pendingCreateGameOptions) {
-            const [ cluster, nodePort ] = this.server.selectRandomNode();
+        if (pendingCreateGameOptions) { // Only if they're trying to create a game.
+            if (ev.redirectIp) { // A room already exists with the code that the client selected.
+                ev.cancel();
+                ev.client.joinError(DisconnectReason.Custom, "A room with that code already exists, please select another or enter CANCEL to stop.");
+                return;
+            }
+
+            if (Int2Code(ev.gameCode) === "CANCEL") { // Exit if the client is canceling creating a game.
+                await this.server.redis.del(redisKey);
+                ev.cancel();
+                ev.client.disconnect(DisconnectReason.None);
+                return;
+            }
+
+            const [ cluster, nodePort ] = this.server.selectRandomNode(); // Pick a random node & redirect (like done when hosting a game).
 
             ev.cancel();
             await this.server.redirectClient(ev.client, cluster.ip, nodePort);
@@ -59,21 +73,9 @@ export default class CustomGameCodePlugin {
 
         if (!pendingCreateGameOptions)
             return;
-
-        if (ev.foundRoom) {
-            ev.cancel();
-            ev.client.joinError(DisconnectReason.Custom, "A room with that code already exists, please select another or enter CANCEL to stop.");
-            return;
-        }
-        
+            
         await this.server.redis.del(redisKey);
-
-        if (Int2Code(ev.gameCode) === "CANCEL") {
-            ev.cancel();
-            ev.client.disconnect(DisconnectReason.None);
-            return;
-        }
-
+        
         const parsedGameOptions = JSON.parse(pendingCreateGameOptions);
         const gameOptions = new GameOptions(parsedGameOptions);
 

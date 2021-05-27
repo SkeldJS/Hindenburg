@@ -66,10 +66,12 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
         this._incr_clientid = 0;
 
         if (this.config.reactor) {
-            this.decoder.register(ModdedHelloPacket);
-            this.decoder.register(ReactorMessage);
-            this.decoder.register(ReactorHandshakeMessage);
-            this.decoder.register(ReactorModDeclarationMessage);
+            this.decoder.register(
+                ModdedHelloPacket,
+                ReactorMessage,
+                ReactorHandshakeMessage,
+                ReactorModDeclarationMessage
+            );
             
             this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], (message, direction, client) => {
                 client.received.unshift(message.nonce);

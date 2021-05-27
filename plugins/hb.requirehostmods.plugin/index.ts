@@ -1,12 +1,8 @@
-import { Color, DisconnectReason, RpcMessageTag } from "@skeldjs/constant";
-import { PlayerChatEvent } from "@skeldjs/core";
-import { GameDataMessage, RpcMessage, SendChatMessage, SetColorMessage, SetNameMessage } from "@skeldjs/protocol";
-
+import { DisconnectReason } from "@skeldjs/constant";
 import { WorkerBeforeJoinEvent } from "../../src/events";
 
 import { DeclarePlugin } from "../../src/plugins/hooks/DeclarePlugin";
 import { OnEvent } from "../../src/plugins/hooks/OnEvent";
-import { PluginMetadata } from "../../src/plugins/Plugin";
 import { WorkerNode } from "../../src/WorkerNode";
 
 @DeclarePlugin({
@@ -18,7 +14,6 @@ import { WorkerNode } from "../../src/WorkerNode";
     loadBalancer: true
 })
 export default class CustomGameCodePlugin {
-    meta!: PluginMetadata;
     server!: WorkerNode;
 
     @OnEvent("worker.beforejoin")
@@ -29,10 +24,10 @@ export default class CustomGameCodePlugin {
         if (this.server.config.reactor) {
             const host = ev.foundRoom.clients.get(ev.foundRoom.hostid);
             
-            if (!host?.mods)
+            if (!host?.mods) // Exit quitely if the host is not using reactor.
                 return;
 
-            if (!ev.client.mods) {
+            if (!ev.client.mods) { // Exit if the client is not using reactor.
                 ev.cancel();
                 return ev.client.joinError(
                     DisconnectReason.Custom,
@@ -41,13 +36,13 @@ export default class CustomGameCodePlugin {
                 );
             }
 
-            for (const cmod of ev.client.mods) {
+            for (const cmod of ev.client.mods) { // Loop through joining client's mods
                 const found = host.mods
                     .find(mod => mod.id === cmod.id);
 
                 
                 if (found) {
-                    if (found.version !== cmod.version) {
+                    if (found.version !== cmod.version) { // Check if the version of the mod is invalid.
                         ev.cancel();
                         return ev.client.joinError(
                             DisconnectReason.Custom,
@@ -56,7 +51,7 @@ export default class CustomGameCodePlugin {
                         );
                     }
                 } else {
-                    ev.cancel();
+                    ev.cancel(); // Host does not have this mod
                     return ev.client.joinError(
                         DisconnectReason.Custom,
                         "Invalid mod loaded for this room: %s (%s)",
@@ -65,12 +60,12 @@ export default class CustomGameCodePlugin {
                 }
             }
             
-            for (const hmod of host.mods) {
+            for (const hmod of host.mods) { // Loop through host's mods.
                 const found = ev.client.mods
                     .find(mod => mod.id === hmod.id);
                 
                 if (!found) {
-                    ev.cancel();
+                    ev.cancel(); // Joining client does not have this mod.
                     return ev.client.joinError(
                         DisconnectReason.Custom,
                         "Missing mod for this room: %s (%s)",
@@ -79,41 +74,5 @@ export default class CustomGameCodePlugin {
                 }
             }
         }
-    }
-    
-    @OnEvent("player.chat")
-    onPlayerChat(ev: PlayerChatEvent) {
-        if (!ev.player.data)
-            return; // Exit early if the player does not have any game data.
-
-        ev.room.broadcast(
-            [
-                new RpcMessage(
-                    ev.player.control.netid,
-                    RpcMessageTag.SetName,
-                    new SetNameMessage("[Server]")
-                ),
-                new RpcMessage(
-                    ev.player.control.netid,
-                    RpcMessageTag.SetColor,
-                    new SetColorMessage(Color.Blue)
-                ),
-                new RpcMessage(
-                    ev.player.control.netid,
-                    RpcMessageTag.SendChat,
-                    new SendChatMessage("Hello, world!")
-                ),
-                new RpcMessage(
-                    ev.player.control.netid,
-                    RpcMessageTag.SetName,
-                    new SetNameMessage(ev.player.data.name)
-                ),
-                new RpcMessage(
-                    ev.player.control.netid,
-                    RpcMessageTag.SetColor,
-                    new SetColorMessage(ev.player.data.color)
-                )
-            ]
-        );
     }
 }

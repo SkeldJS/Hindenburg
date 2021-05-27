@@ -1,19 +1,30 @@
 import { DisconnectReason } from "@skeldjs/constant";
-import { WorkerNode } from "../../src";
 
-export function getPluginInfo() {
-    return {
-        name: "RequireHostMods",
-        description: "Forces players joining a room to have the same mods as the host of the room."
-    };
-}
+import { WorkerBeforeJoinEvent } from "../../src/events";
 
-export function loadPlugin(server: WorkerNode, config: any) {
-    server.on("worker.beforejoin", ev => {
+import { DeclarePlugin } from "../../src/plugins/hooks/DeclarePlugin";
+import { Listener } from "../../src/plugins/hooks/Listener";
+import { PluginInfo } from "../../src/plugins/Plugin";
+import { WorkerNode } from "../../src/WorkerNode";
+
+@DeclarePlugin({
+    id: "hb.requirehostmods.plugin",
+    version: "1.0.0",
+    description: "Allows players to assign their own game code to their games.",
+    defaultConfig: {},
+    clientSide: false,
+    loadBalancer: true
+})
+export default class CustomGameCodePlugin {
+    meta!: PluginInfo;
+    server!: WorkerNode;
+
+    @Listener("worker.beforejoin")
+    async workerBeforeJoin(ev: WorkerBeforeJoinEvent) {
         if (!ev.foundRoom)
             return;
 
-        if (server.config.reactor) {
+        if (this.server.config.reactor) {
             const host = ev.foundRoom.clients.get(ev.foundRoom.hostid);
             
             if (!host?.mods)
@@ -66,5 +77,5 @@ export function loadPlugin(server: WorkerNode, config: any) {
                 }
             }
         }
-    });
+    }
 }

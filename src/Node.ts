@@ -13,7 +13,6 @@ export interface HindenburgClusterConfig {
     name: string;
     ip: string;
     ports: number[];
-    plugins: Record<string, any>;
 }
 
 export interface HindenburgLoadBalancerClusterConfig {
@@ -51,6 +50,7 @@ export interface HindenburgConfig {
     cluster: HindenburgClusterConfig;
     loadbalancer: HindenburgLoadBalancerServerConfig;
     redis: RedisServerConfig;
+    plugins: Record<string, boolean|object>;
 }
 export class ConfigurableNode<T extends EventData = any> extends EventEmitter<T> {
     redis: ioredis.Redis;
@@ -64,6 +64,7 @@ export class ConfigurableNode<T extends EventData = any> extends EventEmitter<T>
         this.config = {
             reactor: false,
             versions: ["2020.4.2"],
+            plugins: {},
             ...config,
             anticheat: {
                 banMessage: "You were banned for %s for hacking.",
@@ -96,7 +97,6 @@ export class ConfigurableNode<T extends EventData = any> extends EventEmitter<T>
                 name: "Cluster",
                 ip: "127.0.0.1",
                 ports: [ 22123 ],
-                plugins: {},
                 ...config.cluster
             },
             redis: {

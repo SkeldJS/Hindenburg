@@ -19,6 +19,7 @@ import { Client } from "./Client";
 
 import {
     ModdedHelloPacket,
+    PluginSide,
     ReactorHandshakeMessage,
     ReactorMessage,
     ReactorModDeclarationMessage
@@ -26,8 +27,8 @@ import {
 
 import { HindenburgConfig, ConfigurableNode } from "./Node";
 import { LoadBalancerNode } from "./LoadBalancerNode";
-import { PluginLoader } from "./PluginLoader";
 import { fmtClient } from "./util/format-client";
+import { PluginLoader } from "./plugins/PluginLoader";
 
 export type MatchmakerNodeEvents = ExtractEventTypes<[]>;
 
@@ -110,12 +111,33 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                                     new ReactorHandshakeMessage(
                                         "Hindenburg",
                                         process.env.npm_package_version || "1.0.0",
-                                        0
+                                        this.pluginLoader.plugins.size
                                     )
                                 )
                             ]
                         )
                     );
+
+                    const entries = [...this.pluginLoader.plugins.entries()];
+                    for (let i = 0; i < entries.length; i++) {
+                        const [, plugin] = entries[i];
+                        
+                        client.send(
+                            new ReliablePacket(
+                                client.getNextNonce(),
+                                [
+                                    new ReactorMessage(
+                                        new ReactorModDeclarationMessage(
+                                            0,
+                                            plugin.meta.id,
+                                            plugin.meta.version || "1.0.0",
+                                            plugin.meta.clientSide ? PluginSide.Both : PluginSide.Clientside
+                                        )
+                                    )
+                                ]
+                            )
+                        )
+                    }
                 } else {
                     client.disconnect(DisconnectReason.IncorrectVersion);
 

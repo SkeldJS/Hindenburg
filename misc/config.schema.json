@@ -149,6 +149,10 @@
                     "patternProperties": {
                         ".+": {}
                     }
+                },
+                "allowDirect": {
+                    "type": "boolean",
+                    "description": "Whether to allow connecting to this cluster directly. (Not through the load-balancer)"
                 }
             }
         },

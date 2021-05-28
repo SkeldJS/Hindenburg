@@ -55,7 +55,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
         this.nodeid = nodeid;
 
         this.decoder.on([ HelloPacket, ModdedHelloPacket ], async (message, direction, client) => {
-            if (this.config.loadbalancer) {
+            if (this.config.loadbalancer && !this.config.cluster.allowDirect) {
                 const was_redirected = await this.redis.hget("redirected." + client.remote.address + "." + client.username, "num");
             
                 if (!was_redirected) {

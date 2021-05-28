@@ -1,9 +1,13 @@
+import { EventEmitter } from "@skeldjs/events";
+import { Deserializable } from "@skeldjs/protocol";
 import fs from "fs/promises";
 import path from "path";
 import { LoadBalancerNode } from "../LoadBalancerNode";
 
 import { MatchmakerNode } from "../MatchmakerNode";
 import { WorkerNode } from "../WorkerNode";
+import { EventHandlers, GlobalEventListener, GlobalEvents } from "./hooks/OnEvent";
+import { MessageHandlerDecl, MessageHandlers, MessagesToRegister, PacketListener } from "./hooks/OnMessage";
 import { HindenburgPlugin, MixinHindenburgPlugin } from "./Plugin";
 
 export interface PluginLoadFunction {
@@ -50,6 +54,45 @@ export class PluginLoader {
                 : undefined
             );
         
+            
+        const eventListeners = loadedPluginClass.prototype[EventHandlers] as Map<keyof GlobalEvents, Set<string>>;
+
+        if (eventListeners) {
+            for (const [ eventName, eventHandlers ] of eventListeners) {
+                const loadedEventHandlers: Set<GlobalEventListener> = new Set;
+                loadedPlugin.loadedEventListeners.set(eventName, loadedEventHandlers);
+                for (const handler of eventHandlers) {
+                    const fn = (loadedPlugin as any)[handler].bind(loadedPlugin) as GlobalEventListener;
+                    (this.server as EventEmitter<GlobalEvents>).on(eventName, fn);
+                    loadedEventHandlers.add(fn);   
+                }
+            }
+        }
+
+        const messagesToRegister = loadedPluginClass.prototype[MessagesToRegister] as Set<Deserializable>;
+
+        if (messagesToRegister) {
+            for (const message of messagesToRegister) {
+                if (!this.server.decoder.listeners.has(message))
+                    this.server.decoder.register(message);
+            }
+        }
+
+        const messageListeners = loadedPluginClass.prototype[MessageHandlers] as Map<Deserializable, Set<MessageHandlerDecl>>;
+
+        if (messageListeners) {
+            for (const [ messageClass, messageHandlers ] of messageListeners) {
+                const loadedMessageHandlers: Set<PacketListener<Deserializable>> = new Set;
+                loadedPlugin.loadedMessageListeners.set(messageClass, loadedMessageHandlers);
+                for (const handler of messageHandlers) {
+                    if (handler.options.override) this.server.decoder.listeners.get(messageClass)?.clear();
+                    const fn = (loadedPlugin as any)[handler.propertyName].bind(loadedPlugin) as PacketListener<Deserializable>;
+                    this.server.decoder.on(messageClass, fn);
+                    loadedMessageHandlers.add(fn);
+                }
+            }
+        }
+
         try {
             await loadedPlugin.onPluginLoad?.();
         } catch (e) {
@@ -69,6 +112,25 @@ export class PluginLoader {
         );
 
         return true;
+    }
+
+    async unloadPlugin(pluginId: string) {
+        const loadedPlugin = this.plugins.get(pluginId);
+
+        if (!loadedPlugin)
+            throw new Error("Tried to unload plguin that was not loaded.");
+
+        for (const [ eventName, eventHandlers ] of loadedPlugin.loadedEventListeners) {
+            for (const handler of eventHandlers) {
+                (this.server as EventEmitter<GlobalEvents>).off(eventName, handler);
+            }
+        }
+        
+        for (const [ messageClass, packetHandlers ] of loadedPlugin.loadedMessageListeners) {
+            for (const handler of packetHandlers) {
+                this.server.decoder.off(messageClass, handler);
+            }
+        }
     }
 
     async loadFromDirectory() {

@@ -99,7 +99,7 @@ The `@OnMessage` decorator also takes in additional options.
 For example,
 ```ts
 @OnMessage(HelloPacket, { override: true })
-onHelloPacket(message: HelloPacket, direction: MessageDirection, sender: Client) {
+onHelloPacket(message: HelloPacket, direction: MessageDirection, client: Client) {
     client.disconnect("Sorry you can't play :///");
 }
 ```

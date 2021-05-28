@@ -1,5 +1,8 @@
+import { Deserializable } from "@skeldjs/protocol";
 import { LoadBalancerNode } from "../LoadBalancerNode";
 import { WorkerNode } from "../WorkerNode";
+import { GlobalEventListener, GlobalEvents } from "./hooks/OnEvent";
+import { PacketListener } from "./hooks/OnMessage";
 
 export interface PluginMetadata {
     /**
@@ -40,9 +43,13 @@ export abstract class HindenburgPlugin {
 
     abstract onPluginLoad?(): void;
     abstract onPluginUnload?(): void;
+    
+    registeredMessages!: Set<Deserializable>;
+    loadedEventListeners!: Map<keyof GlobalEvents, Set<GlobalEventListener>>;
+    loadedMessageListeners!: Map<Deserializable, Set<PacketListener<Deserializable>>>;
 }
 
-export interface MixinHindenburgPlugin extends HindenburgPlugin {
+export interface MixinHindenburgPlugin {
     id: string;
     version: string;
     description: string;

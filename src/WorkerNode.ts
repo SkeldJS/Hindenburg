@@ -55,20 +55,22 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
         this.nodeid = nodeid;
 
         this.decoder.on([ HelloPacket, ModdedHelloPacket ], async (message, direction, client) => {
-            if (this.config.loadbalancer && !this.config.cluster.allowDirect) {
+            if (this.config.loadbalancer) {
                 const was_redirected = await this.redis.hget("redirected." + client.remote.address + "." + client.username, "num");
             
-                if (!was_redirected) {
-                    client.disconnect(
-                        "Please connect through the main server."
-                    );
-                    return;
-                }
-
-                if (was_redirected === "1") {
-                    await this.redis.del("redirected." + client.remote.address + "." + client.username);
+                if (was_redirected) {
+                    if (was_redirected === "1") {
+                        await this.redis.del("redirected." + client.remote.address + "." + client.username);
+                    } else {
+                        await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", -1);
+                    }
                 } else {
-                    await this.redis.hincrby("redirected." + client.remote.address + "." + client.username, "num", -1);
+                    if (!this.config.cluster.allowDirect) {
+                        client.disconnect(
+                            "Please connect through the main server."
+                        );
+                        return;
+                    }
                 }
             }
         });

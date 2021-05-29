@@ -97,7 +97,8 @@ for config documentation.
 
 If you are hosting the server on a public VPS, it's likely that you will need to
 change the ip addresses in the config to `auto` to automatically discover your server's
-public ip address and use that.
+public ip address and use that. Relevant fields: [here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#clusterip)
+and [here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#loadbalancerip)
 
 ## Connecting
 

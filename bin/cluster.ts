@@ -4,6 +4,7 @@ import child_process from "child_process";
 import winston from "winston";
 
 import { MessageOpcode } from "./MessageOpcode";
+import { getExternalIp } from "./util/getExternalIp";
 
 const logger = winston.createLogger({
     transports: [

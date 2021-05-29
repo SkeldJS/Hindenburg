@@ -49,47 +49,47 @@ import { makeConfig } from "./util/makeConfig";
             console.log("No config file detected, writing default config..");
     
             const config = `{
-"$schema": "./misc/config.schema.json",
-"reactor": false,
-"versions": ["2021.4.2"],
-"anticheat": {
-    "checkSettings": true,
-    "maxConnectionsPerIp": 0,
-    "checkObjectOwnership": true,
-    "hostChecks": true,
-    "malformedPackets": false,
-    "invalidFlow": false,
-    "invalidName": true,
-    "massivePackets": {
-        "penalty": "disconnect",
-        "strikes": 3
-    }
-},
-"cluster": {
-    "name": "Capybara",
-    "ip": "127.0.0.1",
-    "ports": [
-        22123
-    ],
-    "plugins": {}
-},
-"loadbalancer": {
-    "clusters": [
-        {
-            "name": "Capybara",
-            "ip": "127.0.0.1",
-            "ports": [
-                22123
-            ]
+    "$schema": "./misc/config.schema.json",
+    "reactor": false,
+    "versions": ["2021.4.2"],
+    "anticheat": {
+        "checkSettings": true,
+        "maxConnectionsPerIp": 0,
+        "checkObjectOwnership": true,
+        "hostChecks": true,
+        "malformedPackets": false,
+        "invalidFlow": false,
+        "invalidName": true,
+        "massivePackets": {
+            "penalty": "disconnect",
+            "strikes": 3
         }
-    ],
-    "ip": "127.0.0.1",
-    "port": 22023
-},
-"redis": {
-    "host": "127.0.0.1",
-    "port": 6379
-}
+    },
+    "cluster": {
+        "name": "Capybara",
+        "ip": "127.0.0.1",
+        "ports": [
+            22123
+        ]
+    },
+    "loadbalancer": {
+        "clusters": [
+            {
+                "name": "Capybara",
+                "ip": "127.0.0.1",
+                "ports": [
+                    22123
+                ]
+            }
+        ],
+        "ip": "127.0.0.1",
+        "port": 22023
+    },
+    "redis": {
+        "host": "127.0.0.1",
+        "port": 6379
+    },
+    "plugins": {}
 }`;
     
             await fs.writeFile(config_path, config, "utf8");

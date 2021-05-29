@@ -36,7 +36,7 @@ Now that we've installed [*Redis*](https://redis.io), we can move on to installi
 
 ### Windows
 
-First download and install nodejs from [*this*](https://nodejs.org/dist/v16.2.0/node-v16.2.0-x64.msi) download link.
+First download and install nodejs from [*here*](https://nodejs.org).
 Then to install yarn, use [*this*](https://classic.yarnpkg.com/latest.msi) download link
 
 ## Installing Hindenburg

@@ -35,10 +35,10 @@ It also allows you to force players to have the same mods and the host of the
 room that they join.
 
 ## Starting
-Installation instructions can be found on this page: https://github.com/edqx/Hindenburg/blob/master/docs/Installing.md
+Installation instructions can be found on this page: [docs/Installing.md](https://github.com/edqx/Hindenburg/blob/master/docs/Installing.md)
 
 ## Configuration
-Configuration documentation can be found on this page: https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md
+Configuration documentation can be found in [docs/Configuration.md](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md)
 
 ## Plugins
-For instructions regarding writing your own plugins, see https://github.com/edqx/Hindenburg/blob/master/docs/Writing%20Plugins.md
+For instructions regarding writing your own plugins, see [docs/Writing Plugins.md](https://github.com/edqx/Hindenburg/blob/master/docs/Writing%20Plugins.md)

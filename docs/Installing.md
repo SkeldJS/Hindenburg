@@ -34,6 +34,11 @@ Now that we've installed [*Redis*](https://redis.io), we can move on to installi
 
 `sudo apt install yarn`
 
+### Windows
+
+First download and install nodejs from [*this*](https://nodejs.org/dist/v16.2.0/node-v16.2.0-x64.msi) download link.
+Then to install yarn, use [*this*](https://classic.yarnpkg.com/latest.msi) download link
+
 ## Installing Hindenburg
 
 `git clone https://github.com/edqx/Hindenburg/`
@@ -44,8 +49,8 @@ Now that we've installed [*Redis*](https://redis.io), we can move on to installi
 
 Now it should say it's generated the config, we need to edit this, we're going to open this file using `nano`
 
-`nano config.json`
-Go to the `loadbalancer` section and change where it says `127.0.0.1` to your vps's (or pc's, if your're using your PC to do this) ip address. Change the `reactor` field to `true` if you wish to use reactor on this server. Do Ctrl+O then hit enter, then hit Ctrl+X to exit `nano`. Open a second terminal and then do
+`nano config.json` *(for windows, just open the file in any text editor)*
+Go to the `loadbalancer` section and change where it says `127.0.0.1` to your vps's (or pc's, if your're using your PC to do this) ip address. Change the `reactor` field to `true` if you wish to use reactor on this server. Save the file and exit the text editor. For `nano`, do Ctrl+O then hit enter, then hit Ctrl+X to exit `nano`. Open a second terminal and then do
 `yarn start:load-balancer`
 in the first one and 
 `yarn start:cluster`

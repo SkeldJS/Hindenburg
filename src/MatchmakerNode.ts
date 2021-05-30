@@ -391,6 +391,9 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
             const parsed = this.decoder.parse(reader, MessageDirection.Serverbound);
             const client = this.clients.get(remote.address + ":" + remote.port);
 
+            if (!parsed)
+                return;
+
             if (client) {
                 if (parsed.tag !== SendOption.Acknowledge && "nonce" in parsed) {
                     const reliable = parsed as ReliableSerializable;

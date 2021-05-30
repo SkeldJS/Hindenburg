@@ -11,7 +11,7 @@ import {
     ReliablePacket,
     Serializable
 } from "@skeldjs/protocol";
-import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
+import { BasicEvent, EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { DisconnectMessages } from "@skeldjs/data";
 
 import { MatchmakerNode, ModInfo } from "./MatchmakerNode";
@@ -74,7 +74,9 @@ export class Client extends EventEmitter<ClientEvents> {
     
     async emit<Event extends ClientEvents[keyof ClientEvents]>(
         event: Event
-    ): Promise<Event> {
+    ): Promise<Event>
+    async emit<Event extends BasicEvent>(event: Event): Promise<Event>;
+    async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
         this.server.emit(event);
 
         return super.emit(event);

@@ -11,49 +11,49 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
-"@skeldjs/constant@2.9.2", "@skeldjs/constant@^2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@skeldjs/constant/-/constant-2.9.2.tgz#b84e1f07a34d9da0a272f2930310927478de630b"
-  integrity sha512-tdOcgK4gNHFcpfW6qGKUXfME/Y8dHJdSP9oiYPzkKQ3IggKaaRO3oFL+z50qq70t0lCvJv3JVlU039Z9RVI4Cg==
+"@skeldjs/constant@2.10.1", "@skeldjs/constant@^2.10.1":
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/@skeldjs/constant/-/constant-2.10.1.tgz#5274d03e1cb839f9654bcea343ff6b8be2b072f0"
+  integrity sha512-nHSuv2y5dOzvITAZtYiI8qdCBFMvNNdWOUEyvn6xmo6EKXbg/6osHuVMMgTyzdH3fgko/C5bmepiQ7y+izZjtw==
   dependencies:
-    "@skeldjs/util" "2.9.2"
+    "@skeldjs/util" "2.10.1"
 
-"@skeldjs/core@^2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@skeldjs/core/-/core-2.9.2.tgz#74cc62f665a79d43bc64fbfe78b13f54fa494a47"
-  integrity sha512-8Jvmm4xbzbcG0QTe2HS9/7U8eJH/YciI1OUyBvv8zLSuqHMrry1BHHj7ck7wci8w+LdwARYsB3/NNcOuQ6r+SA==
+"@skeldjs/core@^2.10.1":
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/@skeldjs/core/-/core-2.10.1.tgz#e33c882fe235b6005bd07461ba9c7dcc77529bc3"
+  integrity sha512-Gpgdc+ohuX5CpXOHtYvJiXxBsyDbwm7ZzoW8QX4PiDSPR4f/LAzPzgDorZqZ708BqKK/3TGA6Q8wY04KQQ5DhQ==
   dependencies:
-    "@skeldjs/constant" "2.9.2"
-    "@skeldjs/data" "2.9.2"
-    "@skeldjs/events" "2.9.2"
-    "@skeldjs/protocol" "2.9.2"
-    "@skeldjs/util" "2.9.2"
+    "@skeldjs/constant" "2.10.1"
+    "@skeldjs/data" "2.10.1"
+    "@skeldjs/events" "2.10.1"
+    "@skeldjs/protocol" "2.10.1"
+    "@skeldjs/util" "2.10.1"
 
-"@skeldjs/data@2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@skeldjs/data/-/data-2.9.2.tgz#76b76157ba9c9b06edd7e0e6e0e20e659c9fceb9"
-  integrity sha512-HPEByylMgskWShBfGl/jAjM+13DyXv2OEjI0cag6etz4jS8gw/UBA4lCqaGLJbQuUhMFrgMhoBhNzh0MyA2b7A==
+"@skeldjs/data@2.10.1":
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/@skeldjs/data/-/data-2.10.1.tgz#f3156f7a4ca3fcbee00bb1d89049055b8c3b41de"
+  integrity sha512-aAl4OmvTOSH1/ac6yWns08t/VSsLc8IhdWfKlXk+QX90LOznSVpLs9H/8Lp6BLfB3ZoFxCyN/vV08gbtM/Haug==
   dependencies:
-    "@skeldjs/constant" "2.9.2"
-    "@skeldjs/util" "2.9.2"
+    "@skeldjs/constant" "2.10.1"
+    "@skeldjs/util" "2.10.1"
 
-"@skeldjs/events@2.9.2", "@skeldjs/events@^2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@skeldjs/events/-/events-2.9.2.tgz#0307dbf29bb19bccca0254089bc82023a32a67f0"
-  integrity sha512-XRRGibY/btG1U3sYPmLeTo/fc3x5KbhfcSAtrz/tv4USNrIUWxX6RE+vRlw/65DKEbz/OjdMck45PxK4b9HpAA==
+"@skeldjs/events@2.10.1", "@skeldjs/events@^2.10.1":
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/@skeldjs/events/-/events-2.10.1.tgz#c16061efcfb9caf2b6194635043d31185cad9ab1"
+  integrity sha512-0Rl8r+TBJH1hHIihKViWnF+eB/Nv2uAbCAGLdMlDWlLK5Phx2faHY+vhNCe0zxEgbonOy7y628DmBreQivBwNA==
 
-"@skeldjs/protocol@2.9.2", "@skeldjs/protocol@^2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@skeldjs/protocol/-/protocol-2.9.2.tgz#30cd7f3fe9d0d674d0c021a579348eae9a34ee4c"
-  integrity sha512-uIZJOMbXbxL8oMpvIU8FLXpWQf5h+Hpw8vUCbsX3wyhgqdEEPfkRkI6Ib7IaT4ppme12TuD05SiHMlWrG9SqLg==
+"@skeldjs/protocol@2.10.1", "@skeldjs/protocol@^2.10.1":
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/@skeldjs/protocol/-/protocol-2.10.1.tgz#c5e462e79e1e610fa81a6308f2a783805ddcf4ef"
+  integrity sha512-ZJZDQYhnSXXYIFAJYqXMZ7tOa0MrFTAMl/mt3myNyFy8PFZBCjo+LB5LbaWBuwt+yq6fzVBUK26K4YQ/J4SbNg==
   dependencies:
-    "@skeldjs/constant" "2.9.2"
-    "@skeldjs/util" "2.9.2"
+    "@skeldjs/constant" "2.10.1"
+    "@skeldjs/util" "2.10.1"
 
-"@skeldjs/util@2.9.2", "@skeldjs/util@^2.9.2":
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/@skeldjs/util/-/util-2.9.2.tgz#846cfc81ae529589ed17d8e534b666920175ce31"
-  integrity sha512-XCod1YvHFZvPFqN+sSIte2ALDCN9WOqxmsTt9WhdHpz8wDVcItJjljJ32eTQessC4U7xuYn1akJE7FRj8YkElg==
+"@skeldjs/util@2.10.1", "@skeldjs/util@^2.10.1":
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/@skeldjs/util/-/util-2.10.1.tgz#c2118b8f25aad6df89a29a644f7121c7ead5482e"
+  integrity sha512-nzNe/vch1kThOyFLgjLTvlRAwOOX68SiC8bLjIc5AO5zGrslLv7/Os4r0s3PlTt3j2RcDbWQZDMKBLfpsk4zBg==
 
 "@types/chalk@^2.2.0":
   version "2.2.0"

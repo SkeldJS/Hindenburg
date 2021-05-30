@@ -87,15 +87,15 @@ export class Room extends Hostable {
 
         this.on("player.setname", setname => {
             this.logger.info(
-                "Player %s set their name to %s.",
-                fmtPlayer(setname.player), setname.name
+                "Player %s changed their name from %s to %s.",
+                fmtPlayer(setname.player), setname.oldName, setname.newName
             );
         });
         
         this.on("player.setcolor", setcolor => {
             this.logger.info(
-                "Player %s set their color to %s.",
-                fmtPlayer(setcolor.player), Color[setcolor.color]
+                "Player %s changed their color from %s to %s.",
+                fmtPlayer(setcolor.player), Color[setcolor.oldColor], Color[setcolor.newColor]
             );
         });
     }
@@ -263,6 +263,9 @@ export class Room extends Hostable {
     async handleRemoteJoin(client: Client) {
         const player = await super.handleJoin(client.clientid);
 
+        if (!player)
+            return;
+
         if (!this.host)
             await this.setHost(player);
 
@@ -273,7 +276,7 @@ export class Room extends Hostable {
                 new JoinGameMessage(
                     this.code,
                     client.clientid,
-                    this.host.id
+                    this.host!.id
                 )
             ]);
 
@@ -292,7 +295,7 @@ export class Room extends Hostable {
                             new JoinedGameMessage(
                                 this.code,
                                 client.clientid,
-                                this.host.id,
+                                this.host!.id,
                                 [...this.clients]
                                     .map(([, client]) => client.clientid)
                             )
@@ -323,7 +326,7 @@ export class Room extends Hostable {
                     new JoinedGameMessage(
                         this.code,
                         client.clientid,
-                        this.host.id,
+                        this.host!.id,
                         [...this.clients]
                             .map(([, client]) => client.clientid)
                     )
@@ -335,7 +338,7 @@ export class Room extends Hostable {
             new JoinGameMessage(
                 this.code,
                 client.clientid,
-                this.host.id
+                this.host!.id
             )
         ]);
         

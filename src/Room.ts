@@ -11,6 +11,7 @@ import {
 import {
     BaseGameDataMessage,
     BaseRootMessage,
+    DataMessage,
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
@@ -26,9 +27,9 @@ import {
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
-import { Code2Int, Int2Code } from "@skeldjs/util";
+import { Code2Int, HazelWriter, Int2Code } from "@skeldjs/util";
 
-import { Hostable, HostableEvents, PlayerData } from "@skeldjs/core";
+import { Hostable, HostableEvents, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
 
 import { Client } from "./Client";
 import { WorkerNode } from "./WorkerNode";
@@ -51,7 +52,7 @@ export class Room extends Hostable {
     anticheat: Anticheat;
 
     constructor(private server: WorkerNode) {
-        super({ doFixedUpdate: false });
+        super();
 
         this.uuid = uuid.v4();
 
@@ -63,6 +64,12 @@ export class Room extends Hostable {
         this.waiting = new Set;
 
         this.anticheat = new Anticheat(this.server, this);
+        
+        if ((this as any)._interval) clearInterval((this as any)._interval);
+        this._interval = setInterval(
+            this.FixedUpdate.bind(this),
+            Hostable.FixedUpdateInterval
+        );
         
         this.logger = winston.createLogger({
             transports: [
@@ -112,6 +119,42 @@ export class Room extends Hostable {
         this.server.emit(event);
 
         return super.emit(event);
+    }
+    
+    async FixedUpdate() {
+        const delta = Date.now() - (this as any).last_fixed_update;
+        (this as any).last_fixed_update = Date.now();
+        for (const [, component] of this.netobjects) {
+            if (
+                component
+            ) {
+                component.FixedUpdate(delta / 1000);
+                if (component.dirtyBit) {
+                    component.PreSerialize();
+                    const writer = HazelWriter.alloc(0);
+                    if (component.Serialize(writer, false)) {
+                        this.stream.push(
+                            new DataMessage(component.netid, writer.buffer)
+                        );
+                    }
+                    component.dirtyBit = 0;
+                }
+            }
+        }
+
+        const ev = await this.emit(
+            new RoomFixedUpdateEvent(
+                this,
+                this.stream
+            )
+        );
+
+        if (this.stream.length) {
+            const stream = this.stream;
+            this.stream = [];
+
+            if (!ev.canceled) await this.broadcast(stream);
+        }
     }
 
     async destroy() {

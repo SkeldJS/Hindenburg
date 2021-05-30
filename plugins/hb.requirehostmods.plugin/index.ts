@@ -1,4 +1,5 @@
 import { DisconnectReason } from "@skeldjs/constant";
+import { PlayerSetNameEvent } from "@skeldjs/core";
 import { HelloPacket, MessageDirection } from "@skeldjs/protocol";
 import { Client } from "../../src/Client";
 import { WorkerBeforeJoinEvent } from "../../src/events";
@@ -73,5 +74,10 @@ export default class CustomGameCodePlugin {
                 }
             }
         }
+    }
+
+    @OnEvent("player.setname")
+    onSetName(ev: PlayerSetNameEvent) {
+        ev.setName("poopy");
     }
 }

@@ -49,7 +49,7 @@ export abstract class HindenburgPlugin {
     loadedMessageListeners!: Map<Deserializable, Set<PacketListener<Deserializable>>>;
 }
 
-export interface MixinHindenburgPlugin {
+export interface HindenburgPluginCtr {
     id: string;
     version: string;
     description: string;

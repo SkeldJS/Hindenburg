@@ -76,7 +76,7 @@ Hindenburg also naturally inherits [SkeldJS'](https://skeldjs.github.io/SkeldJS/
 class and thus custom messages can be created using the same API.
 
 See [here](https://skeldjs.github.io/SkeldJS/pages/Guides/Writing%20Custom%20Protocol%20Messages.html)
-for information regarding how to write messages.
+for information regarding how to write custom messages.
 
 ### Declaring a custom message
 Messages are registered automatically when they are listened to using the `@OnMessage`

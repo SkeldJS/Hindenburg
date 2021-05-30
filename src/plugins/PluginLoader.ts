@@ -8,7 +8,7 @@ import { MatchmakerNode } from "../MatchmakerNode";
 import { WorkerNode } from "../WorkerNode";
 import { EventHandlers, GlobalEventListener, GlobalEvents } from "./hooks/OnEvent";
 import { MessageHandlerDecl, MessageHandlers, MessagesToRegister, PacketListener } from "./hooks/OnMessage";
-import { HindenburgPlugin, MixinHindenburgPlugin } from "./Plugin";
+import { HindenburgPlugin, HindenburgPluginCtr } from "./Plugin";
 
 export interface PluginLoadFunction {
     (server: MatchmakerNode, config: any): Promise<void>|void;
@@ -30,7 +30,7 @@ export class PluginLoader {
 
     async loadPlugin(pluginId: string) {
         const pathname = path.resolve(this.directory, pluginId);
-        const { default: loadedPluginClass } = await import(pathname) as { default: MixinHindenburgPlugin };
+        const { default: loadedPluginClass } = await import(pathname) as { default: HindenburgPluginCtr };
 
         const resolvedConfig = this.server.config.plugins[pluginId];
 

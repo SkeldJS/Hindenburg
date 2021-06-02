@@ -22,7 +22,8 @@ the lines of this:
     description: "", // A short summary of what your plugin does.
     defaultConfig: {}, // The default configuration for your plugin.
     clientSide: false, // Whether this plugin works together with a mod on the client.
-    loadBalancer: false // Whether this plugin works on the load balancer.
+    loadBalancer: false, // Whether this plugin works on the load balancer.
+    order: "none"
 })
 export default class {
     constructor(
@@ -31,6 +32,17 @@ export default class {
     ) {}
 }
 ```
+
+### DeclarePlugin options
+|      Field      |  Type   |                                      Description                                       | Default  |
+|-----------------|---------|----------------------------------------------------------------------------------------|----------|
+| `id`            | string  | A unique plugin identifier.                                                            | _None_   |
+| `version`       | string  | The current version of the plugin.                                                     | _None_   |
+| `description`   | string  | A short summary of what your plugin does.                                              | _None_   |
+| `defaultConfig` | object  | Default configuration object ofr your plugin.                                          | _None_   |
+| `clientSide`    | boolean | Whether this plugin works together with a client mod.                                  | `false`  |
+| `loadBalancer`  | boolean | Whether this plugin works on the load balancer.                                        | `false`  |
+| `order`         | string  | The order at which this plugin is loaded, `"first"`, `"last"`, or `"none"`             | `"none"` |
 
 ## Events
 Plugins use a short and simple syntax in order to declare event listeners. Using

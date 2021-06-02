@@ -4,14 +4,13 @@ import { Int2Code } from "@skeldjs/util";
 import {
     LoadBalancerBeforeCreateEvent,
     LoadBalancerBeforeJoinEvent,
-    WorkerBeforeCreateEvent,
-    WorkerBeforeJoinEvent,
-} from "../../../src/events";
+    WorkerBeforeCreateEvent
+} from "../../src/events";
 
-import { LoadBalancerNode } from "../../../src/LoadBalancerNode";
-import { WorkerNode } from "../../../src/WorkerNode";
-import { DeclarePlugin } from "../../../src/plugins/hooks/DeclarePlugin";
-import { OnEvent } from "../../../src/plugins/hooks/OnEvent";
+import { LoadBalancerNode } from "../../src/LoadBalancerNode";
+import { WorkerNode } from "../../src/WorkerNode";
+import { DeclarePlugin } from "../../src/plugins/hooks/DeclarePlugin";
+import { OnEvent } from "../../src/plugins/hooks/OnEvent";
 import {
     GameOptions,
     HostGameMessage, 
@@ -20,14 +19,14 @@ import {
     ReliablePacket,
     UnreliablePacket
 } from "@skeldjs/protocol";
-import { fmtClient } from "../../../src/util/format-client";
-import { OnMessage } from "../../../src/plugins/hooks/OnMessage";
-import { Client } from "../../../src/Client";
+import { fmtClient } from "../../src/util/format-client";
+import { OnMessage } from "../../src/plugins/hooks/OnMessage";
+import { Client } from "../../src/Client";
 
 @DeclarePlugin({
     id: "hb.noloadbalancer.plugin",
     version: "1.0.0",
-    description: "Allows players to assign their own game code to their games.",
+    description: "Allows hosting the loadbalancer and worker nodes in the same process and on the same port.",
     defaultConfig: {},
     clientSide: false,
     loadBalancer: true,
@@ -38,19 +37,19 @@ export default class CustomGameCodePlugin {
 
     constructor(public readonly server: LoadBalancerNode|WorkerNode, public readonly config: any) {
         if (server.isLoadBalancer()) {
+            // Create a fake worker node that will be behind the load balancer.
             this.fakeWorker = new WorkerNode(server.config, 0, server.pluginLoader.pluginDirectory);
-            this.fakeWorker.socket = this.server.socket;
+            this.fakeWorker.socket = this.server.socket; // (uses the same socket)
         }
     };
 
     async onPluginLoad() {
-        if (this.fakeWorker) {
+        if (this.fakeWorker) { 
             await this.fakeWorker.pluginLoader.loadFromDirectory();
-            this.fakeWorker.on("worker.beforejoin", this.workerBeforeJoin.bind(this));
         }
     }
 
-    createFakeClient(client: Client) {
+    createFakeClient(client: Client) { // Clone the client for the fake worker.
         const fakeClient = new Client(
             this.fakeWorker,
             client.remote,
@@ -72,7 +71,8 @@ export default class CustomGameCodePlugin {
     @OnEvent("loadbalancer.beforecreate")
     async loadBalancerBeforeCreate(ev: LoadBalancerBeforeCreateEvent) {
         ev.cancel();
-        
+
+        // Worker node logic
         if (this.fakeWorker.config.anticheat.checkSettings && !GameOptions.isValid(ev.gameOptions)) {
             this.fakeWorker.logger.warn("%s created room with invalid settings.", fmtClient(ev.client));
 
@@ -121,13 +121,7 @@ export default class CustomGameCodePlugin {
         }
         ev.cancel();
     }
-
-    async workerBeforeJoin(ev: WorkerBeforeJoinEvent) {
-        if (ev.foundRoom) {
-            // ev.client.redirectedTo = "fakeworker";
-        }
-    }
-
+    
     @OnMessage(UnreliablePacket)
     async onUnreliablePacket(message: UnreliablePacket, direction: MessageDirection, sender: Client) {
         if (!this.server.isLoadBalancer())
@@ -148,7 +142,7 @@ export default class CustomGameCodePlugin {
             this.fakeWorker.decoder.emitDecodedSerial(
                 new UnreliablePacket(
                     childrenToPass
-                ), direction, fakeWorkerClient);
+                ), direction, fakeWorkerClient); // Pass messages straight through to the worker node
         }
     }
 
@@ -173,7 +167,7 @@ export default class CustomGameCodePlugin {
                 new ReliablePacket(
                     message.nonce,
                     childrenToPass
-                ), direction, fakeWorkerClient);
+                ), direction, fakeWorkerClient); // Pass messages straight through to the worker node
         }
     }
 }

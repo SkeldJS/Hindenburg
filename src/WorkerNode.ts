@@ -237,8 +237,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                     return message.cancel();
                 }
             }
-            client.room.decoder.emitDecoded(message, direction, client);
-            message.cancel();
+            await client.room.decoder.emitDecoded(message, direction, client);
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, client) => {
@@ -257,8 +256,11 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                 return;
 
             for (const child of children) {
-                client.room.decoder.emitDecoded(child, direction, client);
+                await client.room.decoder.emitDecoded(child, direction, client);
             }
+
+            // Must be filtered again as it went through the room's decoder
+            const finalChildren = children.filter(child => !child.canceled && !(child as RpcMessage).data?.canceled);
 
             for (const [ , cl ] of client.room.clients) {
                 if (cl === client)
@@ -270,7 +272,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                         [
                             new GameDataMessage(
                                 client.room.code,
-                                children
+                                finalChildren
                             )
                         ]
                     )
@@ -468,7 +470,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
         }
 
         try {
-            await this.emitDecoded(parsed, MessageDirection.Serverbound, client);
+            await this.decoder.emitDecodedSerial(parsed, MessageDirection.Serverbound, client);
         } catch (e) {
             this.logger.error("%s", e.stack);
         }

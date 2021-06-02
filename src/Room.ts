@@ -115,10 +115,10 @@ export class Room extends Hostable {
         return this.state === GameState.Destroyed;
     }
     
-    emit<Event extends HostableEvents[keyof HostableEvents]>(event: Event): Promise<Event> {
-        this.server.emit(event);
+    async emit<Event extends HostableEvents[keyof HostableEvents]>(event: Event): Promise<Event> {
+        await super.emit(event);
 
-        return super.emit(event);
+        return this.server.emit(event);
     }
     
     async FixedUpdate() {

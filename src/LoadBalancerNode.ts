@@ -124,7 +124,7 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
         }
 
         try {
-            await this.emitDecoded(parsed, MessageDirection.Serverbound, client);
+            await this.decoder.emitDecodedSerial(parsed, MessageDirection.Serverbound, client);
         } catch (e) {
             this.logger.error("%s", e.stack);
         }

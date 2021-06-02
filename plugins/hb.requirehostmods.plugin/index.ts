@@ -1,12 +1,7 @@
-import { DisconnectReason } from "@skeldjs/constant";
-import { PlayerSetNameEvent } from "@skeldjs/core";
-import { HelloPacket, MessageDirection } from "@skeldjs/protocol";
-import { Client } from "../../src/Client";
 import { WorkerBeforeJoinEvent } from "../../src/events";
 
 import { DeclarePlugin } from "../../src/plugins/hooks/DeclarePlugin";
 import { OnEvent } from "../../src/plugins/hooks/OnEvent";
-import { OnMessage } from "../../src/plugins/hooks/OnMessage";
 import { WorkerNode } from "../../src/WorkerNode";
 
 @DeclarePlugin({

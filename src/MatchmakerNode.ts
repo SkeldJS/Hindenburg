@@ -333,41 +333,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
         void parsed, client;
     }
 
-    async emitDecoded(
-        message: Serializable,
-        direction: MessageDirection,
-        sender: Client
-    ) {
-        if (message.children) {
-            for (const child of message.children) {
-                await this.emitDecoded(child, direction, sender);
-            }
-        }
-        
-        await this.emitPacket(message, direction, sender);
-    }
-
-    private async emitPacket(
-        message: Serializable,
-        direction: MessageDirection,
-        sender: Client
-    ) {
-        const classes = this.decoder.types.get(message.type);
-
-        if (classes) {
-            const messageClass = classes.get(message.tag);
-
-            if (!messageClass)
-                return;
-
-            const listeners = this.decoder.getListeners(messageClass);
-
-            for (const listener of listeners) {
-                await listener(message, direction, sender);
-            }
-        }
-    }
-
     async onMessage(message: Buffer, remote: dgram.RemoteInfo) {
         const reader = HazelReader.from(message);
         
@@ -406,7 +371,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                 }
 
                 try {
-                    await this.emitDecoded(parsed, MessageDirection.Serverbound, client);
+                    await this.decoder.emitDecodedSerial(parsed, MessageDirection.Serverbound, client);
                 } catch (e) {
                     this.logger.error("%s", e.stack);
                 }

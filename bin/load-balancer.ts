@@ -17,7 +17,7 @@ import { makeConfig } from "./util/makeConfig";
         const externalIp = await getExternalIp();
         const internalIp = await getInternalIp();
 
-        const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(process.cwd(), "./plugins"));
+        const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(__dirname, "../plugins"));
         console.log("\u001b[2J\u001b[0;0H");
         console.log(
             chalk.redBright(`

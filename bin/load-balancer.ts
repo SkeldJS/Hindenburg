@@ -17,7 +17,7 @@ import { makeConfig } from "./util/makeConfig";
         const externalIp = await getExternalIp();
         const internalIp = await getInternalIp();
 
-        const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(__dirname, "../plugins"));
+        const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(process.cwd(), "./plugins"));
         console.log("\u001b[2J\u001b[0;0H");
         console.log(
             chalk.redBright(`
@@ -45,6 +45,7 @@ import { makeConfig } from "./util/makeConfig";
         await server.beginListen();
         await server.pluginLoader.loadFromDirectory();
     } catch (e) {
+        console.log(e);
         if (e.code === "ENOENT") {
             console.log("No config file detected, writing default config..");
     

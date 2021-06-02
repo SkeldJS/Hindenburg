@@ -5,7 +5,6 @@ import { sleep } from "@skeldjs/util";
 import { WorkerNode } from "../src";
 import { MessageOpcode } from "./MessageOpcode";
 import { getExternalIp } from "./util/getExternalIp";
-import { getInternalIp } from "./util/getInternalIp";
 import { makeConfig } from "./util/makeConfig";
 
 (async () => {
@@ -16,7 +15,7 @@ import { makeConfig } from "./util/makeConfig";
     const externalIp = await getExternalIp();
     const config = JSON.parse(data);
 
-    const server = new WorkerNode(makeConfig(config, externalIp), parseInt(process.env.NODE_ID), path.resolve(__dirname, "../plugins"));
+    const server = new WorkerNode(makeConfig(config, externalIp), parseInt(process.env.NODE_ID), path.resolve(process.cwd(), "./plugins"));
 
     await server.beginListen();
     await server.pluginLoader.loadFromDirectory();

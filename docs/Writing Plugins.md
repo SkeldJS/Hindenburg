@@ -17,12 +17,12 @@ the lines of this:
 
 ```ts
 @DeclarePlugin({
-    id: "", // The unique plugin identifier.
-    version: "", // The current version of the plugin.
-    description: "", // A short summary of what your plugin does.
-    defaultConfig: {}, // The default configuration for your plugin.
-    clientSide: false, // Whether this plugin works together with a mod on the client.
-    loadBalancer: false, // Whether this plugin works on the load balancer.
+    id: "",
+    version: "",
+    description: "",
+    defaultConfig: {},
+    clientSide: false,
+    loadBalancer: false,
     order: "none"
 })
 export default class {

@@ -22,14 +22,22 @@ export default class CustomGameCodePlugin {
 
         if (this.server.config.reactor) {
             const host = ev.foundRoom.clients.get(ev.foundRoom.hostid);
-            
-            if (!host?.mods) // Exit quitely if the host is not using reactor.
-                return;
+
+            if (!host?.mods) {
+                if (ev.client.mods?.length) { // Check if the client has mods while the host does not.
+                    return ev.client.joinError(
+                        "Invalid mods loaded for this room: ",
+                        ev.client.mods.map(mod => mod.id).join(", ")
+                    );
+                } else {
+                    return;
+                }
+            }
 
             if (!ev.client.mods) { // Exit if the client is not using reactor.
                 ev.cancel();
                 return ev.client.joinError(
-                    "Missing required mods: %s.",
+                    "Missing required mods for this room: %s.",
                     host.mods.map(mod => mod.id).join(", ")
                 );
             }

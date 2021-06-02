@@ -30,12 +30,12 @@ export interface PluginMetadata {
     /**
      * Whether this plugin requires or works with a client-side mod.
      */
-    clientSide: boolean;
+    clientSide?: boolean;
 
     /**
      * Whether this plugin can be applied to the load balancer.
      */
-    loadBalancer: boolean;
+    loadBalancer?: boolean;
 
     /**
      * The order at which this plugin should be loaded.

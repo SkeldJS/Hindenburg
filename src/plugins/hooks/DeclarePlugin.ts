@@ -1,12 +1,10 @@
-import { EventEmitter } from "@skeldjs/events";
-import { Deserializable, PacketDecoder, Serializable } from "@skeldjs/protocol";
-import { Client } from "../../Client";
+import { Deserializable } from "@skeldjs/protocol";
 
 import { LoadBalancerNode } from "../../LoadBalancerNode";
 import { WorkerNode } from "../../WorkerNode";
 import { HindenburgPlugin, PluginMetadata } from "../Plugin";
-import { EventHandlers, GlobalEventListener, GlobalEvents } from "./OnEvent";
-import { MessageHandlers as MessageHandlers, PacketListener, MessagesToRegister, MessageHandlerDecl } from "./OnMessage";
+import { GlobalEventListener, GlobalEvents } from "./OnEvent";
+import { PacketListener} from "./OnMessage";
 
 export interface DeclarePlugin {
     server: LoadBalancerNode|WorkerNode;

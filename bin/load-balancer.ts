@@ -11,16 +11,15 @@ import { makeConfig } from "./util/makeConfig";
 (async () => {
     const config_path = path.resolve(process.cwd(), "./config.json");
 
-    try {
-        const config = JSON.parse(await fs.readFile(config_path, "utf8"));
+    const config = JSON.parse(await fs.readFile(config_path, "utf8"));
 
-        const externalIp = await getExternalIp();
-        const internalIp = await getInternalIp();
+    const externalIp = await getExternalIp();
+    const internalIp = await getInternalIp();
 
-        const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(__dirname, "../plugins"));
-        console.log("\u001b[2J\u001b[0;0H");
-        console.log(
-            chalk.redBright(`
+    const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(__dirname, "../plugins"));
+    console.log("\u001b[2J\u001b[0;0H");
+    console.log(
+        chalk.redBright(`
                #Q8g&&&&gQ#
               &qqqqqqqqqqqq0#
              gqqq5&Q##
@@ -42,62 +41,6 @@ import { makeConfig } from "./util/makeConfig";
             ${chalk.red("QQQQQQB       QQQQ#")}
             ${chalk.red("##BB##")}`));
 
-        await server.beginListen();
-        await server.pluginLoader.loadFromDirectory();
-    } catch (e) {
-        console.log(e);
-        if (e.code === "ENOENT") {
-            console.log("No config file detected, writing default config..");
-    
-            const config = `{
-    "$schema": "./misc/config.schema.json",
-    "reactor": false,
-    "versions": ["2021.4.2"],
-    "anticheat": {
-        "checkSettings": true,
-        "maxConnectionsPerIp": 0,
-        "checkObjectOwnership": true,
-        "hostChecks": true,
-        "malformedPackets": false,
-        "invalidFlow": false,
-        "invalidName": true,
-        "massivePackets": {
-            "penalty": "disconnect",
-            "strikes": 3
-        }
-    },
-    "cluster": {
-        "name": "Capybara",
-        "ip": "127.0.0.1",
-        "ports": [
-            22123
-        ]
-    },
-    "loadbalancer": {
-        "clusters": [
-            {
-                "name": "Capybara",
-                "ip": "127.0.0.1",
-                "ports": [
-                    22123
-                ]
-            }
-        ],
-        "ip": "127.0.0.1",
-        "port": 22023
-    },
-    "redis": {
-        "host": "127.0.0.1",
-        "port": 6379
-    },
-    "plugins": {}
-}`;
-    
-            await fs.writeFile(config_path, config, "utf8");
-            
-            console.log("Wrote default config file, please restart the program to continue.");
-        } else {
-            throw e;
-        }
-    }
+    await server.beginListen();
+    await server.pluginLoader.loadFromDirectory();
 })();

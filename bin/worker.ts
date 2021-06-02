@@ -5,7 +5,6 @@ import { sleep } from "@skeldjs/util";
 import { WorkerNode } from "../src";
 import { MessageOpcode } from "./MessageOpcode";
 import { getExternalIp } from "./util/getExternalIp";
-import { getInternalIp } from "./util/getInternalIp";
 import { makeConfig } from "./util/makeConfig";
 
 (async () => {

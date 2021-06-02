@@ -1,6 +1,7 @@
 import { EventEmitter } from "@skeldjs/events";
 import { Deserializable } from "@skeldjs/protocol";
 import fs from "fs/promises";
+import importFrom from "import-from";
 import path from "path";
 import { LoadBalancerNode } from "../LoadBalancerNode";
 
@@ -8,7 +9,70 @@ import { MatchmakerNode } from "../MatchmakerNode";
 import { WorkerNode } from "../WorkerNode";
 import { EventHandlers, GlobalEventListener, GlobalEvents } from "./hooks/OnEvent";
 import { MessageHandlerDecl, MessageHandlers, MessagesToRegister, PacketListener } from "./hooks/OnMessage";
-import { HindenburgPlugin, HindenburgPluginCtr } from "./Plugin";
+
+export type PluginLoadOrder = "last"|"first"|"none";
+
+export interface PluginMetadata {
+    /**
+     * The unique identifier for this plugin. (Usually reverse domain name format, e.g. com.example.mypackage)
+     */
+    id: string;
+
+    /**
+     * The version of this plugin.
+     */
+    version: string;
+
+    /**
+     * A short summary of this plugin.
+     */
+    description: string;
+
+    /**
+     * Default configuration for this plugin.
+     */
+    defaultConfig: any;
+
+    /**
+     * Whether this plugin requires or works with a client-side mod.
+     */
+    clientSide?: boolean;
+
+    /**
+     * Whether this plugin can be applied to the load balancer.
+     */
+    loadBalancer?: boolean;
+
+    /**
+     * The order at which this plugin should be loaded.
+     */
+    order?: PluginLoadOrder;
+}
+
+export abstract class HindenburgPlugin {
+    meta!: PluginMetadata;
+
+    constructor(public readonly server: LoadBalancerNode|WorkerNode, public readonly config?: object) {}
+
+    abstract onPluginLoad?(): void;
+    abstract onPluginUnload?(): void;
+    
+    registeredMessages!: Set<Deserializable>;
+    loadedEventListeners!: Map<keyof GlobalEvents, Set<GlobalEventListener>>;
+    loadedMessageListeners!: Map<Deserializable, Set<PacketListener<Deserializable>>>;
+}
+
+export interface HindenburgPluginCtr {
+    id: string;
+    version: string;
+    description: string;
+    defaultConfig: any;
+    clientSide: boolean;
+    loadBalancer: boolean;
+    order?: PluginLoadOrder;
+
+    new(server: LoadBalancerNode|WorkerNode, config?: object): HindenburgPlugin;
+}
 
 export interface PluginLoadFunction {
     (server: MatchmakerNode, config: any): Promise<void>|void;
@@ -26,6 +90,12 @@ export class PluginLoader {
         public readonly pluginDirectory: string
     ) {
         this.plugins = new Map;
+    }
+
+    async resolvePluginList(pluginId: string) {
+        const packageJson = await fs.readFile(
+            path.resolve(this.pluginDirectory, "package.json")
+        );
     }
 
     async loadPlugin(loadedPluginClass: HindenburgPluginCtr) {
@@ -134,11 +204,23 @@ export class PluginLoader {
         const filenames = await fs.readdir(this.pluginDirectory);
         const pluginsToLoad: HindenburgPluginCtr[] = [];
 
+        try {
+            const packageJson = JSON.parse(
+                await fs.readFile(
+                    path.resolve(this.pluginDirectory, "package.json"),
+                    "utf8"
+                )
+            );
+
+            filenames.push(...Object.keys(packageJson.dependencies));
+        } catch (e) {
+            void e;
+        }
+
         for (const filename of filenames) {
-            if (/\.plugin(\.(t|j)s)?$/.test(filename)) {
+            if (filename.startsWith("hbplugin-")) {
                 try {
-                    const pathname = path.resolve(this.pluginDirectory, filename);
-                    const { default: loadedPluginClass } = await import(pathname) as { default: HindenburgPluginCtr };
+                    const { default: loadedPluginClass } = importFrom(this.pluginDirectory, filename) as { default: HindenburgPluginCtr };
 
                     pluginsToLoad.push(loadedPluginClass);
                 } catch (e) {

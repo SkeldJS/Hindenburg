@@ -87,9 +87,9 @@ git clone https://github.com/edqx/Hindenburg/
 
 yarn install
 
-yarn build
+yarn setup
 
-yarn start:load-balancer
+yarn build
 ```
 
 For running the first time without a config, Hindenburg will auto-generate
@@ -102,6 +102,23 @@ change the ip addresses in the config to `auto` to automatically discover your s
 public ip address and use that. Relevant fields: [here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#clusterip),
 [here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#loadbalancerip)
 and [here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#loadbalancerclusters)
+
+### Starting Hindenburg
+
+Both the load balancer and the cluster nodes need to be started. You can use a
+program like [**pm2**](https://pm2.keymetrics.io/) to run both of these processes
+simultaneously, with the added benefit of automatically restarting them if they
+were to crash, one might call that, a [_Hindenburg Disaster_](https://en.wikipedia.org/wiki/Hindenburg_disaster)
+
+To start the load balancer process (after building):
+```
+yarn start:load-balancer
+```
+
+To start the cluster node (after building):
+```
+yarn start:cluster
+```
 
 ## Connecting
 

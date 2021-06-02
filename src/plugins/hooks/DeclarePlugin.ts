@@ -2,7 +2,7 @@ import { Deserializable } from "@skeldjs/protocol";
 
 import { LoadBalancerNode } from "../../LoadBalancerNode";
 import { WorkerNode } from "../../WorkerNode";
-import { HindenburgPlugin, PluginMetadata } from "../Plugin";
+import { HindenburgPlugin, PluginMetadata } from "../PluginLoader";
 import { GlobalEventListener, GlobalEvents } from "./OnEvent";
 import { PacketListener} from "./OnMessage";
 

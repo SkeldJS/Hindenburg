@@ -8,8 +8,8 @@ const chalk = new ch.Instance({ level: 2 });
 export function fmtPlayer(player?: PlayerData) {
 	if (!player) return chalk.grey("<No Player>");
 
-	const colour = player.data ? player.data.color : Color.Grey;
-	const name = player.data ? player.data.name || "<No Name>" : "<No Data>";
+	const colour = player.info ? player.info.color : Color.Grey;
+	const name = player.info ? player.info.name || "<No Name>" : "<No Data>";
 	const id = player.id || "<No ID>";
 
 	const consoleClr: ch.Chalk = ColorCodes[colour as keyof typeof ColorCodes]?.hex

@@ -23,19 +23,16 @@ export class PluginLoader {
 
     constructor(
         public readonly server: MatchmakerNode,
-        public readonly directory: string
+        public readonly pluginDirectory: string
     ) {
         this.plugins = new Map;
     }
 
-    async loadPlugin(pluginId: string) {
-        const pathname = path.resolve(this.directory, pluginId);
-        const { default: loadedPluginClass } = await import(pathname) as { default: HindenburgPluginCtr };
-
-        const resolvedConfig = this.server.config.plugins[pluginId];
+    async loadPlugin(loadedPluginClass: HindenburgPluginCtr) {
+        const resolvedConfig = this.server.config.plugins[loadedPluginClass.id];
 
         if (resolvedConfig === false) {
-            this.server.logger.warn("Skipping disabled plugin %s.", pluginId);
+            this.server.logger.warn("Skipping disabled plugin %s.", loadedPluginClass.id);
             return false;
         }
             
@@ -134,17 +131,41 @@ export class PluginLoader {
     }
 
     async loadFromDirectory() {
-        const filenames = await fs.readdir(this.directory);
+        const filenames = await fs.readdir(this.pluginDirectory);
+        const pluginsToLoad: HindenburgPluginCtr[] = [];
 
         for (const filename of filenames) {
             if (/\.plugin(\.(t|j)s)?$/.test(filename)) {
                 try {
-                    await this.loadPlugin(filename)
+                    const pathname = path.resolve(this.pluginDirectory, filename);
+                    const { default: loadedPluginClass } = await import(pathname) as { default: HindenburgPluginCtr };
+
+                    pluginsToLoad.push(loadedPluginClass);
                 } catch (e) {
                     this.server.logger.warn("Could not load plugin '%s'", filename);
                     this.server.logger.error("Error: %s", e);
                 }
             }
+        }
+
+        pluginsToLoad.sort((a, b) => {
+            if (a.order === "first" && b.order !== "first") {
+                return -1;
+            }
+            if (b.order === "first" && a.order !== "first") {
+                return 1;
+            }
+            if (a.order === "last" && b.order !== "last") {
+                return 1;
+            }
+            if (b.order === "last" && a.order !== "last") {
+                return -1;
+            }
+            return 0;
+        });
+
+        for (const pluginClass of pluginsToLoad) {
+            await this.loadPlugin(pluginClass);
         }
     }
 }

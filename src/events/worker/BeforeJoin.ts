@@ -22,7 +22,7 @@ export class WorkerBeforeJoinEvent extends CancelableEvent {
         this.foundRoom = foundRoom;
     }
 
-    setRoom(room?: Room) {
+    setFoundRoom(room?: Room) {
         this.foundRoom = room;
     }
 }

@@ -21,6 +21,7 @@ export function DeclarePlugin(info: PluginMetadata) {
             static defaultConfig = info.defaultConfig;
             static clientSide = info.clientSide;
             static loadBalancer = info.loadBalancer;
+            static order = info.order || "none";
 
             server: LoadBalancerNode|WorkerNode;
             config: any;

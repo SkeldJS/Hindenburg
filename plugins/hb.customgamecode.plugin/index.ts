@@ -58,8 +58,7 @@ export default class CustomGameCodePlugin {
 
             const [ cluster, nodePort ] = this.server.selectRandomNode(); // Pick a random node & redirect (like done when hosting a game).
 
-            ev.cancel();
-            await this.server.redirectClient(ev.client, cluster.ip, nodePort);
+            ev.setRedirect(cluster.ip, nodePort);
         }
     }
 
@@ -80,6 +79,6 @@ export default class CustomGameCodePlugin {
         const gameOptions = new GameOptions(parsedGameOptions);
 
         const createdRoom = await this.server.createRoom(ev.gameCode, gameOptions);
-        ev.setRoom(createdRoom);
+        ev.setFoundRoom(createdRoom);
     }
 }

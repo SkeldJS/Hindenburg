@@ -87,15 +87,10 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                 }
             }
             
-            const chars = [];
-            for (let i = 0; i < 6; i++) {
-                chars.push(~~(Math.random() * 26) + 65);
-            }
-            const name = String.fromCharCode(...chars);
-            const code = Code2Int(name);
+            const roomCode = this.generateCode();
 
             const ev = await this.emit(
-                new WorkerBeforeCreateEvent(client, message.options, code)
+                new WorkerBeforeCreateEvent(client, message.options, roomCode)
             );
 
             if (!ev.canceled) {
@@ -103,7 +98,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                 
                 this.logger.info(
                     "%s created room %s on %s with %s impostors and %s max players (%s).",
-                    fmtClient(client), name,
+                    fmtClient(client), Int2Code(roomCode),
                     GameMap[message.options.map], message.options.numImpostors, message.options.maxPlayers, room.uuid
                 );
 
@@ -111,7 +106,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                     new ReliablePacket(
                         client.getNextNonce(),
                         [
-                            new HostGameMessage(code)
+                            new HostGameMessage(roomCode)
                         ]
                     )
                 );
@@ -124,7 +119,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
             
             const foundRoom = this.rooms.get(message.code);
 
-            const ev = await this.emit(
+            const ev = await this.emitSerial(
                 new WorkerBeforeJoinEvent(client, message.code, foundRoom)
             );
 
@@ -474,6 +469,15 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
         } catch (e) {
             this.logger.error("%s", e.stack);
         }
+    }
+
+    generateCode() {
+        const chars = [];
+        for (let i = 0; i < 6; i++) {
+            chars.push(~~(Math.random() * 26) + 65);
+        }
+        const name = String.fromCharCode(...chars);
+        return Code2Int(name);
     }
 
     async createRoom(code: number, options: GameOptions) {

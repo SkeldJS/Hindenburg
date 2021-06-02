@@ -37,7 +37,7 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
 
             const [ cluster, nodePort ] = this.selectRandomNode();
 
-            const ev = await this.emit(
+            const ev = await this.emitSerial(
                 new LoadBalancerBeforeCreateEvent(
                     client,
                     message.options,
@@ -60,7 +60,7 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
             
             const parts = address ? address.split(":") : [];
 
-            const ev = await this.emit(
+            const ev = await this.emitSerial(
                 new LoadBalancerBeforeJoinEvent(
                     client,
                     message.code,
@@ -159,6 +159,7 @@ export class LoadBalancerNode extends MatchmakerNode<LoadBalancerNodeEvents & Ma
         });
         this.redis.expire("redirected." + client.remote.address + "." + client.username, 6);
 
+        client.redirectedTo = nodeIp + ":" + nodePort;
         client.send(
             new ReliablePacket(
                 client.getNextNonce(),

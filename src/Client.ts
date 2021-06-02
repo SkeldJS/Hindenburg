@@ -32,10 +32,11 @@ export type ClientEvents = ExtractEventTypes<[
 
 export class Client extends EventEmitter<ClientEvents> {
     identified: boolean;
+    disconnected: boolean;
+    redirectedTo?: string;
+    
     username!: string;
     version!: VersionInfo;
-
-    disconnected: boolean;
 
     private _incr_nonce: number;
     last_nonce: number;

@@ -65,12 +65,6 @@ export class Room extends Hostable {
 
         this.anticheat = new Anticheat(this.server, this);
         
-        if ((this as any)._interval) clearInterval((this as any)._interval);
-        this._interval = setInterval(
-            this.FixedUpdate.bind(this),
-            Hostable.FixedUpdateInterval
-        );
-        
         this.logger = winston.createLogger({
             transports: [
                 new winston.transports.Console({

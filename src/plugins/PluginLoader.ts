@@ -8,7 +8,8 @@ import { LoadBalancerNode } from "../LoadBalancerNode";
 import { MatchmakerNode } from "../MatchmakerNode";
 import { WorkerNode } from "../WorkerNode";
 import { EventHandlers, GlobalEventListener, GlobalEvents } from "./hooks/OnEvent";
-import { MessageHandlerDecl, MessageHandlers, MessagesToRegister, PacketListener } from "./hooks/OnMessage";
+import { MessageHandlerDecl, MessageHandlers, PacketListener } from "./hooks/OnMessage";
+import { MessagesToRegister } from "./hooks/RegisterMessage";
 
 export type PluginLoadOrder = "last"|"first"|"none";
 
@@ -138,9 +139,9 @@ export class PluginLoader {
         const messagesToRegister = loadedPluginClass.prototype[MessagesToRegister] as Set<Deserializable>;
 
         if (messagesToRegister) {
-            for (const message of messagesToRegister) {
-                if (!this.server.decoder.listeners.has(message))
-                    this.server.decoder.register(message);
+            for (const messageClass of messagesToRegister) {
+                this.server.decoder.getListeners(messageClass).clear();
+                this.server.decoder.register(messageClass);
             }
         }
 
@@ -151,7 +152,7 @@ export class PluginLoader {
                 const loadedMessageHandlers: Set<PacketListener<Deserializable>> = new Set;
                 loadedPlugin.loadedMessageListeners.set(messageClass, loadedMessageHandlers);
                 for (const handler of messageHandlers) {
-                    if (handler.options.override) this.server.decoder.listeners.get(messageClass)?.clear();
+                    if (handler.options.override) this.server.decoder.getListeners(messageClass).clear();
                     const fn = (loadedPlugin as any)[handler.propertyName].bind(loadedPlugin) as PacketListener<Deserializable>;
                     this.server.decoder.on(messageClass, fn);
                     loadedMessageHandlers.add(fn);

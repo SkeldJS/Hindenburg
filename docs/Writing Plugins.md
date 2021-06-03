@@ -52,8 +52,8 @@ be unloaded.
 ##### Note: Currently the syntax used for events is slightly more verbose than would be ideal, follow https://github.com/Microsoft/TypeScript/issues/4881 for more information on this.
 
 ### Declaring an event listener
-You can use the `@OnEvent` decorator to mark a function as an event listener for
-a specific event.
+You can use the `@OnEvent` decorator above a method on your plugin class to use
+it for listening to a specific event.
 
 ```ts
 @OnEvent("player.chat")
@@ -62,7 +62,7 @@ onPlayerChat(ev: PlayerChatEvent) {
 }
 ```
 
-### Event to listen to
+### Events to listen to
 A Hindenburg server naturally inherits [all core events from SkeldJS](https://skeldjs.github.io/SkeldJS/pages/Information/Events.html#event-list)
 as well as some additional ones listed below:
 
@@ -91,8 +91,35 @@ See [here](https://skeldjs.github.io/SkeldJS/pages/Guides/Writing%20Custom%20Pro
 for information regarding how to write custom messages.
 
 ### Declaring a custom message
-Messages are registered automatically when they are listened to using the `@OnMessage`
-decorator.
+Custom messages must be registered at the top of your plugin using the
+`@RegisterMeesage` decorator.
+
+For example, using the [skeleton](#skeleton) example from above, we can register
+custom messages to add. Messages that are used in place of default messages will
+overwrite them and clear all of their listeners.
+
+```ts
+@DeclarePlugin({
+    id: "",
+    version: "",
+    description: "",
+    defaultConfig: {},
+    clientSide: false,
+    loadBalancer: false,
+    order: "none"
+})
+@RegisterMessage(MyFavouriteMessage) // Register my favourite message.
+export default class {
+    constructor(
+        public readonly server: LoadBalancerNode|WorkerNode,
+        public readonly config: any
+    ) {}
+}
+```
+
+### Listen to Messages
+You can listen to messages using the `@OnMessage` decorator above a method on your
+plugin class.
 
 ```ts
 @OnMessage(MyFavouriteMessage)

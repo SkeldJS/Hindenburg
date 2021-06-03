@@ -1,8 +1,8 @@
 import { Deserializable, GetSerialized, MessageDirection } from "@skeldjs/protocol";
 import { Client } from "../../Client";
+import { MessagesToRegister } from "./RegisterMessage";
 
 export const MessageHandlers = "HindenburgPacketHandlers";
-export const MessagesToRegister = "HindenburgRegisteredPackets";
 
 export type PacketListener<T extends Deserializable> =
     ((message: GetSerialized<T>, direction: MessageDirection, client: Client) => any);
@@ -19,7 +19,6 @@ export interface MessageHandlerDecl {
 export function OnMessage<T extends Deserializable>(messageClass: T, options: Partial<OnMessageOptions> = {}) {
     return function (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<PacketListener<T>>) {
         target[MessageHandlers] ||= new Map;
-        target[MessagesToRegister] ||= new Set;
 
         let gotListeners: Set<MessageHandlerDecl> = target[MessageHandlers].get(messageClass);
 
@@ -28,13 +27,14 @@ export function OnMessage<T extends Deserializable>(messageClass: T, options: Pa
             target[MessageHandlers].set(messageClass, gotListeners);
         }
 
-        target[MessagesToRegister].add(messageClass);
-        gotListeners.add({
-            propertyName,
-            options: {
-                override: false,
-                ...options
-            }
-        });
+        if (target[MessagesToRegister].has(messageClass)) {
+            gotListeners.add({
+                propertyName,
+                options: {
+                    override: false,
+                    ...options
+                }
+            });
+        }
     }
 }

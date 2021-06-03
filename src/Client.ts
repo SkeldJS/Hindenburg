@@ -176,7 +176,7 @@ export class Client extends EventEmitter<ClientEvents> {
             return;
             
         if (typeof reason === "string" && fmt.length) {
-            return this.disconnect(reason, util.format(reason, ...fmt));
+            return this.disconnect(util.format(reason, ...fmt));
         }
         
         this.room?.handleRemoteLeave(this);
@@ -222,7 +222,7 @@ export class Client extends EventEmitter<ClientEvents> {
             return;
             
         if (typeof reason === "string" && fmt.length) {
-            return this.joinError(reason, util.format(reason, ...fmt));
+            return this.joinError(util.format(reason, ...fmt));
         }
 
         const dcReason = typeof reason === "string"

@@ -1,5 +1,5 @@
 import { SendOption } from "@skeldjs/constant";
-import { BaseRootPacket, HelloPacket, MessageDirection, PacketDecoder } from "@skeldjs/protocol";
+import { BaseRootPacket, HelloPacket } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 
 export class ModdedHelloPacket extends BaseRootPacket {

@@ -5,9 +5,10 @@ import chalk from "chalk";
 import {
     AcknowledgePacket,
     DisconnectPacket,
-    HelloPacket,
     MessageDirection,
-    PacketDecoder, PingPacket, ReliablePacket, Serializable
+    PacketDecoder,
+    ReliablePacket,
+    Serializable
 } from "@skeldjs/protocol";
 
 import { DisconnectReason, SendOption } from "@skeldjs/constant";
@@ -71,12 +72,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
             ReactorHandshakeMessage,
             ReactorModDeclarationMessage
         );
-        
-        this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], (message, direction, client) => {
-            client.received.unshift(message.nonce);
-            client.received.splice(8);
-            client.ack(message.nonce);
-        });
         
         this.decoder.on(ModdedHelloPacket, (message, direction, client) => {
             if (client.identified)
@@ -173,6 +168,7 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
         });
 
         this.decoder.on(AcknowledgePacket, (message, direction, client) => {
+            console.log("acked", message.nonce);
             for (const sent of client.sent) {
                 if (sent.nonce === message.nonce) {
                     sent.acked = true;
@@ -293,11 +289,12 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
                 acked: false
             };
 
-            client.sent.push(sent);
+            client.sent.unshift(sent);
             client.sent.splice(8);
             
             let attempts = 0;
             const interval: NodeJS.Timeout = setInterval(async () => {
+                console.log("is acked?", sent.nonce, sent.acked);
                 if (sent.acked) {
                     return clearInterval(interval);
                 } else {
@@ -362,12 +359,16 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
             if (client) {
                 if (parsed.tag !== SendOption.Acknowledge && "nonce" in parsed) {
                     const reliable = parsed as ReliableSerializable;
-
+                    
                     if (reliable.nonce <= client.last_nonce) {
                         return;
                     }
 
                     client.last_nonce = reliable.nonce;
+
+                    client.received.unshift(reliable.nonce);
+                    client.received.splice(8);
+                    client.ack(reliable.nonce);
                 }
 
                 try {

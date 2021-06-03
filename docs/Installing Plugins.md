@@ -22,8 +22,8 @@ will automatically be loaded by Hindenburg.
 You can configure installed plugins via the [`plugins` config option.](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Configuration.md#plugins).
 
 ## Officially Recognised Plugins
-* [hbplugin-customgamecode](https://github.com/SkeldJS/hbplugin-customgamecode) - A Hindenburg plugin to allow clients to create games with a custom game code.
+* [hbplugin-customgamecode](https://github.com/SkeldJS/hbplugin-customgamecode) - Allow clients to create games with a custom game code.
 
-* [hbplugin-noloadbalancer](https://github.com/SkeldJS/hbplugin-noloadbalancer) - A Hindenburg plugin to remove the need for separate loadbalancer and cluster processes.
+* [hbplugin-noloadbalancer](https://github.com/SkeldJS/hbplugin-noloadbalancer) - Remove the need for separate loadbalancer and cluster processes.
 
-* [hbplugin-requirehostmods](https://github.com/SkeldJS/hbplugin-requirehostmods) - A Hindenburg plugin to require clients joining a room to have the same mods as the host of the room. 
+* [hbplugin-requirehostmods](https://github.com/SkeldJS/hbplugin-requirehostmods) - Require clients joining a room to have the same mods as the host of the room. 

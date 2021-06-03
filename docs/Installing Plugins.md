@@ -19,7 +19,7 @@ You can simply drop the plugin folder or file into your plugins directory and it
 will automatically be loaded by Hindenburg.
 
 ### Configuring Plugins
-You can configure installed plugins via the [`plugins` config option.](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Configuration.md#plugins).
+You can configure installed plugins via the [`plugins` config option](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Configuration.md#plugins).
 
 ## Officially Recognised Plugins
 * [hbplugin-customgamecode](https://github.com/SkeldJS/hbplugin-customgamecode) - Allow clients to create games with a custom game code.

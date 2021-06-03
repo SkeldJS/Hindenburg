@@ -9,7 +9,11 @@ const path = require("path");
 
     const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
 
-    child_process.exec("yarn remove \"" + process.argv[2] + "\"" ,{
+    const packageName = process.argv[2].startsWith("hbplugin-")
+        ? process.argv[2]
+        : "hbplugin-" + process.argv[2];
+
+    child_process.exec("yarn remove \"" + packageName + "\"" ,{
         cwd: pluginsDirectory
     }, (err, stdout, stdin) => {
         if (err) {

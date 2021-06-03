@@ -3,13 +3,17 @@ const path = require("path");
 
 (async () => {
     if (!process.argv[2]) {
-        console.log("Usage: add-plugin <pluginname>");
+        console.log("Usage: add-plugin <pluginid>");
         return;
     }
 
     const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
 
-    child_process.exec("yarn add \"" + process.argv[2] + "\"" ,{
+    const packageName = process.argv[2].startsWith("hbplugin-")
+        ? process.argv[2]
+        : "hbplugin-" + process.argv[2];
+
+    child_process.exec("yarn add \"" + packageName + "\"" ,{
         cwd: pluginsDirectory
     }, (err, stdout, stdin) => {
         if (err) {

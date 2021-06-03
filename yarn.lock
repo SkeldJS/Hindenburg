@@ -55,25 +55,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skeldjs/hindenburg@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@skeldjs/hindenburg@npm:0.0.3"
-  dependencies:
-    "@skeldjs/constant": ^2.10.2
-    "@skeldjs/core": ^2.10.2
-    "@skeldjs/data": ^2.10.2
-    "@skeldjs/events": ^2.10.2
-    "@skeldjs/protocol": ^2.10.2
-    "@skeldjs/util": ^2.10.2
-    chalk: ^4.1.1
-    ioredis: ^4.27.2
-    picomatch: ^2.2.3
-    uuid: ^8.3.2
-    winston: ^3.3.3
-  checksum: 83d1d602070fe1bd29947033b09217adb53e2d8cec1b2be95e165bae22e0cc38b030a91860b9563f4bafbacced086faa26ba5f66f5f204c6bb70d3a27a0928b1
-  languageName: node
-  linkType: hard
-
 "@skeldjs/hindenburg@workspace:*, @skeldjs/hindenburg@workspace:.":
   version: 0.0.0-use.local
   resolution: "@skeldjs/hindenburg@workspace:."
@@ -355,15 +336,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hbplugin-requirehostmods@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "hbplugin-requirehostmods@npm:1.0.1"
-  dependencies:
-    "@skeldjs/hindenburg": ^0.0.3
-  checksum: cbaa6ea41b50b9a82627dccbdfa255be83a5d71b18c66e788157a5be7f2bf3fc56341000d2eef922867ea42fdcccdc4438d30e2ed0fb689cbf0d4ef3557d9b81
-  languageName: node
-  linkType: hard
-
 "import-from@npm:^4.0.0":
   version: 4.0.0
   resolution: "import-from@npm:4.0.0"
@@ -494,14 +466,6 @@ __metadata:
   checksum: 16818720ea7c5872b6af110760dee856c8e4cd79aed1c7a006d076b1cc09eff3ae41ca5019966694c33fbd2e1cc6ea617ab10e4adac6df06556168f13be3fca2
   languageName: node
   linkType: hard
-
-"plugins@workspace:plugins":
-  version: 0.0.0-use.local
-  resolution: "plugins@workspace:plugins"
-  dependencies:
-    hbplugin-requirehostmods: ^1.0.1
-  languageName: unknown
-  linkType: soft
 
 "process-nextick-args@npm:~2.0.0":
   version: 2.0.1

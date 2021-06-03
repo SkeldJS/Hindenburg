@@ -16,14 +16,16 @@ Setup Hindenburg for the first time, installs a default `config.json` and a
 default `plugins`, if they do not already exist.
 
 ### `yarn add-plugin`
-Install a plugin from npm.
+Install a plugin from npm. It automatically prefixes the plugin with `hbplugin-`
+if it does not already.
 
 **Usage:** `yarn add-plugin <pluginname>`
 
 **Example:** `yarn add-plugin hbplugin-requirehostmods`
 
 ### `yarn remove-plugin`
-Remove an installed npm plugin.
+Remove an installed npm plugin. It automatically prefixes the plugin with `hbplugin-`
+if it does not already.
 
 **Usage:** `yarn remove-plugin <pluginname>`
 

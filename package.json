@@ -42,8 +42,5 @@
   },
   "files": [
     "dist"
-  ],
-  "workspaces": [
-    "plugins"
   ]
 }

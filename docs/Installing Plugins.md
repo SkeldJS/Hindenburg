@@ -7,8 +7,8 @@ custom file location. for plugins.
 You can generate a default `plugins` directory with the [`yarn setup`](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Commands.md#yarn-setup) command.
 
 ### Installing Plugins from NPM
-`yarn add-plugin <packagename>` allows you to download Hindenburg plugins that
-are published on npm and install them easily.
+[`yarn add-plugin <packagename>`](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Commands.md#yarn-add-plugin)
+allows you to download Hindenburg plugins that are published on npm and install them easily.
 
 ##### Note: Make sure you trust the plugin that you are installing, and that you spell the plugin name correctly.
 

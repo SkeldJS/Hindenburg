@@ -10,12 +10,15 @@ import { makeConfig } from "./util/makeConfig";
 (async () => {
     if (!process.env.NODE_ID || !process.env.CLUSTER_NAME)
         throw new Error("Please launch this script through the cluster script.");
+        
+    const configFilename = process.env.HINDENBURG_CONFIG || path.resolve(process.cwd(), "config.json");
+    const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
 
-    const data = await fs.readFile(process.env.HINDENBURG_CONFIG || path.resolve(process.cwd(), "config.json"), "utf8");
+    const config = JSON.parse(await fs.readFile(configFilename, "utf8"));
+
     const externalIp = await getExternalIp();
-    const config = JSON.parse(data);
 
-    const server = new WorkerNode(makeConfig(config, externalIp), parseInt(process.env.NODE_ID), path.resolve(__dirname, "../plugins"));
+    const server = new WorkerNode(makeConfig(config, externalIp), parseInt(process.env.NODE_ID), pluginsDirectory);
 
     await server.beginListen();
     await server.pluginLoader.loadFromDirectory();

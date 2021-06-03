@@ -9,14 +9,15 @@ import { makeConfig } from "./util/makeConfig";
 
 
 (async () => {
-    const config_path = process.env.HINDENBURG_CONFIG || path.resolve(process.cwd(), "config.json");
+    const configFilename = process.env.HINDENBURG_CONFIG || path.resolve(process.cwd(), "config.json");
+    const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
 
-    const config = JSON.parse(await fs.readFile(config_path, "utf8"));
+    const config = JSON.parse(await fs.readFile(configFilename, "utf8"));
 
     const externalIp = await getExternalIp();
     const internalIp = await getInternalIp();
 
-    const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(__dirname, "../plugins"));
+    const server = new LoadBalancerNode(makeConfig(config, externalIp), path.resolve(__dirname, pluginsDirectory));
     console.log("\u001b[2J\u001b[0;0H");
     console.log(
         chalk.redBright(`

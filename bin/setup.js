@@ -76,8 +76,10 @@ async function createPlugins() {
 
     }
 }`, "utf8");
-    await child_process.exec("yarn install");
-    console.log("- wrote plugins directory and package.json!");
+        console.log("creating yarn.lock..");
+        await fs.writeFile(path.resolve(pluginsDirectory, "yarn.lock"), "", "utf8");
+        await child_process.exec("yarn install");
+        console.log("- wrote plugins directory, package.json and yarn.lock!");
     }
 }
 

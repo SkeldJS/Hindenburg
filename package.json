@@ -21,7 +21,7 @@
     "@skeldjs/constant": "^2.10.3",
     "@skeldjs/core": "^2.10.3",
     "@skeldjs/data": "^2.10.3",
-    "@skeldjs/events": "^2.10.3",
+    "@skeldjs/events": "^2.10.4",
     "@skeldjs/hindenburg": "workspace:*",
     "@skeldjs/protocol": "^2.10.3",
     "@skeldjs/util": "^2.10.3",

@@ -168,7 +168,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
         });
 
         this.decoder.on(AcknowledgePacket, (message, direction, client) => {
-            console.log("acked", message.nonce);
             for (const sent of client.sent) {
                 if (sent.nonce === message.nonce) {
                     sent.acked = true;
@@ -294,7 +293,6 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
             
             let attempts = 0;
             const interval: NodeJS.Timeout = setInterval(async () => {
-                console.log("is acked?", sent.nonce, sent.acked);
                 if (sent.acked) {
                     return clearInterval(interval);
                 } else {

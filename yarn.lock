@@ -48,10 +48,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skeldjs/events@npm:2.10.3, @skeldjs/events@npm:^2.10.3":
+"@skeldjs/events@npm:2.10.3":
   version: 2.10.3
   resolution: "@skeldjs/events@npm:2.10.3"
   checksum: b0c3f0780af4bb0f4772cf5c8c1430c93914649fb880a42e2544bf0b0571d0578d2315cb4942e3fd0e63eb10ffd0b5729950fa3a57078d051b269e12ce33a63d
+  languageName: node
+  linkType: hard
+
+"@skeldjs/events@npm:^2.10.4":
+  version: 2.10.4
+  resolution: "@skeldjs/events@npm:2.10.4"
+  checksum: 02008fa93e6545fb6c4de8a9a69373e177e0dab44ef1e316122b8e994adcda20e2b866cee8b3b33a41a51335b7b73f655b8ea05d2820b882dd5318e189414b6b
   languageName: node
   linkType: hard
 
@@ -62,7 +69,7 @@ __metadata:
     "@skeldjs/constant": ^2.10.3
     "@skeldjs/core": ^2.10.3
     "@skeldjs/data": ^2.10.3
-    "@skeldjs/events": ^2.10.3
+    "@skeldjs/events": ^2.10.4
     "@skeldjs/hindenburg": "workspace:*"
     "@skeldjs/protocol": ^2.10.3
     "@skeldjs/util": ^2.10.3

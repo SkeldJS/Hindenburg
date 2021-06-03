@@ -1,3 +1,5 @@
+import "./modulePatch";
+
 import path from "path";
 import fs from "fs/promises";
 import { sleep } from "@skeldjs/util";

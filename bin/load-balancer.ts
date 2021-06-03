@@ -1,3 +1,6 @@
+
+import "./modulePatch";
+
 import path from "path";
 import fs from "fs/promises";
 import chalk from "chalk";

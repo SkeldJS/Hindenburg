@@ -1,6 +1,6 @@
 {
   "name": "@skeldjs/hindenburg",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "GPL-3.0-only",
   "main": "dist/src/index.js",
   "scripts": {

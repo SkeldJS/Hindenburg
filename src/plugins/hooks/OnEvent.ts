@@ -12,7 +12,7 @@ export type GlobalEvents =
     & ClientEvents
     & HostableEvents;
 
-export const EventHandlers = Symbol("EventHandlers");
+export const EventHandlers = "HindenburgEventHandlers";
 
 export type GlobalEventListener<key extends keyof GlobalEvents = keyof GlobalEvents> = (ev: GlobalEvents[key]) => any;
 

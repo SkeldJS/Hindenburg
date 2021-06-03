@@ -1,8 +1,8 @@
 import { Deserializable, GetSerialized, MessageDirection } from "@skeldjs/protocol";
 import { Client } from "../../Client";
 
-export const MessageHandlers = Symbol("PacketHandlers");
-export const MessagesToRegister = Symbol("RegisteredPackets");
+export const MessageHandlers = "HindenburgPacketHandlers";
+export const MessagesToRegister = "HindenburgRegisteredPackets";
 
 export type PacketListener<T extends Deserializable> =
     ((message: GetSerialized<T>, direction: MessageDirection, client: Client) => any);

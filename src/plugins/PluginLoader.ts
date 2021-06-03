@@ -120,7 +120,6 @@ export class PluginLoader {
                 ? resolvedConfig
                 : undefined
             );
-        
             
         const eventListeners = loadedPluginClass.prototype[EventHandlers] as Map<keyof GlobalEvents, Set<string>>;
 
@@ -201,7 +200,7 @@ export class PluginLoader {
     }
 
     async loadFromDirectory() {
-        const filenames = await fs.readdir(this.pluginDirectory);
+        const filenames = (await fs.readdir(this.pluginDirectory)).map(filename => "./" + filename);
         const pluginsToLoad: HindenburgPluginCtr[] = [];
 
         try {
@@ -218,7 +217,7 @@ export class PluginLoader {
         }
 
         for (const filename of filenames) {
-            if (filename.startsWith("hbplugin-")) {
+            if (/^(\.\/)?hbplugin\-/.test(filename)) {
                 try {
                     const { default: loadedPluginClass } = importFrom(this.pluginDirectory, filename) as { default: HindenburgPluginCtr };
 

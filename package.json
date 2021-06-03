@@ -8,6 +8,7 @@
     "watch": "tsc -w -p ./",
     "setup": "node ./bin/setup.js",
     "add-plugin": "node ./bin/add-plugin",
+    "remove-plugin": "node ./bin/remove-plugin",
     "add-server": "node ./bin/add-server",
     "remove-server": "node ./bin/remove-server",
     "dev:cluster": "ts-node ./bin/cluster.ts",

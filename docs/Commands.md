@@ -22,6 +22,13 @@ Install a plugin from npm.
 
 **Example:** `yarn add-plugin hbplugin-requirehostmods`
 
+### `yarn remove-plugin`
+Remove an installed npm plugin.
+
+**Usage:** `yarn remove-plugin <pluginname>`
+
+**Example:** `yarn remove-plugin hbplugin-requirehostmods`
+
 ### `yarn add-server`
 Add a single or several regions to our Among Us region list.
 

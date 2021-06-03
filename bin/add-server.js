@@ -6,7 +6,7 @@ const regionInfoPath = path.resolve(process.env.APPDATA, "..\\LocalLow\\Innerslo
 const args = process.argv.slice(2);
 
 if (!args.length) {
-    console.log("Usage: add-server reset\nOR\nUsage: set-server <region ip> <region port> <region name> [<region ip> <region port> <region name>]...")
+    console.log("Usage: add-server reset\nOR\nUsage: add-server <region ip> <region port> <region name> [<region ip> <region port> <region name>]...")
     return;
 }
 

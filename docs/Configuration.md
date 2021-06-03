@@ -3,10 +3,14 @@
 The main configuration is a JSON file called `config.json` in the current working
 directory.
 
+Else, you can use the `HINDENBURG_CONFIG` environment variable to specify a custom
+file location.
+
+You can generate a default `config.json` file with the `yarn setup` command.
+
 Below shows valid configuration properties and their default values.
 
 ## Reactor
-
 ### Example
 ```json
 {

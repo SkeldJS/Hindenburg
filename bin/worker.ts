@@ -11,7 +11,7 @@ import { makeConfig } from "./util/makeConfig";
     if (!process.env.NODE_ID || !process.env.CLUSTER_NAME)
         throw new Error("Please launch this script through the cluster script.");
 
-    const data = await fs.readFile(path.resolve(process.cwd(), "./config.json"), "utf8");
+    const data = await fs.readFile(process.env.HINDENBURG_CONFIG || path.resolve(process.cwd(), "config.json"), "utf8");
     const externalIp = await getExternalIp();
     const config = JSON.parse(data);
 

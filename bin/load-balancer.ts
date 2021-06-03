@@ -9,7 +9,7 @@ import { makeConfig } from "./util/makeConfig";
 
 
 (async () => {
-    const config_path = path.resolve(process.cwd(), "./config.json");
+    const config_path = process.env.HINDENBURG_CONFIG || path.resolve(process.cwd(), "config.json");
 
     const config = JSON.parse(await fs.readFile(config_path, "utf8"));
 

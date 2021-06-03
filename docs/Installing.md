@@ -56,7 +56,7 @@ Now that we've installed [*Redis*](https://redis.io), we can move on to installi
 
 ```
 sudo pacman -S yarn
-````
+```
 
 ### Debian-based distros
 
@@ -119,6 +119,8 @@ To start the cluster node (after building):
 ```
 yarn start:cluster
 ```
+
+You can see a list of more useful commands at [Commands.md](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Commands.md)
 
 ## Connecting
 

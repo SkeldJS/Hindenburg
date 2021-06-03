@@ -117,5 +117,23 @@ onHelloPacket(message: HelloPacket, direction: MessageDirection, client: Client)
 ```
 
 ## Examples
-Examples of some plugins can be found [here](https://github.com/edqx/Hindenburg/tree/master/plugins)
+Examples of some plugins can be found [here](https://github.com/SkeldJS?q=hbplugin)
 and show both simple and advanced usages of the plugin API.
+
+## Publishing Plugins
+A few rules must apply when publishing plugins to NPM or some other registry,
+if all these rules apply to your published plugin then you can make a PR to
+add them to the list of [Officially Recognised Plugins](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Installing%20Plugins.md#officially-recognised-plugins).
+
+* The package name that plugins are distributed under are always prefixed with
+`hbplugin-`, this is to help it stand out and make it easier to search for,
+as well as to make them identifiable and consistent.
+
+* It must have a clear, accessible repository for accessing the source of the
+plugin. This is to encourage co-operative open source development and also as a
+way to give back to the Hindenburg community.
+
+* Plugins written in TypeScript must always be built to Javascript before being
+published.
+
+* Plugins for an outdated version of Hindenburg will be removed unless updated.

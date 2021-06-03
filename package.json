@@ -1,9 +1,10 @@
 {
   "name": "@skeldjs/hindenburg",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "GPL-3.0-only",
   "main": "dist/src/index.js",
   "scripts": {
+    "prepack": "yarn build",
     "build": "tsc -p ./",
     "watch": "tsc -w -p ./",
     "setup": "node ./bin/setup.js",

@@ -19,6 +19,7 @@ export interface MessageHandlerDecl {
 export function OnMessage<T extends Deserializable>(messageClass: T, options: Partial<OnMessageOptions> = {}) {
     return function (target: any, propertyName: string, descriptor: TypedPropertyDescriptor<PacketListener<T>>) {
         target[MessageHandlers] ||= new Map;
+        target[MessagesToRegister] ||= new Set;
 
         let gotListeners: Set<MessageHandlerDecl> = target[MessageHandlers].get(messageClass);
 

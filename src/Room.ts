@@ -52,7 +52,7 @@ export class Room extends Hostable {
     anticheat: Anticheat;
 
     constructor(private server: WorkerNode) {
-        super();
+        super({ doFixedUpdate: true });
 
         this.uuid = uuid.v4();
 

@@ -34,11 +34,11 @@ setup the server to require or block certain mods from players.
 It also allows you to force players to have the same mods and the host of the
 room that they join.
 
-## Starting
+## Installing
 Installation instructions can be found on this page: [docs/Installing.md](https://github.com/edqx/Hindenburg/blob/master/docs/Installing.md)
 
 ## Configuration
 Configuration documentation can be found in [docs/Configuration.md](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md)
 
 ## Plugins
-For instructions regarding writing your own plugins, see [docs/Writing Plugins.md](https://github.com/edqx/Hindenburg/blob/master/docs/Writing%20Plugins.md)
+For instructions regarding installing plugins, see [docs/Installing Plugins.md](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Installing%20Plugins.md). For information on writing your own plugins, see [docs/Writing Plugins.md](https://github.com/edqx/Hindenburg/blob/master/docs/Writing%20Plugins.md)

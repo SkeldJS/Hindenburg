@@ -11,6 +11,25 @@ contained entirely within a single class - although this is not to stop you
 from splitting your logic and other utilities into several other files to keep
 readability.
 
+### Notes
+Writing plugins will require you to enable experimental decorators either in
+a `jsconfig.json` if you're using Javscript or a `tsconfig.json` if you're
+using Typescript.
+```json
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    }
+}
+```
+
+All decorators, functions and references to Hindenburg structures can be imported
+from the `@skeldjs/hindenburg` package. While the version of Hindenburg may differ
+between packages slightly, Hindenburg will make sure that all loaded plugins are
+using the current instance of Hindenburg, so it's important to keep your plugins
+updated to the latest release of Hindenburg.
+
 ## Skeleton
 A very simple plugin that does absolutely nothing would look something along
 the lines of this:

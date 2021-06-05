@@ -110,9 +110,9 @@ export class Room extends Hostable {
     }
     
     async emit<Event extends HostableEvents[keyof HostableEvents]>(event: Event): Promise<Event> {
-        await super.emit(event);
+        await this.server.emit(event);
 
-        return this.server.emit(event);
+        return super.emit(event);
     }
     
     async FixedUpdate() {

@@ -29,8 +29,11 @@ import { HostableEvents, SpawnPrefabs } from "@skeldjs/core";
 import { ExtractEventTypes } from "@skeldjs/events";
 
 import { Room } from "./Room";
-import { HindenburgConfig } from "./Node";
-import { MatchmakerNodeEvents, MatchmakerNode } from "./MatchmakerNode";
+import {
+    MatchmakerNodeEvents,
+    MatchmakerNode,
+    HindenburgConfig
+} from "./MatchmakerNode";
 import { Client, ClientEvents } from "./Client";
 import { ModdedHelloPacket } from "./packets";
 

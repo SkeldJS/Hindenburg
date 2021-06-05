@@ -1,4 +1,4 @@
-import { HindenburgConfig } from "../../src/Node";
+import { HindenburgConfig } from "../../src/MatchmakerNode";
 
 export function makeConfig(config: HindenburgConfig, externalIp: string) {
     for (const cluster of config.loadbalancer.clusters) {

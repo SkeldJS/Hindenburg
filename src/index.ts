@@ -7,6 +7,5 @@ export * from "./Anticheat";
 export * from "./Client";
 export * from "./LoadBalancerNode";
 export * from "./MatchmakerNode";
-export * from "./Node";
 export * from "./Room";
 export * from "./WorkerNode";

@@ -12,8 +12,13 @@ import { Int2Code, sleep } from "@skeldjs/util";
 
 import { ExtractEventTypes } from "@skeldjs/events";
 
-import { MatchmakerNodeEvents, MatchmakerNode } from "./MatchmakerNode";
-import { HindenburgConfig, HindenburgLoadBalancerClusterConfig } from "./Node";
+import {
+    MatchmakerNodeEvents,
+    MatchmakerNode,
+    HindenburgConfig,
+    HindenburgLoadBalancerClusterConfig 
+} from "./MatchmakerNode";
+
 import { Client } from "./Client";
 
 import { formatSeconds } from "./util/format-seconds";

@@ -1,6 +1,8 @@
 import dgram from "dgram";
 import picomatch from "picomatch";
 import chalk from "chalk";
+import ioredis from "ioredis";
+import winston from "winston";
 
 import {
     AcknowledgePacket,
@@ -14,7 +16,7 @@ import {
 import { DisconnectReason, SendOption } from "@skeldjs/constant";
 import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 
-import { EventData, ExtractEventTypes } from "@skeldjs/events";
+import { EventData, EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
 import { Client } from "./Client";
 
@@ -26,12 +28,64 @@ import {
     ReactorModDeclarationMessage
 } from "./packets";
 
-import { HindenburgConfig, ConfigurableNode } from "./Node";
 import { LoadBalancerNode } from "./LoadBalancerNode";
 import { fmtClient } from "./util/format-client";
 import { PluginLoader } from "./plugins/PluginLoader";
+import { AnticheatConfig } from "./Anticheat";
 
 export type MatchmakerNodeEvents = ExtractEventTypes<[]>;
+
+
+export interface RedisServerConfig {
+    host: string;
+    port: number;
+    password?: string;
+}
+
+export interface HindenburgClusterConfig {
+    name: string;
+    ip: string;
+    ports: number[];
+    allowDirect: boolean;
+}
+
+export interface HindenburgLoadBalancerClusterConfig {
+    name: string;
+    ip: string;
+    ports: number[];
+}
+
+export interface HindenburgLoadBalancerServerConfig {
+    clusters: HindenburgLoadBalancerClusterConfig[];
+    ip: string;
+    port: number;
+}
+
+export interface ModConfig {
+    version: string;
+    required: boolean;
+    banned: boolean;
+}
+
+export interface ReactorModConfig {
+    [key: string]: string|ModConfig;
+}
+
+export interface ReactorConfig {
+    mods: ReactorModConfig;
+    allowExtraMods: boolean;
+    optional: boolean;
+}
+
+export interface HindenburgConfig {
+    reactor: boolean|ReactorConfig;
+    versions: string[];
+    anticheat: AnticheatConfig;
+    cluster: HindenburgClusterConfig;
+    loadbalancer: HindenburgLoadBalancerServerConfig;
+    redis: RedisServerConfig;
+    plugins: Record<string, boolean|object>;
+}
 
 export interface ReliableSerializable extends Serializable {
     nonce: number;
@@ -42,7 +96,11 @@ export interface ModInfo {
     version: string;
 }
 
-export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<T> {
+export class MatchmakerNode<T extends EventData = any> extends EventEmitter<T> {
+    redis: ioredis.Redis;
+    logger: winston.Logger;
+
+    config: HindenburgConfig;
     socket: dgram.Socket;
 
     decoder: PacketDecoder<Client>;
@@ -55,7 +113,77 @@ export class MatchmakerNode<T extends EventData = any> extends ConfigurableNode<
     private _incr_clientid: number;
 
     constructor(label: string, config: Partial<HindenburgConfig>, pluginDirectory: string) {
-        super(label, config);
+        super();
+
+        this.config = {
+            reactor: false,
+            versions: ["2020.4.2"],
+            plugins: {},
+            ...config,
+            anticheat: {
+                banMessage: "You were banned for %s for hacking.",
+                maxConnectionsPerIp: 2,
+                checkSettings: true,
+                checkObjectOwnership: true,
+                hostChecks: true,
+                invalidFlow: true,
+                invalidName: true,
+                malformedPackets: false,
+                massivePackets: {
+                    penalty: "disconnect",
+                    strikes: 3
+                },
+                ...config.anticheat
+            },
+            loadbalancer: {
+                clusters: [
+                    {
+                        name: "Cluster",
+                        ip: "127.0.0.1",
+                        ports: [ 22123 ]
+                    }
+                ],
+                ip: "127.0.0.1",
+                port: 22023,
+                ...config.loadbalancer
+            },
+            cluster: {
+                name: "Cluster",
+                ip: "127.0.0.1",
+                ports: [ 22123 ],
+                allowDirect: false,
+                ...config.cluster
+            },
+            redis: {
+                host: "127.0.0.1",
+                port: 6379,
+                ...config.redis
+            }
+        }
+        
+        this.logger = winston.createLogger({
+            transports: [
+                new winston.transports.Console({
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.label({ label }),
+                        winston.format.printf(info => {
+                            return `[${info.label}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
+
+        this.redis = new ioredis(this.config.redis);
 
         this.decoder = new PacketDecoder;
         this.pluginLoader = new PluginLoader(this, pluginDirectory);

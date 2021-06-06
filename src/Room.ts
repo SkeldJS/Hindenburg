@@ -1,17 +1,24 @@
+import crypto from "crypto";
 import winston from "winston";
 import * as uuid from "uuid";
 
 import {
     Color,
     DisconnectReason,
+    GameDataMessageTag,
     GameOverReason,
-    GameState
+    GameState,
+    RpcMessageTag
 } from "@skeldjs/constant";
 
 import {
     BaseGameDataMessage,
     BaseRootMessage,
+    ClientInfoMessage,
+    CloseDoorsOfTypeMessage,
+    CompleteTaskMessage,
     DataMessage,
+    DespawnMessage,
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
@@ -19,9 +26,17 @@ import {
     HostGameMessage,
     JoinedGameMessage,
     JoinGameMessage,
+    MurderPlayerMessage,
+    PlayAnimationMessage,
+    ReadyMessage,
     ReliablePacket,
     RemoveGameMessage,
     RemovePlayerMessage,
+    RepairSystemMessage,
+    RpcMessage,
+    SceneChangeMessage,
+    SetNameMessage,
+    SetTasksMessage,
     StartGameMessage,
     UnreliablePacket,
     WaitForHostMessage
@@ -36,6 +51,7 @@ import { WorkerNode } from "./WorkerNode";
 import { Anticheat } from "./Anticheat";
 import { fmtPlayer } from "./util/format-player";
 import { fmtClient } from "./util/format-client";
+import { HindenburgConfig } from "./MatchmakerNode";
 
 export class Room extends Hostable {
     logger: winston.Logger;
@@ -166,24 +182,119 @@ export class Room extends Hostable {
         this.logger.info("Room was destroyed.");
     }
 
+    hashGameDataMessage(message: BaseGameDataMessage) {
+        const shaWriter = crypto.createHash("sha256");
+
+        shaWriter.write("" + message.tag);
+        switch (message.tag) {
+        case GameDataMessageTag.Data:
+            const dataMessage = message as DataMessage;
+            shaWriter.write("" + dataMessage.netid);
+            shaWriter.write("" + dataMessage.data);
+            break;
+        case GameDataMessageTag.RPC:
+            const rpcMessage = message as RpcMessage;
+            shaWriter.write("" + rpcMessage.netid);
+            shaWriter.write("" + rpcMessage.data.tag);
+            switch (rpcMessage.data.tag) {
+                case RpcMessageTag.PlayAnimation:
+                    const rpcPlayAnimation = rpcMessage.data as PlayAnimationMessage;
+                    shaWriter.write("" + rpcPlayAnimation.taskid);
+                    break;
+                case RpcMessageTag.CompleteTask:
+                    const rpcCompleteTask = rpcMessage.data as CompleteTaskMessage;
+                    shaWriter.write("" + rpcCompleteTask.taskidx);
+                    break;
+                case RpcMessageTag.MurderPlayer:
+                    const rpcMurderPlayer = rpcMessage.data as MurderPlayerMessage;
+                    shaWriter.write("" + rpcMurderPlayer.victimid);
+                    break;
+                case RpcMessageTag.SendChat:
+                case RpcMessageTag.SendChatNote:
+                case RpcMessageTag.CastVote:
+                case RpcMessageTag.AddVote:
+                    return "";
+                case RpcMessageTag.CloseDoorsOfType:
+                    const rpcCloseDoorsOfType = rpcMessage.data as CloseDoorsOfTypeMessage;
+                    shaWriter.write("" + rpcCloseDoorsOfType.systemid);
+                    break;
+                case RpcMessageTag.RepairSystem:
+                    const rpcRepairSystem = rpcMessage.data as RepairSystemMessage;
+                    shaWriter.write("" + rpcRepairSystem.systemid);
+                    break;
+                case RpcMessageTag.SetTasks:
+                    const rpcSetTasks = rpcMessage.data as SetTasksMessage;
+                    shaWriter.write("" + rpcSetTasks.playerid);
+                    break;
+            }
+            break;
+        case GameDataMessageTag.Despawn:
+            const despawnMessage = message as DespawnMessage;
+            shaWriter.write("" + despawnMessage.netid);
+            break;
+        case GameDataMessageTag.SceneChange:
+            const sceneChangeMessage = message as SceneChangeMessage;
+            shaWriter.write("" + sceneChangeMessage.clientid);
+            shaWriter.write("" + sceneChangeMessage.scene);
+            break;
+        case GameDataMessageTag.Ready:
+            const readyMessage = message as ReadyMessage;
+            shaWriter.write("" + readyMessage.clientid);
+            break;
+        case GameDataMessageTag.ClientInfo:
+            const clientInfo = message as ClientInfoMessage;
+            shaWriter.write("" + clientInfo.platform);
+            break;
+        default:
+            return "";
+        }
+
+        return shaWriter.digest("hex");
+    }
+
+    compressGameData(messages: BaseGameDataMessage[]) {
+        const unnecessaryMessages = new Set;
+        const toSend = [];
+        for (let i = messages.length - 1; i >= 0; i--) {
+            const message = messages[i];
+            const hash = this.hashGameDataMessage(message);
+
+            console.log(hash);
+            
+            if (!hash) {
+                toSend.unshift(message);
+                continue;
+            }
+
+            if (unnecessaryMessages.has(hash))
+                continue;
+
+            unnecessaryMessages.add(hash);
+            toSend.unshift(message);
+        }
+        return toSend;
+    }
+
     async broadcast(
         messages: BaseGameDataMessage[],
         reliable: boolean = true,
         recipient: PlayerData | null = null,
         payloads: BaseRootMessage[] = []
     ) {
+        const compressedMessages = this.compressGameData(messages);
+
         if (recipient) {
             const remote = this.clients.get(recipient.id);
 
             if (remote) {
                 const children = [
-                    ...(messages?.length ? [new GameDataToMessage(
+                    ...(compressedMessages?.length ? [new GameDataToMessage(
                         this.code,
                         remote.clientid,
-                        messages
+                        compressedMessages
                     )] : []),
                     ...payloads
-                ];
+                ]
                 
                 if (!children.length)
                     return;
@@ -196,9 +307,9 @@ export class Room extends Hostable {
             }
         } else {
             const children = [
-                ...(messages?.length ? [new GameDataMessage(
+                ...(compressedMessages?.length ? [new GameDataMessage(
                     this.code,
-                    messages
+                    compressedMessages
                 )] : []),
                 ...payloads
             ];

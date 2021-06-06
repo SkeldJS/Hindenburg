@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import winston from "winston";
 import * as uuid from "uuid";
 
@@ -26,7 +25,9 @@ import {
     HostGameMessage,
     JoinedGameMessage,
     JoinGameMessage,
+    MessageDirection,
     MurderPlayerMessage,
+    PacketDecoder,
     PlayAnimationMessage,
     ReadyMessage,
     ReliablePacket,
@@ -35,6 +36,8 @@ import {
     RepairSystemMessage,
     RpcMessage,
     SceneChangeMessage,
+    SetColorMessage,
+    SetNameMessage,
     SetTasksMessage,
     StartGameMessage,
     UnreliablePacket,
@@ -179,33 +182,32 @@ export class Room extends Hostable {
 
         this.logger.info("Room was destroyed.");
     }
-
+/*
     hashGameDataMessage(message: BaseGameDataMessage) {
-        const shaWriter = crypto.createHash("sha256");
+        let out = "";
 
-        shaWriter.write("" + message.tag);
         switch (message.tag) {
         case GameDataMessageTag.Data:
             const dataMessage = message as DataMessage;
-            shaWriter.write("" + dataMessage.netid);
-            shaWriter.write("" + dataMessage.data);
+            out += dataMessage.netid;
+            out += dataMessage.data;
             break;
         case GameDataMessageTag.RPC:
             const rpcMessage = message as RpcMessage;
-            shaWriter.write("" + rpcMessage.netid);
-            shaWriter.write("" + rpcMessage.data.tag);
+            out += rpcMessage.netid;
+            out += rpcMessage.data.tag;
             switch (rpcMessage.data.tag) {
                 case RpcMessageTag.PlayAnimation:
                     const rpcPlayAnimation = rpcMessage.data as PlayAnimationMessage;
-                    shaWriter.write("" + rpcPlayAnimation.taskid);
+                    out += rpcPlayAnimation.taskid;
                     break;
                 case RpcMessageTag.CompleteTask:
                     const rpcCompleteTask = rpcMessage.data as CompleteTaskMessage;
-                    shaWriter.write("" + rpcCompleteTask.taskidx);
+                    out += rpcCompleteTask.taskidx;
                     break;
                 case RpcMessageTag.MurderPlayer:
                     const rpcMurderPlayer = rpcMessage.data as MurderPlayerMessage;
-                    shaWriter.write("" + rpcMurderPlayer.victimid);
+                    out += rpcMurderPlayer.victimid;
                     break;
                 case RpcMessageTag.SendChat:
                 case RpcMessageTag.SendChatNote:
@@ -214,40 +216,40 @@ export class Room extends Hostable {
                     return "";
                 case RpcMessageTag.CloseDoorsOfType:
                     const rpcCloseDoorsOfType = rpcMessage.data as CloseDoorsOfTypeMessage;
-                    shaWriter.write("" + rpcCloseDoorsOfType.systemid);
+                    out += rpcCloseDoorsOfType.systemid;
                     break;
                 case RpcMessageTag.RepairSystem:
                     const rpcRepairSystem = rpcMessage.data as RepairSystemMessage;
-                    shaWriter.write("" + rpcRepairSystem.systemid);
+                    out += rpcRepairSystem.systemid;
                     break;
                 case RpcMessageTag.SetTasks:
                     const rpcSetTasks = rpcMessage.data as SetTasksMessage;
-                    shaWriter.write("" + rpcSetTasks.playerid);
+                    out += rpcSetTasks.playerid;
                     break;
             }
             break;
         case GameDataMessageTag.Despawn:
             const despawnMessage = message as DespawnMessage;
-            shaWriter.write("" + despawnMessage.netid);
+            out += despawnMessage.netid;
             break;
         case GameDataMessageTag.SceneChange:
             const sceneChangeMessage = message as SceneChangeMessage;
-            shaWriter.write("" + sceneChangeMessage.clientid);
-            shaWriter.write("" + sceneChangeMessage.scene);
+            out += sceneChangeMessage.clientid;
+            out += sceneChangeMessage.scene;
             break;
         case GameDataMessageTag.Ready:
             const readyMessage = message as ReadyMessage;
-            shaWriter.write("" + readyMessage.clientid);
+            out += readyMessage.clientid;
             break;
         case GameDataMessageTag.ClientInfo:
             const clientInfo = message as ClientInfoMessage;
-            shaWriter.write("" + clientInfo.platform);
+            out += clientInfo.platform;
             break;
         default:
             return "";
         }
 
-        return shaWriter.digest("hex");
+        return out;
     }
 
     compressGameData(messages: BaseGameDataMessage[]) {
@@ -269,7 +271,7 @@ export class Room extends Hostable {
             toSend.unshift(message);
         }
         return toSend;
-    }
+    }*/
 
     async broadcast(
         messages: BaseGameDataMessage[],
@@ -277,7 +279,7 @@ export class Room extends Hostable {
         recipient: PlayerData | null = null,
         payloads: BaseRootMessage[] = []
     ) {
-        const compressedMessages = this.compressGameData(messages);
+        const compressedMessages = messages; // Currently not compressing messages until there is a faster way (if any)
 
         if (recipient) {
             const remote = this.clients.get(recipient.id);

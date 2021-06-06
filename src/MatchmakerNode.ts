@@ -106,8 +106,7 @@ export class MatchmakerNode<T extends EventData = any> extends EventEmitter<T> {
     decoder: PacketDecoder<Client>;
     clients: Map<string, Client>;
 
-    allowed_versions: VersionInfo[];
-    
+    allowedVersions: VersionInfo[];
     pluginLoader: PluginLoader;
     
     private _incr_clientid: number;
@@ -191,7 +190,7 @@ export class MatchmakerNode<T extends EventData = any> extends EventEmitter<T> {
         this.socket = dgram.createSocket("udp4");
 
         this.clients = new Map;
-        this.allowed_versions = this.config.versions.map(version => VersionInfo.from(version));
+        this.allowedVersions = this.config.versions.map(version => VersionInfo.from(version));
 
         this._incr_clientid = 0;
 
@@ -220,7 +219,7 @@ export class MatchmakerNode<T extends EventData = any> extends EventEmitter<T> {
                 }
             }
 
-            const versions = this.allowed_versions.map(version => version.encode());
+            const versions = this.allowedVersions.map(version => version.encode());
             if (versions.includes(message.clientver.encode())) {
                 client.identified = true;
                 client.username = message.username;

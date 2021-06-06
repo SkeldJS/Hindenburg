@@ -128,6 +128,7 @@ export class MatchmakerNode<T extends EventData = any> extends EventEmitter<T> {
                 hostChecks: true,
                 invalidFlow: true,
                 invalidName: true,
+                invalidColor: true,
                 malformedPackets: false,
                 massivePackets: {
                     penalty: "disconnect",

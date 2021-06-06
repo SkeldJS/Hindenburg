@@ -195,7 +195,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                 return message.cancel();
             }
 
-            await client.room.anticheat.emitDecoded(message.data, direction, {
+            await client.room.anticheat.decoder.emitDecoded(message.data, direction, {
                 component,
                 player,
                 client
@@ -302,6 +302,33 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                         switch (rpc.data.tag) {
                             case RpcMessageTag.CheckName:
                             case RpcMessageTag.CheckColor:
+                                const component = client.room.netobjects.get(rpc.netid);
+                    
+                                if (!component) {
+                                    client.room.logger.warn(
+                                        "Player %s had an Rpc for component with netid %s but it did not exist.",
+                                        fmtPlayer(player), rpc.netid
+                                    );
+                                    return message.cancel();
+                                }
+                    
+                                await client.room.anticheat.decoder.emitDecoded(rpc.data, direction, {
+                                    component,
+                                    player,
+                                    client
+                                });
+
+                                if (!recipient.ishost) {
+                                    client.room.logger.warn(
+                                        "Player %s tried to send Rpc %s but the recipient wasn't the host.",
+                                        fmtPlayer(player), RpcMessageTag[rpc.data.tag]
+                                    );
+
+                                    if (await client.penalize("invalidFlow")) {
+                                        return message.cancel();
+                                    }
+                                }
+                                break;
                             case RpcMessageTag.CastVote:
                             case RpcMessageTag.CloseDoorsOfType:
                             case RpcMessageTag.RepairSystem:
@@ -388,6 +415,7 @@ export class WorkerNode extends MatchmakerNode<WorkerNodeEvents & MatchmakerNode
                             client.room.code,
                             recipclient.clientid,
                             message._children
+                                .filter(child => !child.canceled)
                         )
                     ]
                 )

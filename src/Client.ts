@@ -18,7 +18,7 @@ import { MatchmakerNode, ModInfo } from "./MatchmakerNode";
 import { Room } from "./Room";
 import { formatSeconds } from "./util/format-seconds";
 import { ClientDisconnectEvent } from "./events";
-import { AnticheatConfig, AnticheatValue } from "./Anticheat";
+import { AnticheatConfig, AnticheatValue, AnticheatValueConfig } from "./Anticheat";
 import { fmtClient } from "./util/format-client";
 
 export interface SentPacket {
@@ -95,43 +95,48 @@ export class Client extends EventEmitter<ClientEvents> {
         this.server.redis.expire("bans." + this.remote.address, seconds);
     }
 
-    async penalize(infraction: keyof AnticheatConfig) {
-        const config = this.server.config.anticheat[infraction] as boolean|AnticheatValue;
+    async penalize<T extends keyof AnticheatConfig>(infraction: T, key?: keyof AnticheatConfig[T]) {
+        const config = this.server.config.anticheat[infraction] as AnticheatValue;
+        const fmtInfraction = infraction + (key ? "." + key : "");
 
         if (config) {
             if (typeof config === "boolean") {
                 this.disconnect(DisconnectReason.Hacking);
                 this.server.logger.warn(
                     "%s was disconnected for anticheat rule %s.",
-                    fmtClient(this), infraction
+                    fmtClient(this), fmtInfraction
                 );
             } else if (config.penalty !== "ignore") {
-                if (config.strikes && config.strikes > 1) {
-                    const strikes = await this.server.redis.incr("infractions." + this.server.listeningIp + "." + this.clientid + "." + infraction);
-                    this.server.logger.warn(
-                        "%s is on %s strike(s) for anticheat rule %s.",
-                        fmtClient(this), strikes, infraction
-                    );
-    
-                    if (strikes < config.strikes) {
-                        return false;
-                    }
-                }
+                const subConfig = key ? config[key as keyof AnticheatValueConfig] : undefined;
 
-                if (config.penalty === "ban") {
-                    await this.ban(infraction, config.banDuration || 3600);
-                    this.server.logger.warn(
-                        "%s was banned for anticheat rule %s for %s.",
-                        fmtClient(this), infraction, formatSeconds(config.banDuration || 3600)
-                    );
-                } else {
-                    this.disconnect(DisconnectReason.Hacking);
-                    this.server.logger.warn(
-                        "%s was disconnected for anticheat rule %s.",
-                        fmtClient(this), infraction
-                    );
+                if (key && (typeof subConfig !== "boolean" || subConfig)) {
+                    if (config.strikes && config.strikes > 1) {
+                        const strikes = await this.server.redis.incr("infractions." + this.server.listeningIp + "." + this.clientid + "." + infraction);
+                        this.server.logger.warn(
+                            "%s is on %s strike(s) for anticheat rule %s.",
+                            fmtClient(this), strikes, fmtInfraction
+                        );
+        
+                        if (strikes < config.strikes) {
+                            return false;
+                        }
+                    }
+    
+                    if (config.penalty === "ban") {
+                        await this.ban(infraction, config.banDuration || 3600);
+                        this.server.logger.warn(
+                            "%s was banned for anticheat rule %s for %s.",
+                            fmtClient(this), fmtInfraction, formatSeconds(config.banDuration || 3600)
+                        );
+                    } else {
+                        this.disconnect(DisconnectReason.Hacking);
+                        this.server.logger.warn(
+                            "%s was disconnected for anticheat rule %s.",
+                            fmtClient(this), fmtInfraction
+                        );
+                    }
+                    return true;
                 }
-                return true;
             }
         }
         return false;

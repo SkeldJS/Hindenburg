@@ -110,7 +110,41 @@
                 },
                 "invalidName": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Check if a player has the correct name."
+                    "description": "Check if a player has a valid name.",
+                    "properties": {
+                        "changedTwice": {
+                            "type": "boolean"
+                        },
+                        "wrongName": {
+                            "type": "boolean"
+                        },
+                        "nameTaken": {
+                            "type": "boolean"
+                        },
+                        "invalidChars": {
+                            "type": "object",
+                            "properties": {
+                                "regex": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "maxNameLength": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "invalidColor": {
+                    "$ref": "#/definitions/anticheat.value",
+                    "description": "Check if a player has a valid color.",
+                    "properties": {
+                        "colorTaken": {
+                            "type": "boolean"
+                        },
+                        "invalidColor": {
+                            "type": "boolean"
+                        }
+                    }
                 },
                 "massivePackets": {
                     "$ref": "#/definitions/anticheat.value",

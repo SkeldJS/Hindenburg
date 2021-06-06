@@ -160,7 +160,8 @@ A list of rules and their default scan be found in this table.
 | `hostChecks` | Whether to check for clients doing host actions when they aren't the host. | `true` |
 | `malformedPackets` | Whether to check for packets that result in errors that do not come naturally from official clients. | `false` |
 | `invalidFlow` | Whether to act on clients doing things in the wrong order, or doing something that doesn't naturally happen. | `true` |
-| `invalidName` | Whether to act on clients settings their name different to what they identified as, or if their name is too long or contains invalid characters. | `true` |
+| `invalidName` | Whether to act on clients setting their name different to what they identified as, or if their name is too long or contains invalid characters. | `true` |
+| `invalidColor` | Whether to act on clients setting their color to an invalid color, or one that is already taken. | `true` |
 | `massivePackets` | Whether to check for packets that are too large to come from an official client. | `{ "penalty": "disconnect", "strikes": 3 }` |
 
 ## Cluster

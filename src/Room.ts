@@ -35,7 +35,6 @@ import {
     RepairSystemMessage,
     RpcMessage,
     SceneChangeMessage,
-    SetNameMessage,
     SetTasksMessage,
     StartGameMessage,
     UnreliablePacket,
@@ -51,7 +50,6 @@ import { WorkerNode } from "./WorkerNode";
 import { Anticheat } from "./Anticheat";
 import { fmtPlayer } from "./util/format-player";
 import { fmtClient } from "./util/format-client";
-import { HindenburgConfig } from "./MatchmakerNode";
 
 export class Room extends Hostable {
     logger: winston.Logger;
@@ -258,8 +256,6 @@ export class Room extends Hostable {
         for (let i = messages.length - 1; i >= 0; i--) {
             const message = messages[i];
             const hash = this.hashGameDataMessage(message);
-
-            console.log(hash);
             
             if (!hash) {
                 toSend.unshift(message);

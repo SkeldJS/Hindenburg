@@ -39,7 +39,7 @@ export interface AnticheatConfig {
         maxNameLength?: number;
     };
     invalidColor: AnticheatValue & {
-        colorTaken?: boolean;
+        badHostChecks?: boolean;
         invalidColor?: boolean;
     };
     massivePackets: AnticheatValue;
@@ -98,7 +98,7 @@ export class Anticheat {
                             return message.cancel();
                         }
                     }
-                    if (this.config.invalidName.invalidChars) {
+                    if (this.config.invalidName || this.config.invalidName.invalidChars) {
                         if (invalidCharsRegexp?.test(message.name)) {
                             this.server.logger.warn(
                                 "%s set their name to %s, which has invalid characters.",
@@ -150,10 +150,8 @@ export class Anticheat {
                     return message.cancel();
                 }
             }
-            if (this.config.invalidName.invalidChars) {
-                const invalidCharsRegexp =
-                    new RegExp((this.config.invalidName.invalidChars as { regex: string }).regex || /[^a-zA-Z0-9]/);
-                if (invalidCharsRegexp.test(message.name)) {
+            if (this.config.invalidName || this.config.invalidName.invalidChars) {
+                if (invalidCharsRegexp?.test(message.name)) {
                     this.server.logger.warn(
                         "%s asked the host to set their name to %s, which has invalid characters.",
                         fmtPlayer(player), message.name
@@ -192,7 +190,7 @@ export class Anticheat {
                                 "%s set a player's color to a color already in use by %s.",
                                 fmtPlayer(player), fmtPlayer(playerInfo.player)
                             );
-                            if (await client.penalize("invalidColor", "colorTaken")) {
+                            if (await client.penalize("invalidColor", "badHostChecks")) {
                                 return message.cancel();
                             }
                         }

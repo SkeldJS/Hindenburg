@@ -110,39 +110,54 @@
                 },
                 "invalidName": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Check if a player has a valid name.",
+                    "description": "Check if a player has an invalid name.",
                     "properties": {
                         "changedTwice": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Check if a player has already set their name."
                         },
                         "wrongName": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Check if a player has set a name different to the name they identified with."
                         },
                         "badHostChecks": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Check if a host checked the name wrong, e.g. they set a name that is already taken."
                         },
                         "invalidChars": {
-                            "type": "object",
-                            "properties": {
-                                "regex": {
-                                    "type": "string"
+                            "description": "Check if a name contains invalid characters.",
+                            "anyOf": [
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "regex": {
+                                            "type": "string",
+                                            "description": "Regex to match an invalid name. Default `[^a-zA-Z0-9]`."
+                                        }
+                                    }
                                 }
-                            }
+                            ]
                         },
                         "maxNameLength": {
-                            "type": "number"
+                            "type": "number",
+                            "description": "Check if a name is over a certain limit, default `10`."
                         }
                     }
                 },
                 "invalidColor": {
                     "$ref": "#/definitions/anticheat.value",
-                    "description": "Check if a player has a valid color.",
+                    "description": "Check if a player has an invalid color.",
                     "properties": {
                         "colorTaken": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Check if a host checked the name wrong, e.g. they set a name that is already taken."
                         },
                         "invalidColor": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "Check if a player set their colour to an invalid colour. (i.e. one that is not on the colour palette.)"
                         }
                     }
                 },

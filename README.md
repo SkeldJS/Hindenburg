@@ -13,16 +13,25 @@ get help installing or to discuss plugins and updates. https://discord.gg/8ewNJY
 
 ## Features
 
-### 🔌 Plugins
+### 🚦 Load Balancer
+Hindenburg has a lesser-featured central server with the sole purpose of redirecting
+clients to a suitable node.
+
+### 🎨 Highly Configurable
+Hindenburg is completely customisable with a simple json file, giving you full
+control and meaning that you'll likely never have to touch the source.
+
+### 🧩 Plugins
 Hindenburg has full knowledge of what is going on in every game, giving you full
-control over the behaviour of games and even the server itself.
+control over the behaviour of games and even the load balancer and worker nodes
+themselves.
 
 ### 👮‍♂️ Anti-Cheat
 With the power of [HACS](https://github.com/edqx/Hindenburg/blob/master/docs/HACS.md),
 Hindenburg's Anti-Cheat System, you can make sure that cheaters are stopped quickly
 through a highly customisable and easy anti-cheat config.
 
-### 🧩 Reactor Support
+### 🧬 Reactor Support
 Hindenburg also natively supports the Reactor modded handshake, giving you full
 control over which mods your players are allowed to use.
 

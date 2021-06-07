@@ -75,6 +75,8 @@ Whether to allow non-modded clients to connect.
 **Default:** `false`
 
 ## Anticheat
+See the page on [HACS](https://github.com/SkeldJS/Hindenburg/blob/master/docs/HACS.md)
+for information on how to configure the anticheat.
 
 ## Example
 ```json
@@ -92,77 +94,6 @@ Whether to allow non-modded clients to connect.
     }
 }
 ```
-
-### `anticheat.maxConnectionsPerIp`
-Allows you to set the maximum number of connections coming from one IP across all
-worker nodes. Set to `0` to remove the limit.
-
-**Default:** `0`
-
-### `anticheat.banMessage`
-The message to appear for banned clients. Can contain special symbols that will
-can be replaced.
-
-| Symbol | Description |
-|--|--|
-| `%s` | The time for how long the client is banned for. |
-| `%i` | The anti-cheat rule that the client was banned for. |
-
-#### Example
-`You have been banned for %s for breaking '%i'`
-
-Will be seen as
-
-`You have been banned for 5 hours for breaking 'checkSettings'`
-
-Although it's recommended not to include the reason for why the client was
-banned.
-
-**Default:** `"You were banned for %s for hacking."`
-
-### Anticheat Rules
-Every other property passed to the `anticheat` object is an anti-cheat rule that
-can be configured simialr to eachother.
-
-They can either be a simple boolean, where `true` says that the rule should be
-enforced and the client will be disconnnected when the rule is broken, and
-`false` where the rule is ignored.
-
-They can also be an object containing more detailed information about how to
-enforce the rule.
-
-### `anticheat.*.penalty`
-The penalty that the client receives for breaking this rule. Can be one of
-| Penalty | Description |
-|--|--|
-| `ban` | Bans the client's IP for an hour unless set otherwise in `banDuration`. |
-| `disconnect` | Disconnects the client immediately and kicks them from their room. |
-| `ignore` | Ignore the rule. |
-
-**Default:** `"disconnnect"`
-
-### `anticheat.*.strikes`
-The number of strikes before the client is penalised. Set to `0` to have no
-strikes.
-
-**Default:** `0`
-
-### `anticheat.*.banDuration`
-How long to ban the client for in seconds if the penalty is set to `ban`.
-
-**Default:** `3600` (1 Hour)
-
-A list of rules and their default scan be found in this table.
-| Rule | Description | Default |
-|--|--|--|
-| `checkSettings` | Whether to check for invalid settings when creating a room or when updating room settings. | `true` |
-| `checkObjectOwnership` | Whether to act on clients that don't own the objects they use. | `true` |
-| `hostChecks` | Whether to check for clients doing host actions when they aren't the host. | `true` |
-| `malformedPackets` | Whether to check for packets that result in errors that do not come naturally from official clients. | `false` |
-| `invalidFlow` | Whether to act on clients doing things in the wrong order, or doing something that doesn't naturally happen. | `true` |
-| `invalidName` | Whether to act on clients setting their name different to what they identified as, or if their name is too long or contains invalid characters. | `true` |
-| `invalidColor` | Whether to act on clients setting their color to an invalid color, or one that is already taken. | `true` |
-| `massivePackets` | Whether to check for packets that are too large to come from an official client. | `{ "penalty": "disconnect", "strikes": 3 }` |
 
 ## Cluster
 

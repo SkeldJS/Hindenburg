@@ -32,7 +32,7 @@ export interface AnticheatConfig {
     invalidName: AnticheatValue & {
         changedTwice?: boolean;
         wrongName?: boolean;
-        nameTaken?: boolean;
+        badHostChecks?: boolean;
         invalidChars?: boolean|{
             regex?: string;
         };
@@ -59,9 +59,26 @@ export class Anticheat {
         this.decoder = new PacketDecoder;
 
         this.config = server.config.anticheat;
+        
+        const invalidCharsRegexp = this.config.invalidName?.invalidChars
+            ? new RegExp((this.config.invalidName.invalidChars as { regex: string }).regex || /[^a-zA-Z0-9]/)
+            : undefined;
 
         this.decoder.on(SetNameMessage, async (message, direction, { component, player, client }) => {
             if (player.ishost) {
+                if (room.gamedata) {
+                    for (const [ , playerInfo ] of room.gamedata.players) {
+                        if (playerInfo.name === message.name) {
+                            this.server.logger.warn(
+                                "%s set a player's name to a name already taken by %s.",
+                                fmtPlayer(player), fmtPlayer(playerInfo.player)
+                            );
+                            if (await client.penalize("invalidName", "badHostChecks")) {
+                                return message.cancel();
+                            }
+                        }
+                    }
+                }
                 if (component.ownerid === player.id) {
                     if (player.info?.name) {
                         this.server.logger.warn(
@@ -81,23 +98,8 @@ export class Anticheat {
                             return message.cancel();
                         }
                     }
-                    if (room.gamedata) {
-                        for (const [ , playerInfo ] of room.gamedata.players) {
-                            if (playerInfo.name === message.name) {
-                                this.server.logger.warn(
-                                    "%s set a player's name to a name already taken by %s.",
-                                    fmtPlayer(player), fmtPlayer(playerInfo.player)
-                                );
-                                if (await client.penalize("invalidName", "nameTaken")) {
-                                    return message.cancel();
-                                }
-                            }
-                        }
-                    }
                     if (this.config.invalidName.invalidChars) {
-                        const invalidCharsRegexp =
-                            new RegExp((this.config.invalidName.invalidChars as { regex: string }).regex || /[^a-zA-Z0-9]/);
-                        if (invalidCharsRegexp.test(message.name)) {
+                        if (invalidCharsRegexp?.test(message.name)) {
                             this.server.logger.warn(
                                 "%s set their name to %s, which has invalid characters.",
                                 fmtPlayer(player), message.name
@@ -164,7 +166,7 @@ export class Anticheat {
             const maxNameLength = this.config.invalidName.maxNameLength ?? 10;
             if (maxNameLength > 0 && message.name.length > maxNameLength) {
                 this.server.logger.warn(
-                    "%s asked the host to set their name to %s, longer than the maxNameLength of %s.",
+                    "%s asked the host to set their name to %s, longer than the maximum name length of %s.",
                     fmtPlayer(player), message.name, maxNameLength
                 );
                 if (await client.penalize("invalidName", "maxNameLength")) {

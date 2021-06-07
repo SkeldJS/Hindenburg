@@ -11,7 +11,7 @@ contained entirely within a single class - although this is not to stop you
 from splitting your logic and other utilities into several other files to keep
 readability.
 
-### Notes
+### Notes and Things to Consider
 Writing plugins will require you to enable experimental decorators either in
 a `jsconfig.json` if you're using Javscript or a `tsconfig.json` if you're
 using Typescript.
@@ -24,17 +24,37 @@ using Typescript.
 }
 ```
 
-All decorators, functions and references to Hindenburg structures can be imported
-from the `@skeldjs/hindenburg` package. While the version of Hindenburg may differ
-between packages slightly, Hindenburg will make sure that all loaded plugins are
-using the current instance of Hindenburg, so it's important to keep your plugins
-updated to the latest release of Hindenburg.
+* All decorators, functions and references to Hindenburg structures can be imported
+from the `@skeldjs/hindenburg` package, which should be installed as a dev
+dependency with `yarn add --dev @skeldjs/hindenburg`.
+
+* Hindenburg will make sure that all loaded plugins are using the current 
+instance of Hindenburg, so it's important to keep your plugins updated to the
+latest release of Hindenburg.
+
+* The package name that plugins are distributed under are always prefixed with
+`hbplugin-`, this is to make them identifiable and consistent.
+
+* Try to keep plugins open-source, unless it's imperative for security. This is
+to encourage co-operative open source development and also as a way to give back
+to Hindenburg itself.
+
+### Developer Environment
+The `plugins` directory is a great way to work on plugins in a development
+environment without having to publish your plugins. You can simply clone your
+plugin's repository to the directory, or just start working in it.
 
 ## Skeleton
-A very simple plugin that does absolutely nothing would look something along
-the lines of this:
+The general structure of a plugin looks like this. Below the constructor would
+be the place to declare event or message listeners.
 
 ```ts
+import {
+    DeclarePlugin,
+    LoadBalancerNode,
+    WorkerNode
+} from "@skeldjs/hindenburg";
+
 @DeclarePlugin({
     id: "",
     version: "",
@@ -118,6 +138,13 @@ custom messages to add. Messages that are used in place of default messages will
 overwrite them and clear all of their listeners.
 
 ```ts
+import {
+    DeclarePlugin,
+    LoadBalancerNode,
+    WorkerNode,
+    RegisterMessage
+} from "@skeldjs/hindenburg";
+
 @DeclarePlugin({
     id: "",
     version: "",
@@ -163,23 +190,5 @@ onHelloPacket(message: HelloPacket, direction: MessageDirection, client: Client)
 ```
 
 ## Examples
-Examples of some plugins can be found [here](https://github.com/SkeldJS?q=hbplugin)
+Examples of some plugins can be found [here](https://github.com/SkeldJS/Hindenburg-Official-Plugins)
 and show both simple and advanced usages of the plugin API.
-
-## Publishing Plugins
-A few rules must apply when publishing plugins to NPM or some other registry,
-if all these rules apply to your published plugin then you can make a PR to
-add them to the list of [Officially Recognised Plugins](https://github.com/SkeldJS/Hindenburg/blob/master/docs/Installing%20Plugins.md#officially-recognised-plugins).
-
-* The package name that plugins are distributed under are always prefixed with
-`hbplugin-`, this is to help it stand out and make it easier to search for,
-as well as to make them identifiable and consistent.
-
-* It must have a clear, accessible repository for accessing the source of the
-plugin. This is to encourage co-operative open source development and also as a
-way to give back to the Hindenburg community.
-
-* Plugins written in TypeScript must always be built to Javascript before being
-published.
-
-* Plugins for an outdated version of Hindenburg will be removed unless updated.

@@ -4,20 +4,14 @@ import * as uuid from "uuid";
 import {
     Color,
     DisconnectReason,
-    GameDataMessageTag,
     GameOverReason,
-    GameState,
-    RpcMessageTag
+    GameState
 } from "@skeldjs/constant";
 
 import {
     BaseGameDataMessage,
     BaseRootMessage,
-    ClientInfoMessage,
-    CloseDoorsOfTypeMessage,
-    CompleteTaskMessage,
     DataMessage,
-    DespawnMessage,
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
@@ -25,20 +19,9 @@ import {
     HostGameMessage,
     JoinedGameMessage,
     JoinGameMessage,
-    MessageDirection,
-    MurderPlayerMessage,
-    PacketDecoder,
-    PlayAnimationMessage,
-    ReadyMessage,
     ReliablePacket,
     RemoveGameMessage,
     RemovePlayerMessage,
-    RepairSystemMessage,
-    RpcMessage,
-    SceneChangeMessage,
-    SetColorMessage,
-    SetNameMessage,
-    SetTasksMessage,
     StartGameMessage,
     UnreliablePacket,
     WaitForHostMessage
@@ -104,10 +87,17 @@ export class Room extends Hostable {
         });
 
         this.on("player.setname", setname => {
-            this.logger.info(
-                "Player %s changed their name from %s to %s.",
-                fmtPlayer(setname.player), setname.oldName, setname.newName
-            );
+            if (setname.oldName) {
+                this.logger.info(
+                    "Player %s changed their name from %s to %s.",
+                    fmtPlayer(setname.player), setname.oldName, setname.newName
+                );
+            } else {
+                this.logger.info(
+                    "Player %s changed their name from to %s.",
+                    fmtPlayer(setname.player), setname.newName
+                );
+            }
         });
         
         this.on("player.setcolor", setcolor => {

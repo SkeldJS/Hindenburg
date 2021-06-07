@@ -118,7 +118,7 @@
                         "wrongName": {
                             "type": "boolean"
                         },
-                        "nameTaken": {
+                        "badHostChecks": {
                             "type": "boolean"
                         },
                         "invalidChars": {

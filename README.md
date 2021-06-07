@@ -5,11 +5,11 @@ server, complete with plugins and a sophisticated and configurable anti-cheat.
 It uses [SkeldJS](https://github.com/SkeldJS/SkeldJS) to interface with the
 Among Us protocol, as well as keeping state.
 
-🚧 Hindenburg is currently in a work-in-progress, follow #7 to keep up-to-date
-on what to expect for the v1 release.
+🚧 Hindenburg is currently in a work-in-progress, follow [#7](https://github.com/SkeldJS/Hindenburg/issues/7)
+to keep up-to-date on what to expect for the v1 release.
 
 🔮 Hindenburg has its own section in the SkeldJS discord server, as a place to
-get help installing, discuss plugins or updates. https://discord.gg/8ewNJYmYAU
+get help installing or to discuss plugins and updates. https://discord.gg/8ewNJYmYAU
 
 ## Features
 

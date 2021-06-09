@@ -4,6 +4,8 @@ import {
     AcknowledgePacket,
     BaseRootPacket,
     DisconnectPacket,
+    GameDataMessage,
+    GameDataToMessage,
     HostGameMessage,
     JoinGameMessage,
     MessageDirection,
@@ -155,6 +157,13 @@ export class Worker {
             // todo: log received mod from client
         });
 
+        this.decoder.on(DisconnectPacket, async (message, direciton, connection) => {
+            if (!connection.sentDisconnect)
+                await connection.disconnect();
+
+            this.removeConnection(connection);
+        });
+
         this.decoder.on(AcknowledgePacket, (message, direction, connection) => {
             for (const sentPacket of connection.sentPackets) {
                 if (sentPacket.nonce === message.nonce) {
@@ -193,12 +202,27 @@ export class Worker {
             }
         });
 
-        this.decoder.on(DisconnectPacket, async (message, direciton, connection) => {
-            if (!connection.sentDisconnect)
-                await connection.disconnect();
+        this.decoder.on(GameDataMessage, (message, direction, connection) => {
+            if (!connection.room)
+                return;
 
-            this.removeConnection(connection);
+            // todo: handle movement packets with care
+            connection.room.broadcastMessages(message.children, [], undefined, [connection]);
         });
+
+        this.decoder.on(GameDataToMessage, (message, direction, connection) => {
+            if (!connection.room)
+                return;
+
+            const recipientConnection = connection.room.connections.get(message.recipientid);
+
+            if (!recipientConnection)
+                return;
+
+            connection.room.broadcastMessages(message._children, [], [recipientConnection]);
+        });
+
+        // todo: send back start game and similar packets
 
         setInterval(() => {
             for (const [ , connection ] of this.connections) {

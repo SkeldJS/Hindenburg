@@ -48,7 +48,7 @@ export class Room {
      * Broadcast [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * and root messages to all or some connections.
      * 
-     * Sends GameDataTo if a filter is applied with {@link include} or {@link exclude}.
+     * Sends GameDataTo if a filter is applied with {@link include}.
      * @param gamedata The [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * to send.
      * @param payload The [Root messages](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/README.md)
@@ -70,18 +70,18 @@ export class Room {
         include?: ClientConnection[],
         exclude?: ClientConnection[]
     ) {
-        const clientsToBroadcast = [...this.connections.values()] || include;
+        const clientsToBroadcast = include || [...this.connections.values()];
         const clientsToExclude = new Set(exclude);
         const promises: Promise<void>[] = [];
 
         for (const client of clientsToBroadcast) {
             if (clientsToExclude.has(client))
-                return;
+                continue;
 
             const messages = [
-                (gamedata.length ?
+                ...(gamedata.length ?
                     [
-                        (include || exclude)
+                        include
                             ? new GameDataToMessage(
                                 this.code,
                                 client.clientid,
@@ -152,6 +152,7 @@ export class Room {
         
         this.connections.set(client.clientid, client);
         this.players.set(client.clientid, player);
+        client.room = this;
     }
 
     /**

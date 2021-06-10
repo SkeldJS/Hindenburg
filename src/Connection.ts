@@ -1,11 +1,18 @@
 import dgram from "dgram";
+import chalk from "chalk";
 
-import { VersionInfo } from "@skeldjs/util";
-import { BaseRootMessage, BaseRootPacket, DisconnectPacket, JoinGameMessage, ReliablePacket, Serializable } from "@skeldjs/protocol";
+import { DisconnectReason } from "@skeldjs/core";
+
+import { Int2Code, VersionInfo } from "@skeldjs/util";
+import {
+    BaseRootPacket,
+    DisconnectPacket,
+    JoinGameMessage,
+    ReliablePacket
+} from "@skeldjs/protocol";
 
 import { Worker } from "./Worker";
 import { Room } from "./Room";
-import { DisconnectReason } from "@skeldjs/core";
 
 export class ClientMod {
     constructor(
@@ -13,6 +20,10 @@ export class ClientMod {
         public readonly modid: string,
         public readonly modversion: string
     ) {}
+    
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+        return chalk.green(this.modid) + chalk.grey("@" + this.modversion);
+    }
 }
 
 export class SentPacket {
@@ -126,6 +137,15 @@ export class ClientConnection {
         this.receivedPackets = [];
 
         this.roundTripPing = 0;
+    }
+
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+        let paren = this.clientid + ", " + this.rinfo.address + ", " + this.roundTripPing + "ms";
+        if (this.room)
+            paren += ", " + Int2Code(this.room.code)
+
+        return chalk.blue(this.username || "Unidentified")
+            + " " + chalk.grey("(" + paren + ")");
     }
 
     /**

@@ -1,5 +1,22 @@
-import { DisconnectReason, Hostable } from "@skeldjs/core";
-import { BaseGameDataMessage, BaseRootMessage, GameDataMessage, GameDataToMessage, HostGameMessage, JoinedGameMessage, JoinGameMessage, ReliablePacket, RemoveGameMessage, RemovePlayerMessage } from "@skeldjs/protocol";
+import chalk from "chalk";
+import winston from "winston";
+
+import { DisconnectReason, GameMap, Hostable } from "@skeldjs/core";
+
+import {
+    BaseGameDataMessage,
+    BaseRootMessage,
+    GameDataMessage,
+    GameDataToMessage,
+    GameOptions,
+    HostGameMessage,
+    JoinedGameMessage,
+    JoinGameMessage,
+    ReliablePacket,
+    RemoveGameMessage,
+    RemovePlayerMessage
+} from "@skeldjs/protocol";
+
 import { Code2Int, Int2Code } from "@skeldjs/util";
 
 import { ClientConnection } from "./Connection";
@@ -10,8 +27,18 @@ enum SpecialId {
     Nil = 2 ** 31 - 1
 }
 
+const logMaps = {
+    [GameMap.TheSkeld]: "the skeld",
+    [GameMap.MiraHQ]: "mira",
+    [GameMap.Polus]: "polus",
+    [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
+    [GameMap.Airship]: "airship"
+}
+
 export class Room {
-    private readonly _internal: Hostable;
+    public readonly _internal: Hostable;
+
+    logger: winston.Logger;
     
     connections: Map<number, ClientConnection>;
     players: Map<number, Player>;
@@ -20,9 +47,39 @@ export class Room {
     code: number;
 
     constructor(
-        public readonly worker: Worker
+        public readonly worker: Worker,
+        public readonly options: GameOptions
     ) {
         this._internal = new Hostable;
+
+        this.logger = winston.createLogger({
+            transports: [
+                new winston.transports.Console({
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.printf(info => {
+                            return `[${Int2Code(this.code)}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
+        
+        this._internal.on("player.chat", chat => {
+            const player = this.players.get(chat.player.id);
+            this.logger.info(
+                "%s chat message: %s",
+                player, chalk.red("\"" + chat.chatMessage + "\"")
+            );
+        });
 
         this.connections = new Map;
         this.players = new Map;
@@ -31,23 +88,18 @@ export class Room {
         this.code = 0;
     }
 
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+        let paren = logMaps[this.options.map] + ", "
+            + this.players.size + "/" + this.options.maxPlayers + " players";
+
+        return chalk.yellow(Int2Code(this.code)) + " " + chalk.grey("(" + paren + ")");
+    }
+
     /**
      * The host player of this room.
      */
     get host() {
         return this.players.get(this._internal.hostid);
-    }
-
-    /**
-     * Get the internal SkeldJS [Hostable](https://skeldjs.github.io/SkeldJS/classes/core.hostable.html) structure.
-     * @example
-     * ```ts
-     * const room = new Room(worker);
-     * console.log(room.getInternal()); // Hostable
-     * ```
-     */
-    getInternal() {
-        return this._internal;
     }
 
     /**
@@ -61,7 +113,7 @@ export class Room {
      * to send.
      * @param include The connections to include in the broadcast.
      * @param exclude The connections to exclude in the broadcast.
-     * @returns A promise that resolves when all packages have been sent.
+     * @returns A promise that resolves when all packets have been sent.
      * @example
      * ```ts
      * // Broadcast a scenechange message.
@@ -246,7 +298,6 @@ export class Room {
      * @param broadcast Whether to immediately broadcast the host update.
      */
     async setHost(host: ClientConnection|undefined, broadcast: boolean = true) {
-        // todo: implement broadcast
         if (broadcast) {
             await this.broadcastMessages([], [
                 new JoinGameMessage(

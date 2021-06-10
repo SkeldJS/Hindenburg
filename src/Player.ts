@@ -1,7 +1,11 @@
-import { DisconnectReason, PlayerData } from "@skeldjs/core";
-import { RemovePlayerMessage } from "@skeldjs/protocol";
+import chalk from "chalk";
+
+import { Color, ColorCodes, DisconnectReason, PlayerData } from "@skeldjs/core";
 import { ClientConnection } from "./Connection";
 import { Room } from "./Room";
+import { Int2Code } from "@skeldjs/util";
+
+const pChalk = new chalk.Instance({ level: 2 });
 
 export class Player {
     private readonly _internal: PlayerData;
@@ -23,6 +27,13 @@ export class Player {
     ) {
         this._internal = internal;
     }
+    
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+        let paren = this.clientid + ", " + this.connection.roundTripPing + "ms";
+
+        return chalk.blue((this._internal.info?.name) || "<No Name>")
+            + " " + chalk.grey("(" + paren + ")");
+    }
 
     /**
      * The server-unique client ID of this player.
@@ -31,6 +42,9 @@ export class Player {
         return this.connection?.clientid;
     }
 
+    /**
+     * Whether this player is the host of their room.
+     */
     get isHost() {
         return this === this.room.host;
     }

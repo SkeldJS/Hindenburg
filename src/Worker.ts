@@ -1,4 +1,5 @@
 import dgram from "dgram";
+import winston from "winston";
 
 import {
     AcknowledgePacket,
@@ -7,6 +8,7 @@ import {
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
+    GameOptions,
     HostGameMessage,
     JoinGameMessage,
     KickPlayerMessage,
@@ -39,6 +41,11 @@ import { DisconnectReason } from "@skeldjs/core";
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
 export class Worker {
+    /**
+     * Winston logger for this server.
+     */
+    logger: winston.Logger;
+
     /**
      * The UDP socket that all clients connect to.
      */
@@ -83,6 +90,28 @@ export class Worker {
          */
         public readonly config: HindenburgConfig
     ) {
+        this.logger = winston.createLogger({
+            transports: [
+                new winston.transports.Console({
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.label({ label: "worker" /* todo: handle cluster name & node id */ }),
+                        winston.format.printf(info => {
+                            return `[${info.label}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
+
         this.socket = dgram.createSocket("udp4");
         this.socket.on("message", this.handleMessage.bind(this));
 
@@ -124,8 +153,8 @@ export class Worker {
                 connection.numMods = message.modcount!;
             }
 
-            console.log("connection from %s identified as %s (v%s)",
-                connection.address, connection.username, connection.clientVersion);
+            this.logger.info("%s connected.",
+                connection);
 
             // todo: if reactor is disabled and client is using it, disconnect client
             // todo: if reactor is required and client is not using it, disconnect client
@@ -146,9 +175,8 @@ export class Worker {
         });
 
         this.decoder.on(ReactorModDeclarationMessage, (message, direction, connection) => {
-            if (connection.mods.length >= connection.numMods) {
-                // todo: warn if client is sending too many mods
-            }
+            if (connection.mods.length >= connection.numMods)
+                return;
 
             const clientMod = new ClientMod(
                 message.netid,
@@ -158,7 +186,8 @@ export class Worker {
 
             connection.mods.push(clientMod);
 
-            // todo: log received mod from client
+            this.logger.info("Got mod from %s: %s",
+                connection, clientMod);
         });
 
         this.decoder.on(DisconnectPacket, async (message, direciton, connection) => {
@@ -182,8 +211,11 @@ export class Worker {
                 return;
 
             const roomCode = this.generateRoomCode(6); // todo: handle config for 4 letter game codes
-            const room = this.createRoom(roomCode);
+            const room = await this.createRoom(roomCode, message.options);
             room.setHost(connection);
+
+            this.logger.info("%s created room %s",
+                connection, room)
 
             await connection.sendPacket(
                 new ReliablePacket(
@@ -213,10 +245,11 @@ export class Worker {
             if (!connection.room)
                 return;
 
+            connection.room._internal.decoder.emitDecoded(message, MessageDirection.Serverbound, connection.player);
 
             // todo: remove canceled packets (e.g. from the anti-cheat)
             // todo: handle movement packets with care
-            // todo: pipe packets to the room for state measuring
+            // todo: pipe packets to the room for state
             await connection.room.broadcastMessages(message.children, [], undefined, [connection]);
         });
 
@@ -232,7 +265,7 @@ export class Worker {
             await connection.room.broadcastMessages(message._children, [], [recipientConnection]);
         });
 
-        this.decoder.on([ StartGameMessage, EndGameMessage ], async (message, direction, connection) => {
+        this.decoder.on(StartGameMessage, async (message, direction, connection) => {
             if (!connection.room)
                 return;
 
@@ -243,6 +276,20 @@ export class Worker {
 
             await connection.room.broadcastMessages([], [
                 new StartGameMessage(connection.room.code)
+            ]);
+        });
+
+        this.decoder.on(EndGameMessage, async (message, direction, connection) => {
+            if (!connection.room)
+                return;
+
+            if (!connection.player?.isHost) {
+                // todo: proper anti-cheat config
+                return connection.disconnect(DisconnectReason.Hacking);
+            }
+
+            await connection.room.broadcastMessages([], [
+                new EndGameMessage(connection.room.code, message.reason, false)
             ]);
         });
 
@@ -407,39 +454,45 @@ export class Worker {
 
                 const cachedConnection = this.connections.get(rinfo.address + ":" + rinfo.port);
 
-                if (cachedConnection) {
-                    const connection = cachedConnection || new ClientConnection(this, rinfo, this.getNextClientId());
-                    if (!cachedConnection)
-                        this.connections.set(rinfo.address + ":" + rinfo.port, connection);
-                        
-                    if (parsedReliable.nonce !== undefined && !(parsedPacket instanceof AcknowledgePacket)) {
-                        if (parsedReliable.nonce <= connection.lastNonce) {
-                            // todo: warn that client is behind.
-                            return;
+                try {
+                    if (cachedConnection) {
+                        if (parsedReliable.nonce !== undefined && !(parsedPacket instanceof AcknowledgePacket)) {
+                            if (parsedReliable.nonce <= cachedConnection.lastNonce) {
+                                this.logger.warn("%s is behind (got %s, last nonce was %s)",
+                                    cachedConnection, parsedReliable.nonce, cachedConnection.lastNonce);
+                                return;
+                            }
+                            cachedConnection.lastNonce = parsedReliable.nonce;
                         }
-                        connection.lastNonce = parsedReliable.nonce;
+
+                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, cachedConnection);
+                    } else {
+                        if (!(parsedReliable instanceof ModdedHelloPacket))
+                            return;
+
+                        const connection = cachedConnection || new ClientConnection(this, rinfo, this.getNextClientId());
+                        if (!cachedConnection)
+                            this.connections.set(rinfo.address + ":" + rinfo.port, connection);
+
+                        if (parsedReliable.nonce !== undefined) {
+                            connection.lastNonce = parsedReliable.nonce;
+                        }
+
+                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, connection);
                     }
-
-                    await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, connection);
-                } else {
-                    if (!(parsedReliable instanceof ModdedHelloPacket))
-                        return;
-
-                    const connection = cachedConnection || new ClientConnection(this, rinfo, this.getNextClientId());
-                    if (!cachedConnection)
-                        this.connections.set(rinfo.address + ":" + rinfo.port, connection);
-
-                    await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, connection);
+                } catch (e) {
+                    const connection = this.getOrCreateConnection(rinfo);
+                    this.logger.error("Error occurred while processing packet from %s: %s",
+                        connection, e);
                 }
             } else {
                 const connection = this.getOrCreateConnection(rinfo);
-                // todo: handle bad packet
+                this.logger.error("%s sent an unknown root packet.", connection);
             }
         } catch (e) {
             const connection = this.getOrCreateConnection(rinfo);
-            void e;
+            this.logger.error("%s sent a malformed packet.", connection);
             console.log(e);
-            // todo: handle bad packet
         }
     }
 
@@ -489,14 +542,15 @@ export class Worker {
      * Create a room on this server.
      * @param code The game code for the room, see {@link Worker.generateRoomCode}
      * to generate one.
+     * @param options Game options for the room.
      * @returns The created room.
      */
-    createRoom(code: number) {
+    async createRoom(code: number, options: GameOptions) {
         if (this.rooms.has(code))
             throw new Error("A room with code '" + Int2Code(code) + "' already exists.");
 
-        const createdRoom = new Room(this);
-        createdRoom.setCode(code);
+        const createdRoom = new Room(this, options);
+        await createdRoom.setCode(code);
         this.rooms.set(code, createdRoom);
 
         return createdRoom;

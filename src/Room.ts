@@ -187,6 +187,8 @@ export class Room {
      * @param connection The client that is joining.
      */
     async handleJoin(connection: ClientConnection) {
+        // todo: handle wait for host. https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/01_joingame.md#client-to-server
+
         const playerData = await this._internal.handleJoin(connection.clientid);
         if (!playerData)
             throw new Error("Client is already connected to the room.");

@@ -4,14 +4,17 @@ import {
     AcknowledgePacket,
     BaseRootPacket,
     DisconnectPacket,
+    EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
     HostGameMessage,
     JoinGameMessage,
+    KickPlayerMessage,
     MessageDirection,
     PacketDecoder,
     PingPacket,
-    ReliablePacket
+    ReliablePacket,
+    StartGameMessage
 } from "@skeldjs/protocol";
 
 import {
@@ -31,6 +34,7 @@ import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { ClientConnection, ClientMod, SentPacket } from "./Connection";
 import { Room } from "./Room";
+import { DisconnectReason } from "@skeldjs/core";
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
@@ -198,19 +202,25 @@ export class Worker {
             const foundRoom = this.rooms.get(message.code);
 
             if (foundRoom) {
-                foundRoom.handleJoin(connection);
+                if (foundRoom.bans.has(connection.address)) {
+                    return connection.disconnect(DisconnectReason.Banned);
+                }
+                await foundRoom.handleJoin(connection);
             }
         });
 
-        this.decoder.on(GameDataMessage, (message, direction, connection) => {
+        this.decoder.on(GameDataMessage, async (message, direction, connection) => {
             if (!connection.room)
                 return;
 
+
+            // todo: remove canceled packets (e.g. from the anti-cheat)
             // todo: handle movement packets with care
-            connection.room.broadcastMessages(message.children, [], undefined, [connection]);
+            // todo: pipe packets to the room for state measuring
+            await connection.room.broadcastMessages(message.children, [], undefined, [connection]);
         });
 
-        this.decoder.on(GameDataToMessage, (message, direction, connection) => {
+        this.decoder.on(GameDataToMessage, async (message, direction, connection) => {
             if (!connection.room)
                 return;
 
@@ -219,10 +229,41 @@ export class Worker {
             if (!recipientConnection)
                 return;
 
-            connection.room.broadcastMessages(message._children, [], [recipientConnection]);
+            await connection.room.broadcastMessages(message._children, [], [recipientConnection]);
         });
 
-        // todo: send back start game and similar packets
+        this.decoder.on([ StartGameMessage, EndGameMessage ], async (message, direction, connection) => {
+            if (!connection.room)
+                return;
+
+            if (!connection.player?.isHost) {
+                // todo: proper anti-cheat config
+                return connection.disconnect(DisconnectReason.Hacking);
+            }
+
+            await connection.room.broadcastMessages([], [
+                new StartGameMessage(connection.room.code)
+            ]);
+        });
+
+        this.decoder.on([ KickPlayerMessage ], async (message, direction, connection) => {
+            if (!connection.room || !connection.player)
+                return;
+
+            if (!connection.player.isHost) {
+                // todo: proper anti-cheat config
+                return connection.disconnect(DisconnectReason.Hacking);
+            }
+
+            const targetPlayer = connection.room.players.get(message.clientid);
+
+            if (!targetPlayer)
+                return;
+
+            await targetPlayer.kick(message.banned);
+        });
+
+        // todo: handle report player
 
         setInterval(() => {
             for (const [ , connection ] of this.connections) {

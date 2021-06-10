@@ -140,6 +140,17 @@ export class ClientConnection {
     }
 
     /**
+     * Get this client's player in the room that they're connected to.
+     * @example
+     * ```ts
+     * connection.player.setName("obama");
+     * ```
+     */
+    get player() {
+        return this.room?.players.get(this.clientid);
+    }
+
+    /**
      * Get the next nonce to use for a reliable packet for this connection.
      * @returns An incrementing nonce.
      * @example
@@ -217,6 +228,10 @@ export class ClientConnection {
         this.clientVersion = undefined;
         this.numMods = 0;
         this.mods = [];
+
+        if (this.room) {
+            await this.room.handleLeave(this, reason || DisconnectReason.None);
+        }
     }
 
     /**

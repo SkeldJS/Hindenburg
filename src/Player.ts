@@ -1,4 +1,5 @@
-import { PlayerData } from "@skeldjs/core";
+import { DisconnectReason, PlayerData } from "@skeldjs/core";
+import { RemovePlayerMessage } from "@skeldjs/protocol";
 import { ClientConnection } from "./Connection";
 import { Room } from "./Room";
 
@@ -30,6 +31,10 @@ export class Player {
         return this.connection?.clientid;
     }
 
+    get isHost() {
+        return this === this.room.host;
+    }
+
     /**
      * Get the internal SkeldJS [PlayerData](https://skeldjs.github.io/SkeldJS/classes/core.playerdata.html) structure.
      * @example
@@ -40,5 +45,28 @@ export class Player {
      */
     getInternal() {
         return this._internal;
+    }
+
+    /**
+     * Kick this player from the room.
+     * @param ban Whether this player should be banned for their war-crimes.
+     */
+    async kick(ban: boolean) {
+        const reason = ban
+            ? DisconnectReason.Banned
+            : DisconnectReason.Kicked;
+        await this.room.handleLeave(this.connection, reason);
+        await this.connection.disconnect(reason);
+        if (ban) {
+            this.banFromRoom();
+        }
+    }
+
+    /**
+     * Ban anyone from this player's IP from joining the room. Note that this
+     * does not disconnect the player, see {@link Player.kick}.
+     */
+    banFromRoom() {
+        this.room.bans.add(this.connection.rinfo.address);
     }
 }

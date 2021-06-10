@@ -1,16 +1,21 @@
 import { DisconnectReason, Hostable } from "@skeldjs/core";
-import { BaseGameDataMessage, BaseRootMessage, GameDataMessage, GameDataToMessage, JoinedGameMessage, JoinGameMessage, ReliablePacket, RemovePlayerMessage } from "@skeldjs/protocol";
-import { Code2Int } from "@skeldjs/util";
+import { BaseGameDataMessage, BaseRootMessage, GameDataMessage, GameDataToMessage, HostGameMessage, JoinedGameMessage, JoinGameMessage, ReliablePacket, RemoveGameMessage, RemovePlayerMessage } from "@skeldjs/protocol";
+import { Code2Int, Int2Code } from "@skeldjs/util";
 
 import { ClientConnection } from "./Connection";
 import { Player } from "./Player";
 import { Worker } from "./Worker";
+
+enum SpecialId {
+    Nil = 2 ** 31 - 1
+}
 
 export class Room {
     private readonly _internal: Hostable;
     
     connections: Map<number, ClientConnection>;
     players: Map<number, Player>;
+    bans: Set<string>;
 
     code: number;
 
@@ -21,6 +26,7 @@ export class Room {
 
         this.connections = new Map;
         this.players = new Map;
+        this.bans = new Set;
 
         this.code = 0;
     }
@@ -110,38 +116,50 @@ export class Room {
     }
 
     /**
+     * Destroy this room, broadcasting a [RemoveGame](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/03_removegame.md)
+     * message to all clients.
+     */
+    async destroy() {
+        await this.broadcastMessages([], [
+            new RemoveGameMessage(DisconnectReason.ServerRequest)
+        ]);
+
+        this.worker.rooms.delete(this.code);
+    }
+
+    /**
      * Handle a client attempting to join this room.
      * 
      * See https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/01_joingame.md
      * for more information.
-     * @param client The client that is joining.
+     * @param connection The client that is joining.
      */
-    async handleJoin(client: ClientConnection) {
-        const playerData = await this._internal.handleJoin(client.clientid);
+    async handleJoin(connection: ClientConnection) {
+        const playerData = await this._internal.handleJoin(connection.clientid);
         if (!playerData)
             throw new Error("Client is already connected to the room.");
 
-        const player = new Player(client, this, playerData);
+        const player = new Player(connection, this, playerData);
 
         if (this.connections?.size === 0) {
-            this._internal.hostid = client.clientid;
+            await this.setHost(connection, false);
         }
 
         await this.broadcastMessages([], [
             new JoinGameMessage(
                 this.code,
-                client.clientid,
+                connection.clientid,
                 this._internal.hostid
             )
         ]);
 
-        await client.sendPacket(
+        await connection.sendPacket(
             new ReliablePacket(
-                client.getNextNonce(),
+                connection.getNextNonce(),
                 [
                     new JoinedGameMessage(
                         this.code,
-                        client.clientid,
+                        connection.clientid,
                         this._internal.hostid,
                         [...this.connections.values()]
                             .map(connection => connection.clientid)
@@ -150,39 +168,43 @@ export class Room {
             )
         );
         
-        this.connections.set(client.clientid, client);
-        this.players.set(client.clientid, player);
-        client.room = this;
+        this.connections.set(connection.clientid, connection);
+        this.players.set(connection.clientid, player);
+        connection.room = this;
     }
 
     /**
      * Handling a client leaving or being kicked from the room.
-     * @param client The client that is leaving.
+     * @param connection The client that is leaving.
      * @param reason The reason for why the client is leaving.
      */
-    async handleLeave(client: ClientConnection, reason: DisconnectReason) {
-        if (!this.connections.has(client.clientid))
+    async handleLeave(connection: ClientConnection, reason: DisconnectReason) {
+        if (!this.connections.has(connection.clientid))
             throw new Error("Client is not connected to the room.");
 
-        await this._internal.handleLeave(client.clientid);
+        await this._internal.handleLeave(connection.clientid);
 
         await this.broadcastMessages([], [
             new RemovePlayerMessage(
                 this.code,
-                client.clientid,
+                connection.clientid,
                 reason,
-                client.clientid
+                connection.clientid
             )
         ]);
 
-        this.connections.delete(client.clientid);
-        this.players.delete(client.clientid);
+        this.connections.delete(connection.clientid);
+        this.players.delete(connection.clientid);
+        connection.room = undefined;
 
-        if (client.clientid === this._internal.hostid) {
+        if (connection.clientid === this._internal.hostid) {
             if (this.connections.size) {
-                this._internal.hostid = [...this.connections.values()][0].clientid;
+                await this.setHost(
+                    [...this.connections.values()][0],
+                    false
+                );
             } else {
-                this._internal.hostid = 0;
+                await this.setHost(undefined, false);
             }
         }
     }
@@ -206,16 +228,40 @@ export class Room {
             return this.setCode(Code2Int(code));
         }
 
-        // todo: implement broadcast
+        if (this.worker.rooms.has(code))
+            throw new Error("A room with code '" + Int2Code(code) + "' already exists.");
+
+        await this.broadcastMessages([], [
+            new HostGameMessage(code)
+        ]);
+
+        this.worker.rooms.set(code, this);
+        this.worker.rooms.delete(this.code);
         this.code = code;
     }
 
     /**
      * Change the host of the room.
      * @param host The client to set as host.
+     * @param broadcast Whether to immediately broadcast the host update.
      */
-    setHost(host: ClientConnection) {
+    async setHost(host: ClientConnection|undefined, broadcast: boolean = true) {
         // todo: implement broadcast
-        this._internal.hostid = host.clientid;
+        if (broadcast) {
+            await this.broadcastMessages([], [
+                new JoinGameMessage(
+                    this.code,
+                    SpecialId.Nil,
+                    host ? host.clientid : SpecialId.Nil
+                ),
+                new RemovePlayerMessage(
+                    this.code,
+                    SpecialId.Nil,
+                    DisconnectReason.None,
+                    host ? host.clientid : SpecialId.Nil
+                )
+            ]);
+        }
+        this._internal.hostid = host ? host.clientid : 0;
     }
 }

@@ -13,6 +13,10 @@ export class VoteKicks {
      * Add a vote from a player to kick someone else.
      * @param voter The voter to add.
      * @param target Who to vote kick.
+     * @example
+     * ```ts
+     * // Make the 
+     * ```
      */
     addVote(voter: Player, target: Player) {
         const votesFor = this.getVotesFor(target);

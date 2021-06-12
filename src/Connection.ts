@@ -1,9 +1,10 @@
 import dgram from "dgram";
 import chalk from "chalk";
+import util from "util";
 
-import { DisconnectReason } from "@skeldjs/core";
+import { DisconnectReason } from "@skeldjs/constant";
 
-import { Int2Code, VersionInfo } from "@skeldjs/util";
+import { VersionInfo } from "@skeldjs/util";
 import {
     BaseRootPacket,
     DisconnectPacket,
@@ -12,7 +13,7 @@ import {
 } from "@skeldjs/protocol";
 
 import { Worker } from "./Worker";
-import { Room } from "./Room";
+import { Room } from "./room/Room";
 
 export class ClientMod {
     constructor(
@@ -35,7 +36,7 @@ export class SentPacket {
     ) {}
 }
 
-export class ClientConnection {
+export class Connection {
     /**
      * Whether the client has successfully identified with the server.
      * 
@@ -43,6 +44,7 @@ export class ClientConnection {
      * of [0x08 Hello](https://github.com/codyphobe/among-us-protocol/blob/master/01_packet_structure/05_packet_types.md#0x08-hello))
      */
     hasIdentified: boolean;
+
     /**
      * Whether a disconnect packet has been sent to this client.
      * 
@@ -50,18 +52,21 @@ export class ClientConnection {
      * back and forth.
      */
     sentDisconnect: boolean;
+
     /**
      * Whether this client sent a modded Reactor message, and thus is using a
      * [Reactor](https://reactor.gg) modded client.
      */
     usingReactor: boolean;
+
     /**
-     * The username that this client identified with. Sent with the {@link ClientConnection.hasIdentified identify}
+     * The username that this client identified with. Sent with the {@link Connection.hasIdentified identify}
      * packet.
      */
     username: string;
+
     /**
-     * The version of the client's game. Sent with the {@link ClientConnection.hasIdentified identify}
+     * The version of the client's game. Sent with the {@link Connection.hasIdentified identify}
      * packet.
      */
     clientVersion?: VersionInfo;
@@ -71,9 +76,10 @@ export class ClientConnection {
      * if the client is using a Reactor modded client.
      */
     numMods: number;
+
     /**
      * The mods that the client has loaded. Not necessarily complete, see
-     * {@link ClientConnection.numMods} to compare the list size whether
+     * {@link Connection.numMods} to compare the list size whether
      * it is complete.
      */
     mods: ClientMod[];
@@ -91,6 +97,7 @@ export class ClientConnection {
      * re-send packets that have not been acknowledged.
      */
     sentPackets: SentPacket[];
+    
     /**
      * An array of the 8 latest packet nonces that were received from this client.
      * Used to re-send acknowledgements that the client did not receive.
@@ -120,7 +127,7 @@ export class ClientConnection {
         /**
          * The server-unique client ID for this client, see {@link Worker.getNextClientId}.
          */
-        public readonly clientid: number
+        public readonly clientId: number
     ) {
         this.hasIdentified = false;
         this.sentDisconnect = false;
@@ -140,9 +147,9 @@ export class ClientConnection {
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        let paren = this.clientid + ", " + this.rinfo.address + ", " + this.roundTripPing + "ms";
+        let paren = this.clientId + ", " + this.rinfo.address + ", " + this.roundTripPing + "ms";
         if (this.room)
-            paren += ", " + Int2Code(this.room.code)
+            paren += ", " + util.inspect(this.room.code, false, 0, true);
 
         return chalk.blue(this.username || "Unidentified")
             + " " + chalk.grey("(" + paren + ")");
@@ -167,7 +174,7 @@ export class ClientConnection {
      * ```
      */
     get player() {
-        return this.room?.players.get(this.clientid);
+        return this.room?.players.get(this.clientId);
     }
 
     /**
@@ -258,7 +265,7 @@ export class ClientConnection {
      * Emit an error that occurred while the client attempted to create or join
      * a room.
      * 
-     * Note that this does not disconnect the client, see {@link ClientConnection.disconnect}.
+     * Note that this does not disconnect the client, see {@link Connection.disconnect}.
      * @param reason The error that the client encountered while creating or
      * joining their room. Set to a string to use a custom message.
      * @param message If the reason is custom, a custom message for the error

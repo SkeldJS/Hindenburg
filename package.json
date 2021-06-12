@@ -3,7 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "build": "tsc -p ./"
+  },
   "devDependencies": {
     "@swc/core": "^1.2.60",
     "@types/chalk": "^2.2.0",
@@ -12,7 +15,6 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "@skeldjs/core": "^2.10.11",
     "@skeldjs/protocol": "^2.10.11",
     "@skeldjs/reactor": "^2.10.11",
     "@skeldjs/util": "^2.10.11",

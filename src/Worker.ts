@@ -1,6 +1,8 @@
 import dgram from "dgram";
 import winston from "winston";
 
+import { DisconnectReason, GameState } from "@skeldjs/constant";
+
 import {
     AcknowledgePacket,
     BaseRootPacket,
@@ -34,9 +36,8 @@ import {
 import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
-import { ClientConnection, ClientMod, SentPacket } from "./Connection";
-import { Room } from "./Room";
-import { DisconnectReason } from "@skeldjs/core";
+import { Connection, ClientMod, SentPacket } from "./Connection";
+import { Room } from "./room/Room";
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
@@ -53,9 +54,10 @@ export class Worker {
 
     /**
      * All client connections connected to this server, mapped by their address:port,
-     * see {@link ClientConnection.address}.
+     * see {@link Connection.address}.
      */
-    connections: Map<string, ClientConnection>;
+    connections: Map<string, Connection>;
+
     /**
      * All rooms created on this server, mapped by their game code as an integer.
      * 
@@ -66,7 +68,7 @@ export class Worker {
     /**
      * The packet decoder used to decode incoming udp packets.
      */
-    decoder: PacketDecoder<ClientConnection>;
+    decoder: PacketDecoder<Connection>;
 
     /**
      * The last client ID that was used.
@@ -212,7 +214,6 @@ export class Worker {
 
             const roomCode = this.generateRoomCode(6); // todo: handle config for 4 letter game codes
             const room = await this.createRoom(roomCode, message.options);
-            room.setHost(connection);
 
             this.logger.info("%s created room %s",
                 connection, room)
@@ -225,6 +226,14 @@ export class Worker {
                     ]
                 )
             );
+
+            setTimeout(() => {
+                if (room.players.host) {
+                    console.log(room.voteKicks.getVotesFor(room.players.host));
+                } else {
+                    console.log("There was no host.");
+                }
+            }, 60000);
         });
 
         this.decoder.on(JoinGameMessage, async (message, direction, connection) => {
@@ -235,34 +244,49 @@ export class Worker {
 
             if (foundRoom) {
                 if (foundRoom.bans.has(connection.address)) {
+                    this.logger.warn("%s attempted to join %s but they were banned.",
+                        connection, foundRoom)
                     return connection.disconnect(DisconnectReason.Banned);
                 }
+                if (foundRoom.players.size >= foundRoom.options.maxPlayers) {
+                    this.logger.warn("%s attempted to join %s but it was full.",
+                        connection, foundRoom)
+                    return connection.joinError(DisconnectReason.GameFull);
+                }
+                if (foundRoom.state === GameState.Started) { // Use Room.state when that is implemented
+                    this.logger.warn("%s attempted to join %s but the game had already started.",
+                        connection, foundRoom)
+                    return connection.joinError(DisconnectReason.GameStarted);
+                }
                 await foundRoom.handleJoin(connection);
+            } else {
+                this.logger.info("%s attempted to join %s but there was no room with that code.",
+                    connection, Int2Code(message.code));
+                return connection.joinError(DisconnectReason.GameNotFound);
             }
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, connection) => {
-            if (!connection.room)
+            if (!connection.player)
                 return;
 
-            connection.room._internal.decoder.emitDecoded(message, MessageDirection.Serverbound, connection.player);
-
+            await connection.room!.decoder.emitDecoded(message, direction, connection.player);
             // todo: remove canceled packets (e.g. from the anti-cheat)
             // todo: handle movement packets with care
             // todo: pipe packets to the room for state
-            await connection.room.broadcastMessages(message.children, [], undefined, [connection]);
+            await connection.room!.broadcastMessages(message.children, [], undefined, [connection.player]);
         });
 
         this.decoder.on(GameDataToMessage, async (message, direction, connection) => {
-            if (!connection.room)
+            if (!connection.player)
                 return;
 
-            const recipientConnection = connection.room.connections.get(message.recipientid);
+            const recipientPlayer = connection.room!.players.get(message.recipientid);
 
-            if (!recipientConnection)
+            if (!recipientPlayer?.connection)
                 return;
 
-            await connection.room.broadcastMessages(message._children, [], [recipientConnection]);
+            await connection.room!.broadcastMessages(message._children, [], [recipientPlayer]);
         });
 
         this.decoder.on(StartGameMessage, async (message, direction, connection) => {
@@ -275,7 +299,7 @@ export class Worker {
             }
 
             await connection.room.broadcastMessages([], [
-                new StartGameMessage(connection.room.code)
+                new StartGameMessage(connection.room.code.id)
             ]);
         });
 
@@ -289,7 +313,7 @@ export class Worker {
             }
 
             await connection.room.broadcastMessages([], [
-                new EndGameMessage(connection.room.code, message.reason, false)
+                new EndGameMessage(connection.room.code.id, message.reason, false)
             ]);
         });
 
@@ -363,14 +387,14 @@ export class Worker {
      * Retrieve or create a connection based on its remote information received
      * from a [socket `message` event](https://nodejs.org/api/dgram.html#dgram_event_message).
      */
-    getOrCreateConnection(rinfo: dgram.RemoteInfo): ClientConnection {
+    getOrCreateConnection(rinfo: dgram.RemoteInfo): Connection {
         const fmt = rinfo.address + ":" + rinfo.port;
         const cached = this.connections.get(fmt);
         if (cached)
             return cached;
 
         const clientid = this.getNextClientId();
-        const connection = new ClientConnection(this, rinfo, clientid);
+        const connection = new Connection(this, rinfo, clientid);
         this.connections.set(fmt, connection);
         return connection;
     }
@@ -379,10 +403,10 @@ export class Worker {
      * Remove a connection from this server.
      * 
      * Note that this does not notify the client of the connection that they have
-     * been disconnected, see {@link ClientConnection.disconnect}.
+     * been disconnected, see {@link Connection.disconnect}.
      * @param connection The connection to remove.
      */
-    removeConnection(connection: ClientConnection) {
+    removeConnection(connection: Connection) {
         this.connections.delete(connection.rinfo.address + ":" + connection.rinfo.port);
     }
 
@@ -416,7 +440,7 @@ export class Worker {
      * );
      * ```
      */
-    async sendPacket(connection: ClientConnection, packet: BaseRootPacket) {
+    async sendPacket(connection: Connection, packet: BaseRootPacket) {
         const reliablePacket = packet as ReliableSerializable;
 
         const writer = HazelWriter.alloc(512);
@@ -470,7 +494,7 @@ export class Worker {
                         if (!(parsedReliable instanceof ModdedHelloPacket))
                             return;
 
-                        const connection = cachedConnection || new ClientConnection(this, rinfo, this.getNextClientId());
+                        const connection = cachedConnection || new Connection(this, rinfo, this.getNextClientId());
                         if (!cachedConnection)
                             this.connections.set(rinfo.address + ":" + rinfo.port, connection);
 
@@ -550,7 +574,7 @@ export class Worker {
             throw new Error("A room with code '" + Int2Code(code) + "' already exists.");
 
         const createdRoom = new Room(this, options);
-        await createdRoom.setCode(code);
+        await createdRoom.code.set(code);
         this.rooms.set(code, createdRoom);
 
         return createdRoom;

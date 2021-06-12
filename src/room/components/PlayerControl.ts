@@ -1,4 +1,6 @@
+import { BaseRpcMessage, SetNameMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
+import { RpcMessageTag } from "@skeldjs/constant";
 import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
@@ -28,5 +30,18 @@ export class PlayerControl implements Component {
         }
         writer.uint8(this.owner.playerId);
         return isSpawn;
+    }
+
+    async HandleRpc(message: BaseRpcMessage) {
+        switch (message.tag) {
+            case RpcMessageTag.SetName:
+                await this._handleSetName(message as SetNameMessage);
+                break;
+        }
+    }
+
+    private async _handleSetName(message: SetNameMessage) {
+        if (this.owner.info)
+            this.owner.info.name = message.name;
     }
 }

@@ -1,3 +1,4 @@
+import { BaseRpcMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 import { Component } from "../Component";
 import { Player } from "../Player";
@@ -16,5 +17,9 @@ export class PlayerPhysics implements Component {
 
     Serialize(writer: HazelWriter, isSpawn: boolean) {
         return false;
+    }
+
+    async HandleRpc(message: BaseRpcMessage) {
+        
     }
 }

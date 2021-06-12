@@ -23,6 +23,7 @@ import {
     ReliablePacket,
     RemoveGameMessage,
     RemovePlayerMessage,
+    RpcMessage,
     SpawnMessage
 } from "@skeldjs/protocol";
 
@@ -197,6 +198,15 @@ export class Room {
             component.Deserialize(dataReader, false);
         });
 
+        this.decoder.on(RpcMessage, async (message, direction, player) => {
+            const component = this.components.get(message.netid);
+
+            if (!component)
+                return;
+
+            await component.HandleRpc(message.data);
+        });
+
         this.decoder.on(SpawnMessage, (message, direction, player) => {
             const owner = message.ownerid === -2 ? this : this.players.get(message.ownerid);
 
@@ -247,10 +257,6 @@ export class Room {
                 );
             }
         }
-    }
-
-    getPlayerByPlayerId(playerId: number) {
-        return this.players.playerIds.get(playerId);
     }
 
     /**

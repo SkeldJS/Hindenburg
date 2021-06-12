@@ -18,6 +18,13 @@ export class ComponentStore extends Map<number, Component> {
         super();
     }
 
+    /**
+     * Add a component to the room. Also assigns the component variables on objects
+     * like {@link Player.control} or {@link ComponentStore.gameData}
+     * @param spawnType 
+     * @param idx a
+     * @param component 
+     */
     addComponent(spawnType: SpawnType, idx: number, component: Component) {
         if (spawnType === SpawnType.GameData) {
             switch (idx) {
@@ -29,18 +36,19 @@ export class ComponentStore extends Map<number, Component> {
                 break;
             }
         }
-        if (spawnType === SpawnType.Player) {
-            const playerComponent = component as PlayerControl|PlayerPhysics|CustomNetworkTransform;
-            switch (idx) {
-            case 0:
-                playerComponent.owner.control = playerComponent as PlayerControl;
-                break;
-            case 1:
-                playerComponent.owner.physics = playerComponent as PlayerPhysics;
-                break;
-            case 2:
-                playerComponent.owner.transform = playerComponent as CustomNetworkTransform;
-                break;
+        if (component.owner instanceof Player) {
+            if (spawnType === SpawnType.Player) {
+                switch (idx) {
+                case 0:
+                    component.owner.components.control = component as PlayerControl;
+                    break;
+                case 1:
+                    component.owner.components.physics = component as PlayerPhysics;
+                    break;
+                case 2:
+                    component.owner.components.transform = component as CustomNetworkTransform;
+                    break;
+                }
             }
         }
         this.set(component.netid, component);
@@ -54,14 +62,14 @@ export class ComponentStore extends Map<number, Component> {
             this.voteBanSystem = undefined;
         }
         if (component.owner instanceof Player) {
-            if (component.owner.control === component) {
-                component.owner.control = undefined;
+            if (component.owner.components.control === component) {
+                component.owner.components.control = undefined;
             }
-            if (component.owner.physics === component) {
-                component.owner.physics = undefined;
+            if (component.owner.components.physics === component) {
+                component.owner.components.physics = undefined;
             }
-            if (component.owner.transform === component) {
-                component.owner.transform = undefined;
+            if (component.owner.components.transform === component) {
+                component.owner.components.transform = undefined;
             }
         }
         return this.delete(component.netid);

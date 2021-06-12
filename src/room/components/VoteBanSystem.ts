@@ -1,3 +1,4 @@
+import { BaseRpcMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 import { Component } from "../Component";
 import { Player } from "../Player";
@@ -46,5 +47,9 @@ export class VoteBanSystem implements Component {
             return true;
         }
         return false;
+    }
+
+    async HandleRpc(message: BaseRpcMessage) {
+        
     }
 }

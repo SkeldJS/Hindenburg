@@ -1,3 +1,4 @@
+import { BaseRpcMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 import { Component } from "../Component";
 import { Room } from "../Room";
@@ -55,5 +56,9 @@ export class GameData implements Component {
             }
         }
         return flag;
+    }
+
+    async HandleRpc(message: BaseRpcMessage) {
+        
     }
 }

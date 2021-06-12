@@ -5,15 +5,7 @@ import { Vector2 } from "@skeldjs/util";
 
 import { Connection } from "../Connection";
 import { Room } from "./Room";
-import { PlayerControl } from "./components/PlayerControl";
-import { PlayerPhysics } from "./components/PlayerPhysics";
-import { CustomNetworkTransform } from "./components/CustomNetworkTransform";
-
-export enum PlayerComponents {
-    PlayerControl,
-    PlayerPhysics,
-    CustomNetworkTransform
-}
+import { PlayerComponentStore } from "./util/PlayerComponentStore";
 
 export class Player {
     /**
@@ -37,19 +29,9 @@ export class Player {
     velocity: Vector2;
 
     /**
-     * This player's [PlayerControl](https://github.com/codyphobe/among-us-protocol/blob/master/05_innernetobject_types/04_playercontrol.md) component.
+     * The components spawned for this player.
      */
-    control?: PlayerControl;
-
-    /**
-     * This player's [PlayerPhysics](https://github.com/codyphobe/among-us-protocol/blob/master/05_innernetobject_types/09_playerphysics.md) component.
-     */
-    physics?: PlayerPhysics;
-
-    /**
-     * This player's [CustomNetworkTransform](https://github.com/codyphobe/among-us-protocol/blob/master/05_innernetobject_types/10_customnetworktransform.md) component.
-     */
-    transform?: CustomNetworkTransform;
+    components: PlayerComponentStore;
 
     constructor(
         /**
@@ -66,6 +48,8 @@ export class Player {
         this.playerId = 0;
         this.position = Vector2.null;
         this.velocity = Vector2.null;
+
+        this.components = new PlayerComponentStore;
     }
     
     [Symbol.for("nodejs.util.inspect.custom")]() {

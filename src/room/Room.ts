@@ -131,7 +131,7 @@ export class Room {
     hostid?: number;
 
     /**
-     * A stream of gamedata messages that are sent and flushed every FixedUpdate. (50 times per second)
+     * A stream of gamedata messages that are sent and flushed every {@link Room.FixedUpdate}. (50 times per second)
      */
     gamedataStream: BaseGameDataMessage[];
 
@@ -270,6 +270,13 @@ export class Room {
         return util.inspect(this.code, false, 0, true) + " " + chalk.grey("(" + paren + ")");
     }
 
+    /**
+     * Call a Unity [FixedUpdate](https://docs.unity3d.com/ScriptReference/MonoBehaviour.FixedUpdate.html)-like
+     * method on all components.
+     * 
+     * Also flushes {@link Room.gamedataStream} and broadcasts to all players.
+     * @param deltaTime 
+     */
     async FixedUpdate(deltaTime: number) {
         for (const [ netid, component ] of this.components) {
             const writer = HazelWriter.alloc(512);
@@ -353,7 +360,7 @@ export class Room {
 
     /**
      * Destroy this room, broadcasting a [RemoveGame](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/03_removegame.md)
-     * message to all clients.
+     * message to all clients and removing itself from the server.
      */
     async destroy() {
         await this.broadcastMessages([], [

@@ -1,10 +1,13 @@
-import { BaseRpcMessage, RpcMessage, SetNameMessage } from "@skeldjs/protocol";
+import { BaseRpcMessage, RpcMessage, SetColorMessage, SetNameMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
-import { RpcMessageTag } from "@skeldjs/constant";
+import { Color, RpcMessageTag } from "@skeldjs/constant";
 import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
-import { PlayerSetNameEvent } from "../events";
+import {
+    PlayerSetColorEvent,
+    PlayerSetNameEvent
+} from "../events";
 
 export class PlayerControl implements Component {
     constructor(
@@ -68,7 +71,8 @@ export class PlayerControl implements Component {
     }
 
     private _setName(name: string) {
-        if (this.owner.info) this.owner.info.name = name;
+        if (this.owner.info)
+            this.owner.info.name = name;
     }
 
     rpcSetName(name: string) {
@@ -77,6 +81,48 @@ export class PlayerControl implements Component {
                 this.netid,
                 new SetNameMessage(
                     name
+                )
+            )
+        );
+    }
+
+    private async _handleSetColor(message: SetColorMessage) {
+        const oldColor = this.owner.info?.color;
+
+        this._setColor(message.color);
+        const ev = await this.owner.emit(
+            new PlayerSetColorEvent(
+                this.room,
+                this.owner,
+                message,
+                oldColor || -1,
+                message.color
+            )
+        );
+
+        if (ev.reverted) {
+            this._setColor(oldColor || -1);
+            this.rpcSetColor(ev.alteredColor);
+            return;
+        }
+
+        if (ev.alteredColor !== message.color) {
+            this._setColor(ev.alteredColor);
+            this.rpcSetColor(ev.alteredColor);
+        }
+    }
+
+    private _setColor(name: Color) {
+        if (this.owner.info)
+            this.owner.info.color = name;
+    }
+
+    rpcSetColor(color: Color) {
+        this.room.gamedataStream.push(
+            new RpcMessage(
+                this.netid,
+                new SetColorMessage(
+                    color
                 )
             )
         );

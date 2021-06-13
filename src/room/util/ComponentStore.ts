@@ -9,7 +9,16 @@ import { Player } from "../Player";
 import { Room } from "../Room";
 
 export class ComponentStore extends Map<number, Component> {
+    /**
+     * The global room's [GameData](https://github.com/codyphobe/among-us-protocol/blob/master/05_innernetobject_types/03_gamedata.md)
+     * object.
+     */
     gameData?: GameData;
+    
+    /**
+     * The global room's [VoteBanSystem](https://github.com/codyphobe/among-us-protocol/blob/master/05_innernetobject_types/08_votebansystem.md)
+     * object.
+     */
     voteBanSystem?: VoteBanSystem;
 
     constructor(
@@ -20,10 +29,10 @@ export class ComponentStore extends Map<number, Component> {
 
     /**
      * Add a component to the room. Also assigns the component variables on objects
-     * like {@link Player.control} or {@link ComponentStore.gameData}
-     * @param spawnType 
-     * @param idx a
-     * @param component 
+     * like {@link PlayerComponentStore.control} or {@link ComponentStore.gameData}
+     * @param spawnType The type of spawn that this component is for.
+     * @param idx The index of this component for the spawn object.
+     * @param component The component to add.
      */
     addComponent(spawnType: SpawnType, idx: number, component: Component) {
         if (spawnType === SpawnType.GameData) {
@@ -54,6 +63,11 @@ export class ComponentStore extends Map<number, Component> {
         this.set(component.netid, component);
     }
 
+    /**
+     * Remove a component from the room. Also removes the component from objects
+     * like {@link PlayerComponentStore.transform} or {@link ComponentStore.voteBanSystem}.
+     * @param component The component to remove.
+     */
     removeComponent(component: Component) {
         if (this.gameData === component) {
             this.gameData = undefined;
@@ -72,6 +86,6 @@ export class ComponentStore extends Map<number, Component> {
                 component.owner.components.transform = undefined;
             }
         }
-        return this.delete(component.netid);
+        this.delete(component.netid);
     }
 }

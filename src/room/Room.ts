@@ -5,7 +5,9 @@ import winston from "winston";
 import {
     DisconnectReason,
     GameMap,
+    GameOverReason,
     GameState,
+    LimboStates,
     SpawnType
 } from "@skeldjs/constant";
 
@@ -14,6 +16,7 @@ import {
     BaseRootMessage,
     DataMessage,
     DespawnMessage,
+    EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
     GameOptions,
@@ -24,7 +27,9 @@ import {
     RemoveGameMessage,
     RemovePlayerMessage,
     RpcMessage,
-    SpawnMessage
+    SpawnMessage,
+    StartGameMessage,
+    WaitForHostMessage
 } from "@skeldjs/protocol";
 
 import { HazelReader, HazelWriter } from "@skeldjs/util";
@@ -213,6 +218,10 @@ export class Room {
             if (!owner)
                 return;
             
+            if (owner instanceof Player) {
+                owner.limboState = LimboStates.NotLimbo;
+            }
+            
             for (let i = 0; i < message.components.length; i++) {
                 const mComponent = message.components[i];
 
@@ -237,6 +246,20 @@ export class Room {
             if (!component)
                 return;
             this.components.removeComponent(component);
+        });
+
+        this.decoder.on(StartGameMessage, (message, direction, player) => {
+            this.state = GameState.Started;
+
+            this.logger.info("Game started");
+        });
+
+        this.decoder.on(EndGameMessage, (message, direction, player) => {
+            this.state = GameState.Ended;
+            this.players.clear();
+            
+            this.logger.info("Game ended: %s",
+                GameOverReason[message.reason]);
         });
     }
 
@@ -348,22 +371,80 @@ export class Room {
      * @param connection The client that is joining.
      */
     async handleJoin(connection: Connection) {
-        // todo: handle wait for host. https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/01_joingame.md#client-to-server
-        if (this.state === GameState.Ended) {
-            
-            return;
-        }
-
         if (this.players.has(connection.clientId))
             throw new Error("Client is already connected to the room.");
-
+        
         const player = new Player(connection, this);
 
         connection.room = this;
         this.players.set(connection.clientId, player);
-
+        
         if (this.players.size === 1) {
             await this.setHost(player, false);
+        }
+
+        // todo: handle wait for host. https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/01_joingame.md#client-to-server
+        if (this.state === GameState.Ended) {
+            if (connection.clientId === this.hostid) {
+                this.state = GameState.NotStarted;
+                player.limboState = LimboStates.WaitingForHost;
+
+                await Promise.all(
+                    [...this.players]
+                        .map(([ clientId, player ]) => {
+                            if (player.limboState === LimboStates.WaitingForHost) {
+                                player.limboState = LimboStates.NotLimbo;
+
+                                return player.connection.sendPacket(
+                                    new ReliablePacket(
+                                        player.connection.getNextNonce(),
+                                        [
+                                                new JoinedGameMessage(
+                                                this.code.id,
+                                                clientId,
+                                                this.hostid || SpecialId.Nil,
+                                                [...this.players.values()]
+                                                    .filter(pl => pl !== player)
+                                                    .map(player => player.clientId)
+                                            )
+                                        ]
+                                    )
+                                );
+                            } else {
+                                return Promise.resolve();
+                            }
+                        })
+                );
+                
+                this.logger.info("%s joined, joining other clients",
+                    player);
+            } else {
+                player.limboState = LimboStates.WaitingForHost;
+                
+                await this.broadcastMessages([], [
+                    new JoinGameMessage(
+                        this.code.id,
+                        connection.clientId,
+                        this.hostid || SpecialId.Nil
+                    )
+                ], undefined, [player]);
+
+                await connection.sendPacket(
+                    new ReliablePacket(
+                        connection.getNextNonce(),
+                        [
+                            new WaitForHostMessage(
+                                this.code.id,
+                                connection.clientId
+                            )
+                        ]
+                    )
+                );
+
+                this.logger.info("%s joined, waiting for host",
+                    player);
+            }
+            return;
         }
 
         await this.broadcastMessages([], [
@@ -389,6 +470,9 @@ export class Room {
                 ]
             )
         );
+
+        this.logger.info("%s joined",
+            player);
     }
 
     /**

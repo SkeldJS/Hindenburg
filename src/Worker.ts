@@ -155,7 +155,7 @@ export class Worker {
                 connection.numMods = message.modcount!;
             }
 
-            this.logger.info("%s connected.",
+            this.logger.info("%s connected",
                 connection);
 
             // todo: if reactor is disabled and client is using it, disconnect client
@@ -236,23 +236,25 @@ export class Worker {
 
             if (foundRoom) {
                 if (foundRoom.bans.has(connection.address)) {
-                    this.logger.warn("%s attempted to join %s but they were banned.",
-                        connection, foundRoom)
+                    this.logger.warn("%s attempted to join %s but they were banned",
+                        connection, foundRoom);
                     return connection.disconnect(DisconnectReason.Banned);
                 }
                 if (foundRoom.players.size >= foundRoom.options.maxPlayers) {
-                    this.logger.warn("%s attempted to join %s but it was full.",
-                        connection, foundRoom)
+                    this.logger.warn("%s attempted to join %s but it was full",
+                        connection, foundRoom);
                     return connection.joinError(DisconnectReason.GameFull);
                 }
                 if (foundRoom.state === GameState.Started) { // Use Room.state when that is implemented
-                    this.logger.warn("%s attempted to join %s but the game had already started.",
-                        connection, foundRoom)
+                    this.logger.warn("%s attempted to join %s but the game had already started",
+                        connection, foundRoom);
                     return connection.joinError(DisconnectReason.GameStarted);
                 }
+                this.logger.info("%s joining room %s",
+                    connection, foundRoom);
                 await foundRoom.handleJoin(connection);
             } else {
-                this.logger.info("%s attempted to join %s but there was no room with that code.",
+                this.logger.info("%s attempted to join %s but there was no room with that code",
                     connection, Int2Code(message.code));
                 return connection.joinError(DisconnectReason.GameNotFound);
             }
@@ -290,6 +292,7 @@ export class Worker {
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
+            connection.room.decoder.emitDecoded(message, direction, connection.player);
             await connection.room.broadcastMessages([], [
                 new StartGameMessage(connection.room.code.id)
             ]);
@@ -304,6 +307,7 @@ export class Worker {
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
+            connection.room.decoder.emitDecoded(message, direction, connection.player);
             await connection.room.broadcastMessages([], [
                 new EndGameMessage(connection.room.code.id, message.reason, false)
             ]);
@@ -503,11 +507,11 @@ export class Worker {
                 }
             } else {
                 const connection = this.getOrCreateConnection(rinfo);
-                this.logger.error("%s sent an unknown root packet.", connection);
+                this.logger.error("%s sent an unknown root packet", connection);
             }
         } catch (e) {
             const connection = this.getOrCreateConnection(rinfo);
-            this.logger.error("%s sent a malformed packet.", connection);
+            this.logger.error("%s sent a malformed packet", connection);
             console.log(e);
         }
     }

@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-import { DisconnectReason } from "@skeldjs/constant";
+import { DisconnectReason, LimboStates } from "@skeldjs/constant";
 import { Vector2 } from "@skeldjs/util";
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
@@ -14,10 +14,7 @@ export type PlayerEvents = ExtractEventTypes<[
 ]>;
 
 export class Player extends EventEmitter<PlayerEvents> {
-    /**
-     * Whether this player has spawned yet.
-     */
-    spawned: boolean;
+    limboState: LimboStates;
 
     /**
      * The game-unique identifier for this player.
@@ -50,8 +47,8 @@ export class Player extends EventEmitter<PlayerEvents> {
         public readonly room: Room
     ) {
         super();
-        
-        this.spawned = false;
+
+        this.limboState = LimboStates.PreSpawn;
 
         this.playerId = 0;
         this.position = Vector2.null;
@@ -61,7 +58,7 @@ export class Player extends EventEmitter<PlayerEvents> {
     }
     
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        let paren = this.clientId + ", " + this.connection.roundTripPing + "ms";
+        let paren = this.clientId + ", " + this.connection.roundTripPing + "ms" + (this.isHost ? ", host" : "");
 
         return chalk.blue(this.info?.name || "<No Name>")
             + " " + chalk.grey("(" + paren + ")");

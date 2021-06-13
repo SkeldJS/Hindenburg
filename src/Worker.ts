@@ -517,15 +517,16 @@ export class Worker {
     }
 
     private _generateGameCode(len: number) {
-        // todo: better way of generating codes maybe (without String.fromCharCode -> Code2Int)
-        
-        const chars = [];
-        for (let i = 0; i < len; i++) {
-            chars.push(~~(Math.random() * 26) + 65);
+        const c = [];
+        for (let i = 0; i < (len / 2); i++) {
+            const ran = Math.random () * (26 * 26);
+            c.push(~~(ran / 26));
+            c.push(ran % 26);
         }
 
-        const roomName = String.fromCharCode(...chars);
-        return Code2Int(roomName);
+        const one = (c[0] + 26 * c[1]) & 0x3ff;
+        const two = c[2] + 26 * (c[3] + 26 * (c[4] + 26 * c[5]));
+        return one | ((two << 10) & 0x3ffffc00) | 0x80000000;
     }
 
     /**

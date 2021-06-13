@@ -17,11 +17,11 @@ import { PlayerEvent } from "./PlayerEvent";
  * ```
  */
 export class PlayerSetNameEvent extends RevertableEvent implements RoomEvent, PlayerEvent, RpcEvent {
-    static eventName = "player.setname";
-    eventName = "player.setname";
+    static eventName = "player.setname" as const;
+    eventName = "player.setname" as const;
 
     /**
-     * The name that has been altered throuh {@link PlayerSetNameEvent.setName},
+     * The name that has been altered through {@link PlayerSetNameEvent.setName},
      * and will be updated after, if changed.
      */
     alteredName: string;

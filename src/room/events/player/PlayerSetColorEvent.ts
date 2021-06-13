@@ -25,11 +25,11 @@ import { PlayerEvent } from "./PlayerEvent";
  * ```
  */
 export class PlayerSetColorEvent extends RevertableEvent implements RoomEvent, PlayerEvent, RpcEvent {
-    static eventColor = "player.setcolor";
-    eventColor = "player.setcolor";
+    static eventName = "player.setcolor" as const;
+    eventName = "player.setcolor" as const;
 
     /**
-     * The color that has been altered throuh {@link PlayerSetColorEvent.setColor},
+     * The color that has been altered through {@link PlayerSetColorEvent.setColor},
      * and will be updated after, if changed.
      */
     alteredColor: Color;

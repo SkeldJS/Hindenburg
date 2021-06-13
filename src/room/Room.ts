@@ -27,6 +27,7 @@ import {
     RemoveGameMessage,
     RemovePlayerMessage,
     RpcMessage,
+    SendChatMessage,
     SpawnMessage,
     StartGameMessage,
     WaitForHostMessage
@@ -35,7 +36,7 @@ import {
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 
 import { Connection } from "../Connection";
-import { Player } from "./Player";
+import { Player, PlayerEvents } from "./Player";
 import { Worker } from "../Worker";
 import { GameCode } from "./GameCode";
 import { Component } from "./Component";
@@ -48,6 +49,8 @@ import { CustomNetworkTransform } from "./components/CustomNetworkTransform";
 import { ComponentStore } from "./util/ComponentStore";
 import { VoteKicks } from "./util/VoteKicks";
 import { VoteBanSystem } from "./components/VoteBanSystem";
+import { BasicEvent, EventEmitter } from "@skeldjs/events";
+import { RoomEvent } from "./events";
 
 enum SpecialId {
     Nil = 2 ** 31 - 1
@@ -84,12 +87,9 @@ const spawnPrefabs: Record<number, ComponentCtr[]> = {
     [SpawnType.Player]: [PlayerControl, PlayerPhysics, CustomNetworkTransform]
 }
 
-export enum GameDataComponents {
-    GameData,
-    VoteBanSystem
-}
+export type RoomEvents = PlayerEvents;
 
-export class Room {
+export class Room extends EventEmitter<RoomEvents> {
     /**
      * This room's console logger.
      */
@@ -151,6 +151,8 @@ export class Room {
         public readonly worker: Worker,
         public readonly options: GameOptions
     ) {
+        super();
+
         this.state = GameState.NotStarted;
 
         this.logger = winston.createLogger({
@@ -261,6 +263,11 @@ export class Room {
             this.logger.info("Game ended: %s",
                 GameOverReason[message.reason]);
         });
+
+        this.decoder.on(SendChatMessage, (message, direction, player) => {
+            this.logger.info("%s sent chat message: %s",
+                player, chalk.cyan(message.message));
+        });
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -268,6 +275,16 @@ export class Room {
             + this.players.size + "/" + this.options.maxPlayers + " players";
 
         return util.inspect(this.code, false, 0, true) + " " + chalk.grey("(" + paren + ")");
+    }
+    
+    async emit<Event extends RoomEvents[keyof RoomEvents]>(
+        event: Event
+    ): Promise<Event>;
+    async emit<Event extends BasicEvent>(event: Event): Promise<Event>;
+    async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
+        this.worker.emit(event);
+
+        return super.emit(event);
     }
 
     /**

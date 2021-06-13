@@ -1,10 +1,20 @@
-import { BaseRpcMessage, RpcMessage, SetColorMessage, SetNameMessage } from "@skeldjs/protocol";
+import {
+    BaseRpcMessage,
+    RpcMessage,
+    SendChatMessage,
+    SetColorMessage,
+    SetNameMessage
+} from "@skeldjs/protocol";
+
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 import { Color, RpcMessageTag } from "@skeldjs/constant";
+
 import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
+
 import {
+    PlayerChatEvent,
     PlayerSetColorEvent,
     PlayerSetNameEvent
 } from "../events";
@@ -40,6 +50,12 @@ export class PlayerControl implements Component {
         switch (message.tag) {
             case RpcMessageTag.SetName:
                 await this._handleSetName(message as SetNameMessage);
+                break;
+            case RpcMessageTag.SetColor:
+                await this._handleSetColor(message as SetColorMessage);
+                break;
+            case RpcMessageTag.SendChat:
+                await this._handleSendChat(message as SendChatMessage);
                 break;
         }
     }
@@ -124,6 +140,17 @@ export class PlayerControl implements Component {
                 new SetColorMessage(
                     color
                 )
+            )
+        );
+    }
+
+    private async _handleSendChat(message: SendChatMessage) {
+        await this.owner.emit(
+            new PlayerChatEvent(
+                this.room,
+                this.owner,
+                message,
+                message.message
             )
         );
     }

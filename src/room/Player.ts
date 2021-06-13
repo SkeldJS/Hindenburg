@@ -2,15 +2,23 @@ import chalk from "chalk";
 
 import { DisconnectReason, LimboStates } from "@skeldjs/constant";
 import { Vector2 } from "@skeldjs/util";
-import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
+import { BasicEvent, EventEmitter, ExtractEventTypes } from "@skeldjs/events";
+
+import { PlayerComponentStore } from "./util/PlayerComponentStore";
 
 import { Connection } from "../Connection";
 import { Room } from "./Room";
-import { PlayerComponentStore } from "./util/PlayerComponentStore";
-import { PlayerSetNameEvent } from "./events";
+
+import {
+    PlayerChatEvent,
+    PlayerSetColorEvent,
+    PlayerSetNameEvent
+} from "./events";
 
 export type PlayerEvents = ExtractEventTypes<[
-    PlayerSetNameEvent
+    PlayerChatEvent,
+    PlayerSetNameEvent,
+    PlayerSetColorEvent
 ]>;
 
 export class Player extends EventEmitter<PlayerEvents> {
@@ -62,6 +70,16 @@ export class Player extends EventEmitter<PlayerEvents> {
 
         return chalk.blue(this.info?.name || "<No Name>")
             + " " + chalk.grey("(" + paren + ")");
+    }
+    
+    async emit<Event extends PlayerEvents[keyof PlayerEvents]>(
+        event: Event
+    ): Promise<Event>;
+    async emit<Event extends BasicEvent>(event: Event): Promise<Event>;
+    async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
+        this.room.emit(event);
+
+        return super.emit(event);
     }
 
     /**

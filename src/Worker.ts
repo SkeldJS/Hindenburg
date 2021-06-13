@@ -22,7 +22,6 @@ import {
 } from "@skeldjs/protocol";
 
 import {
-    Code2Int,
     HazelWriter,
     Int2Code
 } from "@skeldjs/util";
@@ -33,19 +32,32 @@ import {
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
 
+import { EventEmitter } from "@skeldjs/events";
+
 import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
+import { Room, RoomEvents } from "./room/Room";
+
 import { Connection, ClientMod, SentPacket } from "./Connection";
-import { Room } from "./room/Room";
+import { PluginLoader } from "./PluginLoader";
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
-export class Worker {
+export type WorkerEvents = RoomEvents;
+
+export class Worker extends EventEmitter<WorkerEvents> {
+    config: HindenburgConfig
+
     /**
      * Winston logger for this server.
      */
     logger: winston.Logger;
+
+    /**
+     * The server's plugin loader.
+     */
+    pluginLoader: PluginLoader;
 
     /**
      * The UDP socket that all clients connect to.
@@ -90,8 +102,19 @@ export class Worker {
         /**
          * The global configuration for Hindenburg.
          */
-        public readonly config: HindenburgConfig
+        config: Partial<HindenburgConfig>,
+        /**
+         * Directory to load plugins from.
+         */
+        pluginDir: string
     ) {
+        super();
+
+        this.config = {
+            plugins: {},
+            ...config
+        };
+        
         this.logger = winston.createLogger({
             transports: [
                 new winston.transports.Console({
@@ -113,6 +136,8 @@ export class Worker {
                 })
             ]
         });
+
+        this.pluginLoader = new PluginLoader(this, pluginDir);
 
         this.socket = dgram.createSocket("udp4");
         this.socket.on("message", this.handleMessage.bind(this));

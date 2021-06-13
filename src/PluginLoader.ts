@@ -66,7 +66,7 @@ export class PluginLoader {
          * }
          * 
          * const sprout = new Dog("Sprout");
-         * const barney = new Animal("Sprout");
+         * const barney = new Animal("Barney");
          * 
          * console.log(Object.getPrototypeOf(sprout)); // {}
          * console.log(Object.getPrototypeOf(barney)); // { feed() {} }

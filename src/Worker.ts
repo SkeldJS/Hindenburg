@@ -293,7 +293,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
             // todo: remove canceled packets (e.g. from the anti-cheat)
             // todo: handle movement packets with care
             // todo: pipe packets to the room for state
-            await connection.room!.broadcastMessages(message.children, [], undefined, [connection.player]);
+            await connection.room!.broadcastMessages(
+                message.children
+                    .filter(child => !child.canceled)
+            , [], undefined, [connection.player]);
         });
 
         this.decoder.on(GameDataToMessage, async (message, direction, connection) => {

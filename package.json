@@ -5,7 +5,10 @@
   "main": "index.js",
   "license": "GPL-3.0-only",
   "scripts": {
-    "build": "tsc -p ./"
+    "build": "tsc -p ./", 
+    "setup": "node ./bin/setup.js",
+    "install-plugin": "node ./bin/install-plugin.js",
+    "uninstall-plugin": "node ./bin/uninstall-plugin.js"
   },
   "devDependencies": {
     "@swc/core": "^1.2.60",

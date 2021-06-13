@@ -1,3 +1,4 @@
+require("./modulePatch");
 const path = require("path");
 const { Worker } = require("../src/Worker");
 

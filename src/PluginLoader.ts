@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import fs from "fs/promises";
+import resolveFrom from "resolve-from";
 import path from "path";
 
 import { Worker } from "./Worker";
@@ -71,7 +72,7 @@ export class PluginLoader {
          * console.log(Object.getPrototypeOf(sprout)); // {}
          * console.log(Object.getPrototypeOf(barney)); // { feed() {} }
          * 
-         * const proto = Object.getPrototype(sprout);
+         * const proto = Object.getPrototypeOf(sprout);
          * console.log(Object.getPrototypeOf(proto)); // { feed() {} }
          * ```
          */
@@ -115,12 +116,12 @@ export class PluginLoader {
             if (!file.startsWith("hbplugin-"))
                 continue;
             
-            allImportNames.push(file);
+            allImportNames.push("./" + file);
         }
 
         for (const importName of allImportNames) {
             try {
-                const importPath = path.join(this.pluginDir, importName);
+                const importPath = resolveFrom(this.pluginDir, importName);
                 const loadedPlugin = await this.loadPlugin(importPath);
                 this.worker.logger.info("Loaded plugin %s.", loadedPlugin.meta.id);
             } catch (e) {

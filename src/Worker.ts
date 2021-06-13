@@ -226,14 +226,6 @@ export class Worker {
                     ]
                 )
             );
-
-            setTimeout(() => {
-                if (room.players.host) {
-                    console.log(room.voteKicks.getVotesFor(room.players.host));
-                } else {
-                    console.log("There was no host.");
-                }
-            }, 60000);
         });
 
         this.decoder.on(JoinGameMessage, async (message, direction, connection) => {

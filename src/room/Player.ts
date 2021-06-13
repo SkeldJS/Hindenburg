@@ -2,12 +2,18 @@ import chalk from "chalk";
 
 import { DisconnectReason } from "@skeldjs/constant";
 import { Vector2 } from "@skeldjs/util";
+import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
 import { Connection } from "../Connection";
 import { Room } from "./Room";
 import { PlayerComponentStore } from "./util/PlayerComponentStore";
+import { PlayerSetNameEvent } from "./events";
 
-export class Player {
+export type PlayerEvents = ExtractEventTypes<[
+    PlayerSetNameEvent
+]>;
+
+export class Player extends EventEmitter<PlayerEvents> {
     /**
      * Whether this player has spawned yet.
      */
@@ -43,6 +49,8 @@ export class Player {
          */
         public readonly room: Room
     ) {
+        super();
+        
         this.spawned = false;
 
         this.playerId = 0;
@@ -101,5 +109,28 @@ export class Player {
      */
     banFromRoom() {
         this.room.bans.add(this.connection.rinfo.address);
+    }
+
+    /**
+     * Vote to kick someone as this player.
+     * @param target The player to vote kick.
+     * @example
+     * ```ts
+     * // Make everyone vote kick ForteBass.
+     * const forte = room.players.getPlayerByName("ForteBass");
+     * 
+     * if (!forte)
+     *   return;
+     * 
+     * for (const [ clientId, player ] of room.players) {
+     *   if (player === forte)
+     *     continue;
+     * 
+     *   player.voteKick(forte);
+     * }
+     * ```
+     */
+    voteKick(target: Player) {
+        this.room.voteKicks.addVote(this, target);
     }
 }

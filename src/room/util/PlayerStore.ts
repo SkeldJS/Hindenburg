@@ -30,7 +30,7 @@ export class PlayerStore extends Map<number, Player> {
      * @example
      * ```ts
      * // Get a player by the name of "ForteBass"
-     * const forte = room.players.getByName("ForteBass");
+     * const forte = room.players.getPlayerByName("ForteBass");
      * 
      * if (!forte)
      *   return console.log("Forte is not in the room unfortunately.");
@@ -38,7 +38,7 @@ export class PlayerStore extends Map<number, Player> {
      * console.log("Forte is in the room!!!!");
      * ```
      */
-    getByName(name: string) {
+    getPlayerByName(name: string) {
         for (const [ , player ] of this) {
             if (player.info?.name === name)
                 return player;

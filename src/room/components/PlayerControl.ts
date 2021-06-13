@@ -1,9 +1,10 @@
-import { BaseRpcMessage, SetNameMessage } from "@skeldjs/protocol";
+import { BaseRpcMessage, RpcMessage, SetNameMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 import { RpcMessageTag } from "@skeldjs/constant";
 import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
+import { PlayerSetNameEvent } from "../events";
 
 export class PlayerControl implements Component {
     constructor(
@@ -41,7 +42,43 @@ export class PlayerControl implements Component {
     }
 
     private async _handleSetName(message: SetNameMessage) {
-        if (this.owner.info)
-            this.owner.info.name = message.name;
+        const oldName = this.owner.info?.name;
+
+        this._setName(message.name);
+        const ev = await this.owner.emit(
+            new PlayerSetNameEvent(
+                this.room,
+                this.owner,
+                message,
+                oldName || "",
+                message.name
+            )
+        );
+
+        if (ev.reverted) {
+            this._setName(oldName || "");
+            this.rpcSetName(ev.alteredName);
+            return;
+        }
+
+        if (ev.alteredName !== message.name) {
+            this._setName(ev.alteredName);
+            this.rpcSetName(ev.alteredName);
+        }
+    }
+
+    private _setName(name: string) {
+        if (this.owner.info) this.owner.info.name = name;
+    }
+
+    rpcSetName(name: string) {
+        this.room.gamedataStream.push(
+            new RpcMessage(
+                this.netid,
+                new SetNameMessage(
+                    name
+                )
+            )
+        );
     }
 }

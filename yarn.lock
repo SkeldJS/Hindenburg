@@ -80,7 +80,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skeldjs/events@npm:2.10.11":
+"@skeldjs/events@npm:2.10.11, @skeldjs/events@npm:^2.10.11":
   version: 2.10.11
   resolution: "@skeldjs/events@npm:2.10.11"
   checksum: 5b940d893de1661f3fbcf7a792005775607137a185acd8dfcabd4f4485620d4e0550d108e22e5fa2772a18c6c44f8b3dc21687b21222e36cf3019c7c1a626224
@@ -92,6 +92,7 @@ __metadata:
   resolution: "@skeldjs/hindenburg@workspace:."
   dependencies:
     "@skeldjs/constant": ^2.10.11
+    "@skeldjs/events": ^2.10.11
     "@skeldjs/protocol": ^2.10.11
     "@skeldjs/reactor": ^2.10.11
     "@skeldjs/util": ^2.10.11

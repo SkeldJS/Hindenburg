@@ -172,7 +172,7 @@ export class Room {
         this.decoder = new PacketDecoder;
         this.components = new ComponentStore(this);
         this.players = new PlayerStore(this);
-        this.voteKicks = new VoteKicks;
+        this.voteKicks = new VoteKicks(this);
         this.playerInfo = new Map;
         this.bans = new Set;
 
@@ -256,6 +256,10 @@ export class Room {
                     new DataMessage(netid, writer.buffer)
                 );
             }
+        }
+        if (this.gamedataStream.length) {
+            await this.broadcastMessages(this.gamedataStream);
+            this.gamedataStream = [];
         }
     }
 

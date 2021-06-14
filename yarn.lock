@@ -70,7 +70,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skeldjs/data@npm:2.10.11":
+"@skeldjs/data@npm:2.10.11, @skeldjs/data@npm:^2.10.11":
   version: 2.10.11
   resolution: "@skeldjs/data@npm:2.10.11"
   dependencies:
@@ -92,6 +92,7 @@ __metadata:
   resolution: "@skeldjs/hindenburg@workspace:."
   dependencies:
     "@skeldjs/constant": ^2.10.11
+    "@skeldjs/data": ^2.10.11
     "@skeldjs/events": ^2.10.11
     "@skeldjs/protocol": ^2.10.11
     "@skeldjs/reactor": ^2.10.11

@@ -370,12 +370,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
         this.vorpal
             .command("dc", "Forcefully disconnect a client.")
-            .option("--clientid <clientid>", "Client ID of the client to disconnect.")
-            .option("--username <username>", "Username of the client(s) to disconnect.")
-            .option("--address <ip address>", "IP address of the client(s) to disconnect.")
-            .option("--room <room code>", "Room code of the client(s) to disconnect.")
-            .option("--reason <reason>", "Reason for why to disconnect the client.")
-            .option("--ban", "Ban this client.")
+            .option("--clientid <clientid>", "client id of the client to disconnect")
+            .option("--username <username>", "username of the client(s) to disconnect")
+            .option("--address <ip address>", "ip address of the client(s) to disconnect")
+            .option("--room <room code>", "room code of the client(s) to disconnect")
+            .option("--reason <reason>", "reason for why to disconnect the client")
+            .option("--ban", "Ban this client")
             .action(async args => {
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
@@ -391,6 +391,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         connection.rinfo.address === args.options.address ||
                         connection.room?.code.id === codeId
                     ) {
+                        // todo: ban the client if args.options.ban is true
                         await connection.disconnect(reason);
                         num_disconnected++;
                     }
@@ -400,18 +401,23 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("destroy <room code>", "Destroy a room.")
-            .option("--reason <reason>", "Reason to destroy this room.")
+            .command("destroy <room code>", "Destroy and remove a room from the server.")
+            .option("--reason <reason>", "reason to destroy this room",)
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => Int2Code(room).toLowerCase());
+                }
+            })
             .action(async args => {
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
 
-                const codeId = Code2Int(args["room code"]);
+                const codeId = Code2Int(args["room code"].toUpperCase());
                 const room = this.rooms.get(codeId);
 
                 if (room) {
-                    await room?.destroy(reason as unknown as number);
+                    await room.destroy(reason as unknown as number);
                 } else {
                     this.logger.warn("Could not find room: " + args["room code"]);
                 }
@@ -491,6 +497,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      */
     removeConnection(connection: Connection) {
         this.connections.delete(connection.rinfo.address + ":" + connection.rinfo.port);
+        this.logger.info("Remove %s", connection);
     }
 
     private _sendPacket(remote: dgram.RemoteInfo, buffer: Buffer) {

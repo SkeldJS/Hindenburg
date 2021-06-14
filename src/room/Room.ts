@@ -395,9 +395,13 @@ export class Room extends EventEmitter<RoomEvents> {
      * message to all clients and removing itself from the server.
      */
     async destroy(reason = DisconnectReason.ServerRequest) {
-        await this.broadcastMessages([], [
-            new RemoveGameMessage(reason)
-        ]);
+        this.worker.logger.info("Destroyed %s", this);
+        
+        await Promise.all(
+            [...this.players].map(([, player]) => {
+                return player.connection.leaveRoom(reason);
+            })
+        );
 
         this.worker.rooms.delete(this.code.id);
     }

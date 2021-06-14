@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@skeldjs/constant": "^2.10.11",
+    "@skeldjs/data": "^2.10.11",
     "@skeldjs/events": "^2.10.11",
     "@skeldjs/protocol": "^2.10.11",
     "@skeldjs/reactor": "^2.10.11",

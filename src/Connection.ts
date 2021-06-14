@@ -9,11 +9,13 @@ import {
     BaseRootPacket,
     DisconnectPacket,
     JoinGameMessage,
-    ReliablePacket
+    ReliablePacket,
+    RemoveGameMessage
 } from "@skeldjs/protocol";
 
 import { Worker } from "./Worker";
 import { Room } from "./room/Room";
+import { DisconnectMessages } from "@skeldjs/data";
 
 export class ClientMod {
     constructor(
@@ -119,7 +121,7 @@ export class Connection {
         /**
          * The server that this client is connected to.
          */
-        public readonly server: Worker,
+        public readonly worker: Worker,
         /**
          * Remote information about this client.
          */
@@ -213,7 +215,7 @@ export class Connection {
      * ```
      */
     async sendPacket(packet: BaseRootPacket) {
-        await this.server.sendPacket(this, packet);
+        await this.worker.sendPacket(this, packet);
     }
 
     /**
@@ -247,6 +249,9 @@ export class Connection {
                 true
             )
         );
+        
+        this.worker.logger.info("%s disconnected: %s (%s)",
+            this, reason ? DisconnectReason[reason] : "None", (message || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
 
         this.sentDisconnect = true;
         this.hasIdentified = false;
@@ -295,5 +300,30 @@ export class Connection {
                 ]
             )
         );
+
+        this.worker.logger.info("%s join error: %s (%s)",
+            this, reason, (message || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
+    }
+
+    /**
+     * Force this client to leave their current game. Primarily for {@link Room.destroy}
+     * although exposed as a function for any other possible uses.
+     * 
+     * Sends a [RemoveGame](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/03_removegame.md)
+     * packet and does not immediately disconnect, although the client should do
+     * this shortly after receiving the message.
+     * @param reason The reason to close the game.
+     */
+    async leaveRoom(reason = DisconnectReason.ServerRequest) {
+        await this.sendPacket(
+            new ReliablePacket(
+                this.getNextNonce(),
+                [
+                    new RemoveGameMessage(reason)
+                ]
+            )
+        );
+        this.room?.players.delete(this.clientId);
+        this.room = undefined;
     }
 }

@@ -26,7 +26,8 @@ import {
 import {
     Code2Int,
     HazelWriter,
-    Int2Code
+    Int2Code,
+    V2Gen
 } from "@skeldjs/util";
 
 import {
@@ -369,7 +370,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
         this.vorpal
-            .command("dc", "Forcefully disconnect a client.")
+            .command("dc", "Forcefully disconnect a client or several clients.")
             .option("--clientid <clientid>", "client id of the client to disconnect")
             .option("--username <username>", "username of the client(s) to disconnect")
             .option("--address <ip address>", "ip address of the client(s) to disconnect")
@@ -419,7 +420,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (room) {
                     await room.destroy(reason as unknown as number);
                 } else {
-                    this.logger.warn("Could not find room: " + args["room code"]);
+                    this.logger.error("Couldn't find room: " + args["room code"]);
                 }
             });
 
@@ -432,7 +433,68 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (loadedPlugin) {
                     this.pluginLoader.unloadPlugin(loadedPlugin);
                 } else {    
-                    this.logger.warn("Plugin not loaded: %s", pluginId);
+                    this.logger.error("Plugin not loaded: %s", pluginId);
+                }
+            });
+
+        this.vorpal
+            .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
+            .action(async args => {
+                switch (args.something) {
+                case "clients":
+                    this.logger.info("%s client(s)", this.connections.size);
+                    for (const [ , client ] of this.connections) {
+                        this.logger.info("* %s", client);
+                    }
+                    break;
+                case "rooms":
+                    this.logger.info("%s room(s)", this.rooms.size);
+                    for (const [ , room ] of this.rooms) {
+                        this.logger.info("* %s", room);
+                    }
+                    break;
+                case "plugins":
+                    this.logger.info("%s plugins(s) loaded", this.pluginLoader.loadedPlugins.size);
+                    for (const [ , plugin ] of this.pluginLoader.loadedPlugins) {
+                        this.logger.info("* %s", plugin.meta.id);
+                    }
+                    break;
+                default:
+                    this.logger.error("Expected either \"clients\", \"rooms\" or \"plugins\": %s", args.something);
+                    break;
+                }
+            });
+            
+        this.vorpal
+            .command("list mods <client id>", "List all of a client's mods.")
+            .action(async args => {
+                for (const [ , connection ] of this.connections) {
+                    if (
+                        connection.clientId === args["client id"]
+                    ) {
+                        this.logger.info("%s has %s mod(s)", connection, connection.mods.length);
+                        for (const mod of connection.mods) {
+                            this.logger.info("* %s", mod);
+                        }
+                        return;
+                    }
+                }
+                this.logger.error("Couldn't find client with id: " + args["client id"]);
+            });
+            
+        this.vorpal
+            .command("list players <room code>", "List players in a room.")
+            .action(async args => {
+                const codeId = Code2Int(args["room code"].toUpperCase());
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    this.logger.info("%s player(s) in %s", room.players.size, room);
+                    for (const [ , player ] of room.players) {
+                        this.logger.info("* %s", player);
+                    }
+                } else {
+                    this.logger.error("Couldn't find room: " + args["room code"]);
                 }
             });
 
@@ -623,19 +685,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         }
     }
 
-    private _generateGameCode(len: number) {
-        const c = [];
-        for (let i = 0; i < (len / 2); i++) {
-            const ran = Math.random () * (26 * 26);
-            c.push(~~(ran / 26));
-            c.push(ran % 26);
-        }
-
-        const one = (c[0] + 26 * c[1]) & 0x3ff;
-        const two = c[2] + 26 * (c[3] + 26 * (c[4] + 26 * c[5]));
-        return one | ((two << 10) & 0x3ffffc00) | 0x80000000;
-    }
-
     /**
      * Generate a 4 or 6 letter room code for a room.
      * @param len The length of the room code, 4 or 6.
@@ -659,9 +708,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
             throw new RangeError("Expected to generate a 4 or 6 digit room code.");
         }
         
-        let roomCode = this._generateGameCode(len);
+        let roomCode = V2Gen();
         while (this.rooms.get(roomCode))
-            roomCode = this._generateGameCode(len);
+            roomCode = V2Gen();
 
         return roomCode;
     }

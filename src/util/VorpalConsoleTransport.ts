@@ -16,7 +16,7 @@ export class VorpalConsole extends WinstonTransport {
         this.vorpal.log(info[MESSAGE]);
     
         if (callback) {
-          callback(); // eslint-disable-line callback-return
+            callback();
         }
     }
 }

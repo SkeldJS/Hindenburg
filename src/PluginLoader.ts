@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import resolveFrom from "resolve-from";
 import path from "path";
 
-import { Worker } from "./Worker";
+import { Worker, WorkerEvents } from "./Worker";
 import { hindenburgEventKey } from "./api/events/EventListener";
 
 export interface PluginMeta {
@@ -14,10 +14,14 @@ export class Plugin {
     static id: string;
     meta!: PluginMeta;
 
+    eventListeners: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
+
     constructor(
         public readonly worker: Worker,
         public readonly config: any
-    ) {}
+    ) {
+        this.eventListeners = [];
+    }
 
     async onPluginLoad?(): Promise<void> { return; };
     async onPluginUnload?(): Promise<void> { return; };
@@ -88,13 +92,33 @@ export class PluginLoader {
             const eventName = Reflect.getMetadata(hindenburgEventKey, loadedPlugin, propertyName);
             
             if (eventName) {
-                this.worker.on(eventName, property.bind(loadedPlugin));
+                const fn = property.bind(loadedPlugin);
+                this.worker.on(eventName, fn);
+                loadedPlugin.eventListeners.push([eventName, fn]);
             }
         }
 
+        this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
+
         return loadedPlugin;
     }
+    
+    async unloadPlugin(pluginId: string|Plugin): Promise<void> {
+        if (typeof pluginId === "string") {
+            const plugin = this.loadedPlugins.get(pluginId);
+            if (!plugin)
+                throw new Error("Plugin '" + pluginId + "' not loaded.");
 
+            return this.unloadPlugin(plugin);
+        }
+
+        for (const [ eventName, listenerFn ] of pluginId.eventListeners) {
+            this.worker.off(eventName, listenerFn);
+        }
+
+        this.loadedPlugins.delete(pluginId.meta.id);
+    }
+    
     async loadFromDirectory() {
         const allImportNames = [];
         try {

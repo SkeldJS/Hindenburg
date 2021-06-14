@@ -1,5 +1,5 @@
 import { Plugin, PluginMeta } from "../PluginLoader";
-import { Worker } from "../Worker";
+import { Worker, WorkerEvents } from "../Worker";
 
 export function HindenburgPlugin(meta: PluginMeta) {
     return function<T extends { new(...args: any): {} }>(constructor: T) {
@@ -10,6 +10,8 @@ export function HindenburgPlugin(meta: PluginMeta) {
             config: any;
             
             meta: PluginMeta;
+
+            eventListeners: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
     
             constructor(...args: any) {
                 super(...args);
@@ -18,6 +20,8 @@ export function HindenburgPlugin(meta: PluginMeta) {
                 this.config = args[1] as any;
 
                 this.meta = meta;
+
+                this.eventListeners = [];
             }
         }
     }

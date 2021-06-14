@@ -375,23 +375,45 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--address <ip address>", "IP address of the client(s) to disconnect.")
             .option("--room <room code>", "Room code of the client(s) to disconnect.")
             .option("--reason <reason>", "Reason for why to disconnect the client.")
-            .action(async (args) => {
+            .option("--ban", "Ban this client.")
+            .action(async args => {
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.None;
-                const codeId = args.options.room ? Code2Int(args.options.room) : 0;
 
-                console.log(args.options);
+                const codeId = args.options.room ? Code2Int(args.options.room) : 0;
+                let num_disconnected = 0;
+
                 for (const [ , connection ] of this.connections) {
-                    if (connection.clientId === args.options.clientid) {
+                    if (
+                        connection.clientId === args.options.clientid ||
+                        connection.username === args.options.username ||
+                        connection.rinfo.address === args.options.address ||
+                        connection.room?.code.id === codeId
+                    ) {
                         await connection.disconnect(reason);
-                    } else if (connection.username === args.options.username) {
-                        await connection.disconnect(reason);
-                    } else if (connection.rinfo.address === args.options.address) {
-                        await connection.disconnect(reason);
-                    } else if (connection.room?.code.id === codeId) {
-                        await connection.disconnect(reason);
+                        num_disconnected++;
                     }
+                }
+
+                this.logger.info("Disconnected %s clients.", num_disconnected);
+            });
+
+        this.vorpal
+            .command("destroy <room code>", "Destroy a room.")
+            .option("--reason <reason>", "Reason to destroy this room.")
+            .action(async args => {
+                const reason = (typeof args.options.reason === "number"
+                    ? args.options.reason
+                    : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
+
+                const codeId = Code2Int(args["room code"]);
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    await room?.destroy(reason as unknown as number);
+                } else {
+                    this.logger.warn("Could not find room: " + args["room code"]);
                 }
             });
 

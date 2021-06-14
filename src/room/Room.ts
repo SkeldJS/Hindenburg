@@ -394,9 +394,9 @@ export class Room extends EventEmitter<RoomEvents> {
      * Destroy this room, broadcasting a [RemoveGame](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/03_removegame.md)
      * message to all clients and removing itself from the server.
      */
-    async destroy() {
+    async destroy(reason = DisconnectReason.ServerRequest) {
         await this.broadcastMessages([], [
-            new RemoveGameMessage(DisconnectReason.ServerRequest)
+            new RemoveGameMessage(reason)
         ]);
 
         this.worker.rooms.delete(this.code.id);

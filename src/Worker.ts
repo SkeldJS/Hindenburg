@@ -423,6 +423,19 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             });
 
+        this.vorpal
+            .command("unload <plugin id>", "Unload a plugin.")
+            .action(async args => {
+                const pluginId: string = args["plugin id"];
+                const loadedPlugin = this.pluginLoader.loadedPlugins.get(pluginId);
+
+                if (loadedPlugin) {
+                    this.pluginLoader.unloadPlugin(loadedPlugin);
+                } else {    
+                    this.logger.warn("Plugin not loaded: %s", pluginId);
+                }
+            });
+
         // todo: handle report player
 
         setInterval(() => {

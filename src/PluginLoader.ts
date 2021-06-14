@@ -99,6 +99,7 @@ export class PluginLoader {
         }
 
         this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
+        this.worker.logger.info("Loaded plugin %s", loadedPlugin.meta.id);
 
         return loadedPlugin;
     }
@@ -117,6 +118,7 @@ export class PluginLoader {
         }
 
         this.loadedPlugins.delete(pluginId.meta.id);
+        this.worker.logger.info("Unloaded plugin %s", pluginId.meta.id);
     }
     
     async loadFromDirectory() {
@@ -147,7 +149,6 @@ export class PluginLoader {
             try {
                 const importPath = resolveFrom(this.pluginDir, importName);
                 const loadedPlugin = await this.loadPlugin(importPath);
-                this.worker.logger.info("Loaded plugin %s.", loadedPlugin.meta.id);
             } catch (e) {
                 this.worker.logger.warn("Failed to load plugin %s: %s", importName, e);
             }

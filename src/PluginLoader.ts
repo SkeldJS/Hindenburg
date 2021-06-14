@@ -48,6 +48,9 @@ export class PluginLoader {
         if (typeof config === "boolean" && !config)
             throw new Error("Plugin is disabled.");
 
+        if (this.loadedPlugins.get(loadedPluginCtr.id))
+            await this.unloadPlugin(loadedPluginCtr.id);
+
         const loadedPlugin = new loadedPluginCtr(this.worker, config);
         loadedPlugin.onPluginLoad?.();
 
@@ -99,12 +102,12 @@ export class PluginLoader {
         }
 
         this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
-        this.worker.logger.info("Loaded plugin %s", loadedPlugin.meta.id);
+        this.worker.logger.info("Loaded plugin '%s'", loadedPlugin.meta.id);
 
         return loadedPlugin;
     }
     
-    async unloadPlugin(pluginId: string|Plugin): Promise<void> {
+    unloadPlugin(pluginId: string|Plugin): void {
         if (typeof pluginId === "string") {
             const plugin = this.loadedPlugins.get(pluginId);
             if (!plugin)
@@ -118,7 +121,7 @@ export class PluginLoader {
         }
 
         this.loadedPlugins.delete(pluginId.meta.id);
-        this.worker.logger.info("Unloaded plugin %s", pluginId.meta.id);
+        this.worker.logger.info("Unloaded plugin '%s'", pluginId.meta.id);
     }
     
     async loadFromDirectory() {
@@ -148,9 +151,9 @@ export class PluginLoader {
         for (const importName of allImportNames) {
             try {
                 const importPath = resolveFrom(this.pluginDir, importName);
-                const loadedPlugin = await this.loadPlugin(importPath);
+                await this.loadPlugin(importPath);
             } catch (e) {
-                this.worker.logger.warn("Failed to load plugin %s: %s", importName, e);
+                this.worker.logger.warn("Failed to load plugin from '%s': %s", importName, e);
             }
         }
     }

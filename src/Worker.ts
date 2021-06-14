@@ -2,6 +2,7 @@ import dgram from "dgram";
 import winston from "winston";
 import vorpal from "vorpal";
 import chalk from "chalk";
+import resolveFrom from "resolve-from";
 
 import { DisconnectReason, GameState } from "@skeldjs/constant";
 
@@ -421,6 +422,26 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     await room.destroy(reason as unknown as number);
                 } else {
                     this.logger.error("Couldn't find room: " + args["room code"]);
+                }
+            });
+
+        this.vorpal
+            .command("load <import>", "Load a plugin by its import relative to the base plugin directory.")
+            .action(async args => {
+                try {
+                    const importPath = resolveFrom(this.pluginLoader.pluginDir, args.import);
+                    try {
+                        await this.pluginLoader.loadPlugin(importPath);
+                    } catch (e) {
+                        this.logger.warn("Failed to load plugin from '%s': %s", args.import, e);
+                    }
+                } catch (e) {
+                    const importPath = resolveFrom(this.pluginLoader.pluginDir, "./" + args.import);
+                    try {
+                        await this.pluginLoader.loadPlugin(importPath);
+                    } catch (e) {
+                        this.logger.warn("Failed to load plugin from '%s': %s", args.import, e);
+                    }
                 }
             });
 

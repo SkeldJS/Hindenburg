@@ -1,5 +1,7 @@
 import dgram from "dgram";
 import winston from "winston";
+import vorpal from "vorpal";
+import chalk from "chalk";
 
 import { DisconnectReason, GameState } from "@skeldjs/constant";
 
@@ -41,18 +43,21 @@ import { Room, RoomEvents } from "./room/Room";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { PluginLoader } from "./PluginLoader";
+import { VorpalConsole } from "./util/VorpalConsoleTransport";
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
 export type WorkerEvents = RoomEvents;
 
 export class Worker extends EventEmitter<WorkerEvents> {
-    config: HindenburgConfig
+    config: HindenburgConfig;
 
     /**
      * Winston logger for this server.
      */
     logger: winston.Logger;
+    
+    vorpal: vorpal;
 
     /**
      * The server's plugin loader.
@@ -115,9 +120,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ...config
         };
         
+        this.vorpal = new vorpal;
+        this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
+        
         this.logger = winston.createLogger({
             transports: [
-                new winston.transports.Console({
+                new VorpalConsole(this.vorpal, {
                     format: winston.format.combine(
                         winston.format.splat(),
                         winston.format.colorize(),
@@ -126,6 +134,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             return `[${info.label}] ${info.level}: ${info.message}`;
                         }),
                     ),
+
                 }),
                 new winston.transports.File({
                     filename: "logs.txt",

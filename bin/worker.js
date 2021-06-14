@@ -6,5 +6,5 @@ const { Worker } = require("../src/Worker");
     const worker = new Worker("TEST", 0, {}, path.resolve(process.cwd(), "plugins"));
     await worker.listen();
     await worker.pluginLoader.loadFromDirectory();
-    console.log("Listening on *:22023");
+    worker.logger.info("Listening on *:22023");
 })();

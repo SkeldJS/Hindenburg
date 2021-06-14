@@ -28,6 +28,7 @@ import {
     RemovePlayerMessage,
     RpcMessage,
     SendChatMessage,
+    SetNameMessage,
     SpawnMessage,
     StartGameMessage,
     WaitForHostMessage
@@ -51,6 +52,7 @@ import { VoteKicks } from "./util/VoteKicks";
 import { VoteBanSystem } from "./components/VoteBanSystem";
 import { BasicEvent, EventEmitter } from "@skeldjs/events";
 import { RoomEvent } from "./events";
+import { VorpalConsole } from "../util/VorpalConsoleTransport";
 
 enum SpecialId {
     Nil = 2 ** 31 - 1
@@ -157,7 +159,7 @@ export class Room extends EventEmitter<RoomEvents> {
 
         this.logger = winston.createLogger({
             transports: [
-                new winston.transports.Console({
+                new VorpalConsole(this.worker.vorpal, {
                     format: winston.format.combine(
                         winston.format.splat(),
                         winston.format.colorize(),
@@ -241,6 +243,9 @@ export class Room extends EventEmitter<RoomEvents> {
                 const dataReader = HazelReader.from(mComponent.data);
                 spawnedComponent.Deserialize(dataReader, true);
             }
+
+            //this.logger.info("Spawn: %s %s %s",
+            //    SpawnType[message.spawnType] || message.spawnType, chalk.grey("(" + message.components.length + " components)"), owner);
         });
 
         this.decoder.on(DespawnMessage, (message, direction, player) => {
@@ -268,6 +273,16 @@ export class Room extends EventEmitter<RoomEvents> {
             this.logger.info("%s sent chat message: %s",
                 player, chalk.cyan(message.message));
         });
+
+        this.on("player.setname", setname => {
+            if (setname.oldName) {
+                this.logger.info("%s changed their name from %s to %s",
+                    setname.player, setname.oldName, setname.name);
+            } else {
+                this.logger.info("%s set their name to %s",
+                    setname.player, setname.name);
+            }
+        });
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -282,7 +297,7 @@ export class Room extends EventEmitter<RoomEvents> {
     ): Promise<Event>;
     async emit<Event extends BasicEvent>(event: Event): Promise<Event>;
     async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
-        this.worker.emit(event);
+        await this.worker.emit(event);
 
         return super.emit(event);
     }

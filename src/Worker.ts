@@ -24,6 +24,7 @@ import {
 } from "@skeldjs/protocol";
 
 import {
+    Code2Int,
     HazelWriter,
     Int2Code
 } from "@skeldjs/util";
@@ -121,8 +122,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         };
         
         this.vorpal = new vorpal;
-        this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
-        
+
         this.logger = winston.createLogger({
             transports: [
                 new VorpalConsole(this.vorpal, {
@@ -366,6 +366,34 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             await targetPlayer.kick(message.banned);
         });
+
+        this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
+        this.vorpal
+            .command("dc", "Forcefully disconnect a client.")
+            .option("--clientid <clientid>", "Client ID of the client to disconnect.")
+            .option("--username <username>", "Username of the client(s) to disconnect.")
+            .option("--address <ip address>", "IP address of the client(s) to disconnect.")
+            .option("--room <room code>", "Room code of the client(s) to disconnect.")
+            .option("--reason <reason>", "Reason for why to disconnect the client.")
+            .action(async (args) => {
+                const reason = (typeof args.options.reason === "number"
+                    ? args.options.reason
+                    : DisconnectReason[args.options.reason]) || DisconnectReason.None;
+                const codeId = args.options.room ? Code2Int(args.options.room) : 0;
+
+                console.log(args.options);
+                for (const [ , connection ] of this.connections) {
+                    if (connection.clientId === args.options.clientid) {
+                        await connection.disconnect(reason);
+                    } else if (connection.username === args.options.username) {
+                        await connection.disconnect(reason);
+                    } else if (connection.rinfo.address === args.options.address) {
+                        await connection.disconnect(reason);
+                    } else if (connection.room?.code.id === codeId) {
+                        await connection.disconnect(reason);
+                    }
+                }
+            });
 
         // todo: handle report player
 

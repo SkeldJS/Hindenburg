@@ -1,5 +1,11 @@
 import { Color } from "@skeldjs/constant";
-import { GameDataMessage, ReliablePacket, RpcMessage, SendChatMessage, SetColorMessage, SetNameMessage } from "@skeldjs/protocol";
+import {
+    RpcMessage,
+    SendChatMessage,
+    SetColorMessage,
+    SetNameMessage
+} from "@skeldjs/protocol";
+
 import { Player, Room } from "../../room";
 import { Worker } from "../../Worker";
 

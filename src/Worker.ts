@@ -47,6 +47,7 @@ import { Room, RoomEvents } from "./room/Room";
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { PluginLoader } from "./PluginLoader";
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
+import { ChatCommandHandler } from "./api/chat/CommandHander";
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
@@ -66,6 +67,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * The server's plugin loader.
      */
     pluginLoader: PluginLoader;
+
+    chatCommandHandler: ChatCommandHandler;
 
     /**
      * The UDP socket that all clients connect to.
@@ -149,6 +152,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.pluginLoader = new PluginLoader(this, pluginDir);
+        this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.socket = dgram.createSocket("udp4");
         this.socket.on("message", this.handleMessage.bind(this));

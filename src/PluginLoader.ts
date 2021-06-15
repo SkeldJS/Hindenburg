@@ -5,6 +5,7 @@ import path from "path";
 
 import { Worker, WorkerEvents } from "./Worker";
 import { hindenburgEventKey } from "./api/events/EventListener";
+import { hindenburgChatCommandKey } from "./api/chat/ChatCommand";
 
 export interface PluginMeta {
     id: string;
@@ -59,7 +60,7 @@ export class PluginLoader {
          * the actual plugin class and the prototype is wrong.
          * @example
          * ```ts
-         * class Animal {
+         * class Animal { 
          *   constructor(name: string) {
          *     this.name = name;
          *   }
@@ -98,6 +99,14 @@ export class PluginLoader {
                 const fn = property.bind(loadedPlugin);
                 this.worker.on(eventName, fn);
                 loadedPlugin.eventListeners.push([eventName, fn]);
+            }
+
+            const chatCommand = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
+            
+            if (chatCommand) {
+                const fn = property.bind(loadedPlugin);
+                this.worker.chatCommandHandler.registerCommand(chatCommand, fn);
+                // todo: handle unloading of chat commands
             }
         }
 

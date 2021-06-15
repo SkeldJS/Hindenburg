@@ -171,6 +171,7 @@ export class ChatCommandHandler {
 
         this.worker.on("player.chat", async ev => {
             if (ev.message.startsWith("/")) {
+                ev.rpc.cancel(); // Prevent message from being broadcasted
                 const restMessage = ev.message.substr(1);
                 const context = new ChatCommandContext(ev.room, ev.player, ev.message);
                 try {

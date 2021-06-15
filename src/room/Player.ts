@@ -148,4 +148,17 @@ export class Player extends EventEmitter<PlayerEvents> {
     voteKick(target: Player) {
         this.room.voteKicks.addVote(this, target);
     }
+
+    async setName(name: string) {
+        if (!this.info)
+            throw new TypeError("Cannot set name without player info");
+
+        if (!this.components.control)
+            throw new TypeError("Player not spawned.");
+
+        this.info.name = name;
+        this.info.dirty = true;
+
+        await this.components.control.rpcSetName(name);
+    }
 }

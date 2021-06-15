@@ -1,10 +1,21 @@
-import { Color } from "@skeldjs/constant";
+import chalk from "chalk";
+
+import { Color, DisconnectReason, SpawnType } from "@skeldjs/constant";
 import {
+    ComponentSpawnData,
+    DataMessage,
+    DespawnMessage,
+    GameDataMessage,
+    JoinGameMessage,
+    ReliablePacket,
+    RemovePlayerMessage,
     RpcMessage,
     SendChatMessage,
     SetColorMessage,
-    SetNameMessage
+    SetNameMessage,
+    SpawnMessage
 } from "@skeldjs/protocol";
+import { HazelWriter, sleep } from "@skeldjs/util";
 
 import { Player, Room } from "../../room";
 import { Worker } from "../../Worker";
@@ -37,6 +48,7 @@ export interface ChatCommandParameter {
 
 export class CallError extends Error {};
 
+let incrNetid = 2 ** 16;
 export class ChatCommandContext {
     constructor(
         public readonly room: Room,
@@ -54,29 +66,95 @@ export class ChatCommandContext {
         if (!oldName || !oldColor)
             return;
 
-        // todo: better way of doing this (room api method?)
-        await this.room.broadcastMessages([
-            new RpcMessage(
-                this.player.components.control.netid,
-                new SetNameMessage("[Server]")
-            ),
-            new RpcMessage(
-                this.player.components.control.netid,
-                new SetColorMessage(Color.Yellow)
-            ),
-            new RpcMessage(
-                this.player.components.control.netid,
-                new SendChatMessage(message)
-            ),
-            new RpcMessage(
-                this.player.components.control.netid,
-                new SetNameMessage(oldName)
-            ),
-            new RpcMessage(
-                this.player.components.control.netid,
-                new SetColorMessage(oldColor)
-            ),
-        ], undefined, [this.player], undefined);
+        const writer = HazelWriter.alloc(10);
+        const mwriter = writer.begin(11);
+        mwriter.string("[Server]");
+        mwriter.packed(Color.Yellow);
+        mwriter.upacked(0);
+        mwriter.upacked(0);
+        mwriter.upacked(0);
+        mwriter.byte(0);
+        mwriter.uint8(0);
+        writer.end();
+        await this.player.connection.sendPacket(
+            new ReliablePacket(
+                this.player.connection.getNextNonce(),
+                [
+                    new JoinGameMessage(
+                        this.room.code.id,
+                        2 ** 31 - 3,
+                        this.room.hostid!
+                    )
+                ]
+            )
+        );
+        const pc = ++incrNetid;
+        const pp = ++incrNetid;
+        const cnt = ++incrNetid;
+        await this.player.connection.sendPacket(
+            new ReliablePacket(
+                this.player.connection.getNextNonce(),
+                [
+                    new GameDataMessage(
+                        this.room.code.id,
+                        [
+                            new SpawnMessage(
+                                SpawnType.Player,
+                                2 ** 31 - 3,
+                                0,
+                                [
+                                    new ComponentSpawnData(
+                                        pc,
+                                        Buffer.from("000b", "hex")
+                                    ),
+                                    new ComponentSpawnData(
+                                        pp,
+                                        Buffer.from("", "hex")
+                                    ),
+                                    new ComponentSpawnData(
+                                        cnt,
+                                        Buffer.from("00010000000000000000")
+                                    )
+                                ]
+                            ),
+                            new DataMessage(
+                                this.room.components.gameData!.netid,
+                                writer.buffer
+                            ),
+                            new RpcMessage(
+                                pc,
+                                new SetNameMessage("[Server]")
+                            ),
+                            new RpcMessage(
+                                pc,
+                                new SetColorMessage(Color.Yellow)
+                            ),
+                            new RpcMessage(
+                                pc,
+                                new SendChatMessage(message)
+                            ),
+                            new DespawnMessage(pc),
+                            new DespawnMessage(pp),
+                            new DespawnMessage(cnt)
+                        ]
+                    )
+                ]
+            )
+        );
+        await sleep(50);
+        await this.player.connection.sendPacket(
+            new ReliablePacket(
+                this.player.connection.getNextNonce(),
+                [
+                    new RemovePlayerMessage(
+                        this.room.code.id,
+                        2 ** 31 - 3,
+                        DisconnectReason.None,
+                        this.room.hostid!
+                    )
+                ]
+            )
+        );
     }
 }
 
@@ -156,7 +234,7 @@ export class RegisteredChatCommand {
 
             if (!consume) {
                 if (param.required) {
-                    throw new CallError("Missing parameter: " + param.name);
+                    throw new CallError("Usage: <color=#12a50a>" + this.createUsage() + "</color>\n\<color=#f7584e>Missing: " + param.name + "</color>\n\n" + this.description);
                 }
                 return parsed; // No more arguments are left to consume
             }
@@ -203,13 +281,13 @@ export class ChatCommandHandler {
                     return;
                 }
 
-                await ctx.reply("Usage: " + command.createUsage() + "\n\nDescription: " + command.description);
+                await ctx.reply("Usage: <color=#12a50a>" + command.createUsage() + "</color>\n\n" + command.description);
                 return;
             }
             
-            let outMessage = "Listing " + this.commands.size + " command(s):\n";
+            let outMessage = "Listing " + this.commands.size + " command(s):";
             for (const [ , command ] of this.commands) {
-                outMessage += "\n" + command.createUsage();
+                outMessage += "\n\n<space=1em><color=#12a50a>" + command.createUsage() + "</color> - " + command.description;
             }
             await ctx.reply(outMessage);
         });
@@ -218,6 +296,8 @@ export class ChatCommandHandler {
     registerCommand(usage: string, description: string, callback: ChatCommandCallback) {
         const parsedCommand = RegisteredChatCommand.parse(usage, description, callback);
         this.commands.set(parsedCommand.name, parsedCommand);
+        this.worker.logger.info("Registered chat command: %s",
+            chalk.green("/" + usage))
     }
 
     async parseMessage(ctx: ChatCommandContext, message: string) {

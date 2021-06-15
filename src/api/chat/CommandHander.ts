@@ -86,10 +86,11 @@ export class RegisteredChatCommand {
     constructor(
         public readonly name: string,
         public readonly params: ChatCommandParameter[],
+        public readonly description: string,
         public readonly callback: ChatCommandCallback
     ) {}
 
-    static parse(usage: string, callback: ChatCommandCallback) {
+    static parse(usage: string, description: string, callback: ChatCommandCallback) {
         // https://github.com/dthree/vorpal/blob/51f5e2b545631b6a86c9781c274a1b0916a67ee8/lib/vorpal.js#L311
         const matchedParams = usage.match(/(\[[^\]]*\]|\<[^\>]*\>)/g) || [];
         const matchedCmdName = usage.match(/^([^\[\<]*)/g)?.[0]?.trim() || "";
@@ -131,7 +132,7 @@ export class RegisteredChatCommand {
             cmdParams.push(param);
         }
 
-        const chatCommand = new RegisteredChatCommand(matchedCmdName, cmdParams, callback);
+        const chatCommand = new RegisteredChatCommand(matchedCmdName, cmdParams, description, callback);
         return chatCommand;
     }
 
@@ -193,8 +194,20 @@ export class ChatCommandHandler {
             }
         });
 
-        this.registerCommand("help", async (ctx, args) => {
-            let outMessage = "Listing " + this.commands.size + " command(s):";
+        this.registerCommand("help [command]", "Get a list of commands and how to use them.", async (ctx, args) => {
+            if (args.command) {
+                const command = this.commands.get(args.command);
+
+                if (!command) {
+                    await ctx.reply("No command with name: " + args.command);
+                    return;
+                }
+
+                await ctx.reply("Usage: " + command.createUsage() + "\n\nDescription: " + command.description);
+                return;
+            }
+            
+            let outMessage = "Listing " + this.commands.size + " command(s):\n";
             for (const [ , command ] of this.commands) {
                 outMessage += "\n" + command.createUsage();
             }
@@ -202,8 +215,8 @@ export class ChatCommandHandler {
         });
     }
 
-    registerCommand(usage: string, callback: ChatCommandCallback) {
-        const parsedCommand = RegisteredChatCommand.parse(usage, callback);
+    registerCommand(usage: string, description: string, callback: ChatCommandCallback) {
+        const parsedCommand = RegisteredChatCommand.parse(usage, description, callback);
         this.commands.set(parsedCommand.name, parsedCommand);
     }
 

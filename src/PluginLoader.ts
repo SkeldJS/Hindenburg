@@ -5,7 +5,7 @@ import path from "path";
 
 import { Worker, WorkerEvents } from "./Worker";
 import { hindenburgEventKey } from "./api/events/EventListener";
-import { hindenburgChatCommandKey } from "./api/chat/ChatCommand";
+import { hindenburgChatCommandDescKey, hindenburgChatCommandKey } from "./api/chat/ChatCommand";
 
 export interface PluginMeta {
     id: string;
@@ -102,10 +102,11 @@ export class PluginLoader {
             }
 
             const chatCommand = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
+            const chatCommandDescription = Reflect.getMetadata(hindenburgChatCommandDescKey, loadedPlugin, propertyName);
             
             if (chatCommand) {
                 const fn = property.bind(loadedPlugin);
-                this.worker.chatCommandHandler.registerCommand(chatCommand, fn);
+                this.worker.chatCommandHandler.registerCommand(chatCommand, chatCommandDescription, fn);
                 // todo: handle unloading of chat commands
             }
         }

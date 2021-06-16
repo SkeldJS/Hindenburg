@@ -199,9 +199,9 @@ export class RegisteredChatCommand {
                 param.required = true;
             }
             matchedParam = matchedParam.substr(1, matchedParam.length - 2); // Remove surrounding parameter markers, [ ] and < >
-            if (matchedParam.startsWith("...")) {
+            if (matchedParam.endsWith("...")) {
                 param.isRest = true;
-                matchedParam = matchedParam.substr(3); // Remove leading ...
+                matchedParam = matchedParam.substr(0, matchedParam.length - 3); // Remove trailing ...
                 if (i !== matchedParams.length - 1) {
                     throw new TypeError("Rest parameter must be last.");
                 }
@@ -272,7 +272,7 @@ export class ChatCommandHandler {
             }
         });
 
-        this.registerCommand("help [command]", "Get a list of commands and how to use them.", async (ctx, args) => {
+        this.registerCommand("help [command]", "Get a list of commands and how to use them, or get help for a specific command.", async (ctx, args) => {
             if (args.command) {
                 const command = this.commands.get(args.command);
 

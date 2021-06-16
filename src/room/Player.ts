@@ -149,6 +149,10 @@ export class Player extends EventEmitter<PlayerEvents> {
         this.room.voteKicks.addVote(this, target);
     }
 
+    /**
+     * Change the player's name.
+     * @param name The name to set.
+     */
     async setName(name: string) {
         if (!this.info)
             throw new TypeError("Cannot set name without player info");

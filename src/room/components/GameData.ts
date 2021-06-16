@@ -13,9 +13,9 @@ export class GameData implements Component {
     
     Deserialize(reader: HazelReader, isSpawn: boolean) {
         if (isSpawn) {
-            const num_players = reader.upacked();
+            const numPlayers = reader.upacked();
 
-            for (let i = 0; i < num_players; i++) {
+            for (let i = 0; i < numPlayers; i++) {
                 const playerId = reader.uint8();
                 const playerInfo = reader.read(PlayerInfo, playerId);
                 this.room.playerInfo.set(playerId, playerInfo);

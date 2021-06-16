@@ -42,7 +42,7 @@ import { EventEmitter } from "@skeldjs/events";
 import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
-import { Room, RoomEvents } from "./room/Room";
+import { MessageSide, Room, RoomEvents } from "./room/Room";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { PluginLoader } from "./PluginLoader";
@@ -521,6 +521,33 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 } else {
                     this.logger.error("Couldn't find room: " + args["room code"]);
                 }
+            });
+
+        this.vorpal
+            .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
+            .option("--room <room code>", "the room to send a message to")
+            .action(async args => {
+                const message = args.message.join(" ");
+                const roomCode = args.options.room
+                    ? Code2Int(args.options.room.toUpperCase())
+                    : 0;
+
+                const foundRoom = this.rooms.get(roomCode);
+
+                if (foundRoom) {
+                    foundRoom.sendChat(message, MessageSide.Left);
+                    this.logger.info("Broadcasted message to %s player(s)", foundRoom.players.size);
+                    return;
+                } else if (roomCode) {
+                    this.logger.error("Couldn't find room: " + args.options.room);
+                }
+
+                let numPlayers = 0;
+                for (const [ , room ] of this.rooms) {
+                    room.sendChat(message, MessageSide.Left);
+                    numPlayers += room.players.size;
+                }
+                this.logger.info("Broadcasted message to %s player(s)", numPlayers);
             });
 
         // todo: handle report player

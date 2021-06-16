@@ -57,6 +57,7 @@ export class ChatCommandContext {
     ) {}
 
     async reply(message: string) {
+        // todo: need much better method
         if (!this.player.components.control)
             return;
 

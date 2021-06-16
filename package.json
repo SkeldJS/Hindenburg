@@ -21,12 +21,12 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "@skeldjs/constant": "^2.10.11",
-    "@skeldjs/data": "^2.10.11",
-    "@skeldjs/events": "^2.10.11",
-    "@skeldjs/protocol": "^2.10.11",
-    "@skeldjs/reactor": "^2.10.11",
-    "@skeldjs/util": "^2.10.11",
+    "@skeldjs/constant": "^2.10.12",
+    "@skeldjs/data": "^2.10.12",
+    "@skeldjs/events": "^2.10.12",
+    "@skeldjs/protocol": "^2.10.12",
+    "@skeldjs/reactor": "^2.10.12",
+    "@skeldjs/util": "^2.10.12",
     "chalk": "^4.1.1",
     "reflect-metadata": "^0.1.13",
     "resolve-from": "^5.0.0",

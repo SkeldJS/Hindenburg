@@ -1,22 +1,5 @@
 import chalk from "chalk";
 
-import { Color, DisconnectReason, SpawnType } from "@skeldjs/constant";
-import {
-    ComponentSpawnData,
-    DataMessage,
-    DespawnMessage,
-    GameDataMessage,
-    JoinGameMessage,
-    ReliablePacket,
-    RemovePlayerMessage,
-    RpcMessage,
-    SendChatMessage,
-    SetColorMessage,
-    SetNameMessage,
-    SpawnMessage
-} from "@skeldjs/protocol";
-import { HazelWriter, sleep } from "@skeldjs/util";
-
 import { MessageSide, Player, Room } from "../../room";
 import { Worker } from "../../Worker";
 
@@ -47,21 +30,32 @@ export interface ChatCommandParameter {
 }
 
 export class CallError extends Error {};
-
-let incrNetid = 2 ** 16;
 export class ChatCommandContext {
     constructor(
+        /**
+         * The room that this command came from.
+         */
         public readonly room: Room,
+        /**
+         * The player that sent the message calling the command.
+         */
         public readonly player: Player,
+        /**
+         * The original message that the player sent (without the leading '/').
+         */
         public readonly message: string
     ) {}
 
+    /**
+     * Reply to the message that called this command.
+     * @summary Calls {@link Room.sendChat}
+     * @param message The message to reply with.
+     */
     async reply(message: string) {
-        // todo: need much better method
-        if (!this.player.components.control)
-            return;
-
-        await this.room.sendChat(message, MessageSide.Left, this.player);
+        await this.room.sendChat(message, {
+            side: MessageSide.Left,
+            target: this.player
+        });
     }
 }
 
@@ -121,15 +115,24 @@ export class RegisteredChatCommand {
         return chatCommand;
     }
 
+    /**
+     * Create a formatted usage of this command, in [standard unix command-line
+     * command syntax](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+     */
     createUsage() {
         return "/" + this.name + " " + this.params.map(param => {
             return (param.required ? "<" : "[")
-                + (param.isRest ? "..." : "")
                 + param.name
                 + (param.required ? ">" : "]");
         }).join(" ");
     }
 
+    /**
+     * Verify that an array of arguments correctly fits the usage of this command.
+     * @param args The arguments to verify.
+     * @returns The arguments mapped from parameter name to value of the argument
+     * passed.
+     */
     verify(args: string[]): Record<string, string> {
         const argsCloned = [...args]; // Clone the array to not affect the original arguments array
         const parsed: Record<string, string> = {};
@@ -200,6 +203,19 @@ export class ChatCommandHandler {
         });
     }
 
+    /**
+     * Register a command into the command handler.
+     * @param usage How to use the command in [standard unix command-line command
+     * syntax](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+     * @param description A short summary of what the command does, how to use it, etc.
+     * @param callback A callback function for when the command is called.
+     * @example
+     * ```ts
+     * worker.chatCommandHandler.parseMessage("ping", "Ping the server.", (ctx, args) => {
+     *   ctx.reply("pong!");
+     * });
+     * ```
+     */
     registerCommand(usage: string, description: string, callback: ChatCommandCallback) {
         const parsedCommand = RegisteredChatCommand.parse(usage, description, callback);
         this.commands.set(parsedCommand.name, parsedCommand);
@@ -207,6 +223,18 @@ export class ChatCommandHandler {
             chalk.green("/" + usage))
     }
 
+    /**
+     * Parse a message calling a command. Does not trim off a leading '/'.
+     * @param ctx Context for the message.
+     * @param message The message to parse.
+     * @example
+     * ```ts
+     * const message = "setname weakeyes";
+     * const ctx = new ChatCommandContext(room, room.players.host, message);
+     * 
+     * await worker.chatCommandHandler.parseMessage(ctx, message);
+     * ```
+     */
     async parseMessage(ctx: ChatCommandContext, message: string) {
         const args = betterSplitOnSpaces(message);
         const commandName = args.shift();

@@ -79,6 +79,66 @@ export enum MessageSide {
     Right
 }
 
+/**
+ * Options regarding sending a chat message into the room as the server, see
+ * {@link Room.sendChat}
+ */
+export interface SendChatOptions {
+    /**
+     * The side of the chat box for the message to appear on for each player.
+     * @example
+     * ```ts
+     * room.sendChat("Slide to the left", {
+     *   side: MessageSide.Left
+     * });
+     * 
+     * room.sendChat("Slide to the right", {
+     *   side: MessageSide.Right
+     * });
+     * ```
+     */
+    side: MessageSide;
+    /**
+     * The player to send the message to, if omitted, sends to all players.
+     * @example
+     * ```ts
+     * // Alert the host of a hacker
+     * .@EventListener("anticheat.potential")
+     * onPotentialCheater(ev: AnticheatPotentialEvent) {
+     *   if (!ev.player.info)
+     *     return;
+     * 
+     *   ev.room.sendChat("<color=red>Potential cheater detected: " + ev.player.info.name + "</color>", {
+     *     target: ev.room.players.host
+     *   });
+     * }
+     * ```
+     */
+    target: Player|undefined;
+    /**
+     * The name of the player to appear as.
+     * @example
+     * ```ts
+     * ev.room.sendChat("i am the impostor", {
+     *   name: "<color=red>The Impostor</color>",
+     *   color: Color.Red
+     * });
+     * ```
+     */
+    name: string;
+    /**
+     * The color of the player to appear as.
+     * @example
+     * ```ts
+     * ev.room.sendChat("i am the impostor", {
+     *   name: "<color=red>The Impostor</color>",
+     *   color: Color.Red
+     * });
+     * ```
+     */
+    color: Color;
+}
+
 export interface RoomComponentCtr {
     new(
         room: Room,
@@ -413,6 +473,7 @@ export class Room extends EventEmitter<RoomEvents> {
     /**
      * Destroy this room, broadcasting a [RemoveGame](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/03_removegame.md)
      * message to all clients and removing itself from the server.
+     * @param reason Reason to tell players why the room was destroyed.
      */
     async destroy(reason = DisconnectReason.ServerRequest) {
         this.worker.logger.info("Destroyed %s", this);
@@ -575,6 +636,15 @@ export class Room extends EventEmitter<RoomEvents> {
      * Change the host of the room.
      * @param host The client to set as host.
      * @param doUpdate Whether to immediately update the host for all clients.
+     * @example
+     * ```ts
+     * // Pick a random host
+     * const playersArr = [...room.players];
+     * if (playersArr.length) {
+     *   const random = ~~(Math.random() * playersArr.length);
+     *   room.setHost(random);
+     * }
+     * ```
      */
     async setHost(host: Player|undefined, doUpdate: boolean = true) {
         if (host && !this.players.get(host.clientId))
@@ -602,6 +672,7 @@ export class Room extends EventEmitter<RoomEvents> {
     /**
      * Send a message into the chat as the server.
      * 
+     * @summary
      * If on the left side, the room spawns a new player owned by the room with
      * a player ID of 127 and updates their name and colour and despawns them
      * immediately after sending the message.
@@ -609,22 +680,40 @@ export class Room extends EventEmitter<RoomEvents> {
      * If on the right side, for each player the room sets their name and colour
      * and immediately sets them back after sending the message.
      * @param message The message to send.
-     * @param side The side for the message to appear on for each player.
-     * @param target The player to send the message to.
+     * @param options Options for the method.
+     * @example
+     * ```ts
+     * // Tell a player off if they use a bad word.
+     * .@EventListener("player.chat")
+     * onPlayerChat(ev: PlayerChatEvent) {
+     *   const badWords = [ "sprout", "barney" ];
+     * 
+     *   for (const word of badWords) {
+     *     if (ev.message.includes(word)) {
+     *       ev.rpc.cancel(); // Don't broadcast the message to other players
+     *       ev.room.sendChat("<color=red>You used a bad word there, mister.</color>", { target: ev.player });
+     *     }
+     *   }
+     * }
+     * ```
      */
-    async sendChat(message: string, side = MessageSide.Left, target?: Player) {
+    async sendChat(message: string, options: Partial<SendChatOptions> = {}) {
         if (!this.components.gameData)
             throw new TypeError("No gamedata spawned.");
 
-        // todo: allow changing these as parameter "options"
-        const chatName = "<color=yellow>[Server]</color>";
-        const chatColor = Color.Yellow;
+        const defaultOptions: SendChatOptions = {
+            side: MessageSide.Left,
+            target: undefined,
+            name: "<color=yellow>[Server]</color>",
+            color: Color.Yellow,
+            ...options
+        };
 
-        if (side === MessageSide.Left) {
-            const writer = HazelWriter.alloc(4 + chatName.length + 6);
+        if (defaultOptions.side === MessageSide.Left) {
+            const writer = HazelWriter.alloc(4 + defaultOptions.name.length + 6);
             const mwriter = writer.begin(127); // Write game data for player Id 127 (max player id)
-            mwriter.string(chatName);
-            mwriter.packed(chatColor);
+            mwriter.string(defaultOptions.name);
+            mwriter.packed(defaultOptions.color);
             mwriter.upacked(0);
             mwriter.upacked(0);
             mwriter.upacked(0);
@@ -660,11 +749,11 @@ export class Room extends EventEmitter<RoomEvents> {
                 ),
                 new RpcMessage(
                     pcNetId,
-                    new SetNameMessage(chatName)
+                    new SetNameMessage(defaultOptions.name)
                 ),
                 new RpcMessage(
                     pcNetId,
-                    new SetColorMessage(chatColor)
+                    new SetColorMessage(defaultOptions.color)
                 ),
                 new RpcMessage(
                     pcNetId,
@@ -673,10 +762,10 @@ export class Room extends EventEmitter<RoomEvents> {
                 new DespawnMessage(pcNetId),
                 new DespawnMessage(ppNetId),
                 new DespawnMessage(cntNetId)
-            ], [], target ? [target]: undefined);
+            ], [], defaultOptions.target ? [defaultOptions.target]: undefined);
         } else {
             // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
-            for (const [ , player ] of (target ? [[ target.clientId, target ]] as [[number, Player]] : this.players)) {
+            for (const [ , player ] of (defaultOptions.target ? [[ , defaultOptions.target ]] as [[void, Player]] : this.players)) {
                 if (!player.components.control)
                     continue;
 
@@ -685,8 +774,8 @@ export class Room extends EventEmitter<RoomEvents> {
 
                 const writer = HazelWriter.alloc(18);
                 const mwriter = writer.begin(player.playerId); // Write game data for player
-                mwriter.string(chatName);
-                mwriter.packed(chatColor);
+                mwriter.string(defaultOptions.name);
+                mwriter.packed(defaultOptions.color);
                 mwriter.upacked(0);
                 mwriter.upacked(0);
                 mwriter.upacked(0);
@@ -702,11 +791,11 @@ export class Room extends EventEmitter<RoomEvents> {
                     ),
                     new RpcMessage(
                         player.components.control.netid,
-                        new SetNameMessage(chatName)
+                        new SetNameMessage(defaultOptions.name)
                     ),
                     new RpcMessage(
                         player.components.control.netid,
-                        new SetColorMessage(chatColor)
+                        new SetColorMessage(defaultOptions.color)
                     ),
                     new RpcMessage(
                         player.components.control.netid,
@@ -720,7 +809,7 @@ export class Room extends EventEmitter<RoomEvents> {
                         player.components.control.netid,
                         new SetColorMessage(oldColor)
                     )
-                ], [], target ? [target]: undefined);
+                ], [], defaultOptions.target ? [defaultOptions.target]: undefined);
             }
         }
     }

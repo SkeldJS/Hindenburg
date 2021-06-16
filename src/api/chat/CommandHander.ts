@@ -17,7 +17,7 @@ import {
 } from "@skeldjs/protocol";
 import { HazelWriter, sleep } from "@skeldjs/util";
 
-import { Player, Room } from "../../room";
+import { MessageSide, Player, Room } from "../../room";
 import { Worker } from "../../Worker";
 
 function betterSplitOnSpaces(input: string) {
@@ -61,101 +61,7 @@ export class ChatCommandContext {
         if (!this.player.components.control)
             return;
 
-        const oldName = this.player.info?.name;
-        const oldColor = this.player.info?.color;
-        
-        if (!oldName || !oldColor)
-            return;
-
-        const writer = HazelWriter.alloc(10);
-        const mwriter = writer.begin(11);
-        mwriter.string("[Server]");
-        mwriter.packed(Color.Yellow);
-        mwriter.upacked(0);
-        mwriter.upacked(0);
-        mwriter.upacked(0);
-        mwriter.byte(0);
-        mwriter.uint8(0);
-        writer.end();
-        await this.player.connection.sendPacket(
-            new ReliablePacket(
-                this.player.connection.getNextNonce(),
-                [
-                    new JoinGameMessage(
-                        this.room.code.id,
-                        2 ** 31 - 3,
-                        this.room.hostid!
-                    )
-                ]
-            )
-        );
-        const pc = ++incrNetid;
-        const pp = ++incrNetid;
-        const cnt = ++incrNetid;
-        await this.player.connection.sendPacket(
-            new ReliablePacket(
-                this.player.connection.getNextNonce(),
-                [
-                    new GameDataMessage(
-                        this.room.code.id,
-                        [
-                            new SpawnMessage(
-                                SpawnType.Player,
-                                2 ** 31 - 3,
-                                0,
-                                [
-                                    new ComponentSpawnData(
-                                        pc,
-                                        Buffer.from("000b", "hex")
-                                    ),
-                                    new ComponentSpawnData(
-                                        pp,
-                                        Buffer.from("", "hex")
-                                    ),
-                                    new ComponentSpawnData(
-                                        cnt,
-                                        Buffer.from("00010000000000000000")
-                                    )
-                                ]
-                            ),
-                            new DataMessage(
-                                this.room.components.gameData!.netid,
-                                writer.buffer
-                            ),
-                            new RpcMessage(
-                                pc,
-                                new SetNameMessage("[Server]")
-                            ),
-                            new RpcMessage(
-                                pc,
-                                new SetColorMessage(Color.Yellow)
-                            ),
-                            new RpcMessage(
-                                pc,
-                                new SendChatMessage(message)
-                            ),
-                            new DespawnMessage(pc),
-                            new DespawnMessage(pp),
-                            new DespawnMessage(cnt)
-                        ]
-                    )
-                ]
-            )
-        );
-        await sleep(50);
-        await this.player.connection.sendPacket(
-            new ReliablePacket(
-                this.player.connection.getNextNonce(),
-                [
-                    new RemovePlayerMessage(
-                        this.room.code.id,
-                        2 ** 31 - 3,
-                        DisconnectReason.None,
-                        this.room.hostid!
-                    )
-                ]
-            )
-        );
+        await this.room.sendChat(message, MessageSide.Left, this.player);
     }
 }
 

@@ -3,6 +3,7 @@ import util from "util";
 import winston from "winston";
 
 import {
+    Color,
     DisconnectReason,
     GameMap,
     GameOverReason,
@@ -14,6 +15,7 @@ import {
 import {
     BaseGameDataMessage,
     BaseRootMessage,
+    ComponentSpawnData,
     DataMessage,
     DespawnMessage,
     EndGameMessage,
@@ -24,17 +26,18 @@ import {
     JoinGameMessage,
     PacketDecoder,
     ReliablePacket,
-    RemoveGameMessage,
     RemovePlayerMessage,
     RpcMessage,
     SendChatMessage,
+    SetColorMessage,
     SetNameMessage,
     SpawnMessage,
     StartGameMessage,
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
-import { HazelReader, HazelWriter } from "@skeldjs/util";
+import { BasicEvent, EventEmitter } from "@skeldjs/events";
+import { HazelReader, HazelWriter, sleep } from "@skeldjs/util";
 
 import { Connection } from "../Connection";
 import { Player, PlayerEvents } from "./Player";
@@ -50,12 +53,12 @@ import { CustomNetworkTransform } from "./components/CustomNetworkTransform";
 import { ComponentStore } from "./util/ComponentStore";
 import { VoteKicks } from "./util/VoteKicks";
 import { VoteBanSystem } from "./components/VoteBanSystem";
-import { BasicEvent, EventEmitter } from "@skeldjs/events";
-import { RoomEvent } from "./events";
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
 
-enum SpecialId {
-    Nil = 2 ** 31 - 1
+enum SpecialClientId {
+    Nil = 2 ** 31 - 1,
+    Server = 2 ** 31 - 2,
+    Temp = 2 ** 31 - 3
 }
 
 const logMaps = {
@@ -64,6 +67,16 @@ const logMaps = {
     [GameMap.Polus]: "polus",
     [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
     [GameMap.Airship]: "airship"
+}
+
+const spawnPrefabs: Record<number, ComponentCtr[]> = {
+    [SpawnType.GameData]: [GameData, VoteBanSystem],
+    [SpawnType.Player]: [PlayerControl, PlayerPhysics, CustomNetworkTransform]
+}
+
+export enum MessageSide {
+    Left,
+    Right
 }
 
 export interface RoomComponentCtr {
@@ -83,12 +96,6 @@ export interface PlayerComponentCtr {
 }
 
 export type ComponentCtr = RoomComponentCtr|PlayerComponentCtr;
-
-const spawnPrefabs: Record<number, ComponentCtr[]> = {
-    [SpawnType.GameData]: [GameData, VoteBanSystem],
-    [SpawnType.Player]: [PlayerControl, PlayerPhysics, CustomNetworkTransform]
-}
-
 export type RoomEvents = PlayerEvents;
 
 export class Room extends EventEmitter<RoomEvents> {
@@ -148,6 +155,7 @@ export class Room extends EventEmitter<RoomEvents> {
     voteKicks: VoteKicks;
 
     private lastFixedUpdateTime: number;
+    private incrNetId: number;
 
     constructor(
         public readonly worker: Worker,
@@ -191,6 +199,8 @@ export class Room extends EventEmitter<RoomEvents> {
         this.gamedataStream = [];
 
         this.lastFixedUpdateTime = Date.now();
+        this.incrNetId = 0;
+
         setInterval(() => {
             const deltaTime = Date.now() - this.lastFixedUpdateTime;
             this.lastFixedUpdateTime = Date.now();
@@ -231,6 +241,10 @@ export class Room extends EventEmitter<RoomEvents> {
 
                 const componentCtr = spawnPrefabs[message.spawnType]?.[i];
 
+                if (mComponent.netid > this.incrNetId) {
+                    this.incrNetId = mComponent.netid;
+                }
+
                 if (!componentCtr) {
                     this.logger.warn("Unhandled spawn type: %s %s",
                         SpawnType[message.spawnType] || message.spawnType, chalk.grey("(idx. " + i + ")"));
@@ -242,6 +256,7 @@ export class Room extends EventEmitter<RoomEvents> {
 
                 const dataReader = HazelReader.from(mComponent.data);
                 spawnedComponent.Deserialize(dataReader, true);
+
             }
 
             //this.logger.info("Spawn: %s %s %s",
@@ -300,6 +315,11 @@ export class Room extends EventEmitter<RoomEvents> {
         await this.worker.emit(event);
 
         return super.emit(event);
+    }
+
+    getNextNetId() {
+        this.incrNetId++;
+        return this.incrNetId;
     }
 
     /**
@@ -445,7 +465,7 @@ export class Room extends EventEmitter<RoomEvents> {
                                                 new JoinedGameMessage(
                                                 this.code.id,
                                                 clientId,
-                                                this.hostid || SpecialId.Nil,
+                                                this.hostid || SpecialClientId.Nil,
                                                 [...this.players.values()]
                                                     .filter(pl => pl !== player)
                                                     .map(player => player.clientId)
@@ -468,7 +488,7 @@ export class Room extends EventEmitter<RoomEvents> {
                     new JoinGameMessage(
                         this.code.id,
                         connection.clientId,
-                        this.hostid || SpecialId.Nil
+                        this.hostid || SpecialClientId.Nil
                     )
                 ], undefined, [player]);
 
@@ -494,7 +514,7 @@ export class Room extends EventEmitter<RoomEvents> {
             new JoinGameMessage(
                 this.code.id,
                 connection.clientId,
-                this.hostid || SpecialId.Nil
+                this.hostid || SpecialClientId.Nil
             )
         ], undefined, [player]);
 
@@ -505,7 +525,7 @@ export class Room extends EventEmitter<RoomEvents> {
                     new JoinedGameMessage(
                         this.code.networkName,
                         connection.clientId,
-                        this.hostid || SpecialId.Nil,
+                        this.hostid || SpecialClientId.Nil,
                         [...this.players.values()]
                             .filter(pl => pl !== player)
                             .map(player => player.clientId)
@@ -564,18 +584,144 @@ export class Room extends EventEmitter<RoomEvents> {
             await this.broadcastMessages([], [
                 new JoinGameMessage(
                     this.code.id,
-                    SpecialId.Nil,
-                    host ? host.clientId : SpecialId.Nil
+                    SpecialClientId.Nil,
+                    host ? host.clientId : SpecialClientId.Nil
                 ),
                 new RemovePlayerMessage(
                     this.code.id,
-                    SpecialId.Nil,
+                    SpecialClientId.Nil,
                     DisconnectReason.None,
-                    host ? host.clientId : SpecialId.Nil
+                    host ? host.clientId : SpecialClientId.Nil
                 )
             ]);
         }
 
         this.hostid = host?.clientId || undefined;
+    }
+
+    /**
+     * Send a message into the chat as the server.
+     * 
+     * If on the left side, the room spawns a new player owned by the room with
+     * a player ID of 127 and updates their name and colour and despawns them
+     * immediately after sending the message.
+     * 
+     * If on the right side, for each player the room sets their name and colour
+     * and immediately sets them back after sending the message.
+     * @param message The message to send.
+     * @param side The side for the message to appear on for each player.
+     * @param target The player to send the message to.
+     */
+    async sendChat(message: string, side = MessageSide.Left, target?: Player) {
+        if (!this.components.gameData)
+            throw new TypeError("No gamedata spawned.");
+
+        // todo: allow changing these as parameter "options"
+        const chatName = "<color=yellow>[Server]</color>";
+        const chatColor = Color.Yellow;
+
+        if (side === MessageSide.Left) {
+            const writer = HazelWriter.alloc(4 + chatName.length + 6);
+            const mwriter = writer.begin(127); // Write game data for player Id 127 (max player id)
+            mwriter.string(chatName);
+            mwriter.packed(chatColor);
+            mwriter.upacked(0);
+            mwriter.upacked(0);
+            mwriter.upacked(0);
+            mwriter.byte(0);
+            mwriter.uint8(0);
+            writer.end();
+            const pcNetId = this.getNextNetId();
+            const ppNetId = this.getNextNetId();
+            const cntNetId = this.getNextNetId();
+            await this.broadcastMessages([
+                new SpawnMessage(
+                    SpawnType.Player,
+                    -2,
+                    0,
+                    [ // Must spawn all components as client doesn't accept spawn if it isn't a full player spawn
+                        new ComponentSpawnData( // Player Control
+                            pcNetId,
+                            Buffer.from("007f", "hex") // isNew=false playerId=127
+                        ),
+                        new ComponentSpawnData( // Player Physics
+                            ppNetId,
+                            Buffer.from("", "hex")
+                        ),
+                        new ComponentSpawnData( // Custom Network Transform
+                            cntNetId,
+                            Buffer.from("00010000000000000000") // sequenceId=1 position=0,0 velocity=0,0
+                        )
+                    ]
+                ),
+                new DataMessage(
+                    this.components.gameData.netid,
+                    writer.buffer
+                ),
+                new RpcMessage(
+                    pcNetId,
+                    new SetNameMessage(chatName)
+                ),
+                new RpcMessage(
+                    pcNetId,
+                    new SetColorMessage(chatColor)
+                ),
+                new RpcMessage(
+                    pcNetId,
+                    new SendChatMessage(message)
+                ),
+                new DespawnMessage(pcNetId),
+                new DespawnMessage(ppNetId),
+                new DespawnMessage(cntNetId)
+            ], [], target ? [target]: undefined);
+        } else {
+            // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
+            for (const [ , player ] of (target ? [[ target.clientId, target ]] as [[number, Player]] : this.players)) {
+                if (!player.components.control)
+                    continue;
+
+                if (!player.info)
+                    continue;
+
+                const writer = HazelWriter.alloc(18);
+                const mwriter = writer.begin(player.playerId); // Write game data for player
+                mwriter.string(chatName);
+                mwriter.packed(chatColor);
+                mwriter.upacked(0);
+                mwriter.upacked(0);
+                mwriter.upacked(0);
+                mwriter.byte(0);
+                mwriter.uint8(0);
+                writer.end();
+                const oldName = player.info.name;
+                const oldColor = player.info.color;
+                await this.broadcastMessages([
+                    new DataMessage(
+                        this.components.gameData.netid,
+                        writer.buffer
+                    ),
+                    new RpcMessage(
+                        player.components.control.netid,
+                        new SetNameMessage(chatName)
+                    ),
+                    new RpcMessage(
+                        player.components.control.netid,
+                        new SetColorMessage(chatColor)
+                    ),
+                    new RpcMessage(
+                        player.components.control.netid,
+                        new SendChatMessage(message)
+                    ),
+                    new RpcMessage(
+                        player.components.control.netid,
+                        new SetNameMessage(oldName)
+                    ),
+                    new RpcMessage(
+                        player.components.control.netid,
+                        new SetColorMessage(oldColor)
+                    )
+                ], [], target ? [target]: undefined);
+            }
+        }
     }
 }

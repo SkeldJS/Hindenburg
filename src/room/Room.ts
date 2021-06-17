@@ -773,7 +773,7 @@ export class Room extends EventEmitter<RoomEvents> {
                     continue;
 
                 const writer = HazelWriter.alloc(18);
-                const mwriter = writer.begin(player.playerId); // Write game data for player
+                const mwriter = writer.begin(player.playerId); // Write temporary game data for player
                 mwriter.string(defaultOptions.name);
                 mwriter.packed(defaultOptions.color);
                 mwriter.upacked(0);
@@ -782,13 +782,20 @@ export class Room extends EventEmitter<RoomEvents> {
                 mwriter.byte(0);
                 mwriter.uint8(0);
                 writer.end();
+
+                const writer2 = HazelWriter.alloc(18);
+                const mwriter2 = writer2.begin(player.playerId); // Write old game data for player
+                mwriter2.string(player.info.name);
+                mwriter2.packed(player.info.color);
+                mwriter2.upacked(0);
+                mwriter2.upacked(0);
+                mwriter2.upacked(0);
+                mwriter2.byte(0);
+                mwriter2.uint8(0);
+                writer2.end();
                 const oldName = player.info.name;
                 const oldColor = player.info.color;
                 await this.broadcastMessages([
-                    new DataMessage(
-                        this.components.gameData.netid,
-                        writer.buffer
-                    ),
                     new RpcMessage(
                         player.components.control.netid,
                         new SetNameMessage(defaultOptions.name)
@@ -796,6 +803,10 @@ export class Room extends EventEmitter<RoomEvents> {
                     new RpcMessage(
                         player.components.control.netid,
                         new SetColorMessage(defaultOptions.color)
+                    ),
+                    new DataMessage(
+                        this.components.gameData.netid,
+                        writer.buffer
                     ),
                     new RpcMessage(
                         player.components.control.netid,
@@ -808,6 +819,10 @@ export class Room extends EventEmitter<RoomEvents> {
                     new RpcMessage(
                         player.components.control.netid,
                         new SetColorMessage(oldColor)
+                    ),
+                    new DataMessage(
+                        this.components.gameData.netid,
+                        writer2.buffer
                     )
                 ], [], defaultOptions.target ? [defaultOptions.target]: undefined);
             }

@@ -9,6 +9,7 @@ import { DisconnectReason, GameState } from "@skeldjs/constant";
 import {
     AcknowledgePacket,
     BaseRootPacket,
+    CloseMessage,
     DisconnectPacket,
     EndGameMessage,
     GameDataMessage,
@@ -21,7 +22,8 @@ import {
     PacketDecoder,
     PingPacket,
     ReliablePacket,
-    StartGameMessage
+    StartGameMessage,
+    VotingCompleteMessage
 } from "@skeldjs/protocol";
 
 import {
@@ -535,7 +537,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const foundRoom = this.rooms.get(roomCode);
 
                 if (foundRoom) {
-                    foundRoom.sendChat(message, MessageSide.Left);
+                    foundRoom.sendChat(message, {
+                        side: MessageSide.Left
+                    });
                     this.logger.info("Broadcasted message to %s player(s)", foundRoom.players.size);
                     return;
                 } else if (roomCode) {
@@ -544,7 +548,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 let numPlayers = 0;
                 for (const [ , room ] of this.rooms) {
-                    room.sendChat(message, MessageSide.Left);
+                    room.sendChat(message, {
+                        side: MessageSide.Left
+                    });
                     numPlayers += room.players.size;
                 }
                 this.logger.info("Broadcasted message to %s player(s)", numPlayers);

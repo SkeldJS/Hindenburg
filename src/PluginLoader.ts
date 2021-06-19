@@ -16,12 +16,14 @@ export class Plugin {
     meta!: PluginMeta;
 
     eventListeners: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
+    chatCommandHandlers: string[];
 
     constructor(
         public readonly worker: Worker,
         public readonly config: any
     ) {
         this.eventListeners = [];
+        this.chatCommandHandlers = [];
     }
 
     async onPluginLoad?(): Promise<void> { return; };
@@ -107,7 +109,7 @@ export class PluginLoader {
             if (chatCommand) {
                 const fn = property.bind(loadedPlugin);
                 this.worker.chatCommandHandler.registerCommand(chatCommand, chatCommandDescription, fn);
-                // todo: handle unloading of chat commands
+                loadedPlugin.chatCommandHandlers.push(chatCommand);
             }
         }
 
@@ -128,6 +130,10 @@ export class PluginLoader {
 
         for (const [ eventName, listenerFn ] of pluginId.eventListeners) {
             this.worker.off(eventName, listenerFn);
+        }
+
+        for (const commandName of pluginId.chatCommandHandlers) {
+            this.worker.chatCommandHandler.removeCommand(commandName);
         }
 
         this.loadedPlugins.delete(pluginId.meta.id);

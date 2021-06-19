@@ -209,6 +209,7 @@ export class ChatCommandHandler {
      * syntax](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
      * @param description A short summary of what the command does, how to use it, etc.
      * @param callback A callback function for when the command is called.
+     * @returns The command that was parsed.
      * @example
      * ```ts
      * worker.chatCommandHandler.parseMessage("ping", "Ping the server.", (ctx, args) => {
@@ -219,8 +220,23 @@ export class ChatCommandHandler {
     registerCommand(usage: string, description: string, callback: ChatCommandCallback) {
         const parsedCommand = RegisteredChatCommand.parse(usage, description, callback);
         this.commands.set(parsedCommand.name, parsedCommand);
-        this.worker.logger.info("Registered chat command: %s",
-            chalk.green("/" + usage))
+        this.worker.logger.info("Registered chat command: '%s'", parsedCommand.name);
+        return parsedCommand;
+    }
+
+    /**
+     * Remove a command from the command handler.
+     * @param commandName The name of the command to be removed, should be {@link RegisteredChatCommand.name}.
+     * ```ts
+     * worker.chatCommandHandler.removeCommand("ping");
+     * ```
+     */
+    removeCommand(commandName: string) {
+        if (!this.commands.has(commandName))
+            throw new TypeError("No command: " + commandName);
+
+        this.commands.delete(commandName);
+        this.worker.logger.info("Command unregistered: '%s'", commandName);
     }
 
     /**

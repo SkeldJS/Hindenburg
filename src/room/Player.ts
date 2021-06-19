@@ -14,6 +14,8 @@ import {
     PlayerSetColorEvent,
     PlayerSetNameEvent
 } from "./events";
+import { DirtySet } from "./util/DirtyMap";
+import { AddVoteMessage, RpcMessage } from "@skeldjs/protocol";
 
 export type PlayerEvents = ExtractEventTypes<[
     PlayerChatEvent,
@@ -44,6 +46,8 @@ export class Player extends EventEmitter<PlayerEvents> {
      */
     components: PlayerComponentStore;
 
+    voteKicks: DirtySet<Player>;
+
     constructor(
         /**
          * The client connection that this player belongs to.
@@ -63,6 +67,8 @@ export class Player extends EventEmitter<PlayerEvents> {
         this.velocity = Vector2.null;
 
         this.components = new PlayerComponentStore;
+
+        this.voteKicks = new DirtySet;
     }
     
     [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -146,7 +152,20 @@ export class Player extends EventEmitter<PlayerEvents> {
      * ```
      */
     voteKick(target: Player) {
-        this.room.voteKicks.addVote(this, target);
+        target.voteKicks.add(this);
+        
+        if (this.room.components.voteBanSystem) {
+            this.room.gamedataStream.push(
+                new RpcMessage(
+                    this.room.components.voteBanSystem.netid,
+                    new AddVoteMessage(
+                        this.clientId,
+                        target.clientId
+                    )
+                )
+            );
+        }
+        target.voteKicks.dirty = true;
     }
 
     /**

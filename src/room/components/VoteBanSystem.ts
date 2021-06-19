@@ -3,6 +3,7 @@ import { HazelReader, HazelWriter } from "@skeldjs/util";
 import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
+import { DirtySet } from "../util/DirtyMap";
 
 export class VoteBanSystem implements Component {
     constructor(
@@ -15,11 +16,11 @@ export class VoteBanSystem implements Component {
         const numPlayers = reader.uint8();
         for (let i = 0; i < numPlayers; i++) {
             const votedId = reader.uint32();
-            const voters: Set<Player> = new Set;
+            const voters: DirtySet<Player> = new DirtySet;
             const voted = this.room.players.get(votedId);
 
             if (voted) {
-                this.room.voteKicks.votes.set(voted, voters);
+                voted.voteKicks = voters;
             }
             for (let i = 0; i < 3; i++) {
                 const voterId = reader.upacked();
@@ -34,19 +35,19 @@ export class VoteBanSystem implements Component {
     }
 
     Serialize(writer: HazelWriter, isSpawn: boolean) {
-        if (this.room.voteKicks.dirty) {
-            writer.upacked(this.room.voteKicks.votes.size);
+        let flag = false;
+        for (const [ clientId, player ] of this.room.players) {
+            if (player.voteKicks.dirty) {
+                flag = true;
+                
+                writer.uint32(clientId);
 
-            for (const [voted, voters] of this.room.voteKicks.votes) {
-                writer.uint32(voted.clientId);
-
-                for (const voter of voters) {
+                for (const voter of player.voteKicks) {
                     writer.upacked(voter ? voter.clientId : 0);
                 }
             }
-            return true;
         }
-        return false;
+        return flag;
     }
 
     async HandleRpc(message: BaseRpcMessage) {

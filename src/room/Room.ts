@@ -37,7 +37,7 @@ import {
 } from "@skeldjs/protocol";
 
 import { BasicEvent, EventEmitter } from "@skeldjs/events";
-import { HazelReader, HazelWriter, sleep } from "@skeldjs/util";
+import { HazelReader, HazelWriter } from "@skeldjs/util";
 
 import { Connection } from "../Connection";
 import { Player, PlayerEvents } from "./Player";
@@ -46,14 +46,15 @@ import { GameCode } from "./GameCode";
 import { Component } from "./Component";
 import { PlayerInfo } from "./util/PlayerInfo";
 import { PlayerStore } from "./util/PlayerStore";
+import { MeetingHud } from "./components/MeetingHud";
 import { GameData } from "./components/GameData";
+import { VoteBanSystem } from "./components/VoteBanSystem";
 import { PlayerControl } from "./components/PlayerControl";
 import { PlayerPhysics } from "./components/PlayerPhysics";
 import { CustomNetworkTransform } from "./components/CustomNetworkTransform";
 import { ComponentStore } from "./util/ComponentStore";
-import { VoteKicks } from "./util/VoteKicks";
-import { VoteBanSystem } from "./components/VoteBanSystem";
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
+import { PlayerVoteState } from "./util/PlayerVoteState";
 
 enum SpecialClientId {
     Nil = 2 ** 31 - 1,
@@ -70,6 +71,7 @@ const logMaps = {
 }
 
 const spawnPrefabs: Record<number, ComponentCtr[]> = {
+    [SpawnType.MeetingHud]: [MeetingHud],
     [SpawnType.GameData]: [GameData, VoteBanSystem],
     [SpawnType.Player]: [PlayerControl, PlayerPhysics, CustomNetworkTransform]
 }
@@ -209,10 +211,7 @@ export class Room extends EventEmitter<RoomEvents> {
      */
     playerInfo: Map<number, PlayerInfo>;
 
-    /**
-     * Information about which players have voted to kick other players.
-     */
-    voteKicks: VoteKicks;
+    voteStates: Map<number, PlayerVoteState>;
 
     private lastFixedUpdateTime: number;
     private incrNetId: number;
@@ -249,7 +248,7 @@ export class Room extends EventEmitter<RoomEvents> {
         this.decoder = new PacketDecoder;
         this.components = new ComponentStore(this);
         this.players = new PlayerStore(this);
-        this.voteKicks = new VoteKicks(this);
+        this.voteStates = new Map;
         this.playerInfo = new Map;
         this.bans = new Set;
 

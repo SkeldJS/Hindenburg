@@ -3,31 +3,54 @@ import fs from "fs/promises";
 import resolveFrom from "resolve-from";
 import path from "path";
 
+import { ReactorHandshakeMessage, ReactorMessage, ReactorModDeclarationMessage } from "@skeldjs/reactor";
+import { Deserializable, Serializable } from "@skeldjs/protocol";
+
 import { Worker, WorkerEvents } from "./Worker";
 import { hindenburgEventKey } from "./api/events/EventListener";
 import { hindenburgChatCommandDescKey, hindenburgChatCommandKey } from "./api/chat/ChatCommand";
+import { hindenburgRegisterMessageKey } from "./api";
+import { ModdedHelloPacket } from "./packets";
+import { hindenburgMessageKey, MessageListenerOptions } from "./api/protocol";
+
+type PluginOrder = "last"|"first"|"none"|number;
 
 export interface PluginMeta {
     id: string;
+    version: string;
+    order: PluginOrder;
 }
 
 export class Plugin {
     static id: string;
     meta!: PluginMeta;
 
-    eventListeners: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
+    eventHandlers: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
     chatCommandHandlers: string[];
+    messageHandlers: [Deserializable, (ev: Serializable) => any][];
+    registeredMessages: Map<string, Map<number, Deserializable>>;  // todo: maybe switch to using sets of messages? unsure.
 
     constructor(
         public readonly worker: Worker,
         public readonly config: any
     ) {
-        this.eventListeners = [];
+        this.eventHandlers = [];
         this.chatCommandHandlers = [];
+        this.messageHandlers = [];
+        this.registeredMessages = new Map;
     }
 
     async onPluginLoad?(): Promise<void> { return; };
     async onPluginUnload?(): Promise<void> { return; };
+}
+
+function registerMessageToMessageMap(message: Deserializable, map: Map<string, Map<number, Deserializable>>) {
+    const cachedType = map.get(message.type);
+    const messageType = cachedType || new Map;
+    if (!cachedType)
+        map.set(message.type, messageType);
+
+    messageType.set(message.tag, message);
 }
 
 export class PluginLoader {
@@ -38,6 +61,34 @@ export class PluginLoader {
         public readonly pluginDir: string
     ) {
         this.loadedPlugins = new Map; 
+    }
+
+    async reregisterMessages() {
+        this.worker.decoder.reset();
+        this.worker.decoder.register(
+            ModdedHelloPacket,
+            ReactorMessage,
+            ReactorHandshakeMessage,
+            ReactorModDeclarationMessage
+        );
+
+        const loadedPluginsArr = [...this.loadedPlugins];
+        const messagesSet: Map<string, Map<number, Deserializable>> = new Map;
+
+        for (let i = loadedPluginsArr.length - 1; i >= 0; i--) { // iterate backwards as the last ones loaded should overwrite the first ones loaded
+            const [ , loadedPlugin ] = loadedPluginsArr[i];
+            for (const [ , messageTags ] of loadedPlugin.registeredMessages) {
+                for (const [ , messageClass ] of messageTags) {
+                    const wasSet = messagesSet.get(messageClass.type)?.get(messageClass.tag);
+
+                    if (wasSet)
+                        continue;
+
+                    this.worker.decoder.register(messageClass);
+                    registerMessageToMessageMap(messageClass, messagesSet);
+                }
+            }
+        }
     }
 
     async loadPlugin(importPath: string) {
@@ -100,20 +151,49 @@ export class PluginLoader {
             if (eventName) {
                 const fn = property.bind(loadedPlugin);
                 this.worker.on(eventName, fn);
-                loadedPlugin.eventListeners.push([eventName, fn]);
+                loadedPlugin.eventHandlers.push([eventName, fn]);
             }
 
             const chatCommand = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
             const chatCommandDescription = Reflect.getMetadata(hindenburgChatCommandDescKey, loadedPlugin, propertyName);
             
             if (chatCommand) {
+                // todo: maybe some sort of a stack system for commands that have the same trigger,
+                // or allow multiple commands to have the same trigger (triggers all of them).
                 const fn = property.bind(loadedPlugin);
                 this.worker.chatCommandHandler.registerCommand(chatCommand, chatCommandDescription, fn);
                 loadedPlugin.chatCommandHandlers.push(chatCommand);
             }
+
+            const messageClassAndOptions = Reflect.getMetadata(hindenburgMessageKey, loadedPlugin, propertyName);
+            if (messageClassAndOptions) {
+                const [ messageClass, handlerOptions ] = messageClassAndOptions as [ Deserializable, MessageListenerOptions ];
+
+                if (handlerOptions.override) {
+                    // todo: handle overriding message listeners, this is difficult:
+                    // must implement a "stack" system which captures the listeners
+                    // of each layer of plugin added.
+                }
+
+                const fn = property.bind(loadedPlugin);
+                this.worker.decoder.on(messageClass, fn);
+                loadedPlugin.messageHandlers.push([ messageClass, fn ]);
+            }
         }
 
         this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
+        
+        const messagesToRegister: Set<Deserializable>|undefined = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPluginCtr);
+        if (messagesToRegister) {
+            for (const messageClass of messagesToRegister) {
+                registerMessageToMessageMap(
+                    messageClass,
+                    loadedPlugin.registeredMessages
+                );
+            }
+            this.reregisterMessages();
+        }
+
         this.worker.logger.info("Loaded plugin '%s'", loadedPlugin.meta.id);
 
         return loadedPlugin;
@@ -128,7 +208,7 @@ export class PluginLoader {
             return this.unloadPlugin(plugin);
         }
 
-        for (const [ eventName, listenerFn ] of pluginId.eventListeners) {
+        for (const [ eventName, listenerFn ] of pluginId.eventHandlers) {
             this.worker.off(eventName, listenerFn);
         }
 
@@ -137,6 +217,8 @@ export class PluginLoader {
         }
 
         this.loadedPlugins.delete(pluginId.meta.id);
+
+        this.reregisterMessages();
         this.worker.logger.info("Unloaded plugin '%s'", pluginId.meta.id);
     }
     

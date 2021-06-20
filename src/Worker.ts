@@ -22,8 +22,7 @@ import {
     PacketDecoder,
     PingPacket,
     ReliablePacket,
-    StartGameMessage,
-    VotingCompleteMessage
+    StartGameMessage
 } from "@skeldjs/protocol";
 
 import {
@@ -42,15 +41,19 @@ import {
 
 import { EventEmitter } from "@skeldjs/events";
 
+import { VorpalConsole } from "./util/VorpalConsoleTransport";
+
 import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { MessageSide, Room, RoomEvents } from "./room/Room";
 
+import {
+    PluginHandler,
+    ChatCommandHandler
+} from "./handlers";
+
 import { Connection, ClientMod, SentPacket } from "./Connection";
-import { PluginHandler } from "./handlers/PluginHandler";
-import { VorpalConsole } from "./util/VorpalConsoleTransport";
-import { ChatCommandHandler } from "./api/chat/CommandHander";
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
@@ -126,7 +129,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.config = {
             plugins: {},
-            ...config
+            ...config,
+            anticheat: {
+                store: "file",
+                file: "./bans.txt",
+                rules: {
+
+                },
+                ...config.anticheat
+            }
         };
         
         this.vorpal = new vorpal;

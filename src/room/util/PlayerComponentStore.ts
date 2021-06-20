@@ -1,6 +1,8 @@
-import { PlayerControl } from "../components/PlayerControl";
-import { PlayerPhysics } from "../components/PlayerPhysics";
-import { CustomNetworkTransform } from "../components/CustomNetworkTransform";
+import {
+    PlayerControl,
+    PlayerPhysics,
+    CustomNetworkTransform
+} from "../components";
 
 export class PlayerComponentStore {
     /**

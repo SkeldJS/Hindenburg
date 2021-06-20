@@ -1,6 +1,7 @@
 import { Color } from "@skeldjs/constant";
 import { RevertableEvent } from "@skeldjs/events";
 import { SetColorMessage } from "@skeldjs/protocol";
+
 import { Player } from "../../Player";
 import { Room } from "../../Room";
 import { RoomEvent } from "../RoomEvent";

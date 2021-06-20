@@ -39,22 +39,29 @@ import {
 import { BasicEvent, EventEmitter } from "@skeldjs/events";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 
+import {
+    MeetingHud,
+    GameData,
+    VoteBanSystem,
+    PlayerControl,
+    PlayerPhysics,
+    CustomNetworkTransform
+} from "./components";
+
+import {
+    ComponentStore,
+    PlayerVoteState,
+    PlayerInfo,
+    PlayerStore
+} from "./util";
+
+import { VorpalConsole } from "../util/VorpalConsoleTransport";
+
 import { Connection } from "../Connection";
 import { Player, PlayerEvents } from "./Player";
 import { Worker } from "../Worker";
 import { GameCode } from "./GameCode";
 import { Component } from "./Component";
-import { PlayerInfo } from "./util/PlayerInfo";
-import { PlayerStore } from "./util/PlayerStore";
-import { MeetingHud } from "./components/MeetingHud";
-import { GameData } from "./components/GameData";
-import { VoteBanSystem } from "./components/VoteBanSystem";
-import { PlayerControl } from "./components/PlayerControl";
-import { PlayerPhysics } from "./components/PlayerPhysics";
-import { CustomNetworkTransform } from "./components/CustomNetworkTransform";
-import { ComponentStore } from "./util/ComponentStore";
-import { VorpalConsole } from "../util/VorpalConsoleTransport";
-import { PlayerVoteState } from "./util/PlayerVoteState";
 
 enum SpecialClientId {
     Nil = 2 ** 31 - 1,

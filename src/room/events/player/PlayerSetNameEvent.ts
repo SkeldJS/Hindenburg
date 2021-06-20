@@ -1,5 +1,6 @@
 import { RevertableEvent } from "@skeldjs/events";
 import { SetNameMessage } from "@skeldjs/protocol";
+
 import { Player } from "../../Player";
 import { Room } from "../../Room";
 import { RoomEvent } from "../RoomEvent";

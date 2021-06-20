@@ -3,8 +3,9 @@ import chalk from "chalk";
 import util from "util";
 
 import { DisconnectReason } from "@skeldjs/constant";
-
+import { DisconnectMessages } from "@skeldjs/data";
 import { VersionInfo } from "@skeldjs/util";
+
 import {
     BaseRootPacket,
     DisconnectPacket,
@@ -15,7 +16,6 @@ import {
 
 import { Worker } from "./Worker";
 import { Room } from "./room/Room";
-import { DisconnectMessages } from "@skeldjs/data";
 
 export class ClientMod {
     constructor(

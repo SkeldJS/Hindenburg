@@ -1,7 +1,5 @@
-import chalk from "chalk";
-
-import { MessageSide, Player, Room } from "../../room";
-import { Worker } from "../../Worker";
+import { MessageSide, Player, Room } from "../room";
+import { Worker } from "../Worker";
 
 function betterSplitOnSpaces(input: string) {
     let collector = "";

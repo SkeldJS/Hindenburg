@@ -1,6 +1,7 @@
 import { RpcMessageTag } from "@skeldjs/constant";
 import { BaseRpcMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
+
 import { Component } from "../Component";
 import { Room } from "../Room";
 import { PlayerVoteState } from "../util/PlayerVoteState";

@@ -8,10 +8,15 @@ import { Deserializable, Serializable } from "@skeldjs/protocol";
 
 import { Worker, WorkerEvents } from "../Worker";
 import { ModdedHelloPacket } from "../packets";
-import { hindenburgEventKey } from "../api/events/EventListener";
-import { hindenburgChatCommandDescKey, hindenburgChatCommandKey } from "../api/chat/ChatCommand";
-import { hindenburgMessageKey, MessageListenerOptions } from "../api/protocol";
-import { hindenburgRegisterMessageKey } from "../api";
+
+import {
+    hindenburgEventKey,
+    hindenburgChatCommandDescKey,
+    hindenburgChatCommandKey,
+    hindenburgMessageKey,
+    hindenburgRegisterMessageKey,
+    MessageListenerOptions
+} from "../api";
 
 type PluginOrder = "last"|"first"|"none"|number;
 

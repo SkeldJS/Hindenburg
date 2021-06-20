@@ -1,10 +1,14 @@
 import { SpawnType } from "@skeldjs/constant";
+
 import { Component } from "../Component";
-import { CustomNetworkTransform } from "../components/CustomNetworkTransform";
-import { GameData } from "../components/GameData";
-import { PlayerControl } from "../components/PlayerControl";
-import { PlayerPhysics } from "../components/PlayerPhysics";
-import { VoteBanSystem } from "../components/VoteBanSystem";
+import {
+    CustomNetworkTransform,
+    GameData,
+    PlayerControl,
+    PlayerPhysics,
+    VoteBanSystem
+} from "../components";
+
 import { Player } from "../Player";
 import { Room } from "../Room";
 

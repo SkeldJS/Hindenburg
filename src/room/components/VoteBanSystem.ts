@@ -1,5 +1,6 @@
 import { BaseRpcMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
+
 import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";

@@ -1,10 +1,12 @@
 import chalk from "chalk";
 
-import { DisconnectReason, LimboStates } from "@skeldjs/constant";
-import { Vector2 } from "@skeldjs/util";
 import { BasicEvent, EventEmitter, ExtractEventTypes } from "@skeldjs/events";
+import { DisconnectReason, LimboStates } from "@skeldjs/constant";
+import { AddVoteMessage, RpcMessage } from "@skeldjs/protocol";
+import { Vector2 } from "@skeldjs/util";
 
 import { PlayerComponentStore } from "./util/PlayerComponentStore";
+import { DirtySet } from "./util/DirtyMap";
 
 import { Connection } from "../Connection";
 import { Room } from "./Room";
@@ -14,8 +16,6 @@ import {
     PlayerSetColorEvent,
     PlayerSetNameEvent
 } from "./events";
-import { DirtySet } from "./util/DirtyMap";
-import { AddVoteMessage, RpcMessage } from "@skeldjs/protocol";
 
 export type PlayerEvents = ExtractEventTypes<[
     PlayerChatEvent,

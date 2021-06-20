@@ -1,5 +1,6 @@
 import { BasicEvent } from "@skeldjs/events";
 import { SendChatMessage } from "@skeldjs/protocol";
+
 import { Player } from "../../Player";
 import { Room } from "../../Room";
 import { RoomEvent } from "../RoomEvent";

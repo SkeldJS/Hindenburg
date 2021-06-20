@@ -1,5 +1,2 @@
-export * from "./chat";
-export * from "./events";
-export * from "./protocol";
-
+export * from "./hooks";
 export * from "./HindenburgPlugin";

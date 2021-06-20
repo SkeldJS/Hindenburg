@@ -1,6 +1,7 @@
 import Vorpal from "vorpal";
-import { MESSAGE } from "triple-beam";
 import WinstonTransport from "winston-transport";
+
+import { MESSAGE } from "triple-beam";
 
 export class VorpalConsole extends WinstonTransport {
     constructor(

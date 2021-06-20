@@ -1,7 +1,8 @@
 import chalk from "chalk";
 
-import { HostGameMessage, RemoveGameMessage } from "@skeldjs/protocol";
+import { HostGameMessage } from "@skeldjs/protocol";
 import { Code2Int, Int2Code } from "@skeldjs/util";
+
 import { Room } from "./Room";
 
 export class GameCode {

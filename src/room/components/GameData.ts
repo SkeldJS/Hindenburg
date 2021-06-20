@@ -1,8 +1,9 @@
 import { BaseRpcMessage } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
+
+import { PlayerInfo } from "../util/PlayerInfo";
 import { Component } from "../Component";
 import { Room } from "../Room";
-import { PlayerInfo } from "../util/PlayerInfo";
 
 export class GameData implements Component {
     constructor(

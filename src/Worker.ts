@@ -205,7 +205,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             // todo: if reactor is required and client is not using it, disconnect client
 
             if (connection.usingReactor) {
-                // todo: send loaded plugins
                 await connection.sendPacket(
                     new ReliablePacket(
                         connection.getNextNonce(),

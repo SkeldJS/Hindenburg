@@ -48,7 +48,7 @@ import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 import { MessageSide, Room, RoomEvents } from "./room/Room";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
-import { PluginLoader } from "./PluginLoader";
+import { PluginHandler } from "./handlers/PluginHandler";
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { ChatCommandHandler } from "./api/chat/CommandHander";
 
@@ -69,7 +69,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * The server's plugin loader.
      */
-    pluginLoader: PluginLoader;
+    pluginHandler: PluginHandler;
 
     chatCommandHandler: ChatCommandHandler;
 
@@ -154,7 +154,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]
         });
 
-        this.pluginLoader = new PluginLoader(this, pluginDir);
+        this.pluginHandler = new PluginHandler(this, pluginDir);
         this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.socket = dgram.createSocket("udp4");
@@ -215,8 +215,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         ]
                     )
                 );
-
-                const entries = [...this.pluginLoader.loadedPlugins];
+                
+                const entries = [...this.pluginHandler.loadedPlugins];
                 for (let i = 0; i < entries.length; i++) {
                     const [, plugin] = entries[i];
                     
@@ -234,7 +234,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                 )
                             ]
                         )
-                    )
+                    );
                 }
             }
         });
@@ -456,16 +456,16 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("load <import>", "Load a plugin by its import relative to the base plugin directory.")
             .action(async args => {
                 try {
-                    const importPath = resolveFrom(this.pluginLoader.pluginDir, args.import);
+                    const importPath = resolveFrom(this.pluginHandler.pluginDir, args.import);
                     try {
-                        await this.pluginLoader.loadPlugin(importPath);
+                        await this.pluginHandler.loadPlugin(importPath);
                     } catch (e) {
                         this.logger.warn("Failed to load plugin from '%s': %s", args.import, e);
                     }
                 } catch (e) {
-                    const importPath = resolveFrom(this.pluginLoader.pluginDir, "./" + args.import);
+                    const importPath = resolveFrom(this.pluginHandler.pluginDir, "./" + args.import);
                     try {
-                        await this.pluginLoader.loadPlugin(importPath);
+                        await this.pluginHandler.loadPlugin(importPath);
                     } catch (e) {
                         this.logger.warn("Failed to load plugin from '%s': %s", args.import, e);
                     }
@@ -476,10 +476,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("unload <plugin id>", "Unload a plugin.")
             .action(async args => {
                 const pluginId: string = args["plugin id"];
-                const loadedPlugin = this.pluginLoader.loadedPlugins.get(pluginId);
+                const loadedPlugin = this.pluginHandler.loadedPlugins.get(pluginId);
 
                 if (loadedPlugin) {
-                    this.pluginLoader.unloadPlugin(loadedPlugin);
+                    this.pluginHandler.unloadPlugin(loadedPlugin);
                 } else {    
                     this.logger.error("Plugin not loaded: %s", pluginId);
                 }
@@ -502,8 +502,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                     break;
                 case "plugins":
-                    this.logger.info("%s plugins(s) loaded", this.pluginLoader.loadedPlugins.size);
-                    for (const [ , plugin ] of this.pluginLoader.loadedPlugins) {
+                    this.logger.info("%s plugins(s) loaded", this.pluginHandler.loadedPlugins.size);
+                    for (const [ , plugin ] of this.pluginHandler.loadedPlugins) {
                         this.logger.info("* %s", plugin.meta.id);
                     }
                     break;

@@ -4,5 +4,5 @@ export * from "./packets";
 export * from "./room";
 
 export * from "./Connection";
-export * from "./PluginLoader";
+export * from "./handlers/PluginHandler";
 export * from "./Worker";

@@ -6,12 +6,12 @@ import path from "path";
 import { ReactorHandshakeMessage, ReactorMessage, ReactorModDeclarationMessage } from "@skeldjs/reactor";
 import { Deserializable, Serializable } from "@skeldjs/protocol";
 
-import { Worker, WorkerEvents } from "./Worker";
-import { hindenburgEventKey } from "./api/events/EventListener";
-import { hindenburgChatCommandDescKey, hindenburgChatCommandKey } from "./api/chat/ChatCommand";
-import { hindenburgRegisterMessageKey } from "./api";
-import { ModdedHelloPacket } from "./packets";
-import { hindenburgMessageKey, MessageListenerOptions } from "./api/protocol";
+import { Worker, WorkerEvents } from "../Worker";
+import { ModdedHelloPacket } from "../packets";
+import { hindenburgEventKey } from "../api/events/EventListener";
+import { hindenburgChatCommandDescKey, hindenburgChatCommandKey } from "../api/chat/ChatCommand";
+import { hindenburgMessageKey, MessageListenerOptions } from "../api/protocol";
+import { hindenburgRegisterMessageKey } from "../api";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -53,7 +53,7 @@ function registerMessageToMessageMap(message: Deserializable, map: Map<string, M
     messageType.set(message.tag, message);
 }
 
-export class PluginLoader {
+export class PluginHandler {
     loadedPlugins: Map<string, Plugin>;
 
     constructor(

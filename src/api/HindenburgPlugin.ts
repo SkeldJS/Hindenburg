@@ -1,5 +1,5 @@
 import { Deserializable, Serializable } from "@skeldjs/protocol";
-import { Plugin, PluginMeta } from "../PluginLoader";
+import { Plugin, PluginMeta } from "../handlers/PluginHandler";
 import { Worker, WorkerEvents } from "../Worker";
 
 export function HindenburgPlugin(meta: PluginMeta) {

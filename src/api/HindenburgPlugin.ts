@@ -1,3 +1,4 @@
+import { Deserializable, Serializable } from "@skeldjs/protocol";
 import { Plugin, PluginMeta } from "../PluginLoader";
 import { Worker, WorkerEvents } from "../Worker";
 
@@ -11,7 +12,10 @@ export function HindenburgPlugin(meta: PluginMeta) {
             
             meta: PluginMeta;
 
-            eventListeners: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
+            eventHandlers: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
+            chatCommandHandlers: string[];
+            messageHandlers: [Deserializable, (ev: Serializable) => any][]
+            registeredMessages: Map<string, Map<number, Deserializable>>;
     
             constructor(...args: any) {
                 super(...args);
@@ -20,8 +24,11 @@ export function HindenburgPlugin(meta: PluginMeta) {
                 this.config = args[1] as any;
 
                 this.meta = meta;
-
-                this.eventListeners = [];
+                
+                this.eventHandlers = [];
+                this.chatCommandHandlers = [];
+                this.messageHandlers = [];
+                this.registeredMessages = new Map;
             }
         }
     }

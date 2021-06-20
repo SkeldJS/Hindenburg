@@ -34,6 +34,7 @@ import {
 } from "@skeldjs/util";
 
 import {
+    PluginSide,
     ReactorHandshakeMessage,
     ReactorMessage,
     ReactorModDeclarationMessage
@@ -215,6 +216,27 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         ]
                     )
                 );
+
+                const entries = [...this.pluginLoader.loadedPlugins];
+                for (let i = 0; i < entries.length; i++) {
+                    const [, plugin] = entries[i];
+                    
+                    connection.sendPacket(
+                        new ReliablePacket(
+                            connection.getNextNonce(),
+                            [
+                                new ReactorMessage(
+                                    new ReactorModDeclarationMessage(
+                                        i,
+                                        plugin.meta.id,
+                                        plugin.meta.version || "1.0.0",
+                                        PluginSide.Both // todo: let plugin choose?
+                                    )
+                                )
+                            ]
+                        )
+                    )
+                }
             }
         });
 

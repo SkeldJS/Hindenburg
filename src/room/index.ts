@@ -1,5 +1,4 @@
 export * from "./components";
-export * from "./events";
 export * from "./util";
 
 export * from "./Component";

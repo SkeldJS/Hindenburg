@@ -9,15 +9,15 @@ import {
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 import { Color, RpcMessageTag } from "@skeldjs/constant";
 
+import {
+    PlayerSendChatEvent,
+    PlayerSetColorEvent,
+    PlayerSetNameEvent
+} from "../../api";
+
 import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
-
-import {
-    PlayerChatEvent,
-    PlayerSetColorEvent,
-    PlayerSetNameEvent
-} from "../events";
 
 export class PlayerControl implements Component {
     constructor(
@@ -146,7 +146,7 @@ export class PlayerControl implements Component {
 
     private async _handleSendChat(message: SendChatMessage) {
         await this.owner.emit(
-            new PlayerChatEvent(
+            new PlayerSendChatEvent(
                 this.room,
                 this.owner,
                 message,

@@ -690,7 +690,7 @@ export class Room extends EventEmitter<RoomEvents> {
      * @example
      * ```ts
      * // Tell a player off if they use a bad word.
-     * .@EventListener("player.chat")
+     * .@EventListener("player.sentchat")
      * onPlayerChat(ev: PlayerChatEvent) {
      *   const badWords = [ "sprout", "barney" ];
      * 

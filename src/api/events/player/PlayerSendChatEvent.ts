@@ -1,8 +1,7 @@
 import { BasicEvent } from "@skeldjs/events";
 import { SendChatMessage } from "@skeldjs/protocol";
 
-import { Player } from "../../Player";
-import { Room } from "../../Room";
+import { Room, Player } from "../../../room";
 import { RoomEvent } from "../RoomEvent";
 import { RpcEvent } from "../RpcEvent";
 import { PlayerEvent } from "./PlayerEvent";
@@ -14,9 +13,9 @@ import { PlayerEvent } from "./PlayerEvent";
  * the {@link PlayerChatEvent.rpc} can, preventing it from being sent to other
  * clients.
  */
-export class PlayerChatEvent extends BasicEvent implements RoomEvent, PlayerEvent, RpcEvent {
-    static eventName = "player.chat" as const;
-    eventName = "player.chat" as const;
+export class PlayerSendChatEvent extends BasicEvent implements RoomEvent, PlayerEvent, RpcEvent {
+    static eventName = "player.sendchat" as const;
+    eventName = "player.sendchat" as const;
 
     constructor(
         public readonly room: Room,

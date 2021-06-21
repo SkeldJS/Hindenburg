@@ -2,8 +2,7 @@ import { Color } from "@skeldjs/constant";
 import { RevertableEvent } from "@skeldjs/events";
 import { SetColorMessage } from "@skeldjs/protocol";
 
-import { Player } from "../../Player";
-import { Room } from "../../Room";
+import { Room, Player } from "../../../room";
 import { RoomEvent } from "../RoomEvent";
 import { RpcEvent } from "../RpcEvent";
 import { PlayerEvent } from "./PlayerEvent";

@@ -5,20 +5,20 @@ import { DisconnectReason, LimboStates } from "@skeldjs/constant";
 import { AddVoteMessage, RpcMessage } from "@skeldjs/protocol";
 import { Vector2 } from "@skeldjs/util";
 
+import {
+    PlayerSendChatEvent,
+    PlayerSetColorEvent,
+    PlayerSetNameEvent
+} from "../api";
+
 import { PlayerComponentStore } from "./util/PlayerComponentStore";
 import { DirtySet } from "./util/DirtyMap";
 
 import { Connection } from "../Connection";
 import { Room } from "./Room";
 
-import {
-    PlayerChatEvent,
-    PlayerSetColorEvent,
-    PlayerSetNameEvent
-} from "./events";
-
 export type PlayerEvents = ExtractEventTypes<[
-    PlayerChatEvent,
+    PlayerSendChatEvent,
     PlayerSetNameEvent,
     PlayerSetColorEvent
 ]>;

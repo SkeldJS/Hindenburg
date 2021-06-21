@@ -1,5 +1,6 @@
 import winston from "winston";
 import chalk from "chalk";
+import vorpal from "vorpal";
 
 import { Deserializable, Serializable } from "@skeldjs/protocol";
 
@@ -22,6 +23,7 @@ export function HindenburgPlugin(meta: PluginMeta) {
             chatCommandHandlers: string[];
             messageHandlers: [Deserializable, (ev: Serializable) => any][]
             registeredMessages: Map<string, Map<number, Deserializable>>;
+            registeredVorpalCommands: vorpal.Command[];
     
             constructor(...args: any) {
                 super(...args);
@@ -56,6 +58,7 @@ export function HindenburgPlugin(meta: PluginMeta) {
                 this.chatCommandHandlers = [];
                 this.messageHandlers = [];
                 this.registeredMessages = new Map;
+                this.registeredVorpalCommands = [];
             }
         }
     }

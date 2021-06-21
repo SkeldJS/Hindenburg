@@ -22,7 +22,7 @@ function betterSplitOnSpaces(input: string) {
 }
 
 export interface ChatCommandParameter {
-    isRest: boolean;
+    variadic: boolean;
     required: boolean;
     name: string;
 }
@@ -59,6 +59,51 @@ export class ChatCommandContext {
 
 export type ChatCommandCallback = (ctx: ChatCommandContext, args: any) => any;
 
+export function parseCommandUsage(usage: string): [ string, ChatCommandParameter[] ] {
+    // https://github.com/dthree/vorpal/blob/51f5e2b545631b6a86c9781c274a1b0916a67ee8/lib/vorpal.js#L311
+    const matchedParams = usage.match(/(\[[^\]]*\]|\<[^\>]*\>)/g) || [];
+    const matchedCmdName = usage.match(/^([^\[\<]*)/g)?.[0]?.trim() || "";
+
+    if (!matchedCmdName)
+        throw new TypeError("Invalid command name.");
+
+    if (matchedCmdName.includes("  "))
+        throw new TypeError("Command name cannot contain spaces.");
+
+    const cmdParams: ChatCommandParameter[] = [];
+
+    let wasOptional = false; // Flag to prevent required parameters from coming after optional ones
+    for (let i = 0; i < matchedParams.length; i++) {
+        let matchedParam = matchedParams[i];
+        const param: ChatCommandParameter = {
+            variadic: false,
+            required: false,
+            name: ""
+        };
+        if (matchedParam.startsWith("[")) {
+            wasOptional = true;
+        }
+        if (matchedParam.startsWith("<")) {
+            if (wasOptional) { // Check if an optional parameter has come before
+                throw new TypeError("Required parameter cannot come after an optional parameter.");
+            }
+            param.required = true;
+        }
+        matchedParam = matchedParam.substr(1, matchedParam.length - 2); // Remove surrounding parameter markers, [ ] and < >
+        if (matchedParam.endsWith("...")) {
+            param.variadic = true;
+            matchedParam = matchedParam.substr(0, matchedParam.length - 3); // Remove trailing ...
+            if (i !== matchedParams.length - 1) {
+                throw new TypeError("Rest parameter must be last.");
+            }
+        }
+        param.name = matchedParam;
+        cmdParams.push(param);
+    }
+
+    return [ matchedCmdName, cmdParams ];
+}
+
 export class RegisteredChatCommand {
     constructor(
         public readonly name: string,
@@ -68,47 +113,7 @@ export class RegisteredChatCommand {
     ) {}
 
     static parse(usage: string, description: string, callback: ChatCommandCallback) {
-        // https://github.com/dthree/vorpal/blob/51f5e2b545631b6a86c9781c274a1b0916a67ee8/lib/vorpal.js#L311
-        const matchedParams = usage.match(/(\[[^\]]*\]|\<[^\>]*\>)/g) || [];
-        const matchedCmdName = usage.match(/^([^\[\<]*)/g)?.[0]?.trim() || "";
-
-        if (!matchedCmdName)
-            throw new TypeError("Invalid command name.");
-
-        if (matchedCmdName.includes("  "))
-            throw new TypeError("Command name cannot contain spaces.");
-
-        const cmdParams: ChatCommandParameter[] = [];
-
-        let wasOptional = false; // Flag to prevent required parameters from coming after optional ones
-        for (let i = 0; i < matchedParams.length; i++) {
-            let matchedParam = matchedParams[i];
-            const param: ChatCommandParameter = {
-                isRest: false,
-                required: false,
-                name: ""
-            };
-            if (matchedParam.startsWith("[")) {
-                wasOptional = true;
-            }
-            if (matchedParam.startsWith("<")) {
-                if (wasOptional) { // Check if an optional parameter has come before
-                    throw new TypeError("Required parameter cannot come after an optional parameter.");
-                }
-                param.required = true;
-            }
-            matchedParam = matchedParam.substr(1, matchedParam.length - 2); // Remove surrounding parameter markers, [ ] and < >
-            if (matchedParam.endsWith("...")) {
-                param.isRest = true;
-                matchedParam = matchedParam.substr(0, matchedParam.length - 3); // Remove trailing ...
-                if (i !== matchedParams.length - 1) {
-                    throw new TypeError("Rest parameter must be last.");
-                }
-            }
-            param.name = matchedParam;
-            cmdParams.push(param);
-        }
-
+        const [ matchedCmdName, cmdParams ] = parseCommandUsage(usage);
         const chatCommand = new RegisteredChatCommand(matchedCmdName, cmdParams, description, callback);
         return chatCommand;
     }
@@ -136,7 +141,7 @@ export class RegisteredChatCommand {
         const parsed: Record<string, string> = {};
 
         for (const param of this.params) {
-            const consume = param.isRest
+            const consume = param.variadic
                 ? argsCloned.join(" ")
                 : argsCloned.shift();
 

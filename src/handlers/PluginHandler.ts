@@ -2,6 +2,7 @@ import "reflect-metadata";
 import fs from "fs/promises";
 import resolveFrom from "resolve-from";
 import path from "path";
+import vorpal from "vorpal";
 
 import { ReactorHandshakeMessage, ReactorMessage, ReactorModDeclarationMessage } from "@skeldjs/reactor";
 import { Deserializable, Serializable } from "@skeldjs/protocol";
@@ -17,6 +18,7 @@ import {
     hindenburgRegisterMessageKey,
     MessageListenerOptions
 } from "../api";
+import { hindenburgVorpalCommand, VorpalCommandInformation } from "../api/hooks/CliCommand";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -34,6 +36,7 @@ export class Plugin {
     chatCommandHandlers: string[];
     messageHandlers: [Deserializable, (ev: Serializable) => any][];
     registeredMessages: Map<string, Map<number, Deserializable>>;  // todo: maybe switch to using sets of messages? unsure.
+    registeredVorpalCommands: vorpal.Command[];
 
     constructor(
         public readonly worker: Worker,
@@ -43,6 +46,7 @@ export class Plugin {
         this.chatCommandHandlers = [];
         this.messageHandlers = [];
         this.registeredMessages = new Map;
+        this.registeredVorpalCommands = [];
     }
 
     async onPluginLoad?(): Promise<void> { return; };
@@ -184,11 +188,27 @@ export class PluginHandler {
                 this.worker.decoder.on(messageClass, fn);
                 loadedPlugin.messageHandlers.push([ messageClass, fn ]);
             }
+
+            const vorpalCommand = Reflect.getMetadata(hindenburgVorpalCommand, loadedPlugin, propertyName) as undefined|VorpalCommandInformation;
+            if (vorpalCommand) {
+                const command = this.worker.vorpal.command(vorpalCommand.usage, vorpalCommand.description);
+
+                if (vorpalCommand.options) {
+                    for (const option of vorpalCommand.options) {
+                        command.option(option.usage, option.description || "");
+                    }
+                }
+
+                const fn = property.bind(loadedPlugin);
+                command.action(fn);
+
+                loadedPlugin.registeredVorpalCommands.push(command);
+            }
         }
 
         this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
         
-        const messagesToRegister: Set<Deserializable>|undefined = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPluginCtr);
+        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPluginCtr) as Set<Deserializable>|undefined;
         if (messagesToRegister) {
             for (const messageClass of messagesToRegister) {
                 registerMessageToMessageMap(
@@ -219,6 +239,10 @@ export class PluginHandler {
 
         for (const commandName of pluginId.chatCommandHandlers) {
             this.worker.chatCommandHandler.removeCommand(commandName);
+        }
+
+        for (const vorpalCommand of pluginId.registeredVorpalCommands) {
+            vorpalCommand.remove();
         }
 
         this.loadedPlugins.delete(pluginId.meta.id);

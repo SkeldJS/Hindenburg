@@ -162,7 +162,7 @@ export class ChatCommandHandler {
     ) {
         this.commands = new Map;
 
-        this.worker.on("player.chat", async ev => {
+        this.worker.on("player.sendchat", async ev => {
             if (ev.message.startsWith("/")) {
                 ev.rpc.cancel(); // Prevent message from being broadcasted
                 const restMessage = ev.message.substr(1);

@@ -39,14 +39,14 @@ import {
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
 
-import { EventEmitter } from "@skeldjs/events";
+import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
 
 import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
-import { MessageSide, Room, RoomEvents } from "./room/Room";
+import { MessageSide, Room, RoomEvents } from "./room";
 
 import {
     PluginHandler,
@@ -54,10 +54,15 @@ import {
 } from "./handlers";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
+import { ClientBanEvent, ClientConnectEvent } from "./api";
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
-export type WorkerEvents = RoomEvents;
+export type WorkerEvents = RoomEvents
+    & ExtractEventTypes<[
+        ClientBanEvent,
+        ClientConnectEvent
+    ]>;
 
 export class Worker extends EventEmitter<WorkerEvents> {
     config: HindenburgConfig;
@@ -248,6 +253,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     );
                 }
             }
+
+            await this.emit(
+                new ClientConnectEvent(connection)
+            );
         });
 
         this.decoder.on(ReactorModDeclarationMessage, (message, direction, connection) => {
@@ -415,7 +424,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--address <ip address>", "ip address of the client(s) to disconnect")
             .option("--room <room code>", "room code of the client(s) to disconnect")
             .option("--reason <reason>", "reason for why to disconnect the client")
-            .option("--ban", "Ban this client")
+            .option("--ban [duration]", "Ban this client")
             .action(async args => {
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
@@ -431,7 +440,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         connection.rinfo.address === args.options.address ||
                         connection.room?.code.id === codeId
                     ) {
-                        // todo: ban the client if args.options.ban is true
+                        if (args.options.ban) {
+                            await this.emit(
+                                new ClientBanEvent(
+                                    connection,
+                                    parseInt(args.options.ban) || 3600
+                                )
+                            );
+                        }
                         await connection.disconnect(reason);
                         num_disconnected++;
                     }

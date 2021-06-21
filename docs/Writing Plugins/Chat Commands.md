@@ -18,18 +18,18 @@ Hindenburg has built-in support for these kind of commands, with a built-in
 run your commands.
 
 ### Skeleton
-To register a global command, you can use the following general skeleton in your
-plugin class:
+To register a global chat command, you can use the `@ChatCommand` decorator above
+a method in your plugin class.
 
 ```ts
 @ChatCommand("<usage>", "<description>")
-onMyCommand(ctx: ChatCommandContext, args: any) {
+onMyChatCommand(ctx: ChatCommandContext, args: any) {
 
 }
 ```
 
-`<usage>` is to be replaced with a string representing how to use the command,
-see below for more information.
+`<usage>` is a string representation of how to use the command, see below for
+more information.
 
 `<description>` should be replaced by a short description of your command (what
 it does, how to use it, etc.)
@@ -87,8 +87,8 @@ players to understand the commands properly, keep this in mind while writing the
 yourself.**
 
 ### Callback
-The function body acts as a callback function for when a player uses the command.
-It takes in 2 arguments:
+The method below the decorator acts as a callback function for when a player
+uses the command. It takes in 2 arguments:
 
 * A simple `context` argument consisting of information about where the command
 came from and who called it, as well as supplying a useful `.reply` method to easily

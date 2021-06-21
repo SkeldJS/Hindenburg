@@ -6,7 +6,7 @@ export interface AnticheatConfig {
 
 export interface AnticheatRuleConfig {
     penalty: {
-        penalty?: "disconnect"|"ban"|"ignore";
+        action?: "disconnect"|"ban"|"ignore";
         strikes?: number;
         banAfterXDisconnects?: number;
         banDuration?: number;

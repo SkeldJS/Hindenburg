@@ -260,7 +260,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(ReactorModDeclarationMessage, (message, direction, connection) => {
-            if (connection.mods.length >= connection.numMods)
+            if (connection.mods.size >= connection.numMods)
                 return;
 
             const clientMod = new ClientMod(
@@ -269,7 +269,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 message.version
             );
 
-            connection.mods.push(clientMod);
+            connection.mods.set(clientMod.netid, clientMod);
 
             this.logger.info("Got mod from %s: %s",
                 connection, clientMod);
@@ -347,8 +347,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!connection.player)
                 return;
 
-            await connection.room!.decoder.emitDecoded(message, direction, connection.player);
-            // todo: remove canceled packets (e.g. from the anti-cheat)
+            const canceled = message.children
+                .filter(child => !child.canceled);
+
+            for (const child of canceled) {
+                await connection.room!.decoder.emitDecoded(child, direction, connection.player);
+            }
+            
             // todo: handle movement packets with care
             // todo: pipe packets to the room for state
             await connection.room!.broadcastMessages(
@@ -562,9 +567,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     if (
                         connection.clientId === args["client id"]
                     ) {
-                        this.logger.info("%s has %s mod(s)", connection, connection.mods.length);
-                        for (let i = 0; i < connection.mods.length; i++) {
-                            const mod = connection.mods[i];
+                        this.logger.info("%s has %s mod(s)", connection, connection.mods.size);
+                        const mods = [...connection.mods];
+                        for (let i = 0; i < mods.length; i++) {
+                            const mod = mods[i];
                             this.logger.info("%s) %s", i + 1, mod)
                         }
                         return;

@@ -84,7 +84,7 @@ export class Connection {
      * {@link Connection.numMods} to compare the list size whether
      * it is complete.
      */
-    mods: ClientMod[];
+    mods: Map<number, ClientMod>;
 
     /**
      * The last nonce that was received by this client.
@@ -137,7 +137,7 @@ export class Connection {
         this.username = "";
         
         this.numMods = 0;
-        this.mods = [];
+        this.mods = new Map;
 
         this.lastNonce = -1;
         this._incrNonce = 0;
@@ -259,7 +259,7 @@ export class Connection {
         this.username = "";
         this.clientVersion = undefined;
         this.numMods = 0;
-        this.mods = [];
+        this.mods = new Map;
 
         if (this.room) {
             await this.room.handleLeave(this, reason || DisconnectReason.None);

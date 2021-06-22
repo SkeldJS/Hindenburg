@@ -1,14 +1,28 @@
 import "reflect-metadata";
+
 import fs from "fs/promises";
 import resolveFrom from "resolve-from";
+import winston from "winston";
 import path from "path";
 import vorpal from "vorpal";
+import chalk from "chalk";
 
-import { ReactorHandshakeMessage, ReactorMessage, ReactorModDeclarationMessage } from "@skeldjs/reactor";
-import { Deserializable, Serializable } from "@skeldjs/protocol";
+import {
+    ReactorHandshakeMessage,
+    ReactorMessage,
+    ReactorModDeclarationMessage
+} from "@skeldjs/reactor";
+
+import { Deserializable, RpcMessage, Serializable } from "@skeldjs/protocol";
+
+import { VorpalConsole } from "../util/VorpalConsoleTransport";
 
 import { Worker, WorkerEvents } from "../Worker";
-import { ModdedHelloPacket } from "../packets";
+
+import {
+    ModdedHelloPacket,
+    ReactorRpcMessage
+} from "../packets";
 
 import {
     hindenburgEventKey,
@@ -16,9 +30,14 @@ import {
     hindenburgChatCommandKey,
     hindenburgMessageKey,
     hindenburgRegisterMessageKey,
-    MessageListenerOptions
+    MessageListenerOptions,
+    hindenburgVorpalCommand,
+    VorpalCommandInformation,
+    BaseReactorRpcMessage
 } from "../api";
-import { hindenburgVorpalCommand, VorpalCommandInformation } from "../api/hooks/CliCommand";
+
+import { Component } from "../room";
+import { ClientMod } from "../Connection";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -28,10 +47,12 @@ export interface PluginMeta {
     order: PluginOrder;
 }
 
-export class Plugin {
+export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc to a seperate interface so plugins can't see those types
     static id: string;
     meta!: PluginMeta;
 
+    logger: winston.Logger;
+    
     eventHandlers: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
     chatCommandHandlers: string[];
     messageHandlers: [Deserializable, (ev: Serializable) => any][];
@@ -42,6 +63,27 @@ export class Plugin {
         public readonly worker: Worker,
         public readonly config: any
     ) {
+        this.logger = winston.createLogger({
+            transports: [
+                new VorpalConsole(this.worker.vorpal, {
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.printf(info => {
+                            return `[${chalk.green(this.meta.id)}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
+        
         this.eventHandlers = [];
         this.chatCommandHandlers = [];
         this.messageHandlers = [];
@@ -49,8 +91,33 @@ export class Plugin {
         this.registeredVorpalCommands = [];
     }
 
-    async onPluginLoad?(): Promise<void> { return; };
-    async onPluginUnload?(): Promise<void> { return; };
+    async onPluginLoad?(): Promise<void>;
+    async onPluginUnload?(): Promise<void>;
+
+    async sendRpc(component: Component, rpc: BaseReactorRpcMessage): Promise<void> {
+        for (const [ , player ] of component.room.players) {
+            let targetMod: ClientMod | null = null;
+            for (const [ , clientMod ] of player.mods) {
+                if (clientMod.modid === rpc.modId) {
+                    targetMod = clientMod;
+                    break;
+                }
+            }
+
+            if (targetMod === null)
+                continue;
+
+            await player.sendGameData([
+                new RpcMessage(
+                    component.netid,
+                    new ReactorRpcMessage(
+                        targetMod.netid,
+                        rpc
+                    )
+                )
+            ]);
+        }
+    }
 }
 
 function registerMessageToMessageMap(message: Deserializable, map: Map<string, Map<number, Deserializable>>) {

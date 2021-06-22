@@ -36,7 +36,7 @@ import {
     BaseReactorRpcMessage
 } from "../api";
 
-import { Component } from "../room";
+import { Component, Player } from "../room";
 import { ClientMod } from "../Connection";
 
 type PluginOrder = "last"|"first"|"none"|number;
@@ -94,8 +94,8 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
     async onPluginLoad?(): Promise<void>;
     async onPluginUnload?(): Promise<void>;
 
-    async sendRpc(component: Component, rpc: BaseReactorRpcMessage): Promise<void> {
-        for (const [ , player ] of component.room.players) {
+    async sendRpc(component: Component, rpc: BaseReactorRpcMessage, target?: Player): Promise<void> {
+        for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
             let targetMod: ClientMod | null = null;
             for (const [ , clientMod ] of player.mods) {
                 if (clientMod.modid === rpc.modId) {

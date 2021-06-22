@@ -490,11 +490,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         this.logger.warn("Failed to load plugin from '%s': %s", args.import, e);
                     }
                 } catch (e) {
-                    const importPath = resolveFrom(this.pluginHandler.pluginDir, "./" + args.import);
                     try {
-                        await this.pluginHandler.loadPlugin(importPath);
+                        const importPath = resolveFrom(this.pluginHandler.pluginDir, "./" + args.import);
+                        try {
+                            await this.pluginHandler.loadPlugin(importPath);
+                        } catch (e) {
+                            this.logger.error("Failed to load plugin from '%s': %s", args.import, e);
+                        }
                     } catch (e) {
-                        this.logger.warn("Failed to load plugin from '%s': %s", args.import, e);
+                        this.logger.warn("Could not find plugin %s from %s", args.import, this.pluginHandler.pluginDir);
                     }
                 }
             });
@@ -503,7 +507,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("unload <plugin id>", "Unload a plugin.")
             .action(async args => {
                 const pluginId: string = args["plugin id"];
-                const loadedPlugin = this.pluginHandler.loadedPlugins.get(pluginId);
+                const loadedPlugin = 
+                    typeof pluginId === "number"
+                    ? [...this.pluginHandler.loadedPlugins][pluginId - 1]?.[1]
+                    : this.pluginHandler.loadedPlugins.get(pluginId);
 
                 if (loadedPlugin) {
                     this.pluginHandler.unloadPlugin(loadedPlugin);
@@ -514,24 +521,31 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
+            .alias("ls")
             .action(async args => {
                 switch (args.something) {
                 case "clients":
                     this.logger.info("%s client(s)", this.connections.size);
-                    for (const [ , client ] of this.connections) {
-                        this.logger.info("* %s", client);
+                    const connections = [...this.connections];
+                    for (let i = 0; i < connections.length; i++) {
+                        const [ , connection ] = connections[i];
+                        this.logger.info("%s) %s", i + 1, connection);
                     }
                     break;
                 case "rooms":
                     this.logger.info("%s room(s)", this.rooms.size);
-                    for (const [ , room ] of this.rooms) {
-                        this.logger.info("* %s", room);
+                    const rooms = [...this.rooms];
+                    for (let i = 0; i < rooms.length; i++) {
+                        const [ , room ] = rooms[i];
+                        this.logger.info("%s) %s", i + 1, room);
                     }
                     break;
                 case "plugins":
                     this.logger.info("%s plugins(s) loaded", this.pluginHandler.loadedPlugins.size);
-                    for (const [ , plugin ] of this.pluginHandler.loadedPlugins) {
-                        this.logger.info("* %s", plugin.meta.id);
+                    const loadedPlugins = [...this.pluginHandler.loadedPlugins];
+                    for (let i = 0; i < loadedPlugins.length; i++) {
+                        const [ , plugin ] = loadedPlugins[i];
+                        this.logger.info("%s) %s", i + 1, plugin.meta.id);
                     }
                     break;
                 default:
@@ -542,14 +556,16 @@ export class Worker extends EventEmitter<WorkerEvents> {
             
         this.vorpal
             .command("list mods <client id>", "List all of a client's mods.")
+            .alias("ls mods")
             .action(async args => {
                 for (const [ , connection ] of this.connections) {
                     if (
                         connection.clientId === args["client id"]
                     ) {
                         this.logger.info("%s has %s mod(s)", connection, connection.mods.length);
-                        for (const mod of connection.mods) {
-                            this.logger.info("* %s", mod);
+                        for (let i = 0; i < connection.mods.length; i++) {
+                            const mod = connection.mods[i];
+                            this.logger.info("%s) %s", i + 1, mod)
                         }
                         return;
                     }
@@ -559,14 +575,17 @@ export class Worker extends EventEmitter<WorkerEvents> {
             
         this.vorpal
             .command("list players <room code>", "List players in a room.")
+            .alias("ls players")
             .action(async args => {
                 const codeId = Code2Int(args["room code"].toUpperCase());
                 const room = this.rooms.get(codeId);
 
                 if (room) {
                     this.logger.info("%s player(s) in %s", room.players.size, room);
-                    for (const [ , player ] of room.players) {
-                        this.logger.info("* %s", player);
+                    const players = [...room.players];
+                    for (let i = 0; i < players.length; i++) {
+                        const [ , player ] = players[i];
+                        this.logger.info("%s) %s", i + 1, player);
                     }
                 } else {
                     this.logger.error("Couldn't find room: " + args["room code"]);

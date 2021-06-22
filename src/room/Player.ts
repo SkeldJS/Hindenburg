@@ -2,8 +2,15 @@ import chalk from "chalk";
 
 import { BasicEvent, EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { DisconnectReason, LimboStates } from "@skeldjs/constant";
-import { AddVoteMessage, RpcMessage } from "@skeldjs/protocol";
 import { Vector2 } from "@skeldjs/util";
+
+import {
+    AddVoteMessage,
+    BaseGameDataMessage,
+    GameDataMessage,
+    ReliablePacket,
+    RpcMessage
+} from "@skeldjs/protocol";
 
 import {
     PlayerSendChatEvent,
@@ -95,6 +102,10 @@ export class Player extends EventEmitter<PlayerEvents> {
         return this.connection?.clientId;
     }
 
+    get mods() {
+        return this.connection.mods;
+    }
+
     /**
      * Whether this player is the host of their room.
      */
@@ -183,5 +194,19 @@ export class Player extends EventEmitter<PlayerEvents> {
         this.info.dirty = true;
 
         await this.components.control.rpcSetName(name);
+    }
+
+    async sendGameData(gamedata: BaseGameDataMessage[]) {
+        await this.connection.sendPacket(
+            new ReliablePacket(
+                this.connection.getNextNonce(),
+                [
+                    new GameDataMessage(
+                        this.room.code.id,
+                        gamedata
+                    )
+                ]
+            )
+        );
     }
 }

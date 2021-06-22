@@ -95,18 +95,21 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
     async onPluginUnload?(): Promise<void>;
 
     async sendRpc(component: Component, rpc: BaseReactorRpcMessage, target?: Player): Promise<void> {
-        for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
-            let targetMod: ClientMod | null = null;
-            for (const [ , clientMod ] of player.mods) {
-                if (clientMod.modid === rpc.modId) {
-                    targetMod = clientMod;
-                    break;
-                }
+        if (!component.room.players.host)
+            return;
+
+        let targetMod: ClientMod | null = null;
+        for (const [ , clientMod ] of component.room.players.host.mods) {
+            if (clientMod.modid === rpc.modId) {
+                targetMod = clientMod;
+                break;
             }
+        }
+        
+        if (targetMod === null)
+            return;
 
-            if (targetMod === null)
-                continue;
-
+        for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
             await player.sendGameData([
                 new RpcMessage(
                     component.netid,

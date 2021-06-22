@@ -33,6 +33,7 @@ import {
     SetNameMessage,
     SpawnMessage,
     StartGameMessage,
+    UnreliablePacket,
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
@@ -278,6 +279,27 @@ export class Room extends EventEmitter<RoomEvents> {
 
             if (!component)
                 return;
+
+            if (component.owner instanceof Player && component.owner.components.transform === component) { // check if data packet is a movement packet
+                message.cancel(); // cancel the packet & broadcast it unreliably since there's no decent way of doing this.
+                for (const [ , player ] of this.players) {
+                    player.connection.sendPacket( // don't await because movement packets need to be processed quickly
+                        new UnreliablePacket(
+                            [
+                                new GameDataMessage(
+                                    this.code.id,
+                                    [
+                                        new DataMessage(
+                                            component.netid,
+                                            message.data
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    );
+                }
+            }
 
             const dataReader = HazelReader.from(message.data);
             component.Deserialize(dataReader, false);

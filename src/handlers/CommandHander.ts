@@ -1,3 +1,5 @@
+import util from "util";
+
 import { MessageSide, Player, Room } from "../room";
 import { Worker } from "../Worker";
 
@@ -49,8 +51,8 @@ export class ChatCommandContext {
      * @summary Calls {@link Room.sendChat}
      * @param message The message to reply with.
      */
-    async reply(message: string) {
-        await this.room.sendChat(message, {
+    async reply(message: string, ...fmt: any) {
+        await this.room.sendChat(util.format(message, ...fmt), {
             side: MessageSide.Left,
             target: this.player
         });
@@ -185,24 +187,55 @@ export class ChatCommandHandler {
             }
         });
 
-        this.registerCommand("help [command]", "Get a list of commands and how to use them, or get help for a specific command.", async (ctx, args) => {
-            if (args.command) {
+        this.registerCommand("help [command/page]", "Get a list of commands and how to use them, or get help for a specific command.", async (ctx, args) => {
+            const maxDisplay = 2;
+
+            const pageArg = parseInt(args["command/page"]);
+            const commandName = args["command/page"];
+
+            if (commandName && isNaN(pageArg)) {
                 const command = this.commands.get(args.command);
 
                 if (!command) {
-                    await ctx.reply("No command with name: " + args.command);
+                    await ctx.reply("No command with name: %s", args.command);
                     return;
                 }
 
                 await ctx.reply("Usage: <color=#12a50a>" + command.createUsage() + "</color>\n\n" + command.description);
                 return;
             }
-            
-            let outMessage = "Listing " + this.commands.size + " command(s):";
-            for (const [ , command ] of this.commands) {
-                outMessage += "\n\n<space=1em><color=#12a50a>" + command.createUsage() + "</color> - " + command.description;
+
+            const maxPages = Math.ceil(this.commands.size / maxDisplay);
+            const displayPage = isNaN(pageArg) ? 1 : pageArg;
+            const actualPage = displayPage - 1;
+
+            if (actualPage * maxDisplay >= this.commands.size || actualPage < 0) {
+                await ctx.reply("There are no commands on page %s.", displayPage);
+                return;
             }
-            await ctx.reply(outMessage);
+            
+            const allCommands = [...this.commands.values()];
+            let outMessage = "";
+
+            let num = 0;
+            for (
+                let i = actualPage * maxDisplay; // start on requested page
+                i < allCommands.length && i < (actualPage + 1) * maxDisplay; // loop until no commands left or page ends
+                i++
+            ) {
+                const command = allCommands[i];
+                outMessage += "\n<space=1em><color=#12a50a>" + command.createUsage() + "</color> - " + command.description;
+                num++;
+            }
+
+            if (num === maxDisplay && displayPage < maxPages) {
+                outMessage += "\n\nUse <color=#12a50a>/help " + (displayPage + 1) + "</color> for more commands.";
+            }
+
+            await ctx.reply(
+                "Listing " + num + " command" + (num === 1 ? "" : "s") + " on page " + displayPage + "/" + maxPages + ":\n"
+                + outMessage
+            );
         });
     }
 

@@ -188,7 +188,7 @@ export class ChatCommandHandler {
         });
 
         this.registerCommand("help [command/page]", "Get a list of commands and how to use them, or get help for a specific command.", async (ctx, args) => {
-            const maxDisplay = 2;
+            const maxDisplay = 4;
 
             const pageArg = parseInt(args["command/page"]);
             const commandName = args["command/page"];

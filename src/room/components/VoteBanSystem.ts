@@ -6,12 +6,16 @@ import { Player } from "../Player";
 import { Room } from "../Room";
 import { DirtySet } from "../util/DirtyMap";
 
-export class VoteBanSystem implements Component {
+export class VoteBanSystem extends Component {
+    classname = "VoteBanSystem" as const;
+    
     constructor(
         public readonly room: Room,
         public readonly owner: Room,
         public readonly netid: number
-    ) {}
+    ) {
+        super(room, owner, netid);
+    }
     
     Deserialize(reader: HazelReader, isSpawn: boolean) {
         const numPlayers = reader.uint8();

@@ -5,7 +5,9 @@ import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
 
-export class CustomNetworkTransform implements Component {
+export class CustomNetworkTransform extends Component {
+    classname = "CustomNetworkTransform" as const;
+
     dirty: boolean;
 
     constructor(
@@ -13,6 +15,8 @@ export class CustomNetworkTransform implements Component {
         public readonly owner: Player,
         public readonly netid: number
     ) {
+        super(room, owner, netid);
+
         this.dirty = false;
     }
     

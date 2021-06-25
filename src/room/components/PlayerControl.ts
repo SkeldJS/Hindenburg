@@ -19,12 +19,16 @@ import { Component } from "../Component";
 import { Player } from "../Player";
 import { Room } from "../Room";
 
-export class PlayerControl implements Component {
+export class PlayerControl extends Component {
+    classname = "PlayerControl" as const;
+
     constructor(
         public readonly room: Room,
         public readonly owner: Player,
         public readonly netid: number
-    ) {}
+    ) {
+        super(room, owner, netid);
+    }
     
     Deserialize(reader: HazelReader, isSpawn: boolean) {
         if (isSpawn) {

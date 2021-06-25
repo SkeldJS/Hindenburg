@@ -5,12 +5,16 @@ import { PlayerInfo } from "../util/PlayerInfo";
 import { Component } from "../Component";
 import { Room } from "../Room";
 
-export class GameData implements Component {
+export class GameData extends Component {
+    classname = "GameData" as const;
+
     constructor(
         public readonly room: Room,
         public readonly owner: Room,
         public readonly netid: number
-    ) {}
+    ) {
+        super(room, owner, netid);
+    }
     
     Deserialize(reader: HazelReader, isSpawn: boolean) {
         if (isSpawn) {

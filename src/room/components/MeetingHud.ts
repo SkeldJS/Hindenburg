@@ -6,12 +6,16 @@ import { Component } from "../Component";
 import { Room } from "../Room";
 import { PlayerVoteState } from "../util/PlayerVoteState";
 
-export class MeetingHud implements Component {
+export class MeetingHud extends Component {
+    classname = "MeetingHud" as const;
+
     constructor(
         public readonly room: Room,
         public readonly owner: Room,
         public readonly netid: number
-    ) {}
+    ) {
+        super(room, owner, netid);
+    }
     
     Deserialize(reader: HazelReader, isSpawn: boolean) {
         if (isSpawn) {

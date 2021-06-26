@@ -485,14 +485,16 @@ export class Room extends EventEmitter<RoomEvents> {
                 ...payload
             ] as BaseRootMessage[];
 
-            promises.push(
-                player.connection.sendPacket(
-                    new ReliablePacket(
-                        player.connection.getNextNonce(),
-                        messages
+            if (messages.length) {
+                promises.push(
+                    player.connection.sendPacket(
+                        new ReliablePacket(
+                            player.connection.getNextNonce(),
+                            messages
+                        )
                     )
-                )
-            );
+                );
+            }
         }
 
         await Promise.all(promises);

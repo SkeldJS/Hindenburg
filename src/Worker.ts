@@ -647,6 +647,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 this.logger.info("Using: %s",
                     chalk.green(formatBytes(usage.heapUsed)));
+                    
+                this.logger.info("Allocated: %s",
+                    chalk.green(formatBytes(usage.heapTotal)));
             });
 
         // todo: handle report player

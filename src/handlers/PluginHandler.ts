@@ -38,6 +38,7 @@ import {
 
 import { Component, Player } from "../room";
 import { ClientMod } from "../Connection";
+import { RegisteredChatCommand } from "./CommandHander";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -54,7 +55,7 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
     logger: winston.Logger;
     
     eventHandlers: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
-    chatCommandHandlers: string[];
+    registeredChatCommands: RegisteredChatCommand[];
     messageHandlers: [Deserializable, (ev: Serializable) => any][];
     registeredMessages: Map<string, Map<number, Deserializable>>;  // todo: maybe switch to using sets of messages? unsure.
     registeredVorpalCommands: vorpal.Command[];
@@ -85,7 +86,7 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
         });
         
         this.eventHandlers = [];
-        this.chatCommandHandlers = [];
+        this.registeredChatCommands = [];
         this.messageHandlers = [];
         this.registeredMessages = new Map;
         this.registeredVorpalCommands = [];
@@ -143,7 +144,9 @@ export class PluginHandler {
     }
 
     async reregisterMessages() {
+        const listeners = this.worker.decoder.listeners;
         this.worker.decoder.reset();
+        this.worker.decoder.listeners = listeners;
         this.worker.decoder.register(
             ModdedHelloPacket,
             ReactorMessage,
@@ -153,7 +156,6 @@ export class PluginHandler {
         );
 
         const loadedPluginsArr = [...this.loadedPlugins];
-
         for (const [ , loadedPlugin ] of loadedPluginsArr) {
             for (const [ , messageTags ] of loadedPlugin.registeredMessages) {
                 for (const [ , messageClass ] of messageTags) {
@@ -162,7 +164,15 @@ export class PluginHandler {
             }
         }
     }
-    
+
+    async reregisterChatCommands() {
+        for (const [ , loadedPlugin ] of this.loadedPlugins) {
+            for (const registeredCommand of loadedPlugin.registeredChatCommands) {
+                this.worker.chatCommandHandler.commands.set(registeredCommand.name, registeredCommand);
+            }
+        }
+    }
+
     async loadPlugin(importPath: string) {
         const { default: loadedPluginCtr } = await import(importPath) as { default: typeof Plugin };
 
@@ -234,7 +244,7 @@ export class PluginHandler {
                 // or allow multiple commands to have the same trigger (triggers all of them).
                 const fn = property.bind(loadedPlugin);
                 const registeredCommand = this.worker.chatCommandHandler.registerCommand(chatCommand, chatCommandDescription, fn);
-                loadedPlugin.chatCommandHandlers.push(registeredCommand.name);
+                loadedPlugin.registeredChatCommands.push(registeredCommand);
             }
 
             const messageClassAndOptions = Reflect.getMetadata(hindenburgMessageKey, loadedPlugin, propertyName);
@@ -300,10 +310,6 @@ export class PluginHandler {
             this.worker.off(eventName, listenerFn);
         }
 
-        for (const commandName of pluginId.chatCommandHandlers) {
-            this.worker.chatCommandHandler.removeCommand(commandName);
-        }
-
         for (const vorpalCommand of pluginId.registeredVorpalCommands) {
             vorpalCommand.remove();
         }
@@ -311,6 +317,7 @@ export class PluginHandler {
         this.loadedPlugins.delete(pluginId.meta.id);
 
         this.reregisterMessages();
+        this.reregisterChatCommands();
         this.worker.logger.info("Unloaded plugin '%s'", pluginId.meta.id);
     }
     

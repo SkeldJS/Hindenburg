@@ -9,7 +9,6 @@ import { DisconnectReason, GameState } from "@skeldjs/constant";
 import {
     AcknowledgePacket,
     BaseRootPacket,
-    CloseMessage,
     DisconnectPacket,
     EndGameMessage,
     GameDataMessage,
@@ -432,13 +431,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
         this.vorpal
             .command("dc", "Forcefully disconnect a client or several clients.")
-            .option("--clientid <clientid>", "client id of the client to disconnect")
-            .option("--username <username>", "username of the client(s) to disconnect")
-            .option("--address <ip address>", "ip address of the client(s) to disconnect")
-            .option("--room <room code>", "room code of the client(s) to disconnect")
-            .option("--reason <reason>", "reason for why to disconnect the client")
-            .option("--ban [duration]", "Ban this client")
+            .option("--clientid, -i <clientid>", "client id(s) of the client(s) to disconnect")
+            .option("--username, -u <username>", "username of the client(s) to disconnect")
+            .option("--address, -a <ip address>", "ip address of the client(s) to disconnect")
+            .option("--room, -c <room code>", "room code of the client(s) to disconnect")
+            .option("--reason, -r <reason>", "reason for why to disconnect the client")
+            .option("--ban, -b [duration]", "ban this client, duration in seconds")
             .action(async args => {
+                console.log(args);
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.None;
@@ -448,7 +448,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 for (const [ , connection ] of this.connections) {
                     if (
-                        connection.clientId === args.options.clientid ||
+                        (Array.isArray(args.options.clientid)
+                            ? args.options.clientid.includes(connection.clientId)
+                            : connection.clientId === args.options.clientid
+                        ) ||
                         connection.username === args.options.username ||
                         connection.rinfo.address === args.options.address ||
                         connection.room?.code.id === codeId
@@ -471,7 +474,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("destroy <room code>", "Destroy and remove a room from the server.")
-            .option("--reason <reason>", "reason to destroy this room",)
+            .option("--reason, r <reason>", "reason to destroy this room",)
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => Int2Code(room).toLowerCase());

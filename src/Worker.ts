@@ -56,6 +56,15 @@ import {
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { ClientBanEvent, ClientConnectEvent } from "./api";
 
+const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
+function formatBytes(bytes: number) {
+    if (bytes === 0)
+        return "0 bytes";
+        
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(2) + " " + byteSizes[i];
+}
+
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
 export type WorkerEvents = RoomEvents
@@ -271,8 +280,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             connection.mods.set(clientMod.netid, clientMod);
 
-            this.logger.info("Got mod from %s: %s",
-                connection, clientMod);
+            if (connection.mods.size === 4) {
+                this.logger.info("... Got mods from %s, use '%s' to see more",
+                    connection, chalk.green("list mods " + connection.clientId));
+            } else if (connection.mods.size < 4) {
+                this.logger.info("Got mod from %s: %s",
+                    connection, clientMod);
+            }
         });
 
         this.decoder.on(DisconnectPacket, async (message, direciton, connection) => {
@@ -570,7 +584,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         this.logger.info("%s has %s mod(s)", connection, connection.mods.size);
                         const mods = [...connection.mods];
                         for (let i = 0; i < mods.length; i++) {
-                            const mod = mods[i];
+                            const [ , mod ] = mods[i];
                             this.logger.info("%s) %s", i + 1, mod)
                         }
                         return;
@@ -627,6 +641,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     numPlayers += room.players.size;
                 }
                 this.logger.info("Broadcasted message to %s player(s)", numPlayers);
+            });
+
+        this.vorpal
+            .command("mem", "View the memory usage of this server.")
+            .action(async () => {
+                const usage = process.memoryUsage();
+
+                this.logger.info("Using: %s",
+                    chalk.green(formatBytes(usage.heapUsed)));
             });
 
         // todo: handle report player
@@ -802,8 +825,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 } catch (e) {
                     const connection = this.getOrCreateConnection(rinfo);
-                    this.logger.error("Error occurred while processing packet from %s: %s",
-                        connection, e);
+                    this.logger.error("Error occurred while processing packet from %s:",
+                        connection);
+                    console.log(e);
                 }
             } else {
                 const connection = this.getOrCreateConnection(rinfo);

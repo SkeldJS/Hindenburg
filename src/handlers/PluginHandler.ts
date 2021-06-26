@@ -240,8 +240,8 @@ export class PluginHandler {
                 // todo: maybe some sort of a stack system for commands that have the same trigger,
                 // or allow multiple commands to have the same trigger (triggers all of them).
                 const fn = property.bind(loadedPlugin);
-                this.worker.chatCommandHandler.registerCommand(chatCommand, chatCommandDescription, fn);
-                loadedPlugin.chatCommandHandlers.push(chatCommand);
+                const registeredCommand = this.worker.chatCommandHandler.registerCommand(chatCommand, chatCommandDescription, fn);
+                loadedPlugin.chatCommandHandlers.push(registeredCommand.name);
             }
 
             const messageClassAndOptions = Reflect.getMetadata(hindenburgMessageKey, loadedPlugin, propertyName);

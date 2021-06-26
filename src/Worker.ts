@@ -274,7 +274,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             connection.mods.set(clientMod.netid, clientMod);
 
             if (connection.mods.size === 4) {
-                this.logger.info("... Got mods from %s, use '%s' to see more",
+                this.logger.info("... Got more mods from %s, use '%s' to see more",
                     connection, chalk.green("list mods " + connection.clientId));
             } else if (connection.mods.size < 4) {
                 this.logger.info("Got mod from %s: %s",
@@ -591,10 +591,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
             
         this.vorpal
-            .command("list players <room code>", "List players in a room.")
+            .command("list players <room code>", "List all players in a room.")
             .alias("ls players")
             .action(async args => {
-                const codeId = Code2Int(args["room code"].toUpperCase());
+                const codeId = Code2Int(args["room code"].toUpperCase?.());
                 const room = this.rooms.get(codeId);
 
                 if (room) {
@@ -611,11 +611,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
-            .option("--room <room code>", "the room to send a message to")
+            .option("--room, c <room code>", "the room to send a message to")
             .action(async args => {
                 const message = args.message.join(" ");
                 const roomCode = args.options.room
-                    ? Code2Int(args.options.room.toUpperCase())
+                    ? Code2Int(args.options.room.toUpperCase?.())
                     : 0;
 
                 const foundRoom = this.rooms.get(roomCode);

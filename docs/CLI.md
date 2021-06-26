@@ -107,7 +107,7 @@ For example,
 [worker] info: Got mod from Smallbook (1, 127.0.0.1, 1ms): dev.weakeyes.forcefreechat@1.0.0
 [worker] info: ... Got more mods from Smallbook (1, 127.0.0.1, 1ms), use 'list mods 1' to see more
 ```
-the logs here don't show all of the mods that Smallbook has loaded. You can use
+The logs here don't show all of the mods that Smallbook has loaded. You can use
 `ls mods 1` to see the full list.
 ```
 hindenburg~$ ls mods 1

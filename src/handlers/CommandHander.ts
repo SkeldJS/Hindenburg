@@ -194,10 +194,10 @@ export class ChatCommandHandler {
             const commandName = args["command/page"];
 
             if (commandName && isNaN(pageArg)) {
-                const command = this.commands.get(args.command);
+                const command = this.commands.get(commandName);
 
                 if (!command) {
-                    await ctx.reply("No command with name: %s", args.command);
+                    await ctx.reply("No command with name: %s", commandName);
                     return;
                 }
 
@@ -256,7 +256,6 @@ export class ChatCommandHandler {
     registerCommand(usage: string, description: string, callback: ChatCommandCallback) {
         const parsedCommand = RegisteredChatCommand.parse(usage, description, callback);
         this.commands.set(parsedCommand.name, parsedCommand);
-        this.worker.logger.info("Registered chat command: '%s'", parsedCommand.name);
         return parsedCommand;
     }
 

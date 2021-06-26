@@ -190,13 +190,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.rooms = new Map;
 
         this.decoder = new PacketDecoder;
-
-        this.decoder.register(
-            ModdedHelloPacket,
-            ReactorMessage,
-            ReactorHandshakeMessage,
-            ReactorModDeclarationMessage
-        );
+        this.pluginHandler.reregisterMessages();
 
         this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, connection) => {
             connection.receivedPackets.unshift(message.nonce);

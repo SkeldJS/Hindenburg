@@ -148,28 +148,21 @@ export class PluginHandler {
             ModdedHelloPacket,
             ReactorMessage,
             ReactorHandshakeMessage,
-            ReactorModDeclarationMessage
+            ReactorModDeclarationMessage,
+            ReactorRpcMessage
         );
 
         const loadedPluginsArr = [...this.loadedPlugins];
-        const messagesSet: Map<string, Map<number, Deserializable>> = new Map;
 
-        for (let i = loadedPluginsArr.length - 1; i >= 0; i--) { // iterate backwards as the last ones loaded should overwrite the first ones loaded
-            const [ , loadedPlugin ] = loadedPluginsArr[i];
+        for (const [ , loadedPlugin ] of loadedPluginsArr) {
             for (const [ , messageTags ] of loadedPlugin.registeredMessages) {
                 for (const [ , messageClass ] of messageTags) {
-                    const wasSet = messagesSet.get(messageClass.type)?.get(messageClass.tag);
-
-                    if (wasSet)
-                        continue;
-
                     this.worker.decoder.register(messageClass);
-                    registerMessageToMessageMap(messageClass, messagesSet);
                 }
             }
         }
     }
-
+    
     async loadPlugin(importPath: string) {
         const { default: loadedPluginCtr } = await import(importPath) as { default: typeof Plugin };
 

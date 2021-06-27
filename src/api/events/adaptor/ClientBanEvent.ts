@@ -9,6 +9,7 @@ export class ClientBanEvent extends BasicEvent implements ClientEvent {
 
     constructor(
         public readonly client: Connection,
+        public readonly reason: string,
         public readonly duration: number
     ) {
         super();

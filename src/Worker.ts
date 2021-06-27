@@ -460,6 +460,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             await this.emit(
                                 new ClientBanEvent(
                                     connection,
+                                    DisconnectReason[reason as any],
                                     parseInt(args.options.ban) || 3600
                                 )
                             );

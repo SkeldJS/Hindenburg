@@ -138,8 +138,9 @@ Broadcast a message to the chat box in all rooms, or a specific room.
 Note that players currently playing a game (i.e. not in the lobby or in a meeting),
 won't be able to see the messages immediately.
 
-| Option | Alias | Description |
-| `--room <room code>` | `-c` | The specific room to broadcast a message to. |
+| Option               | Alias | Description                                  |
+|----------------------|-------|----------------------------------------------|
+| `--room <room code>` | `-c`  | The specific room to broadcast a message to. |
 
 For example, you might want to tell all rooms that the server is shutting down
 shortly, `broadcast "Notice: server will be shutting down in 5 minutes."`.

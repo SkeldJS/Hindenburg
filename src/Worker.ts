@@ -438,7 +438,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--reason, -r <reason>", "reason for why to disconnect the client")
             .option("--ban, -b [duration]", "ban this client, duration in seconds")
             .action(async args => {
-                console.log(args);
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.None;

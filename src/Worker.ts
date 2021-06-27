@@ -46,12 +46,7 @@ import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { MessageSide, Room, RoomEvents } from "./room";
-
-import {
-    PluginHandler,
-    ChatCommandHandler
-} from "./handlers";
-
+import { PluginHandler, ChatCommandHandler } from "./handlers";
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { ClientBanEvent, ClientConnectEvent } from "./api";
 

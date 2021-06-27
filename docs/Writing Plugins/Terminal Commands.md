@@ -2,7 +2,7 @@
 Hindenburg provides a simple api to interface with Hindenburg's runtime terminal
 interface, which uses [vorpal](https://vorpal.js.org) internally. There are some
 built-in commands that are enabled by default without any plugins, see
-[/CLI#Built-In](../CLI.md#built-in-commands) for more information
+[the CLI page](../CLI.md#built-in-commands) for more information
 
 ## Registering Commands
 

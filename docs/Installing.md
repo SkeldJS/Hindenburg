@@ -83,7 +83,7 @@ Make sure you also have git installed at https://git-scm.org
 ## Installing Hindenburg
 
 ```
-git clone https://github.com/edqx/Hindenburg/
+git clone https://github.com/skeldjs/Hindenburg/
 
 yarn install
 
@@ -94,14 +94,14 @@ yarn build
 
 For running the first time without a config, Hindenburg will auto-generate
 a default config for you, although for more advanced customisation you can open
-the file in a text editor of your choice. See https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md
+the file in a text editor of your choice. See https://github.com/skeldjs/Hindenburg/blob/master/docs/Configuration.md
 for config documentation.
 
 If you are hosting the server on a public VPS, it might be useful for you to
 change the ip addresses in the config to `auto` to automatically discover your server's
-public ip address and use that. Relevant fields: [here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#clusterip),
-[here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#loadbalancerip)
-and [here](https://github.com/edqx/Hindenburg/blob/master/docs/Configuration.md#loadbalancerclusters)
+public ip address and use that. Relevant fields: [here](https://github.com/skeldjs/Hindenburg/blob/master/docs/Configuration.md#clusterip)
+[here](https://github.com/skeldjs/Hindenburg/blob/master/docs/Configuration.md#loadbalancerip)
+and [here](https://github.com/skeldjs/Hindenburg/blob/master/docs/Configuration.md#loadbalancerclusters)
 
 ### Starting Hindenburg
 

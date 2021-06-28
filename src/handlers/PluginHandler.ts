@@ -36,9 +36,9 @@ import {
     BaseReactorRpcMessage
 } from "../api";
 
-import { Component, Player } from "../room";
 import { ClientMod } from "../Connection";
 import { RegisteredChatCommand } from "./CommandHander";
+import { Networkable, PlayerData } from "@skeldjs/core";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -95,23 +95,11 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
     async onPluginLoad?(): Promise<void>;
     async onPluginUnload?(): Promise<void>;
 
-    async sendRpc(component: Component, rpc: BaseReactorRpcMessage, target?: Player): Promise<void> {
-        if (!component.room.players.host)
-            return;
-
-        let targetMod: ClientMod | null = null;
-        for (const [ , clientMod ] of component.room.players.host.mods) {
-            if (clientMod.modid === rpc.modId) {
-                targetMod = clientMod;
-                break;
-            }
-        }
-        
-        if (targetMod === null)
-            return;
-
+    async sendRpc(component: Networkable, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
         for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
-            await player.sendGameData([
+            /*
+            todo: find this player's mod netid
+            await player.room.broadcast([
                 new RpcMessage(
                     component.netid,
                     new ReactorRpcMessage(
@@ -119,7 +107,8 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
                         rpc
                     )
                 )
-            ]);
+            ], true, player);
+            */
         }
     }
 }

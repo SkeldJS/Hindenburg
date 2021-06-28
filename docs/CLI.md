@@ -24,27 +24,27 @@ Allows you to pass filters for which clients to disconnect or ban.
 | `--clientid <clientid>`  | `-i`  | Client IDs of clients to disconnect, pass multiple to choose multiple clients.                                                                                                                                             |
 | `--username <username>`  | `-u`  | Disconnect all clients with this username. Not necessarily their in-game name, just the one they initially identified with.                                                                                                |
 | `--address <ip address>` | `-a`  | Disconnect all clients on this ip address.                                                                                                                                                                                 |
-| `--room <room code>`     | `-c`  | Disconnect all clients in this room.                                                                                                                                                                                       |
+| `--lobby <lobby code>`     | `-c`  | Disconnect all clients in this lobby.                                                                                                                                                                                       |
 | `--reason <reason>`      | `-r`  | Reason to give for disconnecting, an integer of the [DisconnectReason](https://github.com/codyphobe/among-us-protocol/blob/master/01_packet_structure/06_enums.md#disconnectreason) enum, or a string for a custom reason. |
 | `--ban [duration]`       | `-b`  | Ban the clients, with an optional duration in seconds, default `3600` (1 hour)                                                                                                                                             |
 
-For example, if you wanted to ban all players in a room that is being particularly
-malicious, you could run `dc --room KLVBAD --ban` to ban them all. The room would
+For example, if you wanted to ban all players in a lobby that is being particularly
+malicious, you could run `dc --lobby KLVBAD --ban` to ban them all. The lobby would
 be closed as a result of all players leaving.
 
 Or you might have received a report from a player and you needed to manually ban,
-you might use the [`ls players OIEDXG`](#list-players-room-code) command to find the player's player id, and
+you might use the [`ls players OIEDXG`](#list-players-lobby-code) command to find the player's player id, and
 used `dc -i 734 --ban 86400 -r "banned for 1 day for being annoying"` to ban that player.
 
-### `destroy <room code>`
+### `destroy <lobby code>`
 
-Destroy and remove a room from the server.
+Destroy and remove a lobby from the server.
 
 | Option              | Alias | Description                                                                                                                                                                                                                                 |
 |---------------------|-------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `--reason <reason>` | `-r`  | Reason to give to clients for destroying the room, an integer of the [DisconnectReason](https://github.com/codyphobe/among-us-protocol/blob/master/01_packet_structure/06_enums.md#disconnectreason) enum, or a string for a custom reason. |
+| `--reason <reason>` | `-r`  | Reason to give to clients for destroying the lobby, an integer of the [DisconnectReason](https://github.com/codyphobe/among-us-protocol/blob/master/01_packet_structure/06_enums.md#disconnectreason) enum, or a string for a custom reason. |
 
-You might want to destroy a room with cheaters with suspicious behaviour if you
+You might want to destroy a lobby with cheaters with suspicious behaviour if you
 have the anti-cheat disabled, you could just use `destroy JKLLKM -r "please stop cheating"`.
 
 ### `load <import>`
@@ -84,12 +84,12 @@ with `unload hbplugin-someplugin`, or you could reference its index by `unload 2
 
 List something about the server.
 
-`something` can be either "clients", "rooms" or "plugins". You can also use this
+`something` can be either "clients", "lobbys" or "plugins". You can also use this
 command with `ls` instead.
 
 `ls clients` lists every client connected to the server.
 
-`ls rooms` lists every room currently being hosted on the server.
+`ls lobbys` lists every lobby currently being hosted on the server.
 
 `ls plugins` lists every plugin currently loaded into the server.
 
@@ -118,11 +118,11 @@ hindenburg~$ ls mods 1
 [worker] info: 4) dev.weakeyes.skipauth@1.0.0
 ```
 
-### `list players <room code>`
+### `list players <lobby code>`
 
-List all players in a room.
+List all players in a lobby.
 
-It's hard to keep track of players in a room manually, since they might be all
+It's hard to keep track of players in a lobby manually, since they might be all
 over the place. This command allows you to see each player, showing basic
 information about them.
 ```
@@ -133,16 +133,16 @@ hindenburg~$ list players aqoukt
 
 ### `broadcast <message>`
 
-Broadcast a message to the chat box in all rooms, or a specific room.
+Broadcast a message to the chat box in all lobbys, or a specific lobby.
 
 Note that players currently playing a game (i.e. not in the lobby or in a meeting),
 won't be able to see the messages immediately.
 
 | Option               | Alias | Description                                  |
 |----------------------|-------|----------------------------------------------|
-| `--room <room code>` | `-c`  | The specific room to broadcast a message to. |
+| `--lobby <lobby code>` | `-c`  | The specific lobby to broadcast a message to. |
 
-For example, you might want to tell all rooms that the server is shutting down
+For example, you might want to tell all lobbys that the server is shutting down
 shortly, `broadcast "Notice: server will be shutting down in 5 minutes."`.
 
 ### `mem`

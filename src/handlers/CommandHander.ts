@@ -1,6 +1,8 @@
 import util from "util";
 
-import { MessageSide, Player, Room } from "../room";
+import { PlayerData } from "@skeldjs/core";
+
+import { Lobby, MessageSide } from "../lobby";
 import { Worker } from "../Worker";
 
 function betterSplitOnSpaces(input: string) {
@@ -33,13 +35,13 @@ export class CallError extends Error {};
 export class ChatCommandContext {
     constructor(
         /**
-         * The room that this command came from.
+         * The lobby that this command came from.
          */
-        public readonly room: Room,
+        public readonly lobby: Lobby,
         /**
          * The player that sent the message calling the command.
          */
-        public readonly player: Player,
+        public readonly player: PlayerData,
         /**
          * The original message that the player sent (without the leading '/').
          */
@@ -48,11 +50,11 @@ export class ChatCommandContext {
 
     /**
      * Reply to the message that called this command.
-     * @summary Calls {@link Room.sendChat}
+     * @summary Calls {@link Lobby.sendChat}
      * @param message The message to reply with.
      */
     async reply(message: string, ...fmt: any) {
-        await this.room.sendChat(util.format(message, ...fmt), {
+        await this.lobby.sendChat(util.format(message, ...fmt), {
             side: MessageSide.Left,
             target: this.player
         });
@@ -169,11 +171,16 @@ export class ChatCommandHandler {
     ) {
         this.commands = new Map;
 
-        this.worker.on("player.sendchat", async ev => {
-            if (ev.message.startsWith("/")) {
-                ev.rpc.cancel(); // Prevent message from being broadcasted
-                const restMessage = ev.message.substr(1);
-                const context = new ChatCommandContext(ev.room, ev.player, ev.message);
+        this.worker.on("player.chat", async ev => {
+            if (ev.chatMessage.startsWith("/")) {
+                const lobby = this.worker.lobbies.get(ev.room.code);
+                
+                if (!lobby)
+                    return;
+
+                ev.message?.cancel(); // Prevent message from being broadcasted
+                const restMessage = ev.chatMessage.substr(1);
+                const context = new ChatCommandContext(lobby, ev.player, ev.chatMessage);
                 try {
                     await this.parseMessage(context, restMessage);
                 } catch (e) {
@@ -281,7 +288,7 @@ export class ChatCommandHandler {
      * @example
      * ```ts
      * const message = "setname weakeyes";
-     * const ctx = new ChatCommandContext(room, room.players.host, message);
+     * const ctx = new ChatCommandContext(lobby, lobby.players.host, message);
      * 
      * await worker.chatCommandHandler.parseMessage(ctx, message);
      * ```

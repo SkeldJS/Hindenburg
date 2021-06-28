@@ -45,10 +45,11 @@ import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
-import { MessageSide, Room, RoomEvents } from "./room";
+import { Lobby, LobbyEvents } from "./lobby";
 import { PluginHandler, ChatCommandHandler } from "./handlers";
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { ClientBanEvent, ClientConnectEvent } from "./api";
+import { fmtCode } from "./util/fmtCode";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -61,7 +62,7 @@ function formatBytes(bytes: number) {
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
-export type WorkerEvents = RoomEvents
+export type WorkerEvents = LobbyEvents
     & ExtractEventTypes<[
         ClientBanEvent,
         ClientConnectEvent
@@ -96,11 +97,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
     connections: Map<string, Connection>;
 
     /**
-     * All rooms created on this server, mapped by their game code as an integer.
+     * All lobbies created on this server, mapped by their game code as an integer.
      * 
-     * See {@link Worker.createRoom}
+     * See {@link Worker.createLobby}
      */
-    rooms: Map<number, Room>;
+    lobbies: Map<number, Lobby>;
 
     /**
      * The packet decoder used to decode incoming udp packets.
@@ -181,7 +182,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.lastClientId = 0;
         this.connections = new Map;
-        this.rooms = new Map;
+        this.lobbies = new Map;
 
         this.decoder = new PacketDecoder;
         this.pluginHandler.reregisterMessages();
@@ -294,133 +295,145 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(HostGameMessage, async (message, direction, connection) => {
-            if (connection.room)
+            if (connection.lobby)
                 return;
 
-            const roomCode = this.generateRoomCode(6); // todo: handle config for 4 letter game codes
-            const room = await this.createRoom(roomCode, message.options);
+            const lobbyCode = this.generateLobbyCode(6); // todo: handle config for 4 letter game codes
+            const lobby = await this.createLobby(lobbyCode, message.options);
 
-            this.logger.info("%s created room %s",
-                connection, room)
+            this.logger.info("%s created lobby %s",
+                connection, lobby)
 
             await connection.sendPacket(
                 new ReliablePacket(
                     connection.getNextNonce(),
                     [
-                        new HostGameMessage(roomCode)
+                        new HostGameMessage(lobbyCode)
                     ]
                 )
             );
         });
 
         this.decoder.on(JoinGameMessage, async (message, direction, connection) => {
-            if (connection.room)
+            if (connection.lobby)
                 return;
 
-            const foundRoom = this.rooms.get(message.code);
+            const lobbyCode = this.generateLobbyCode(6); // todo: handle config for 4 letter game codes
 
-            if (foundRoom) {
-                if (foundRoom.bans.has(connection.address)) {
+            if (message.code === 0x20 && !this.lobbies.get(0x20)) {
+                await this.createLobby(message.code, new GameOptions);
+            }
+
+            const foundLobby = this.lobbies.get(message.code);
+
+            if (foundLobby) {
+                if (foundLobby.bans.has(connection.address)) {
                     this.logger.warn("%s attempted to join %s but they were banned",
-                        connection, foundRoom);
+                        connection, foundLobby);
                     return connection.disconnect(DisconnectReason.Banned);
                 }
-                if (foundRoom.players.size >= foundRoom.options.maxPlayers) {
+                if (foundLobby.connections.size >= foundLobby.room.settings.maxPlayers) {
                     this.logger.warn("%s attempted to join %s but it was full",
-                        connection, foundRoom);
+                        connection, foundLobby);
                     return connection.joinError(DisconnectReason.GameFull);
                 }
-                if (foundRoom.state === GameState.Started) { // Use Room.state when that is implemented
+                if (foundLobby.state === GameState.Started) { // Use Lobby.state when that is implemented
                     this.logger.warn("%s attempted to join %s but the game had already started",
-                        connection, foundRoom);
+                        connection, foundLobby);
                     return connection.joinError(DisconnectReason.GameStarted);
                 }
-                this.logger.info("%s joining room %s",
-                    connection, foundRoom);
-                await foundRoom.handleJoin(connection);
+                this.logger.info("%s joining lobby %s",
+                    connection, foundLobby);
+                await foundLobby.handleRemoteJoin(connection);
             } else {
-                this.logger.info("%s attempted to join %s but there was no room with that code",
-                    connection, Int2Code(message.code));
+                this.logger.info("%s attempted to join %s but there was no lobby with that code",
+                    connection, fmtCode(message.code));
                 return connection.joinError(DisconnectReason.GameNotFound);
             }
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, connection) => {
-            if (!connection.player)
+            const player = connection.getPlayer();
+            if (!player)
                 return;
 
             const canceled = message.children
                 .filter(child => !child.canceled);
 
             for (const child of canceled) {
-                await connection.room!.decoder.emitDecoded(child, direction, connection.player);
+                await connection.lobby!.room.decoder.emitDecoded(child, direction, connection);
             }
             
             // todo: handle movement packets with care
-            // todo: pipe packets to the room for state
-            await connection.room!.broadcastMessages(
+            // todo: pipe packets to the lobby for state
+            await connection.lobby?.broadcastMessages(
                 message.children
                     .filter(child => !child.canceled)
-            , [], undefined, [connection.player]);
+            , [], undefined, [connection]);
         });
 
         this.decoder.on(GameDataToMessage, async (message, direction, connection) => {
-            if (!connection.player)
+            const player = connection.getPlayer();
+            if (!player)
                 return;
 
-            const recipientPlayer = connection.room!.players.get(message.recipientid);
+            const recipientConnection = connection.lobby!.connections.get(message.recipientid);
 
-            if (!recipientPlayer?.connection)
+            if (!recipientConnection)
                 return;
 
-            await connection.room!.broadcastMessages(message._children, [], [recipientPlayer]);
+            await connection.lobby?.broadcastMessages(message._children, [], [recipientConnection]);
         });
 
         this.decoder.on(StartGameMessage, async (message, direction, connection) => {
-            if (!connection.room)
+            const player = connection.getPlayer();
+            if (!player)
                 return;
 
-            if (!connection.player?.isHost) {
+            if (!player.ishost) {
                 // todo: proper anti-cheat config
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room.decoder.emitDecoded(message, direction, connection.player);
-            await connection.room.broadcastMessages([], [
-                new StartGameMessage(connection.room.code.id)
+            connection.lobby?.room.decoder.emitDecoded(message, direction, player);
+            await connection.lobby?.broadcastMessages([], [
+                new StartGameMessage(connection.lobby.code)
             ]);
         });
 
         this.decoder.on(EndGameMessage, async (message, direction, connection) => {
-            if (!connection.room)
+            const player = connection.getPlayer();
+            if (!player)
                 return;
 
-            if (!connection.player?.isHost) {
+            if (!player.ishost) {
                 // todo: proper anti-cheat config
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room.decoder.emitDecoded(message, direction, connection.player);
-            await connection.room.broadcastMessages([], [
-                new EndGameMessage(connection.room.code.id, message.reason, false)
+            connection.lobby?.room.decoder.emitDecoded(message, direction, player);
+            await connection.lobby?.broadcastMessages([], [
+                new EndGameMessage(connection.lobby.code, message.reason, false)
             ]);
         });
 
         this.decoder.on([ KickPlayerMessage ], async (message, direction, connection) => {
-            if (!connection.room || !connection.player)
+            const player = connection.getPlayer();
+            if (!player)
                 return;
 
-            if (!connection.player.isHost) {
+            if (!player.ishost) {
                 // todo: proper anti-cheat config
                 return connection.disconnect(DisconnectReason.Hacking);
             }
+/*
+            const targetConnection = connection.lobby?.lobby.players.get(message.clientid);
 
-            const targetPlayer = connection.room.players.get(message.clientid);
-
-            if (!targetPlayer)
+            if (!targetConnection)
                 return;
 
-            await targetPlayer.kick(message.banned);
+            await targetConnection.kick(message.banned);
+*/
         });
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
@@ -429,7 +442,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--clientid, -i <clientid>", "client id(s) of the client(s) to disconnect")
             .option("--username, -u <username>", "username of the client(s) to disconnect")
             .option("--address, -a <ip address>", "ip address of the client(s) to disconnect")
-            .option("--room, -c <room code>", "room code of the client(s) to disconnect")
+            .option("--lobby, -c <lobby code>", "lobby code of the client(s) to disconnect")
             .option("--reason, -r <reason>", "reason for why to disconnect the client")
             .option("--ban, -b [duration]", "ban this client, duration in seconds")
             .action(async args => {
@@ -437,7 +450,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.None;
 
-                const codeId = args.options.room ? Code2Int(args.options.room) : 0;
+                const lobbyName = args["lobby code"].toUpperCase();
+                const codeId = lobbyName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(lobbyName);
+
                 let num_disconnected = 0;
 
                 for (const [ , connection ] of this.connections) {
@@ -448,7 +465,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         ) ||
                         connection.username === args.options.username ||
                         connection.rinfo.address === args.options.address ||
-                        connection.room?.code.id === codeId
+                        connection.lobby?.code === codeId
                     ) {
                         if (args.options.ban) {
                             await this.emit(
@@ -468,11 +485,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("destroy <room code>", "Destroy and remove a room from the server.")
-            .option("--reason, r <reason>", "reason to destroy this room",)
+            .command("destroy <lobby code>", "Destroy and remove a lobby from the server.")
+            .option("--reason, r <reason>", "reason to destroy this lobby",)
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => Int2Code(room).toLowerCase());
+                    return [...this.lobbies.keys()].map(lobby => fmtCode(lobby).toLowerCase());
                 }
             })
             .action(async args => {
@@ -480,13 +497,17 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
 
-                const codeId = Code2Int(args["room code"].toUpperCase());
-                const room = this.rooms.get(codeId);
+                const lobbyName = args["lobby code"].toUpperCase();
+                const codeId = lobbyName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(lobbyName);
 
-                if (room) {
-                    await room.destroy(reason as unknown as number);
+                const lobby = this.lobbies.get(codeId);
+
+                if (lobby) {
+                    await lobby.destroy(reason as unknown as number);
                 } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
+                    this.logger.error("Couldn't find lobby: " + args["lobby code"]);
                 }
             });
 
@@ -531,7 +552,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
+            .command("list <something>", "List something about the server, \"clients\", \"lobbies\" or \"plugins\".")
             .alias("ls")
             .action(async args => {
                 switch (args.something) {
@@ -543,12 +564,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         this.logger.info("%s) %s", i + 1, connection);
                     }
                     break;
-                case "rooms":
-                    this.logger.info("%s room(s)", this.rooms.size);
-                    const rooms = [...this.rooms];
-                    for (let i = 0; i < rooms.length; i++) {
-                        const [ , room ] = rooms[i];
-                        this.logger.info("%s) %s", i + 1, room);
+                case "lobbies":
+                    this.logger.info("%s lobby(s)", this.lobbies.size);
+                    const lobbies = [...this.lobbies];
+                    for (let i = 0; i < lobbies.length; i++) {
+                        const [ , lobby ] = lobbies[i];
+                        this.logger.info("%s) %s", i + 1, lobby);
                     }
                     break;
                 case "plugins":
@@ -560,7 +581,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                     break;
                 default:
-                    this.logger.error("Expected either \"clients\", \"rooms\" or \"plugins\": %s", args.something);
+                    this.logger.error("Expected either \"clients\", \"lobbies\" or \"plugins\": %s", args.something);
                     break;
                 }
             });
@@ -586,51 +607,55 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
             
         this.vorpal
-            .command("list players <room code>", "List all players in a room.")
+            .command("list players <lobby code>", "List all players in a lobby.")
             .alias("ls players")
             .action(async args => {
-                const codeId = Code2Int(args["room code"].toUpperCase?.());
-                const room = this.rooms.get(codeId);
+                const lobbyName = args["lobby code"].toUpperCase();
+                const codeId = lobbyName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(lobbyName);
+                    
+                const lobby = this.lobbies.get(codeId);
 
-                if (room) {
-                    this.logger.info("%s player(s) in %s", room.players.size, room);
-                    const players = [...room.players];
+                if (lobby) {
+                    this.logger.info("%s player(s) in %s", lobby.room.players.size, lobby);
+                    const players = [...lobby.room.players];
                     for (let i = 0; i < players.length; i++) {
                         const [ , player ] = players[i];
                         this.logger.info("%s) %s", i + 1, player);
                     }
                 } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
+                    this.logger.error("Couldn't find lobby: " + args["lobby code"]);
                 }
             });
 
         this.vorpal
-            .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
-            .option("--room, c <room code>", "the room to send a message to")
+            .command("broadcast <message...>", "Broadcast a message to all lobbies, or a specific lobby.")
+            .option("--lobby, -c <lobby code>", "the lobby to send a message to")
             .action(async args => {
                 const message = args.message.join(" ");
-                const roomCode = args.options.room
-                    ? Code2Int(args.options.room.toUpperCase?.())
+                const lobbyCode = args.options.lobby
+                    ? Code2Int(args.options.lobby.toUpperCase?.())
                     : 0;
 
-                const foundRoom = this.rooms.get(roomCode);
+                const foundLobby = this.lobbies.get(lobbyCode);
 
-                if (foundRoom) {
-                    foundRoom.sendChat(message, {
+                if (foundLobby) {
+                    /*foundLobby.sendChat(message, {
                         side: MessageSide.Left
-                    });
-                    this.logger.info("Broadcasted message to %s player(s)", foundRoom.players.size);
+                    });*/
+                    this.logger.info("Broadcasted message to %s player(s)", foundLobby.connections.size);
                     return;
-                } else if (roomCode) {
-                    this.logger.error("Couldn't find room: " + args.options.room);
+                } else if (lobbyCode) {
+                    this.logger.error("Couldn't find lobby: " + args.options.lobby);
                 }
 
                 let numPlayers = 0;
-                for (const [ , room ] of this.rooms) {
-                    room.sendChat(message, {
+                for (const [ , lobby ] of this.lobbies) {
+                    /*lobby.sendChat(message, {
                         side: MessageSide.Left
-                    });
-                    numPlayers += room.players.size;
+                    });*/
+                    numPlayers += lobby.connections.size;
                 }
                 this.logger.info("Broadcasted message to %s player(s)", numPlayers);
             });
@@ -836,50 +861,50 @@ export class Worker extends EventEmitter<WorkerEvents> {
     }
 
     /**
-     * Generate a 4 or 6 letter room code for a room.
-     * @param len The length of the room code, 4 or 6.
-     * @returns The generated room code as an integer.
+     * Generate a 4 or 6 letter lobby code for a lobby.
+     * @param len The length of the lobby code, 4 or 6.
+     * @returns The generated lobby code as an integer.
      * @example
      * ```ts
      * // Generate a 4 letter code.
-     * const roomCode = generateRoomCode(4);
+     * const lobbyCode = generateLobbyCode(4);
      * 
-     * console.log(roomCode); // => 1246449490
+     * console.log(lobbyCode); // => 1246449490
      * ```
      * ```ts
      * // Generate a 6 letter code.
-     * const roomCode = generateRoomCode(6);
+     * const lobbyCode = generateLobbyCode(6);
      * 
-     * console.log(roomCode); // => -2007212745
+     * console.log(lobbyCode); // => -2007212745
      * ```
      */
-    generateRoomCode(len: 4|6) {
+    generateLobbyCode(len: 4|6) {
         if (len !== 4 && len !== 6) {
-            throw new RangeError("Expected to generate a 4 or 6 digit room code.");
+            throw new RangeError("Expected to generate a 4 or 6 digit lobby code.");
         }
         
-        let roomCode = V2Gen();
-        while (this.rooms.get(roomCode))
-            roomCode = V2Gen();
+        let lobbyCode = V2Gen();
+        while (this.lobbies.get(lobbyCode))
+            lobbyCode = V2Gen();
 
-        return roomCode;
+        return lobbyCode;
     }
 
     /**
-     * Create a room on this server.
-     * @param code The game code for the room, see {@link Worker.generateRoomCode}
+     * Create a lobby on this server.
+     * @param code The game code for the lobby, see {@link Worker.generateLobbyCode}
      * to generate one.
-     * @param options Game options for the room.
-     * @returns The created room.
+     * @param options Game options for the lobby.
+     * @returns The created lobby.
      */
-    async createRoom(code: number, options: GameOptions) {
-        if (this.rooms.has(code))
-            throw new Error("A room with code '" + Int2Code(code) + "' already exists.");
+    async createLobby(code: number, options: GameOptions) {
+        if (this.lobbies.has(code))
+            throw new Error("A lobby with code '" + Int2Code(code) + "' already exists.");
 
-        const createdRoom = new Room(this, options);
-        await createdRoom.code.set(code);
-        this.rooms.set(code, createdRoom);
+        const createdLobby = new Lobby(this, options);
+        await createdLobby.room.setCode(code);
+        this.lobbies.set(code, createdLobby);
 
-        return createdRoom;
+        return createdLobby;
     }
 }

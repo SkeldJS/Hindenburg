@@ -14,7 +14,6 @@ import {
 
 interface IpBanInfo {
     reason: string;
-    ip: string;
     username: string;
     bannedAt: number;
     duration: number;
@@ -71,7 +70,6 @@ export default class extends Plugin {
     async onClientBan(ev: ClientBanEvent) {
         this.bannedIps[ev.client.rinfo.address] = {
             reason: ev.reason,
-            ip: ev.client.rinfo.address,
             username: ev.client.username,
             bannedAt: Date.now(),
             duration: ev.duration

@@ -479,10 +479,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.None;
 
-                const lobbyName = args["lobby code"].toUpperCase();
-                const codeId = lobbyName === "LOCAL"
+                const lobbyName = args["lobby code"]?.toUpperCase();
+                const codeId = lobbyName && (lobbyName === "LOCAL"
                     ? 0x20
-                    : Code2Int(lobbyName);
+                    : Code2Int(lobbyName));
 
                 let num_disconnected = 0;
 

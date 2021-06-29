@@ -41,15 +41,21 @@ import {
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
+import { fmtCode } from "./util/fmtCode";
 
 import { HindenburgConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
-import { Lobby, LobbyEvents } from "./lobby";
-import { PluginHandler, ChatCommandHandler } from "./handlers";
 import { Connection, ClientMod, SentPacket } from "./Connection";
-import { ClientBanEvent, ClientConnectEvent } from "./api";
-import { fmtCode } from "./util/fmtCode";
+
+import { PluginHandler, ChatCommandHandler } from "./handlers";
+import { Lobby, LobbyEvents } from "./lobby";
+
+import {
+    ClientBanEvent,
+    ClientConnectEvent,
+    WorkerBeforeJoinEvent
+} from "./api";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -65,7 +71,8 @@ export type ReliableSerializable = BaseRootPacket & { nonce: number };
 export type WorkerEvents = LobbyEvents
     & ExtractEventTypes<[
         ClientBanEvent,
-        ClientConnectEvent
+        ClientConnectEvent,
+        WorkerBeforeJoinEvent
     ]>;
 
 interface MemoryUsageStamp {
@@ -331,38 +338,47 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (connection.lobby)
                 return;
 
-            const lobbyCode = this.generateLobbyCode(6); // todo: handle config for 4 letter game codes
-
-            if (message.code === 0x20 && !this.lobbies.get(0x20)) {
-                await this.createLobby(message.code, new GameOptions);
-            }
-
             const foundLobby = this.lobbies.get(message.code);
 
-            if (foundLobby) {
-                if (foundLobby.bans.has(connection.address)) {
-                    this.logger.warn("%s attempted to join %s but they were banned",
-                        connection, foundLobby);
-                    return connection.disconnect(DisconnectReason.Banned);
-                }
-                if (foundLobby.connections.size >= foundLobby.room.settings.maxPlayers) {
-                    this.logger.warn("%s attempted to join %s but it was full",
-                        connection, foundLobby);
-                    return connection.joinError(DisconnectReason.GameFull);
-                }
-                if (foundLobby.state === GameState.Started) { // Use Lobby.state when that is implemented
-                    this.logger.warn("%s attempted to join %s but the game had already started",
-                        connection, foundLobby);
-                    return connection.joinError(DisconnectReason.GameStarted);
-                }
-                this.logger.info("%s joining lobby %s",
-                    connection, foundLobby);
-                await foundLobby.handleRemoteJoin(connection);
-            } else {
+            const ev = await this.emit(
+                new WorkerBeforeJoinEvent(
+                    connection,
+                    message.code,
+                    foundLobby
+                )
+            );
+
+            if (ev.canceled)
+                return;
+
+            if (!ev.foundLobby) {
                 this.logger.info("%s attempted to join %s but there was no lobby with that code",
                     connection, fmtCode(message.code));
+
                 return connection.joinError(DisconnectReason.GameNotFound);
             }
+
+            if (ev.foundLobby.bans.has(connection.address)) {
+                this.logger.warn("%s attempted to join %s but they were banned",
+                    connection, foundLobby);
+                return connection.disconnect(DisconnectReason.Banned);
+            }
+
+            if (ev.foundLobby.connections.size >= ev.foundLobby.room.settings.maxPlayers) {
+                this.logger.warn("%s attempted to join %s but it was full",
+                    connection, foundLobby);
+                return connection.joinError(DisconnectReason.GameFull);
+            }
+
+            if (ev.foundLobby.state === GameState.Started) { // Use Lobby.state when that is implemented
+                this.logger.warn("%s attempted to join %s but the game had already started",
+                    connection, foundLobby);
+                return connection.joinError(DisconnectReason.GameStarted);
+            }
+            
+            this.logger.info("%s joining lobby %s",
+                connection, foundLobby);
+            await ev.foundLobby.handleRemoteJoin(connection);
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, connection) => {

@@ -68,6 +68,12 @@ export type WorkerEvents = LobbyEvents
         ClientConnectEvent
     ]>;
 
+interface MemoryUsageStamp {
+    used: number;
+    numLobbies: number;
+    numConnections: number;
+}
+
 export class Worker extends EventEmitter<WorkerEvents> {
     config: HindenburgConfig;
 
@@ -115,6 +121,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * ID.
      */
     lastClientId: number;
+
+    /**
+     * The last 60s of memory usages.
+     */
+    memUsages: MemoryUsageStamp[];
 
     constructor(
         /**
@@ -186,6 +197,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.decoder = new PacketDecoder;
         this.pluginHandler.reregisterMessages();
+
+        this.memUsages = [];
 
         this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, connection) => {
             connection.receivedPackets.unshift(message.nonce);
@@ -662,19 +675,106 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("mem", "View the memory usage of this server.")
-            .action(async () => {
-                const usage = process.memoryUsage();
+            .option("--graph", "View a formatted graph of the last 60s of memory usage.")
+            .action(async args => {
+                if (args.options.graph) {
+                    const numEntries = 60000 / pingInterval;
+                    const numRows = 8;
+                    const numColumns = 125;
+                    const displayDiff = numColumns / numEntries;
 
-                this.logger.info("Using: %s",
-                    chalk.green(formatBytes(usage.heapUsed)));
+                    const displaySeconds = new Array(numEntries).fill(0).map((_, i) => 58000 - Math.floor(i * pingInterval));
+                    const secondsXAxis = displaySeconds.map((ms, i) => {
+                        const secondsStr = (~~(ms / 1000)).toString();
+                        const padded = secondsStr.padStart(displayDiff);
+                        return padded;
+                    }).join("");
+                    let numLobbiesAxis = "";
+                    for (let i = 0; i < numEntries; i++) {
+                        const entryI = numEntries - i;
+                        const lobbiesStr = this.memUsages[entryI]
+                            ? this.memUsages[entryI].numLobbies + "L"
+                            : "";
+                        const padded = lobbiesStr.padStart(displayDiff);
+                        numLobbiesAxis += padded;
+                    }
+                    let numConnectionsAxis = "";
+                    for (let i = 0; i < numEntries; i++) {
+                        const entryI = numEntries - i;
+                        const connectionsStr = this.memUsages[entryI]
+                            ? this.memUsages[entryI].numConnections + "C"
+                            : "";
+                        const padded = connectionsStr.padStart(displayDiff);
+                        numConnectionsAxis += padded;
+                    }
+
+                    const maxUsageUnrounded = this.memUsages.reduce((prev, cur) => cur.used > prev ? cur.used : prev, 0);
+                    const maxUsage = Math.round(maxUsageUnrounded / 5242880) * 5242880;
+                    const maxUsageFmt = formatBytes(maxUsage);
+
+                    const marginWidth = maxUsageFmt.length + 1;
+                    const margin = " ".repeat(marginWidth);
+
+                    const rows = new Array(numRows).fill(0).map(_ => new Array(marginWidth + numColumns).fill(" "));
+
+                    for (let i = 0; i < this.memUsages.length; i++) {
+                        const entry = this.memUsages[i];
+                        const displayI = numEntries - i;
+                        const displayColumn = Math.floor((displayI * displayDiff) - displayDiff);
+                        const usagePerc = (entry.used / maxUsage);
+                        const displayRow = numRows - Math.floor(Math.min(usagePerc * numRows, numRows));
+                        rows[displayRow][marginWidth + displayColumn] = "-";
+                    }
+
+                    const latest = this.memUsages[0];
+                    if (latest) {
+                        const usagePerc = (latest.used / maxUsage);
+                        const displayRow = numRows - Math.floor(Math.min(usagePerc * numRows, numRows));
+                        for (let i = 0; i < rows[displayRow].length; i++) {
+                            if (rows[displayRow][i] !== "-") {
+                                rows[displayRow].splice(i, 1, chalk.green("-"));
+                            }
+                        }
+                        
+                        const latestUsageFmt = formatBytes(latest.used);
+
+                        rows[displayRow].push(" ", ...chalk.green(latestUsageFmt));
+                    }
                     
-                this.logger.info("Allocated: %s",
-                    chalk.green(formatBytes(usage.heapTotal)));
+                    for (let i = 0; i < rows.length; i += 2) {
+                        const yAxisMem = (maxUsage / rows.length) * (rows.length - i);
+                        const memFmt = formatBytes(yAxisMem);
+                        rows[i].splice(0, memFmt.length, ...memFmt.split(""));
+                    }
+
+                    console.log(rows.map(row => row.join("")).join("\n"));
+                    console.log(margin + secondsXAxis);
+                    console.log(margin + numLobbiesAxis);
+                    console.log(margin + numConnectionsAxis);
+                } else {
+                    const usage = process.memoryUsage();
+    
+                    this.logger.info("Using: %s",
+                        chalk.green(formatBytes(usage.heapUsed)));
+                        
+                    this.logger.info("Allocated: %s",
+                        chalk.green(formatBytes(usage.heapTotal)));
+                }
             });
 
         // todo: handle report player
 
+        const pingInterval = 2000;
         setInterval(() => {
+            const numEntries = 60000 / pingInterval;
+            const usage = process.memoryUsage();
+            this.memUsages.unshift({
+                used: usage.heapUsed,
+                numLobbies: this.lobbies.size,
+                numConnections: this.connections.size
+            });
+            this.memUsages.splice(numEntries);
+
             for (const [ , connection ] of this.connections) {
                 connection.sendPacket(
                     new PingPacket(
@@ -690,7 +790,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 }
             }
-        }, 2500);
+        }, pingInterval);
     }
 
     /**

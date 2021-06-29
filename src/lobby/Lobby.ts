@@ -35,16 +35,15 @@ import {
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
-import { HostableEvents, PlayerData } from "@skeldjs/core";
-import { BasicEvent, EventEmitter } from "@skeldjs/events";
+import { Hostable, HostableEvents, PlayerData } from "@skeldjs/core";
+import { BasicEvent } from "@skeldjs/events";
 
-import { Code2Int, HazelWriter, Int2Code } from "@skeldjs/util";
+import { Code2Int, HazelWriter } from "@skeldjs/util";
 
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
 
 import { Connection } from "../Connection";
 import { Worker } from "../Worker";
-import { Room } from "./Room";
 import { fmtCode } from "../util/fmtCode";
 
 export enum MessageSide {
@@ -112,8 +111,9 @@ export interface SendChatOptions {
     color: Color;
 }
 
-(PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData) {
-    let paren = this.id + ", " + /* this.connection.roundTripPing */ 0 + "ms" + (this.ishost ? ", host" : "");
+(PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Lobby>) {
+    const connection = this.room.connections.get(this.id);
+    let paren = this.id + (connection ? ", " + connection.roundTripPing + "ms" : "") + (this.ishost ? ", host" : "");
 
     return chalk.blue(this.info?.name || "<No Name>")
         + " " + chalk.grey("(" + paren + ")");
@@ -133,9 +133,9 @@ const logMaps = {
     [GameMap.Airship]: "airship"
 }
 
-export type LobbyEvents = HostableEvents;
+export type LobbyEvents = HostableEvents<Lobby>;
 
-export class Lobby extends EventEmitter<LobbyEvents> {
+export class Lobby extends Hostable<LobbyEvents> {
     connections: Map<number, Connection>;
 
     waiting: Set<Connection>;
@@ -149,8 +149,6 @@ export class Lobby extends EventEmitter<LobbyEvents> {
      * All IP addresses banned from this room.
      */
     bans: Set<string>;
-
-    room: Room;
 
     state: GameState;
 
@@ -185,8 +183,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
         });
 
         this.bans = new Set;
-        this.room = new Room(this);
-        this.room.settings = settings;
+        this.settings = settings;
 
         this.state = GameState.NotStarted;
 
@@ -212,14 +209,10 @@ export class Lobby extends EventEmitter<LobbyEvents> {
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        let paren = logMaps[this.room.settings.map] + ", "
-            + this.room.players.size + "/" + this.room.settings.maxPlayers + " players";
+        let paren = logMaps[this.settings.map] + ", "
+            + this.players.size + "/" + this.settings.maxPlayers + " players";
 
         return fmtCode(this.code) + " " + chalk.grey("(" + paren + ")");
-    }
-
-    get code() {
-        return this.room.code;
     }
 
     get name() {
@@ -231,7 +224,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
     }
 
     async destroy(reason = DisconnectReason.Destroy) {
-        this.room.destroy();
+        super.destroy();
 
         await this.broadcastMessages([], [
             new RemoveGameMessage(reason)
@@ -310,6 +303,19 @@ export class Lobby extends EventEmitter<LobbyEvents> {
         await Promise.all(promises);
     }
 
+    async broadcast(
+        messages: BaseGameDataMessage[],
+        reliable: boolean = true,
+        recipient: PlayerData | undefined = undefined,
+        payloads: BaseRootMessage[] = []
+    ) {
+        const recipientConnection = recipient
+            ? this.connections.get(recipient.id)
+            : undefined;
+            
+        return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
+    }
+
     async setCode(code: number|string): Promise<void> {
         if (typeof code === "string") {
             return this.setCode(Code2Int(code));
@@ -322,7 +328,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
             );
         }
 
-        this.room.setCode(code);
+        super.setCode(code);
 
         await this.broadcastMessages([], [
             new HostGameMessage(code)
@@ -348,7 +354,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
     async setHost(player: PlayerData) {
         const remote = this.connections.get(player.id);
 
-        await this.room.setHost(player);
+        await super.setHost(player);
 
         if (remote && this.state === GameState.Ended && this.waiting.has(remote)) {
             await this.handleRemoteJoin(remote);
@@ -361,7 +367,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
     }
 
     async handleRemoteLeave(client: Connection, reason: DisconnectReason = DisconnectReason.None) {
-        await this.room.handleLeave(client.clientId);
+        await this.handleLeave(client.clientId);
 
         this.connections.delete(client.clientId);
 
@@ -370,14 +376,14 @@ export class Lobby extends EventEmitter<LobbyEvents> {
             return;
         }
 
-        await this.setHost([...this.room.players.values()][0]);
+        await this.setHost([...this.players.values()][0]);
 
         await this.broadcastMessages([], [
             new RemovePlayerMessage(
                 this.code,
                 client.clientId,
                 reason,
-                this.room.hostid
+                this.hostid
             )
         ]);
 
@@ -388,18 +394,18 @@ export class Lobby extends EventEmitter<LobbyEvents> {
     }
 
     async handleRemoteJoin(client: Connection) {
-        const player = await this.room.handleJoin(client.clientId);
+        const player = await this.handleJoin(client.clientId);
 
         if (!player)
             return;
 
-        if (!this.room.host)
+        if (!this.host)
             await this.setHost(player);
 
         client.lobby = this;
 
         if (this.state === GameState.Ended) {
-            if (client.clientId === this.room.hostid) {
+            if (client.clientId === this.hostid) {
                 this.state = GameState.NotStarted;
                 this.waiting.add(client);
 
@@ -418,7 +424,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
                                                 new JoinedGameMessage(
                                                 this.code,
                                                 clientId,
-                                                this.room.hostid || SpecialClientId.Nil,
+                                                this.hostid || SpecialClientId.Nil,
                                                 [...this.connections.values()]
                                                     .filter(cl => cl !== connection)
                                                     .map(connection => connection.clientId)
@@ -441,7 +447,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
                     new JoinGameMessage(
                         this.code,
                         client.clientId,
-                        this.room.hostid || SpecialClientId.Nil
+                        this.hostid || SpecialClientId.Nil
                     )
                 ]);
 
@@ -470,7 +476,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
                     new JoinedGameMessage(
                         this.code,
                         client.clientId,
-                        this.room.host!.id,
+                        this.host!.id,
                         [...this.connections]
                             .map(([, client]) => client.clientId)
                     )
@@ -482,7 +488,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
             new JoinGameMessage(
                 this.code,
                 client.clientId,
-                this.room.host!.id
+                this.host!.id
             )
         ]);
         
@@ -540,7 +546,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
      * ```
      */
      async sendChat(message: string, options: Partial<SendChatOptions> = {}) {
-        if (!this.room.gamedata)
+        if (!this.gamedata)
             throw new TypeError("No gamedata spawned.");
 
         const defaultOptions: SendChatOptions = {
@@ -562,10 +568,10 @@ export class Lobby extends EventEmitter<LobbyEvents> {
             mwriter.byte(0);
             mwriter.uint8(0);
             writer.end();
-            const pcNetId = this.room.getNextNetId();
-            const ppNetId = this.room.getNextNetId();
-            const cntNetId = this.room.getNextNetId();
-            await this.room.broadcast([
+            const pcNetId = this.getNextNetId();
+            const ppNetId = this.getNextNetId();
+            const cntNetId = this.getNextNetId();
+            await this.broadcast([
                 new SpawnMessage(
                     SpawnType.Player,
                     -2,
@@ -586,7 +592,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
                     ]
                 ),
                 new DataMessage(
-                    this.room.gamedata.netid,
+                    this.gamedata.netid,
                     writer.buffer
                 ),
                 new RpcMessage(
@@ -607,7 +613,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
             ], true, defaultOptions.target);
         } else {
             // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
-            for (const [ , player ] of (defaultOptions.target ? [[ , defaultOptions.target ]] as [[void, PlayerData]] : this.room.players)) {
+            for (const [ , player ] of (defaultOptions.target ? [[ , defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
                 if (!player.control)
                     continue;
 
@@ -637,7 +643,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
                 writer2.end();
                 const oldName = player.info.name;
                 const oldColor = player.info.color;
-                await this.room.broadcast([
+                await this.broadcast([
                     new RpcMessage(
                         player.control.netid,
                         new SetNameMessage(defaultOptions.name)
@@ -647,7 +653,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
                         new SetColorMessage(defaultOptions.color)
                     ),
                     new DataMessage(
-                        this.room.gamedata.netid,
+                        this.gamedata.netid,
                         writer.buffer
                     ),
                     new RpcMessage(
@@ -663,7 +669,7 @@ export class Lobby extends EventEmitter<LobbyEvents> {
                         new SetColorMessage(oldColor)
                     ),
                     new DataMessage(
-                        this.room.gamedata.netid,
+                        this.gamedata.netid,
                         writer2.buffer
                     )
                 ], true, defaultOptions.target);

@@ -351,26 +351,26 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (ev.canceled)
                 return;
 
-            if (!ev.foundLobby) {
+            if (!ev.alteredLobby) {
                 this.logger.info("%s attempted to join %s but there was no lobby with that code",
                     connection, fmtCode(message.code));
 
                 return connection.joinError(DisconnectReason.GameNotFound);
             }
 
-            if (ev.foundLobby.bans.has(connection.address)) {
+            if (ev.alteredLobby.bans.has(connection.address)) {
                 this.logger.warn("%s attempted to join %s but they were banned",
                     connection, foundLobby);
                 return connection.disconnect(DisconnectReason.Banned);
             }
 
-            if (ev.foundLobby.connections.size >= ev.foundLobby.room.settings.maxPlayers) {
+            if (ev.alteredLobby.connections.size >= ev.alteredLobby.room.settings.maxPlayers) {
                 this.logger.warn("%s attempted to join %s but it was full",
                     connection, foundLobby);
                 return connection.joinError(DisconnectReason.GameFull);
             }
 
-            if (ev.foundLobby.state === GameState.Started) { // Use Lobby.state when that is implemented
+            if (ev.alteredLobby.state === GameState.Started) { // Use Lobby.state when that is implemented
                 this.logger.warn("%s attempted to join %s but the game had already started",
                     connection, foundLobby);
                 return connection.joinError(DisconnectReason.GameStarted);
@@ -378,7 +378,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             
             this.logger.info("%s joining lobby %s",
                 connection, foundLobby);
-            await ev.foundLobby.handleRemoteJoin(connection);
+            await ev.alteredLobby.handleRemoteJoin(connection);
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, connection) => {

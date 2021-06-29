@@ -61,8 +61,12 @@ export default class extends Plugin {
         usage: "unban <ip>"
     })
     async onUnbanClient(args: any) {
-        delete this.bannedIps[args.ip];
-        this.logger.info("Unbanned %s", args.ip);
+        if (this.bannedIps[args.ip]) {
+            delete this.bannedIps[args.ip];
+            this.logger.info("Unbanned %s", args.ip);
+        } else {
+            this.logger.info("IP address not banned: " + args.ip);
+        }
         await this.writeBanned();
     }
 

@@ -1,14 +1,15 @@
 {
   "name": "@skeldjs/hindenburg",
-  "private": true,
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "1.0.0-beta.3",
+  "main": "./dist/index.js",
   "license": "GPL-3.0-only",
   "scripts": {
     "build": "tsc -p ./",
     "setup": "node ./bin/setup.js",
     "install-plugin": "node ./bin/install-plugin.js",
-    "uninstall-plugin": "node ./bin/uninstall-plugin.js"
+    "uninstall-plugin": "node ./bin/uninstall-plugin.js",
+    "prepack": "rm -rf dist && yarn build",
+    "publish": "yarn npm publish --access public"
   },
   "devDependencies": {
     "@swc/core": "^1.2.60",
@@ -36,5 +37,8 @@
     "vorpal": "^1.12.0",
     "winston": "^3.3.3",
     "winston-transport": "^4.4.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

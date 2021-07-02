@@ -13,7 +13,8 @@ import {
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
 
-import { Deserializable, RpcMessage, Serializable } from "@skeldjs/protocol";
+import { Deserializable, Serializable } from "@skeldjs/protocol";
+import { Networkable, PlayerData } from "@skeldjs/core";
 
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
 
@@ -25,7 +26,7 @@ import {
 } from "../packets";
 
 import {
-    hindenburgEventKey,
+    hindenburgEventListenersKey,
     hindenburgChatCommandDescKey,
     hindenburgChatCommandKey,
     hindenburgMessageKey,
@@ -36,9 +37,7 @@ import {
     BaseReactorRpcMessage
 } from "../api";
 
-import { ClientMod } from "../Connection";
 import { RegisteredChatCommand } from "./CommandHander";
-import { Networkable, PlayerData } from "@skeldjs/core";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -217,14 +216,6 @@ export class PluginHandler {
             if (typeof property !== "function")
                 continue;
 
-            const eventName = Reflect.getMetadata(hindenburgEventKey, loadedPlugin, propertyName);
-            
-            if (eventName) {
-                const fn = property.bind(loadedPlugin);
-                this.worker.on(eventName, fn);
-                loadedPlugin.eventHandlers.push([eventName, fn]);
-            }
-
             const chatCommand = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
             const chatCommandDescription = Reflect.getMetadata(hindenburgChatCommandDescKey, loadedPlugin, propertyName);
             
@@ -279,6 +270,15 @@ export class PluginHandler {
                 );
             }
             this.reregisterMessages();
+        }
+
+        const eventListeners = Reflect.getMetadata(hindenburgEventListenersKey, loadedPluginCtr) as Set<[ (ev: WorkerEvents[keyof WorkerEvents]) => any, keyof WorkerEvents ]>|undefined;
+        if (eventListeners) {
+            for (const [ listener, eventName ] of eventListeners) {
+                const fn = listener.bind(loadedPlugin);
+                this.worker.on(eventName, fn);
+                loadedPlugin.eventHandlers.push([ eventName, fn ]);
+            }
         }
 
         this.worker.logger.info("Loaded plugin '%s'", loadedPlugin.meta.id);

@@ -36,7 +36,7 @@ import {
 } from "@skeldjs/protocol";
 
 import { Hostable, HostableEvents, PlayerData } from "@skeldjs/core";
-import { BasicEvent } from "@skeldjs/events";
+import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
 import { Code2Int, HazelWriter } from "@skeldjs/util";
 
@@ -45,6 +45,7 @@ import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { Connection } from "../Connection";
 import { Worker } from "../Worker";
 import { fmtCode } from "../util/fmtCode";
+import { LobbyDestroyEvent } from "../api";
 
 export enum MessageSide {
     Left,
@@ -133,7 +134,7 @@ const logMaps = {
     [GameMap.Airship]: "airship"
 }
 
-export type LobbyEvents = HostableEvents<Lobby>;
+export type LobbyEvents = HostableEvents<Lobby> & ExtractEventTypes<[LobbyDestroyEvent]>;
 
 export class Lobby extends Hostable<LobbyEvents> {
     connections: Map<number, Connection>;
@@ -224,6 +225,7 @@ export class Lobby extends Hostable<LobbyEvents> {
     }
 
     async destroy(reason = DisconnectReason.Destroy) {
+        // todo: room before destroy event
         super.destroy();
 
         await this.broadcastMessages([], [
@@ -232,6 +234,8 @@ export class Lobby extends Hostable<LobbyEvents> {
 
         this.state = GameState.Destroyed;
         this.worker.lobbies.delete(this.code);
+
+        this.emit(new LobbyDestroyEvent(this));
 
         this.logger.info("Room was destroyed.");
     }

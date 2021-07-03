@@ -10,7 +10,7 @@
     "uninstall-plugin": "node ./bin/uninstall-plugin.js",
     "prepack": "rm -rf dist && yarn build",
     "publish": "yarn npm publish --access public",
-    "start": "node ./bin/worker.js",
+    "start": "node ./dist/bin/worker.js",
     "dev": "ts-node ./bin/worker.js",
   },
   "devDependencies": {

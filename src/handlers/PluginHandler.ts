@@ -303,6 +303,7 @@ export class PluginHandler {
             vorpalCommand.remove();
         }
 
+        pluginId.onPluginUnload?.();
         this.loadedPlugins.delete(pluginId.meta.id);
 
         this.reregisterMessages();

@@ -49,7 +49,7 @@ import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 import { Connection, ClientMod, SentPacket } from "./Connection";
 
 import { PluginHandler, ChatCommandHandler } from "./handlers";
-import { Lobby, LobbyEvents } from "./lobby";
+import { Lobby, LobbyEvents, MessageSide } from "./lobby";
 
 import {
     ClientBanEvent,
@@ -670,9 +670,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const foundLobby = this.lobbies.get(lobbyCode);
 
                 if (foundLobby) {
-                    /*foundLobby.sendChat(message, {
+                    foundLobby.sendChat(message, {
                         side: MessageSide.Left
-                    });*/
+                    });
                     this.logger.info("Broadcasted message to %s player(s)", foundLobby.connections.size);
                     return;
                 } else if (lobbyCode) {
@@ -681,9 +681,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 let numPlayers = 0;
                 for (const [ , lobby ] of this.lobbies) {
-                    /*lobby.sendChat(message, {
+                    lobby.sendChat(message, {
                         side: MessageSide.Left
-                    });*/
+                    });
                     numPlayers += lobby.connections.size;
                 }
                 this.logger.info("Broadcasted message to %s player(s)", numPlayers);

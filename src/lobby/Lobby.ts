@@ -197,6 +197,11 @@ export class Lobby extends Hostable<LobbyEvents> {
                     setname.player, setname.newName);
             }
         });
+
+        this.on("player.chat", chat => {
+            this.logger.info("%s sent message: %s",
+                chat.player, chalk.red(chat.chatMessage));
+        });
     }
 
     async emit<Event extends LobbyEvents[keyof LobbyEvents]>(

@@ -9,7 +9,8 @@
     "install-plugin": "node ./bin/install-plugin.js",
     "uninstall-plugin": "node ./bin/uninstall-plugin.js",
     "prepack": "rm -rf dist && yarn build",
-    "publish": "yarn npm publish --access public"
+    "publish": "yarn npm publish --access public",
+    "worker": "ts-node ./bin/worker.js"
   },
   "devDependencies": {
     "@swc/core": "^1.2.60",

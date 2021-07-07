@@ -155,7 +155,9 @@ export class Connection {
             this.worker.config.logging.connections?.format || ["id", "ip", "ping", "lobby"],
             {
                 id: this.clientId,
-                ip: this.rinfo.address,
+                ip: this.worker.config.logging.hideSensitiveInfo
+                    ? undefined
+                    : this.rinfo.address,
                 ping: this.roundTripPing + "ms",
                 lobby: this.lobby ? fmtCode(this.lobby.code) : undefined
             }

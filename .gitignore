@@ -155,3 +155,4 @@ logs.txt
 plugins
 banned_ips.json
 examples/*.yarn
+config.json

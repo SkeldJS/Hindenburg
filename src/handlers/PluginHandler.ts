@@ -274,7 +274,7 @@ export class PluginHandler {
             this.reregisterMessages();
         }
 
-        const eventListeners = Reflect.getMetadata(hindenburgEventListenersKey, loadedPluginCtr) as Set<[ (ev: WorkerEvents[keyof WorkerEvents]) => any, keyof WorkerEvents ]>|undefined;
+        const eventListeners = Reflect.getMetadata(hindenburgEventListenersKey, loadedPlugin) as Set<[ (ev: WorkerEvents[keyof WorkerEvents]) => any, keyof WorkerEvents ]>|undefined;
         if (eventListeners) {
             for (const [ listener, eventName ] of eventListeners) {
                 const fn = listener.bind(loadedPlugin);

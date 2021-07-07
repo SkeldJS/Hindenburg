@@ -557,12 +557,12 @@ export class Room extends Hostable<RoomEvents> {
      * ```ts
      * // Tell a player off if they use a bad word.
      * .@EventListener("player.sentchat")
-     * onPlayerChat(ev: PlayerChatEvent) {
+     * onPlayerChat(ev: PlayerChatEvent<Room>) {
      *   const badWords = [ "sprout", "barney" ];
      * 
      *   for (const word of badWords) {
-     *     if (ev.message.includes(word)) {
-     *       ev.rpc.cancel(); // Don't broadcast the message to other players
+     *     if (ev.chatMessage.includes(word)) {
+     *       ev.message.cancel(); // Don't broadcast the message to other players
      *       ev.room.sendChat("<color=red>You used a bad word there, mister.</color>", { target: ev.player });
      *     }
      *   }

@@ -29,7 +29,7 @@ export function EventListener<EventName extends keyof WorkerEvents>(pluginClassO
     ) {
         const actualTarget = typeof pluginClassOrEventName === "string"
             ? target
-            : pluginClassOrEventName;
+            : pluginClassOrEventName.prototype;
 
         const cachedSet: Set<[ (ev: WorkerEvents[EventName]) => any, EventName ]>|undefined = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
         const messagesToRegister = cachedSet || new Set;

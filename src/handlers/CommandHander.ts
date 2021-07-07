@@ -2,7 +2,7 @@ import util from "util";
 
 import { PlayerData } from "@skeldjs/core";
 
-import { Lobby, MessageSide } from "../lobby";
+import { Room, MessageSide } from "../room";
 import { Worker } from "../Worker";
 
 function betterSplitOnSpaces(input: string) {
@@ -35,9 +35,9 @@ export class CallError extends Error {};
 export class ChatCommandContext {
     constructor(
         /**
-         * The lobby that this command came from.
+         * The room that this command came from.
          */
-        public readonly lobby: Lobby,
+        public readonly room: Room,
         /**
          * The player that sent the message calling the command.
          */
@@ -50,11 +50,11 @@ export class ChatCommandContext {
 
     /**
      * Reply to the message that called this command.
-     * @summary Calls {@link Lobby.sendChat}
+     * @summary Calls {@link Room.sendChat}
      * @param message The message to reply with.
      */
     async reply(message: string, ...fmt: any) {
-        await this.lobby.sendChat(util.format(message, ...fmt), {
+        await this.room.sendChat(util.format(message, ...fmt), {
             side: MessageSide.Left,
             target: this.player
         });
@@ -173,14 +173,14 @@ export class ChatCommandHandler {
 
         this.worker.on("player.chat", async ev => {
             if (ev.chatMessage.startsWith("/")) {
-                const lobby = this.worker.lobbies.get(ev.room.code);
+                const room = this.worker.rooms.get(ev.room.code);
                 
-                if (!lobby)
+                if (!room)
                     return;
 
                 ev.message?.cancel(); // Prevent message from being broadcasted
                 const restMessage = ev.chatMessage.substr(1);
-                const context = new ChatCommandContext(lobby, ev.player, ev.chatMessage);
+                const context = new ChatCommandContext(room, ev.player, ev.chatMessage);
                 try {
                     await this.parseMessage(context, restMessage);
                 } catch (e) {
@@ -288,7 +288,7 @@ export class ChatCommandHandler {
      * @example
      * ```ts
      * const message = "setname weakeyes";
-     * const ctx = new ChatCommandContext(lobby, lobby.players.host, message);
+     * const ctx = new ChatCommandContext(room, room.players.host, message);
      * 
      * await worker.chatCommandHandler.parseMessage(ctx, message);
      * ```

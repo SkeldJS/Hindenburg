@@ -7,7 +7,7 @@
     },
     "logging": {
         "connections": {
-            "format": ["lobby", "lobby", "lobby"]
+            "format": ["room", "room", "room"]
         }
     }
 }

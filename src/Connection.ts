@@ -15,7 +15,7 @@ import {
 } from "@skeldjs/protocol";
 
 import { Worker } from "./Worker";
-import { Lobby } from "./lobby";
+import { Room } from "./room";
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
 
@@ -115,9 +115,9 @@ export class Connection {
     roundTripPing: number;
 
     /**
-     * The lobby that this client is in.
+     * The room that this client is in.
      */
-    lobby?: Lobby;
+    room?: Room;
 
     constructor(
         /**
@@ -152,14 +152,14 @@ export class Connection {
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtLogFormat(
-            this.worker.config.logging.connections?.format || ["id", "ip", "ping", "lobby"],
+            this.worker.config.logging.connections?.format || ["id", "ip", "ping", "room"],
             {
                 id: this.clientId,
                 ip: this.worker.config.logging.hideSensitiveInfo
                     ? undefined
                     : this.rinfo.address,
                 ping: this.roundTripPing + "ms",
-                lobby: this.lobby ? fmtCode(this.lobby.code) : undefined
+                room: this.room ? fmtCode(this.room.code) : undefined
             }
         )
 
@@ -179,14 +179,14 @@ export class Connection {
     }
 
     /**
-     * Get this client's player in the lobby that they're connected to.
+     * Get this client's player in the room that they're connected to.
      * @example
      * ```ts
      * connection.player.setName("obama");
      * ```
      */
     getPlayer() {
-        return this.lobby?.room.players.get(this.clientId);
+        return this.room?.room.players.get(this.clientId);
     }
 
     /**
@@ -271,26 +271,26 @@ export class Connection {
         this.numMods = 0;
         this.mods = new Map;
 
-        if (this.lobby) {
-            await this.lobby.handleRemoteLeave(this, reason || DisconnectReason.None);
+        if (this.room) {
+            await this.room.handleRemoteLeave(this, reason || DisconnectReason.None);
         }
     }
 
     /**
      * Emit an error that occurred while the client attempted to create or join
-     * a lobby.
+     * a room.
      * 
      * Note that this does not disconnect the client, see {@link Connection.disconnect}.
      * @param reason The error that the client encountered while creating or
-     * joining their lobby. Set to a string to use a custom message.
+     * joining their room. Set to a string to use a custom message.
      * @param message If the reason is custom, a custom message for the error
      * that the client encountered.
      * @example
      * ```ts
-     * // A lobby that the client tried to join is full.
+     * // A room that the client tried to join is full.
      * await client.joinError(DisconnectReason.GameFull);
      * 
-     * // A lobby that the client tried to join is already full.
+     * // A room that the client tried to join is already full.
      * await client.joinError(DisconectReason.GameStarted);
      * 
      * // A custom reason for why the client could not join.
@@ -316,7 +316,7 @@ export class Connection {
     }
 
     /**
-     * Force this client to leave their current game. Primarily for {@link Lobby.destroy}
+     * Force this client to leave their current game. Primarily for {@link Room.destroy}
      * although exposed as a function for any other possible uses.
      * 
      * Sends a [RemoveGame](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/03_removegame.md)
@@ -324,7 +324,7 @@ export class Connection {
      * this shortly after receiving the message.
      * @param reason The reason to close the game.
      */
-    async leaveLobby(reason = DisconnectReason.ServerRequest) {
+    async leaveRoom(reason = DisconnectReason.ServerRequest) {
         await this.sendPacket(
             new ReliablePacket(
                 this.getNextNonce(),
@@ -333,7 +333,7 @@ export class Connection {
                 ]
             )
         );
-        await this.lobby?.handleRemoteLeave(this, reason);
-        this.lobby = undefined;
+        await this.room?.handleRemoteLeave(this, reason);
+        this.room = undefined;
     }
 }

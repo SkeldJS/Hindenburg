@@ -29,8 +29,8 @@ export interface SocketConfig {
     port: number;
 }
 
-export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"lobby";
-export type LobbyFormatOptions = "players"|"map";
+export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room";
+export type RoomFormatOptions = "players"|"map";
 export type PlayerFormatOptions = "id"|"ping"|"ishost";
 
 export interface LoggingConfig {
@@ -49,13 +49,13 @@ export interface LoggingConfig {
          * @id The client's client id.
          * @ip The client's ip address.
          * @ping The client's round-trip ping.
-         * @lobby The client's current lobby code.
+         * @room The client's current room code.
          * 
          * @example
          * ```json
          * {
          *     // Hide the client's round-trip ping.
-         *     "format": ["id", "ip", "lobby"]
+         *     "format": ["id", "ip", "room"]
          * }
          * 
          * // => weakeyes (140, 127.0.0.1, ABCDEF)
@@ -64,7 +64,7 @@ export interface LoggingConfig {
          * @default
          * ```json
          * {
-         *     "format": ["id", "ip", "ping", "lobby"]
+         *     "format": ["id", "ip", "ping", "room"]
          * }
          * 
          * // => weakeyes (140, 127.0.0.1, 53ms, ABCDEF)
@@ -73,15 +73,15 @@ export interface LoggingConfig {
         format?: ConnectionsFormatOptions[];
     };
     /**
-     * Logging options for game lobbies.
+     * Logging options for game rooms.
      */
-    lobbies?: {
+    rooms?: {
         /**
-         * Custom formatting for the extra information provided when lobbies are
+         * Custom formatting for the extra information provided when rooms are
          * logged. (The part in parenthesis after the game code.)
          * 
-         * @players The total number of players currently connected to the lobby.
-         * @map The map that the lobby is currently playing.
+         * @players The total number of players currently connected to the room.
+         * @map The map that the room is currently playing.
          * 
          * @example
          * ```json
@@ -102,7 +102,7 @@ export interface LoggingConfig {
          * // => ABCDEF (5/15 players, polus)
          * ```
          */
-        format?: LobbyFormatOptions[]
+        format?: RoomFormatOptions[]
     };
     /**
      * Logging options for logging players in-game.
@@ -137,7 +137,7 @@ export interface LoggingConfig {
          * ```
          */
         format?: PlayerFormatOptions[]
-    }
+    };
 }
 
 export interface HindenburgConfig {

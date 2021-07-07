@@ -45,7 +45,7 @@ import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { Connection } from "../Connection";
 import { Worker } from "../Worker";
 import { fmtCode } from "../util/fmtCode";
-import { LobbyDestroyEvent } from "../api";
+import { RoomDestroyEvent } from "../api";
 import { fmtLogFormat } from "../util/fmtLogFormat";
 
 export enum MessageSide {
@@ -113,7 +113,7 @@ export interface SendChatOptions {
     color: Color;
 }
 
-(PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Lobby>) {
+(PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Room>) {
     const connection = this.room.connections.get(this.id);
 
     const paren = fmtLogFormat(
@@ -143,9 +143,9 @@ const logMaps = {
     [GameMap.Airship]: "airship"
 }
 
-export type LobbyEvents = HostableEvents<Lobby> & ExtractEventTypes<[LobbyDestroyEvent]>;
+export type RoomEvents = HostableEvents<Room> & ExtractEventTypes<[RoomDestroyEvent]>;
 
-export class Lobby extends Hostable<LobbyEvents> {
+export class Room extends Hostable<RoomEvents> {
     connections: Map<number, Connection>;
 
     waiting: Set<Connection>;
@@ -213,7 +213,7 @@ export class Lobby extends Hostable<LobbyEvents> {
         });
     }
 
-    async emit<Event extends LobbyEvents[keyof LobbyEvents]>(
+    async emit<Event extends RoomEvents[keyof RoomEvents]>(
         event: Event
     ): Promise<Event>;
     async emit<Event extends BasicEvent>(event: Event): Promise<Event>;
@@ -225,7 +225,7 @@ export class Lobby extends Hostable<LobbyEvents> {
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtLogFormat(
-            this.worker.config.logging.lobbies?.format || ["players", "map"],
+            this.worker.config.logging.rooms?.format || ["players", "map"],
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",
                 map: logMaps[this.settings.map]
@@ -253,9 +253,9 @@ export class Lobby extends Hostable<LobbyEvents> {
         ]);
 
         this.state = GameState.Destroyed;
-        this.worker.lobbies.delete(this.code);
+        this.worker.rooms.delete(this.code);
 
-        this.emit(new LobbyDestroyEvent(this));
+        this.emit(new RoomDestroyEvent(this));
 
         this.logger.info("Room was destroyed.");
     }
@@ -426,7 +426,7 @@ export class Lobby extends Hostable<LobbyEvents> {
         if (!this.host)
             await this.setHost(player);
 
-        client.lobby = this;
+        client.room = this;
 
         if (this.state === GameState.Ended) {
             if (client.clientId === this.hostid) {

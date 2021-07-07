@@ -94,6 +94,8 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
     async onPluginLoad?(): Promise<void>;
     async onPluginUnload?(): Promise<void>;
 
+    onConfigUpdate?(config: any): void;
+
     async sendRpc(component: Networkable, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
         for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
             /*
@@ -341,6 +343,28 @@ export class PluginHandler {
                 await this.loadPlugin(importPath);
             } catch (e) {
                 this.worker.logger.warn("Failed to load plugin from '%s': %s", importName, e);
+            }
+        }
+    }
+
+    async resolveLoadPlugin(importName: string) {
+        try {
+            const importPath = resolveFrom(this.pluginDir, importName);
+            try {
+                await this.loadPlugin(importPath);
+            } catch (e) {
+                this.worker.logger.warn("Failed to load plugin from '%s': %s", importName, e);
+            }
+        } catch (e) {
+            try {
+                const importPath = resolveFrom(this.pluginDir, "./" + importName);
+                try {
+                    await this.loadPlugin(importPath);
+                } catch (e) {
+                    this.worker.logger.error("Failed to load plugin from '%s': %s", importName, e);
+                }
+            } catch (e) {
+                this.worker.logger.warn("Could not find plugin %s from %s", importName, this.pluginDir);
             }
         }
     }

@@ -56,6 +56,8 @@ import {
     ClientConnectEvent,
     WorkerBeforeJoinEvent
 } from "./api";
+import { recursiveAssign } from "./util/recursiveAssign";
+import { recursiveCompare } from "./util/recursiveCompare";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -146,7 +148,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         /**
          * The global configuration for Hindenburg.
          */
-        config: Partial<HindenburgConfig>,
+        config: HindenburgConfig,
         /**
          * Directory to load plugins from.
          */
@@ -154,18 +156,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     ) {
         super();
 
-        this.config = {
-            plugins: {},
-            ...config,
-            anticheat: {
-                store: "file",
-                file: "./bans.txt",
-                rules: {
-
-                },
-                ...config.anticheat
-            }
-        };
+        this.config = config;
         
         this.vorpal = new vorpal;
 
@@ -543,25 +534,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal
             .command("load <import>", "Load a plugin by its import relative to the base plugin directory.")
             .action(async args => {
-                try {
-                    const importPath = resolveFrom(this.pluginHandler.pluginDir, args.import);
-                    try {
-                        await this.pluginHandler.loadPlugin(importPath);
-                    } catch (e) {
-                        this.logger.warn("Failed to load plugin from '%s': %s", args.import, e);
-                    }
-                } catch (e) {
-                    try {
-                        const importPath = resolveFrom(this.pluginHandler.pluginDir, "./" + args.import);
-                        try {
-                            await this.pluginHandler.loadPlugin(importPath);
-                        } catch (e) {
-                            this.logger.error("Failed to load plugin from '%s': %s", args.import, e);
-                        }
-                    } catch (e) {
-                        this.logger.warn("Could not find plugin %s from %s", args.import, this.pluginHandler.pluginDir);
-                    }
-                }
+                this.pluginHandler.resolveLoadPlugin(args.import);
             });
 
         this.vorpal
@@ -812,11 +785,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * Bind the socket to the configured port.
      */
-    listen() {
+    listen(port: number) {
         return new Promise<void>(resolve => {
-            this.socket.bind(22023);
+            this.socket.bind(port);
 
             this.socket.once("listening", () => {
+                this.logger.info("Listening on *:" + port);
                 resolve();
             });
         });
@@ -873,6 +847,36 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 resolve(bytes);
             });
         });
+    }
+
+    updateConfig(config: Partial<HindenburgConfig>) {
+        if (config.socket && config.socket?.port !== this.config.socket.port) {
+            this.socket.close();
+            this.socket = dgram.createSocket("udp4");
+            this.listen(config.socket.port);
+        }
+
+        if (config.plugins) {
+            const pluginKeys = Object.keys(config.plugins);
+            for (const key of pluginKeys) {
+                const loadedPlugin = this.pluginHandler.loadedPlugins.get(key);
+
+                if (!config.plugins[key]) {
+                    this.pluginHandler.unloadPlugin(key);
+                } else {
+                    if (!loadedPlugin) {
+                        this.pluginHandler.resolveLoadPlugin(key);
+                        continue;
+                    }
+
+                    if (!recursiveCompare(config.plugins[key], this.config.plugins[key])) {
+                        loadedPlugin.onConfigUpdate?.(config.plugins[key]);
+                    }
+                }
+            }
+        }
+
+        recursiveAssign(this.config, config, { removeKeys: true });
     }
 
     /**

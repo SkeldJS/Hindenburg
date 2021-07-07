@@ -1,6 +1,11 @@
 export interface AnticheatConfig {
-    store: "redis"|"file";
-    file: string;
+    penalty: {
+        action?: "disconnect"|"ban"|"ignore";
+        strikes?: number;
+        banAfterXDisconnects?: number;
+        banDuration?: number;
+        disconnectMessage?: string;
+    }
     rules: Record<string, AnticheatRuleConfig>;
 }
 
@@ -15,7 +20,19 @@ export interface AnticheatRuleConfig {
     [key: string]: any;
 }
 
+export interface PluginConfig {
+    loadDirectory: boolean;
+    [key: string]: any;
+}
+
+export interface SocketConfig {
+    port: number;
+}
+
 export interface HindenburgConfig {
-    plugins: Record<string, any>;
+    clusterName: string;
+    nodeId: number;
+    socket: SocketConfig;
+    plugins: PluginConfig;
     anticheat: AnticheatConfig;
 }

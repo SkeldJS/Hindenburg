@@ -4,5 +4,10 @@
     },
     "socket": {
         "port": 22023
+    },
+    "logging": {
+        "connections": {
+            "format": ["lobby", "lobby", "lobby"]
+        }
     }
 }

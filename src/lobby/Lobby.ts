@@ -46,6 +46,7 @@ import { Connection } from "../Connection";
 import { Worker } from "../Worker";
 import { fmtCode } from "../util/fmtCode";
 import { LobbyDestroyEvent } from "../api";
+import { fmtLogFormat } from "../util/fmtLogFormat";
 
 export enum MessageSide {
     Left,
@@ -114,10 +115,18 @@ export interface SendChatOptions {
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Lobby>) {
     const connection = this.room.connections.get(this.id);
-    let paren = this.id + (connection ? ", " + connection.roundTripPing + "ms" : "") + (this.ishost ? ", host" : "");
+
+    const paren = fmtLogFormat(
+        this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
+        {
+            id: this.id,
+            ping: connection?.roundTripPing,
+            ishost: this.ishost ? "host" : undefined
+        }
+    );
 
     return chalk.blue(this.info?.name || "<No Name>")
-        + " " + chalk.grey("(" + paren + ")");
+        + (paren ? " " + chalk.grey("(" + paren + ")") : "");
 }
 
 enum SpecialClientId {
@@ -215,10 +224,16 @@ export class Lobby extends Hostable<LobbyEvents> {
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        let paren = logMaps[this.settings.map] + ", "
-            + this.players.size + "/" + this.settings.maxPlayers + " players";
+        const paren = fmtLogFormat(
+            this.worker.config.logging.lobbies?.format || ["players", "map"],
+            {
+                players: this.players.size + "/" + this.settings.maxPlayers + " players",
+                map: logMaps[this.settings.map]
+            }
+        );
 
-        return fmtCode(this.code) + " " + chalk.grey("(" + paren + ")");
+        return fmtCode(this.code)
+            + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 
     get name() {

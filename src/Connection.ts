@@ -17,6 +17,7 @@ import {
 import { Worker } from "./Worker";
 import { Lobby } from "./lobby";
 import { fmtCode } from "./util/fmtCode";
+import { fmtLogFormat } from "./util/fmtLogFormat";
 
 export class ClientMod {
     constructor(
@@ -150,12 +151,18 @@ export class Connection {
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        let paren = this.clientId + ", " + this.rinfo.address + ", " + this.roundTripPing + "ms";
-        if (this.lobby)
-            paren += ", " + fmtCode(this.lobby.code);
+        const paren = fmtLogFormat(
+            this.worker.config.logging.connections?.format || ["id", "ip", "ping", "lobby"],
+            {
+                id: this.clientId,
+                ip: this.rinfo.address,
+                ping: this.roundTripPing + "ms",
+                lobby: this.lobby ? fmtCode(this.lobby.code) : undefined
+            }
+        )
 
         return chalk.blue(this.username || "Unidentified")
-            + " " + chalk.grey("(" + paren + ")");
+            + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 
     /**

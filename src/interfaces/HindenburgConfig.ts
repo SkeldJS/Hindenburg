@@ -29,10 +29,141 @@ export interface SocketConfig {
     port: number;
 }
 
+export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"lobby";
+export type LobbyFormatOptions = "players"|"map";
+export type PlayerFormatOptions = "id"|"ping"|"ishost";
+
+export interface LoggingConfig {
+    /**
+     * Whether to hide sensitive information from logging, such as ip addresses.
+     */
+    hideSensitiveInfo?: boolean;
+    /**
+     * Logging options for client connections.
+     */
+    connections?: {
+        /**
+         * Custom formatting for the extra information provided when logging
+         * client connections. (The part in parenthesis after their username.)
+         * 
+         * @id The client's client id.
+         * @ip The client's ip address.
+         * @ping The client's round-trip ping.
+         * @lobby The client's current lobby code.
+         * 
+         * @example
+         * ```json
+         * {
+         *     // Hide the client's round-trip ping.
+         *     "format": ["id", "ip", "lobby"]
+         * }
+         * 
+         * // => weakeyes (140, 127.0.0.1, ABCDEF)
+         * ```
+         * 
+         * @default
+         * ```json
+         * {
+         *     "format": ["id", "ip", "ping", "lobby"]
+         * }
+         * 
+         * // => weakeyes (140, 127.0.0.1, 53ms, ABCDEF)
+         * ```
+         */
+        format?: ConnectionsFormatOptions[];
+    };
+    /**
+     * Logging options for game lobbies.
+     */
+    lobbies?: {
+        /**
+         * Custom formatting for the extra information provided when lobbies are
+         * logged. (The part in parenthesis after the game code.)
+         * 
+         * @players The total number of players currently connected to the lobby.
+         * @map The map that the lobby is currently playing.
+         * 
+         * @example
+         * ```json
+         * {
+         *     // Don't show any extra information about the room.
+         *     "format": []
+         * }
+         * 
+         * // => ABCDEF
+         * ```
+         * 
+         * @default
+         * ```json
+         * {
+         *     "format": ["players", "map"]
+         * }
+         * 
+         * // => ABCDEF (5/15 players, polus)
+         * ```
+         */
+        format?: LobbyFormatOptions[]
+    };
+    /**
+     * Logging options for logging players in-game.
+     */
+    players?: {
+        /**
+         * Custom formatting for the extra information provided when players are
+         * logged. (The part in parenthesis after the player's name.)
+         * 
+         * @id The client ID of the player.
+         * @ping The player's round-trip ping.
+         * @ishost Whether this player is host. (Not displayed if the player is
+         * not host.)
+         * 
+         * @example
+         * ```json
+         * {
+         *     // Don't show the player's ping or whether they are the host.
+         *     "format": ["id"]
+         * }
+         * 
+         * // => weakeyes (104)
+         * ```
+         * 
+         * @default
+         * ```json
+         * {
+         *     "format": ["id", "ping", "ishost"]
+         * }
+         * 
+         * // => weakeyes (104, 50ms, host)
+         * ```
+         */
+        format?: PlayerFormatOptions[]
+    }
+}
+
 export interface HindenburgConfig {
+    /**
+     * The name of the cluster that this node belongs to.
+     */
     clusterName: string;
+    /**
+     * The ID of this node in relation to other nodes in the cluster.
+     */
     nodeId: number;
+    /**
+     * Options regarding the socket that the server listens on.
+     */
     socket: SocketConfig;
+    /**
+     * Options regarding plugins, such as disabling them or passing configuration
+     * options.
+     */
     plugins: PluginConfig;
+    /**
+     * Advanced options for HACS, Hindenburg's Anti-Cheat System.
+     */
     anticheat: AnticheatConfig;
+    /**
+     * Options for logging.
+     */
+    logging: LoggingConfig;
 }

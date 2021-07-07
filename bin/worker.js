@@ -21,7 +21,8 @@ const defaultConfig = {
             disconnectMessage: "You have been banned for $duration."
         },
         rules: {}
-    }
+    },
+    logging: {}
 }
 
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");

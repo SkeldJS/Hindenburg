@@ -29,7 +29,7 @@ export interface SocketConfig {
     port: number;
 }
 
-export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room";
+export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"language";
 export type RoomFormatOptions = "players"|"map";
 export type PlayerFormatOptions = "id"|"ping"|"ishost";
 
@@ -50,6 +50,7 @@ export interface LoggingConfig {
          * @ip The client's ip address.
          * @ping The client's round-trip ping.
          * @room The client's current room code.
+         * @language The client's language.
          * 
          * @example
          * ```json

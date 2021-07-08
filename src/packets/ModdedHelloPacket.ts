@@ -1,4 +1,4 @@
-import { SendOption } from "@skeldjs/constant";
+import { GameKeyword, QuickChatMode, SendOption } from "@skeldjs/constant";
 import { BaseRootPacket, HelloPacket } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 
@@ -6,29 +6,17 @@ export class ModdedHelloPacket extends BaseRootPacket {
     static tag = SendOption.Hello as const;
     tag = SendOption.Hello as const;
 
-    nonce!: number;
-    clientver!: VersionInfo;
-    username!: string;
-    token!: number;
-    protocolver?: number;
-    modcount?: number;
-
     constructor(
-        nonce: number,
-        clientver: VersionInfo,
-        username: string,
-        token: number,
-        protocolver?: number,
-        modcount?: number,
+        public readonly nonce: number,
+        public readonly clientver: VersionInfo,
+        public readonly username: string,
+        public readonly token: number,
+        public readonly language: GameKeyword,
+        public readonly chatMode: QuickChatMode,
+        public readonly protocolver?: number,
+        public readonly modcount?: number,
     ) {
         super();
-
-        this.nonce = nonce;
-        this.clientver = clientver;
-        this.username = username;
-        this.token = token;
-        this.protocolver = protocolver;
-        this.modcount = modcount;
     }
 
     isNormalHello(): this is HelloPacket {
@@ -41,6 +29,8 @@ export class ModdedHelloPacket extends BaseRootPacket {
         const clientver = reader.read(VersionInfo);
         const username = reader.string();
         const token = reader.uint32();
+        const language = reader.uint32();
+        const chatMode = reader.uint8();
 
         if (reader.left) {
             const protocolversion = reader.uint8();
@@ -51,6 +41,8 @@ export class ModdedHelloPacket extends BaseRootPacket {
                 clientver,
                 username,
                 token,
+                language,
+                chatMode,
                 protocolversion,
                 modcount
             );
@@ -59,7 +51,9 @@ export class ModdedHelloPacket extends BaseRootPacket {
                 nonce,
                 clientver,
                 username,
-                token
+                token,
+                language,
+                chatMode
             );
         }
     }
@@ -69,6 +63,8 @@ export class ModdedHelloPacket extends BaseRootPacket {
         writer.write(this.clientver);
         writer.string(this.username);
         writer.uint32(this.token);
+        writer.uint32(this.language);
+        writer.uint8(this.chatMode);
         writer.uint8(this.protocolver || 0);
         writer.packed(this.modcount || 0);
     }

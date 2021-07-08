@@ -4,7 +4,7 @@ import vorpal from "vorpal";
 import chalk from "chalk";
 import resolveFrom from "resolve-from";
 
-import { DisconnectReason, GameState } from "@skeldjs/constant";
+import { DisconnectReason, GameKeyword, GameState } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
@@ -58,6 +58,7 @@ import {
 } from "./api";
 import { recursiveAssign } from "./util/recursiveAssign";
 import { recursiveCompare } from "./util/recursiveCompare";
+import { ClientLanguage } from ".";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -166,7 +167,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     format: winston.format.combine(
                         winston.format.splat(),
                         winston.format.colorize(),
-                        winston.format.label({ label: "worker" /* todo: handle cluster name & node id */ }),
+                        winston.format.label({ label: this.config.clusterName + this.config.nodeId }),
                         winston.format.printf(info => {
                             return `[${info.label}] ${info.level}: ${info.message}`;
                         }),
@@ -217,14 +218,16 @@ export class Worker extends EventEmitter<WorkerEvents> {
             connection.hasIdentified = true;
             connection.usingReactor = !message.isNormalHello();
             connection.username = message.username;
+            connection.language = message.language
             connection.clientVersion = message.clientver;
 
             if (connection.usingReactor) {
                 connection.numMods = message.modcount!;
             }
 
-            this.logger.info("%s connected",
-                connection);
+            console.log(message.language);
+            this.logger.info("%s connected, language: %s",
+                connection, ClientLanguage[connection.language] || "Unknown");
 
             // todo: if reactor is disabled and client is using it, disconnect client
             // todo: if reactor is required and client is not using it, disconnect client

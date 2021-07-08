@@ -2,7 +2,7 @@ import dgram from "dgram";
 import chalk from "chalk";
 import util from "util";
 
-import { DisconnectReason } from "@skeldjs/constant";
+import { DisconnectReason, GameKeyword } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
 import { Int2Code, VersionInfo } from "@skeldjs/util";
 
@@ -40,6 +40,46 @@ export class SentPacket {
     ) {}
 }
 
+/**
+ * todo: remove this and use skeldjs'
+ */
+export enum ClientLanguage {
+    English,
+    SpanishLatinAmerica,
+    PortugueseBrazil,
+    Portuguese,
+    Korean,
+    Russian,
+    Dutch,
+    Filipino,
+    French,
+    German,
+    Italian,
+    Japanese,
+    Spanish,
+    ChineseSimplified,
+    ChineseTraditional,
+    Irish
+}
+
+const logLanguages = {
+    [ClientLanguage.English]: "english",
+    [ClientLanguage.SpanishLatinAmerica]: "spanish (latin america)",
+    [ClientLanguage.PortugueseBrazil]: "portuguese (brazil)",
+    [ClientLanguage.Portuguese]: "portuguese",
+    [ClientLanguage.Korean]: "korean",
+    [ClientLanguage.Russian]: "russian",
+    [ClientLanguage.Dutch]: "netherlands",
+    [ClientLanguage.Filipino]: "filipino",
+    [ClientLanguage.German]: "german",
+    [ClientLanguage.Italian]: "italian",
+    [ClientLanguage.Japanese]: "japanese",
+    [ClientLanguage.Spanish]: "spanish",
+    [ClientLanguage.ChineseSimplified]: "chinese (simplified)",
+    [ClientLanguage.ChineseTraditional]: "chinese (traditional)",
+    [ClientLanguage.Irish]: "irish"
+};
+
 export class Connection {
     /**
      * Whether the client has successfully identified with the server.
@@ -68,6 +108,11 @@ export class Connection {
      * packet.
      */
     username: string;
+
+    /**
+     * The language that the client identified with.
+     */
+    language: GameKeyword;
 
     /**
      * The version of the client's game. Sent with the {@link Connection.hasIdentified identify}
@@ -137,6 +182,7 @@ export class Connection {
         this.sentDisconnect = false;
         this.usingReactor = false;
         this.username = "";
+        this.language = GameKeyword.English;
         
         this.numMods = 0;
         this.mods = new Map;
@@ -159,7 +205,8 @@ export class Connection {
                     ? undefined
                     : this.rinfo.address,
                 ping: this.roundTripPing + "ms",
-                room: this.room ? fmtCode(this.room.code) : undefined
+                room: this.room ? fmtCode(this.room.code) : undefined,
+                language: (logLanguages as any)[this.language]
             }
         )
 
@@ -267,6 +314,7 @@ export class Connection {
         this.hasIdentified = false;
         this.usingReactor = false;
         this.username = "";
+        this.language = GameKeyword.English;
         this.clientVersion = undefined;
         this.numMods = 0;
         this.mods = new Map;

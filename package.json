@@ -11,7 +11,8 @@
     "prepack": "rm -rf dist && yarn build",
     "publish": "yarn npm publish --access public",
     "start": "node ./dist/bin/worker.js",
-    "dev": "ts-node ./bin/worker.js"
+    "dev": "ts-node ./bin/worker.js",
+    "docs": "typedoc src/index.ts --out docs"
   },
   "devDependencies": {
     "@swc/core": "^1.2.60",
@@ -22,6 +23,8 @@
     "@types/vorpal": "^1.12.0",
     "@types/yargs": "^17.0.0",
     "ts-node": "^10.0.0",
+    "typedoc": "^0.21.2",
+    "typedoc-plugin-pages": "patch:typedoc-plugin-pages@^1.1.0#./typedoc-plugin-pages-pr-41.diff",
     "typescript": "^4.3.2"
   },
   "dependencies": {

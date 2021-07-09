@@ -1,0 +1,47 @@
+{
+  "groups": [
+    {
+      "title": "Setting Up",
+      "pages": [
+        {
+          "title": "Installing Hindenburg",
+          "source": "./pages/Setting Up/Installing Hindenburg.md"
+        }
+      ]
+    },
+    {
+      "title": "Using Hindenburg",
+      "pages": [
+        {
+          "title": "CLI",
+          "source": "./pages/Using Hindenburg/CLI.md"
+        }
+      ]
+    },
+    {
+      "title": "Writing Plugins",
+      "pages": [
+        {
+          "title": "Chat Commands",
+          "source": "./pages/Writing Plugins/Chat Commands.md"
+        },
+        {
+          "title": "Event Listeners",
+          "source": "./pages/Writing Plugins/Event Listeners.md"
+        },
+        {
+          "title": "Plugin Lifecycle Methods",
+          "source": "./pages/Writing Plugins/Plugin Lifecycle Methods.md"
+        },
+        {
+          "title": "Splitting Plugin Listeners",
+          "source": "./pages/Writing Plugins/Splitting Plugin Listeners.md"
+        },
+        {
+          "title": "Terminal Commands",
+          "source": "./pages/Writing Plugins/Terminal Commands.md"
+        }
+      ]
+    }
+  ]
+}

@@ -40,7 +40,6 @@ of the [standard
 unix command-line command syntax](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax)
 
 #### Command Name
-
 The first part of the usage before any space or parameter declarations is used
 as the name of the command (the part after the `/` to call the command).
 

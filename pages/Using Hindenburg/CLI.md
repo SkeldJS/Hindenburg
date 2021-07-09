@@ -1,5 +1,4 @@
 # CLI Commands
-
 Hindenburg provides a useful and easy-to-use terminal interface while running that
 you can do to interface with plugins, or use some of Hindenburg's built-in commands
 for common functions.
@@ -12,9 +11,7 @@ Below is a list of built-in commands and full examples on how to use them. You c
 also use the `help` command for a cheatsheet. 
 
 ## Built-In Commands
-
 ### `dc`
-
 Forcefully disconnect a client or several clients.
 
 Allows you to pass filters for which clients to disconnect or ban.
@@ -37,7 +34,6 @@ you might use the [`ls players OIEDXG`](#list-players-room-code) command to find
 used `dc -i 734 --ban 86400 -r "banned for 1 day for being annoying"` to ban that player.
 
 ### `destroy <room code>`
-
 Destroy and remove a room from the server.
 
 | Option              | Alias | Description                                                                                                                                                                                                                                 |
@@ -48,7 +44,6 @@ You might want to destroy a room with cheaters with suspicious behaviour if you
 have the anti-cheat disabled, you could just use `destroy JKLLKM -r "please stop cheating"`.
 
 ### `load <import>`
-
 Load a plugin by its import relative to the base plugin directory.
 
 Allows you to load plugins without having to restart the server.
@@ -65,7 +60,6 @@ cache and loading the new plugin if changed.
 Example: `load hbplugin-my-best-plugin`
 
 ### `unload <plugin id>`
-
 Unload a plugin.
 
 `plugin id` being the id/name of the plugin to unload. Can also be the index of
@@ -81,7 +75,6 @@ You could either unload the `someplugin` plugin by either referencing its name
 with `unload hbplugin-someplugin`, or you could reference its index by `unload 2`.
 
 ### `list <something>`
-
 List something about the server.
 
 `something` can be either "clients", "rooms" or "plugins". You can also use this
@@ -94,7 +87,6 @@ command with `ls` instead.
 `ls plugins` lists every plugin currently loaded into the server.
 
 ### `list mods <client id>`
-
 List all of a client's mods.
 
 You can use this command to see all of a client's mods, as the mods logged when
@@ -119,7 +111,6 @@ hindenburg~$ ls mods 1
 ```
 
 ### `list players <room code>`
-
 List all players in a room.
 
 It's hard to keep track of players in a room manually, since they might be all
@@ -132,7 +123,6 @@ hindenburg~$ list players aqoukt
 ```
 
 ### `broadcast <message>`
-
 Broadcast a message to the chat box in all rooms, or a specific room.
 
 Note that players currently playing a game (i.e. not in the room or in a meeting),
@@ -146,7 +136,6 @@ For example, you might want to tell all rooms that the server is shutting down
 shortly, `broadcast "Notice: server will be shutting down in 5 minutes."`.
 
 ### `mem`
-
 View basic memory usage of the server.
 
 This command simply takes into account created objects, and doesn't take into

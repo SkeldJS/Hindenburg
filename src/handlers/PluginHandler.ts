@@ -61,7 +61,7 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
 
     constructor(
         public readonly worker: Worker,
-        public readonly config: any
+        private config: any
     ) {
         this.logger = winston.createLogger({
             transports: [
@@ -91,10 +91,19 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
         this.registeredVorpalCommands = [];
     }
 
-    async onPluginLoad?(): Promise<void>;
-    async onPluginUnload?(): Promise<void>;
+    onPluginLoad?(): any;
+    onPluginUnload?(): any;
 
-    onConfigUpdate?(config: any): void;
+    onConfigUpdate?(): any;
+
+    setConfig(config: any) {
+        this.config = config;
+        this.onConfigUpdate?.();
+    }
+
+    getConfig() {
+        return this.config;
+    }
 
     async sendRpc(component: Networkable, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
         for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
@@ -178,7 +187,6 @@ export class PluginHandler {
             await this.unloadPlugin(loadedPluginCtr.id);
 
         const loadedPlugin = new loadedPluginCtr(this.worker, config);
-        loadedPlugin.onPluginLoad?.();
 
         /**
          * Object.getPrototypeOf is done twice as {@link HindenburgPlugin} extends
@@ -282,6 +290,8 @@ export class PluginHandler {
                 loadedPlugin.eventHandlers.push([ eventName, fn ]);
             }
         }
+        
+        await loadedPlugin.onPluginLoad?.();
 
         this.worker.logger.info("Loaded plugin '%s'", loadedPlugin.meta.id);
 

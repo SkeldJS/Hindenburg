@@ -58,7 +58,7 @@ import {
 } from "./api";
 import { recursiveAssign } from "./util/recursiveAssign";
 import { recursiveCompare } from "./util/recursiveCompare";
-import { ClientLanguage } from ".";
+import { ClientLanguage } from "./Connection";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -873,7 +873,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
 
                     if (!recursiveCompare(config.plugins[key], this.config.plugins[key])) {
-                        loadedPlugin.onConfigUpdate?.(config.plugins[key]);
+                        loadedPlugin.setConfig(config.plugins[key]);
                     }
                 }
             }

@@ -71,6 +71,7 @@ const logLanguages = {
     [ClientLanguage.Russian]: "russian",
     [ClientLanguage.Dutch]: "netherlands",
     [ClientLanguage.Filipino]: "filipino",
+    [ClientLanguage.French]: "french",
     [ClientLanguage.German]: "german",
     [ClientLanguage.Italian]: "italian",
     [ClientLanguage.Japanese]: "japanese",

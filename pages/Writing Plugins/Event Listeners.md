@@ -17,7 +17,7 @@ and also allows you to use the same API for them.
 ## Declaring Events
 Instead of attaching events directly to the worker via the constructor or the
 [onPluginLoad](./Plugin%20Lifecycle%20Methods) method, Hindenburg allows you to
-use a special constructor, meaning that your plugin can be properly unloaded
+use a special decorator, meaning that your plugin can be properly unloaded
 and cleaned up. It also looks sick.
 
 ```ts

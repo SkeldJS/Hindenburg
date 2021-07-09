@@ -61,7 +61,7 @@ export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc
 
     constructor(
         public readonly worker: Worker,
-        private config: any
+        public config: any
     ) {
         this.logger = winston.createLogger({
             transports: [

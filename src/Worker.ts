@@ -225,7 +225,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 connection.numMods = message.modcount!;
             }
 
-            console.log(message.language);
             this.logger.info("%s connected, language: %s",
                 connection, ClientLanguage[connection.language] || "Unknown");
 

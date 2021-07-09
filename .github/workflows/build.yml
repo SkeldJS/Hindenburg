@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ v1-rewrite ] # todo: set to master on v1 release
   pull_request:
-    branches: [ master ]
+    branches: [ v1-rewrite ]
 
 jobs:
   build:

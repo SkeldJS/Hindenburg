@@ -35,7 +35,7 @@ import {
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
-import { Hostable, HostableEvents, PlayerData } from "@skeldjs/core";
+import { Hostable, HostableEvents, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
 import { Code2Int, HazelWriter } from "@skeldjs/util";
@@ -166,7 +166,7 @@ export class Room extends Hostable<RoomEvents> {
         public readonly worker: Worker,
         settings: GameOptions
     ) {
-        super();
+        super({ doFixedUpdate: true });
 
         this.connections = new Map;
         this.waiting = new Set;
@@ -260,6 +260,42 @@ export class Room extends Hostable<RoomEvents> {
         this.logger.info("Room was destroyed.");
     }
 
+    async FixedUpdate() {
+        const delta = Date.now() - (this as any).last_fixed_update;
+        (this as any).last_fixed_update = Date.now();
+        for (const [, component] of this.netobjects) {
+            if (
+                component
+            ) {
+                component.FixedUpdate(delta / 1000);
+                if (component.dirtyBit) {
+                    component.PreSerialize();
+                    const writer = HazelWriter.alloc(0);
+                    if (component.Serialize(writer, false)) {
+                        this.stream.push(
+                            new DataMessage(component.netid, writer.buffer)
+                        );
+                    }
+                    component.dirtyBit = 0;
+                }
+            }
+        }
+
+        const ev = await this.emit(
+            new RoomFixedUpdateEvent(
+                this,
+                this.stream
+            )
+        );
+
+        if (this.stream.length) {
+            const stream = this.stream;
+            this.stream = [];
+
+            if (!ev.canceled) await this.broadcast(stream);
+        }
+    }
+    
     /**
      * Broadcast [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * and root messages to all or some connections.

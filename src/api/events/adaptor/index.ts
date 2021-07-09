@@ -1,1 +1,1 @@
-export * from "./ClientBanEvent";
+export * from "./ClientBan";

@@ -1,2 +1,2 @@
-export * from "./ClientConnectEvent";
+export * from "./ClientConnect";
 export * from "./ClientEvent";

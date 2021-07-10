@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ClientBanEvent | @skeldjs/hindenburg</title>
+	<title>WorkerBeforeCreateEvent | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="clientbanevent.html">ClientBanEvent</a>
+					<a href="workerbeforecreateevent.html">WorkerBeforeCreateEvent</a>
 				</li>
 			</ul>
-			<h1>Class ClientBanEvent</h1>
+			<h1>Class WorkerBeforeCreateEvent</h1>
 		</div>
 	</div>
 </header>
@@ -70,29 +70,35 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Emitted when a client should be banned. This event is emitted specifically to
-						be handled by a <a href="https://skeldjs.github.io/Hindenburg/pages/Setting%20Up/Ban%20Handling">ban handler plugin</a>.</p>
+						<p>Emitted before a player successfully or unsuccessfully creates a room.</p>
 					</div>
-					<p>Often sent because of the Anti-Cheat.</p>
+					<p>This event allows you to prevent players from creating games, or allow
+					custom game codes.</p>
+					<dl class="tsd-comment-tags">
+						<dt>example</dt>
+						<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;worker.beforecreate&quot;</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onWorkerBeforeCreate</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #001080">WorkerBeforeCreateEvent</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #001080">mods</span><span style="color: #000000">.</span><span style="color: #001080">size</span><span style="color: #000000"> &gt; </span><span style="color: #098658">0</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #795E26">cancel</span><span style="color: #000000">();</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">joinError</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;You cannot create a game with Reactor enabled!!!&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+						</dd>
+					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">BasicEvent</span>
+						<span class="tsd-signature-type">CancelableEvent</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">ClientBanEvent</span>
+								<span class="target">WorkerBeforeCreateEvent</span>
 							</li>
 						</ul>
 					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implements</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/clientevent.html" class="tsd-signature-type" data-tsd-kind="Interface">ClientEvent</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -102,17 +108,23 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="clientbanevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="workerbeforecreateevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientbanevent.html#client" class="tsd-kind-icon">client</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientbanevent.html#duration" class="tsd-kind-icon">duration</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="clientbanevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientbanevent.html#reason" class="tsd-kind-icon">reason</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="clientbanevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="workerbeforecreateevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="workerbeforecreateevent.html#client" class="tsd-kind-icon">client</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="workerbeforecreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="workerbeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="workerbeforecreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-inherited tsd-is-external">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="workerbeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
 							</ul>
 						</section>
 					</div>
@@ -124,14 +136,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Client<wbr>Ban<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a>, reason<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, duration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="clientbanevent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientBanEvent</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Worker<wbr>Before<wbr>Create<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a>, gameOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GameOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="workerbeforecreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerBeforeCreateEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides BasicEvent.constructor</p>
+								<p>Overrides CancelableEvent.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/dcc67d0/src/api/events/adaptor/ClientBan.ts#L14">src/api/events/adaptor/ClientBan.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/dcc67d0/src/api/events/worker/BeforeCreate.ts#L25">src/api/events/worker/BeforeCreate.ts:25</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -140,62 +152,83 @@
 									<h5>client: <a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a></h5>
 								</li>
 								<li>
-									<h5>reason: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>duration: <span class="tsd-signature-type">number</span></h5>
+									<h5>gameOptions: <span class="tsd-signature-type">GameOptions</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="clientbanevent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientBanEvent</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="workerbeforecreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerBeforeCreateEvent</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+					<a name="canceled" class="tsd-anchor"></a>
+					<h3>canceled</h3>
+					<div class="tsd-signature tsd-kind-icon">canceled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from CancelableEvent.canceled</p>
+						<ul>
+							<li>Defined in node_modules/@skeldjs/events/dist/lib/CancelableEvent.d.ts:3</li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="client" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> client</h3>
 					<div class="tsd-signature tsd-kind-icon">client<span class="tsd-signature-symbol">:</span> <a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a></div>
-					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/clientevent.html">ClientEvent</a>.<a href="../interfaces/clientevent.html#client">client</a></p>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="duration" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> duration</h3>
-					<div class="tsd-signature tsd-kind-icon">duration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;client.ban&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;worker.beforecreate&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
+						<p>Overrides CancelableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/dcc67d0/src/api/events/adaptor/ClientBan.ts#L14">src/api/events/adaptor/ClientBan.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/dcc67d0/src/api/events/worker/BeforeCreate.ts#L25">src/api/events/worker/BeforeCreate.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="reason" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> reason</h3>
-					<div class="tsd-signature tsd-kind-icon">reason<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="gameoptions" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> game<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">game<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">GameOptions</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
 					<a name="eventname-1" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;client.ban&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;worker.beforecreate&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
+						<p>Overrides CancelableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/dcc67d0/src/api/events/adaptor/ClientBan.ts#L13">src/api/events/adaptor/ClientBan.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/dcc67d0/src/api/events/worker/BeforeCreate.ts#L24">src/api/events/worker/BeforeCreate.ts:24</a></li>
 						</ul>
 					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-external">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+					<a name="cancel" class="tsd-anchor"></a>
+					<h3>cancel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from CancelableEvent.cancel</p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/CancelableEvent.d.ts:5</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -242,25 +275,28 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="clientbanevent.html" class="tsd-kind-icon">Client<wbr>Ban<wbr>Event</a>
+						<a href="workerbeforecreateevent.html" class="tsd-kind-icon">Worker<wbr>Before<wbr>Create<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="clientbanevent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="workerbeforecreateevent.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="workerbeforecreateevent.html#canceled" class="tsd-kind-icon">canceled</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientbanevent.html#client" class="tsd-kind-icon">client</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientbanevent.html#duration" class="tsd-kind-icon">duration</a>
+								<a href="workerbeforecreateevent.html#client" class="tsd-kind-icon">client</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-								<a href="clientbanevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="workerbeforecreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientbanevent.html#reason" class="tsd-kind-icon">reason</a>
+								<a href="workerbeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-								<a href="clientbanevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="workerbeforecreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="workerbeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a>
 							</li>
 						</ul>
 					</li>

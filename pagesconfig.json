@@ -4,8 +4,8 @@
       "title": "Setting Up",
       "pages": [
         {
-          "title": "Installing Hindenburg",
-          "source": "./pages/Setting Up/Installing Hindenburg.md"
+          "title": "Installation",
+          "source": "./pages/Setting Up/Installation.md"
         }
       ]
     },

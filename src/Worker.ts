@@ -54,6 +54,7 @@ import { Room, RoomEvents, MessageSide } from "./room";
 import {
     ClientBanEvent,
     ClientConnectEvent,
+    WorkerBeforeCreateEvent,
     WorkerBeforeJoinEvent
 } from "./api";
 import { recursiveAssign } from "./util/recursiveAssign";
@@ -75,6 +76,7 @@ export type WorkerEvents = RoomEvents
     & ExtractEventTypes<[
         ClientBanEvent,
         ClientConnectEvent,
+        WorkerBeforeCreateEvent,
         WorkerBeforeJoinEvent
     ]>;
 
@@ -309,6 +311,16 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.decoder.on(HostGameMessage, async (message, direction, connection) => {
             if (connection.room)
+                return;
+
+            const ev = await this.emit(
+                new WorkerBeforeCreateEvent(
+                    connection,
+                    message.options
+                )
+            );
+
+            if (ev.canceled)
                 return;
 
             const roomCode = this.generateRoomCode(6); // todo: handle config for 4 letter game codes

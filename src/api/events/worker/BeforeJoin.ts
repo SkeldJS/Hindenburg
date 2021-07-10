@@ -6,8 +6,8 @@ import { Room } from "../../../room";
  * Emitted before a player successfully or unsuccessfully joins a room on the
  * server.
  * 
- * This event is emitted to allow you to either redirect the player to another
- * game, or to completely prevent them from joining.
+ * This event allows you to redirect the player to another game, or to completely
+ * prevent them from joining.
  * 
  * A better event to use for when a player has successfully joined a room is
  * the [`player.join`](https://skeld.js.org/classes/core.playerjoinevent.html)

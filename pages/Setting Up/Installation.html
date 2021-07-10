@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Installing Hindenburg | @skeldjs/hindenburg</title>
+	<title>Installation | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -57,13 +57,13 @@
 					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Installing Hindenburg.html">Setting Up</a>
+					<a href="Installation.html">Setting Up</a>
 				</li>
 				<li>
-					<a href="Installing Hindenburg.html">Installing Hindenburg</a>
+					<a href="Installation.html">Installation</a>
 				</li>
 			</ul>
-			<h1>Installing Hindenburg</h1>
+			<h1>Installation</h1>
 		</div>
 	</div>
 </header>
@@ -71,6 +71,48 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
+				<a href="#installing-hindenburg" id="installing-hindenburg" style="color: inherit; text-decoration: none;">
+					<h1>Installing Hindenburg</h1>
+				</a>
+				<a href="#via-github" id="via-github" style="color: inherit; text-decoration: none;">
+					<h2>Via GitHub</h2>
+				</a>
+				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
+					<h3>Prerequisites</h3>
+				</a>
+				<ul>
+					<li><a href="https://git-scm.org">Git</a></li>
+					<li><a href="https://nodejs.org">Node.js</a></li>
+					<li><a href="https://npmjs.com">NPM</a> (Comes installed with Node.js)</li>
+				</ul>
+				<pre><code class="language-sh"><span style="color: #008000"># Install yarn via npm</span>
+<span style="color: #000000">npm install -g yarn</span>
+<span style="color: #008000"># Copy source code to your computer</span>
+<span style="color: #000000">git clone https://github.com/Skeldjs/Hindenburg</span>
+<span style="color: #795E26">cd</span><span style="color: #000000"> Hindenburg</span>
+<span style="color: #008000"># Install dependencies and setup Hindenburg</span>
+<span style="color: #000000">yarn</span>
+<span style="color: #000000">yarn setup</span>
+<span style="color: #008000"># Use `yarn dev` instead to skip this step</span>
+<span style="color: #000000">yarn build</span>
+<span style="color: #000000">yarn start</span>
+</code></pre>
+				<a href="#via-docker-to-come" id="via-docker-to-come" style="color: inherit; text-decoration: none;">
+					<h2>Via Docker (to come)</h2>
+				</a>
+				<a href="#prerequisites-1" id="prerequisites-1" style="color: inherit; text-decoration: none;">
+					<h3>Prerequisites</h3>
+				</a>
+				<ul>
+					<li><a href="https://docker.com">Docker</a><pre><code><span style="color: #001080">docker</span><span style="color: #000000"> </span><span style="color: #001080">run</span><span style="color: #000000"> -</span><span style="color: #001080">p</span><span style="color: #000000"> </span><span style="color: #098658">22023</span><span style="color: #000000">:</span><span style="color: #098658">22023</span><span style="color: #000000"> </span><span style="color: #001080">skeldjs</span><span style="color: #000000">/</span><span style="color: #001080">hindenburg</span>
+</code></pre>
+					</li>
+				</ul>
+				<a href="#notes" id="notes" style="color: inherit; text-decoration: none;">
+					<h2>Notes</h2>
+				</a>
+				<p>Join the discord if you&#39;re having issues installing, or have any questions:
+				<a href="https://discord.gg/8ewNJYmYAU">https://discord.gg/8ewNJYmYAU</a></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -80,7 +122,7 @@
 						<span>Setting <wbr>Up</span>
 					</li>
 					<li class="current pp-nav pp-page">
-						<a href="Installing Hindenburg.html">Installing <wbr>Hindenburg</a>
+						<a href="Installation.html">Installation</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Using <wbr>Hindenburg</span>

@@ -15,7 +15,6 @@
     "docs": "typedoc src/index.ts --out docs"
   },
   "devDependencies": {
-    "@swc/core": "^1.2.60",
     "@types/chalk": "^2.2.0",
     "@types/node": "^15.12.2",
     "@types/reflect-metadata": "^0.1.0",

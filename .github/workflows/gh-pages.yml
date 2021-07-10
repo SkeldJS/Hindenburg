@@ -2,9 +2,9 @@ name: Docs
 
 on:
   push:
-    branches: [ v1-rewrite ]
+    branches: [ master ]
   pull_request:
-    branches: [ v1-rewrite ]
+    branches: [ master ]
 
 jobs:
   build:

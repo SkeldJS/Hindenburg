@@ -6,3 +6,6 @@ export * from "./room";
 
 export * from "./Connection";
 export * from "./Worker";
+
+export * from "@skeldjs/core";
+export * from "@skeldjs/protocol";

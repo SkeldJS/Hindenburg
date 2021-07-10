@@ -2,9 +2,8 @@ import dgram from "dgram";
 import winston from "winston";
 import vorpal from "vorpal";
 import chalk from "chalk";
-import resolveFrom from "resolve-from";
 
-import { DisconnectReason, GameKeyword, GameState } from "@skeldjs/constant";
+import { DisconnectReason, Language, GameState } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
@@ -32,9 +31,10 @@ import {
 } from "@skeldjs/util";
 
 import {
-    PluginSide,
+    ModPluginSide,
     ReactorHandshakeMessage,
     ReactorMessage,
+    ReactorMod,
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
 
@@ -57,9 +57,9 @@ import {
     WorkerBeforeCreateEvent,
     WorkerBeforeJoinEvent
 } from "./api";
+
 import { recursiveAssign } from "./util/recursiveAssign";
 import { recursiveCompare } from "./util/recursiveCompare";
-import { ClientLanguage } from "./Connection";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -228,7 +228,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             this.logger.info("%s connected, language: %s",
-                connection, ClientLanguage[connection.language] || "Unknown");
+                connection, Language[connection.language] || "Unknown");
 
             // todo: if reactor is disabled and client is using it, disconnect client
             // todo: if reactor is required and client is not using it, disconnect client
@@ -256,9 +256,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                 new ReactorMessage(
                                     new ReactorModDeclarationMessage(
                                         i,
-                                        plugin.meta.id,
-                                        plugin.meta.version || "1.0.0",
-                                        PluginSide.Both // todo: let plugin choose?
+                                        new ReactorMod(
+                                            plugin.meta.id,
+                                            plugin.meta.version,
+                                            ModPluginSide.Both
+                                        )
                                     )
                                 )
                             ]
@@ -277,9 +279,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
 
             const clientMod = new ClientMod(
-                message.netid,
-                message.modid,
-                message.version
+                message.netId,
+                message.mod.modId,
+                message.mod.version
             );
 
             connection.mods.set(clientMod.netid, clientMod);

@@ -1,10 +1,9 @@
 import dgram from "dgram";
 import chalk from "chalk";
-import util from "util";
 
-import { DisconnectReason, GameKeyword } from "@skeldjs/constant";
+import { DisconnectReason, GameKeyword, Language } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
-import { Int2Code, VersionInfo } from "@skeldjs/util";
+import { VersionInfo } from "@skeldjs/util";
 
 import {
     BaseRootPacket,
@@ -40,45 +39,23 @@ export class SentPacket {
     ) {}
 }
 
-/**
- * todo: remove this and use skeldjs'
- */
-export enum ClientLanguage {
-    English,
-    SpanishLatinAmerica,
-    PortugueseBrazil,
-    Portuguese,
-    Korean,
-    Russian,
-    Dutch,
-    Filipino,
-    French,
-    German,
-    Italian,
-    Japanese,
-    Spanish,
-    ChineseSimplified,
-    ChineseTraditional,
-    Irish
-}
-
 const logLanguages = {
-    [ClientLanguage.English]: "english",
-    [ClientLanguage.SpanishLatinAmerica]: "spanish (latin america)",
-    [ClientLanguage.PortugueseBrazil]: "portuguese (brazil)",
-    [ClientLanguage.Portuguese]: "portuguese",
-    [ClientLanguage.Korean]: "korean",
-    [ClientLanguage.Russian]: "russian",
-    [ClientLanguage.Dutch]: "netherlands",
-    [ClientLanguage.Filipino]: "filipino",
-    [ClientLanguage.French]: "french",
-    [ClientLanguage.German]: "german",
-    [ClientLanguage.Italian]: "italian",
-    [ClientLanguage.Japanese]: "japanese",
-    [ClientLanguage.Spanish]: "spanish",
-    [ClientLanguage.ChineseSimplified]: "chinese (simplified)",
-    [ClientLanguage.ChineseTraditional]: "chinese (traditional)",
-    [ClientLanguage.Irish]: "irish"
+    [Language.English]: "english",
+    [Language.SpanishAmericas]: "spanish (latin america)",
+    [Language.PortugueseBrazil]: "portuguese (brazil)",
+    [Language.Portuguese]: "portuguese",
+    [Language.Korean]: "korean",
+    [Language.Russian]: "russian",
+    [Language.Dutch]: "netherlands",
+    [Language.Filipino]: "filipino",
+    [Language.French]: "french",
+    [Language.German]: "german",
+    [Language.Italian]: "italian",
+    [Language.Japanese]: "japanese",
+    [Language.Spanish]: "spanish",
+    [Language.ChineseSimplified]: "chinese (simplified)",
+    [Language.ChineseTraditional]: "chinese (traditional)",
+    [Language.Irish]: "irish"
 };
 
 export class Connection {

@@ -9,10 +9,11 @@ Hindenburg naturally inherits [all events from SkeldJS](https://skeld.js.org/pag
 and also allows you to use the same API for them.
 
 ## Hindenburg Events
-{@link WorkerBeforeJoinEvent | `worker.beforejoin`}
-{@link ClientBanEvent | `client.ban`}
-{@link ClientConnectEvent | `client.connect`}
-{@link RoomDestroyEvent | `room.destroy`}
+* {@link WorkerBeforeJoinEvent | `worker.beforejoin`}
+* {@link WorkerBeforeCreateEvent | `worker.beforecreate`}
+* {@link ClientBanEvent | `client.ban`}
+* {@link ClientConnectEvent | `client.connect`}
+* {@link RoomDestroyEvent | `room.destroy`}
 
 ## Declaring Events
 Instead of attaching events directly to the worker via the constructor or the

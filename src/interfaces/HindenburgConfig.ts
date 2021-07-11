@@ -143,6 +143,10 @@ export interface LoggingConfig {
 
 export interface HindenburgConfig {
     /**
+     * An array of game versions that Hindenburg will accept.
+     */
+    versions: string[];
+    /**
      * The name of the cluster that this node belongs to.
      */
     clusterName: string;

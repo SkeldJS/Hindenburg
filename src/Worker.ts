@@ -227,6 +227,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 connection.numMods = message.modcount!;
             }
 
+            const versionStr = connection.clientVersion.toString();
+            if (!this.config.versions.includes(versionStr)) {
+                this.logger.warn("%s connected with invalid client version: %s",
+                    connection, versionStr);
+                connection.disconnect(DisconnectReason.IncorrectVersion);
+                return;
+            }
+
             this.logger.info("%s connected, language: %s",
                 connection, Language[connection.language] || "Unknown");
 

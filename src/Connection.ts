@@ -1,7 +1,7 @@
 import dgram from "dgram";
 import chalk from "chalk";
 
-import { DisconnectReason, GameKeyword, Language } from "@skeldjs/constant";
+import { DisconnectReason, Language } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
 import { VersionInfo } from "@skeldjs/util";
 
@@ -90,7 +90,7 @@ export class Connection {
     /**
      * The language that the client identified with.
      */
-    language: GameKeyword;
+    language: Language;
 
     /**
      * The version of the client's game. Sent with the {@link Connection.hasIdentified identify}
@@ -160,7 +160,7 @@ export class Connection {
         this.sentDisconnect = false;
         this.usingReactor = false;
         this.username = "";
-        this.language = GameKeyword.English;
+        this.language = Language.English;
         
         this.numMods = 0;
         this.mods = new Map;
@@ -292,7 +292,7 @@ export class Connection {
         this.hasIdentified = false;
         this.usingReactor = false;
         this.username = "";
-        this.language = GameKeyword.English;
+        this.language = Language.English;
         this.clientVersion = undefined;
         this.numMods = 0;
         this.mods = new Map;

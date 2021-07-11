@@ -1,4 +1,4 @@
-import { GameKeyword, QuickChatMode, SendOption } from "@skeldjs/constant";
+import { Language, QuickChatMode, SendOption } from "@skeldjs/constant";
 import { BaseRootPacket, HelloPacket } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter, VersionInfo } from "@skeldjs/util";
 
@@ -11,7 +11,7 @@ export class ModdedHelloPacket extends BaseRootPacket {
         public readonly clientver: VersionInfo,
         public readonly username: string,
         public readonly token: number,
-        public readonly language: GameKeyword,
+        public readonly language: Language,
         public readonly chatMode: QuickChatMode,
         public readonly protocolver?: number,
         public readonly modcount?: number,
@@ -26,11 +26,19 @@ export class ModdedHelloPacket extends BaseRootPacket {
     static Deserialize(reader: HazelReader) {
         const nonce = reader.uint16(true);
         reader.jump(1); // Skip hazel version.
-        const clientver = reader.read(VersionInfo);
+        const clientverint = reader.int32();
         const username = reader.string();
         const token = reader.uint32();
-        const language = reader.uint32();
-        const chatMode = reader.uint8();
+
+        let language = Language.English;
+        let chatMode = QuickChatMode.FreeChat;
+
+        if (clientverint >= 50537300 /* 2021.6.30.0: Added language & chat mode */) {
+            language = reader.uint32();
+            chatMode = reader.uint8();
+        }
+
+        const clientver = VersionInfo.from(clientverint);
 
         if (reader.left) {
             const protocolversion = reader.uint8();

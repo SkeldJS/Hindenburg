@@ -27,7 +27,8 @@ import {
     Code2Int,
     HazelWriter,
     Int2Code,
-    V2Gen
+    V2Gen,
+    VersionInfo
 } from "@skeldjs/util";
 
 import {
@@ -87,7 +88,8 @@ interface MemoryUsageStamp {
 }
 
 export class Worker extends EventEmitter<WorkerEvents> {
-    config: HindenburgConfig;
+    config: HindenburgConfig; // todo: maybe create a config class? could handle things like checking if a version is valid
+    validVersions: number[];
 
     /**
      * Winston logger for this server.
@@ -160,6 +162,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         super();
 
         this.config = config;
+        this.validVersions = this.config.versions.map(version => VersionInfo.from(version).encode());
         
         this.vorpal = new vorpal;
 
@@ -227,10 +230,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 connection.numMods = message.modcount!;
             }
 
-            const versionStr = connection.clientVersion.toString();
-            if (!this.config.versions.includes(versionStr)) {
+            if (!this.validVersions.includes(connection.clientVersion.encode())) {
                 this.logger.warn("%s connected with invalid client version: %s",
-                    connection, versionStr);
+                    connection, connection.clientVersion.toString());
                 connection.disconnect(DisconnectReason.IncorrectVersion);
                 return;
             }
@@ -900,6 +902,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         }
 
+        this.validVersions = this.config.versions.map(version => VersionInfo.from(version).encode());
         recursiveAssign(this.config, config, { removeKeys: true });
     }
 

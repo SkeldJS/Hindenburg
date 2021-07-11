@@ -2,7 +2,8 @@ require("./modulePatch");
 const path = require("path");
 const fs = require("fs");
 const chokidar = require("chokidar");
-const { Worker, HindenburgConfig } = require("../src");
+const { createDefault } = require("./setup");
+const { Worker } = require("../src");
 const { recursiveAssign } = require("../src/util/recursiveAssign");
 
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
@@ -12,32 +13,6 @@ async function resolveConfig() {
     } catch (e) {
         return false;
     }
-}
-
-/**
- * @returns {HindenburgConfig}
- */
-function createDefault() {
-    return {
-        versions: ["2021.6.30"],
-        clusterName: "Capybara",
-        nodeId: 0,
-        socket: {
-            port: 22023
-        },
-        plugins: {},
-        anticheat: {
-            penalty: {
-                action: "disconnect",
-                strikes: 2,
-                banAfterXDisconnects: 3,
-                banDuration: 3600,
-                disconnectMessage: "You have been banned for $duration."
-            },
-            rules: {}
-        },
-        logging: {}
-    };
 }
 
 (async () => {

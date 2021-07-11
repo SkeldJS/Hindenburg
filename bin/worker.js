@@ -2,7 +2,7 @@ require("./modulePatch");
 const path = require("path");
 const fs = require("fs");
 const chokidar = require("chokidar");
-const { Worker } = require("../src/Worker");
+const { Worker, HindenburgConfig } = require("../src");
 const { recursiveAssign } = require("../src/util/recursiveAssign");
 
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
@@ -14,8 +14,12 @@ async function resolveConfig() {
     }
 }
 
+/**
+ * @returns {HindenburgConfig}
+ */
 function createDefault() {
     return {
+        versions: ["2021.6.30"],
         clusterName: "Capybara",
         nodeId: 0,
         socket: {

@@ -28,6 +28,8 @@ const child_process = require("child_process");
     };
 }
 
+module.exports = { createDefault };
+
 function doesExist(path) {
     try {
         fs.statSync(path);

@@ -2,7 +2,7 @@ require("./modulePatch");
 const path = require("path");
 const fs = require("fs");
 const chokidar = require("chokidar");
-const { createDefault } = require("./setup");
+const { createDefault } = require("./createDefault");
 const { Worker } = require("../src");
 const { recursiveAssign } = require("../src/util/recursiveAssign");
 

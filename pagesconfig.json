@@ -6,6 +6,10 @@
         {
           "title": "Installation",
           "source": "./pages/Setting Up/Installation.md"
+        },
+        {
+          "title": "Installing Plugins",
+          "source": "./pages/Setting Up/installing Plugins.md"
         }
       ]
     },
@@ -21,6 +25,14 @@
     {
       "title": "Writing Plugins",
       "pages": [
+        {
+          "title": "Writing Plugins",
+          "source": "./pages/Writing Plugins/Getting Started.md"
+        },
+        {
+          "title": "Publishing Plugins to NPM",
+          "source": "./pages/Writing Plugins/Publishing Plugins to NPM.md"
+        },
         {
           "title": "Chat Commands",
           "source": "./pages/Writing Plugins/Chat Commands.md"

@@ -7,6 +7,7 @@ import { DisconnectReason, Language, GameState } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
+    AlterGameMessage,
     BaseRootPacket,
     DisconnectPacket,
     EndGameMessage,
@@ -429,6 +430,22 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
 
             await connection.room?.broadcastMessages(message._children, [], [recipientConnection]);
+        });
+
+        this.decoder.on(AlterGameMessage, async (message, direction, connection) => {
+            const player = connection.getPlayer();
+            if (!player)
+                return;
+
+            if (!player.ishost) {
+                // todo: proper anti-cheat config
+                return connection.disconnect(DisconnectReason.Hacking);
+            }
+
+            connection.room?.room.decoder.emitDecoded(message, direction, player);
+            await connection.room?.broadcastMessages([], [
+                new AlterGameMessage(connection.room.code, message.alterTag, message.value)
+            ]);
         });
 
         this.decoder.on(StartGameMessage, async (message, direction, connection) => {

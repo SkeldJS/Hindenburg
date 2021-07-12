@@ -1,24 +1,21 @@
+export interface AnticheatPenalty {
+    action?: "disconnect"|"ban"|"ignore";
+    strikes?: number;
+    banAfterXDisconnects?: number;
+    banDuration?: number;
+    disconnectMessage?: string;
+}
+
 export interface AnticheatConfig {
-    penalty: {
-        action?: "disconnect"|"ban"|"ignore";
-        strikes?: number;
-        banAfterXDisconnects?: number;
-        banDuration?: number;
-        disconnectMessage?: string;
-    }
-    rules: Record<string, AnticheatRuleConfig>;
+    penalty: AnticheatPenalty;
+    rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
 }
 
 export interface AnticheatRuleConfig {
-    penalty: {
-        action?: "disconnect"|"ban"|"ignore";
-        strikes?: number;
-        banAfterXDisconnects?: number;
-        banDuration?: number;
-        disconnectMessage?: string;
-    };
-    [key: string]: any;
-}
+    penalty: AnticheatPenalty;
+    value: string|number|boolean;
+    rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
+};
 
 export interface PluginConfig {
     loadDirectory: boolean;

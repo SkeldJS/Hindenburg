@@ -99,5 +99,5 @@ Create a file named `jsconfig.json` with the following contents:
 ```
 
 ### Create an entrypoint
-If you want to use [typescript](https://typescriptlang.org), you can create an
+If you want to use typescript, you can create an
 `index.ts` file in your plugin's folder. If you want to use plain javascript, you can create a `index.js` file instead.

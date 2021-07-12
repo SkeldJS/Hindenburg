@@ -1,7 +1,7 @@
 # Splitting Plugin Listeners
 You can split up your plugin into several files for maintainability, best demonstrated by a short example.
 
-```py
+```ts
 index.ts
 src
  |- SetName.ts # handles players updating their name

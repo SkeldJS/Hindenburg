@@ -3,6 +3,7 @@
  */
 function createDefault() {
     return {
+        $schema: "./misc/config.schema.json",
         versions: ["2021.6.30"],
         clusterName: "Capybara",
         nodeId: 0,

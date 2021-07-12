@@ -1,0 +1,97 @@
+{
+    "definitions": {
+        "anticheatPenalty": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["disconnect", "ban", "ignore"]
+                },
+                "strikes": {
+                    "type": "number"
+                },
+                "banAfterXDisconnects": {
+                    "type": "number"
+                },
+                "banDuration": {
+                    "type": "number"
+                },
+                "disconnectMessage": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "properties": {
+        "versions": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "clusterName": {
+            "type": "string"
+        },
+        "nodeId": {
+            "type": "number"
+        },
+        "socket": {
+            "type": "object",
+            "properties": {
+                "port": {
+                    "type": "number"
+                }
+            }
+        },
+        "plugins": {
+            "type": "object",
+            "properties": {
+                "loadDirectory": {
+                    "type": "boolean"
+                }
+            },
+            "patternProperties": {
+                ".+": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "object"
+                        }
+                    ]
+                }
+            }
+        },
+        "anticheat": {
+            "type": "object",
+            "properties": {
+                "penalty": {
+                    "$ref": "#/definitions/anticheatPenalty"
+                },
+                "rules": {
+                    "patternProperties": {
+                        ".+": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/properties/anticheat"
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "boolean"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

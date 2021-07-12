@@ -43,12 +43,13 @@ type PluginOrder = "last"|"first"|"none"|number;
 
 export interface PluginMeta {
     id: string;
-    version: string;
-    order: PluginOrder;
+    version?: string;
+    defaultConfig: any;
+    order: PluginOrder; // todo: load in plugin order
 }
 
 export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc to a seperate interface so plugins can't see those types
-    static id: string;
+    static meta: PluginMeta;
     meta!: PluginMeta;
 
     logger: winston.Logger;
@@ -178,13 +179,13 @@ export class PluginHandler {
         if (typeof loadedPluginCtr !== "function")
             throw new Error("Expected default export of plugin class, got " + typeof loadedPluginCtr + ".");
 
-        const config = this.worker.config.plugins[loadedPluginCtr.id] || {};
+        const config = this.worker.config.plugins[loadedPluginCtr.meta.id] || {};
 
         if (typeof config === "boolean" && !config)
             throw new Error("Plugin is disabled.");
 
-        if (this.loadedPlugins.get(loadedPluginCtr.id))
-            await this.unloadPlugin(loadedPluginCtr.id);
+        if (this.loadedPlugins.get(loadedPluginCtr.meta.id))
+            await this.unloadPlugin(loadedPluginCtr.meta.id);
 
         const loadedPlugin = new loadedPluginCtr(this.worker, config);
 

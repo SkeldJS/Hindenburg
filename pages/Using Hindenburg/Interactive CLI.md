@@ -1,4 +1,4 @@
-# CLI Commands
+# Interactive CLI
 Hindenburg provides a useful and easy-to-use terminal interface while running that
 you can do to interface with plugins, or use some of Hindenburg's built-in commands
 for common functions.

@@ -8,7 +8,7 @@ Plugin developers can publish their plugins to the [npm](https://npmjs.com) regi
 this allows you to install and setup plugins using a single command:
 
 ```sh
-yarn install-plugin hbplugin-<plugin name>
+yarn plugins install <plugin name>
 ```
 
 This will download and install your plugin with `yarn`, and update your configuration

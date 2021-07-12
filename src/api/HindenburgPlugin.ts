@@ -4,7 +4,7 @@ export interface DeclaredPlugin {
     new(...args: any[]): Plugin
 }
 
-export function HindenburgPlugin(meta: PluginMeta) {
+export function HindenburgPlugin(meta: PluginMeta & { version: undefined|string }) {
     return function<T extends DeclaredPlugin>(constructor: T) {
         return class extends constructor {
             static id = meta.id;

@@ -6,9 +6,7 @@
   "scripts": {
     "build": "tsc -p ./",
     "setup": "node ./bin/setup.js",
-    "install-plugin": "node ./bin/install-plugin.js",
-    "uninstall-plugin": "node ./bin/uninstall-plugin.js",
-    "init-plugin": "node ./bin/init-plugin.js",
+    "plugins": "ts-node ./bin/plugins.js",
     "prepack": "rm -rf dist && yarn build",
     "publish": "yarn npm publish --access public",
     "start": "node ./dist/bin/worker.js",

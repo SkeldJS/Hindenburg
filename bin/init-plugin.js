@@ -133,6 +133,9 @@ export default class extends Plugin {
             packageJson.scripts = {
                 build: "tsc -p ./"
             };
+            const devDependencies = packageJson.devDependencies; // dumb thing to make it the last key in the package.json
+            delete packageJson.devDependencies;
+            packageJson.devDependencies = devDependencies;
         } else {
             await fs.writeFile(
                 path.resolve(pluginDirectory, "jsconfig.json"),

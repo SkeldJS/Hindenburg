@@ -13,7 +13,7 @@ const path = require("path");
         ? process.argv[2]
         : "hbplugin-" + process.argv[2];
 
-    child_process.exec("yarn add \"" + packageName + "\"" ,{
+    child_process.exec("yarn add \"" + packageName + "\"", {
         cwd: pluginsDirectory
     }, (err, stdout, stdin) => {
         if (err) {
@@ -23,4 +23,6 @@ const path = require("path");
         }
         console.log("Succesfully installed plugin!");
     });
+
+    // todo: write plugin default config to config.json
 })();

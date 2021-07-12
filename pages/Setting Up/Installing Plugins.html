@@ -3,18 +3,18 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RpcEvent | @skeldjs/hindenburg</title>
+	<title>Installing Plugins | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../assets/css/main.css">
-	<link rel="stylesheet" href="../assets/css/pages.css">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">@skeldjs/hindenburg</a>
+					<a href="../../index.html" class="title">@skeldjs/hindenburg</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -54,58 +54,60 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Globals</a>
+					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="rpcevent.html">RpcEvent</a>
+					<a href="Installation.html">Setting Up</a>
+				</li>
+				<li>
+					<a href="Installing Plugins.html">Installing Plugins</a>
 				</li>
 			</ul>
-			<h1>Interface RpcEvent</h1>
+			<h1>Installing Plugins</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">RpcEvent</span>
-					</li>
+			<div class="tsd-panel tsd-typography">
+				<a href="#installing-plugins" id="installing-plugins" style="color: inherit; text-decoration: none;">
+					<h1>Installing Plugins</h1>
+				</a>
+				<p>There are 2 ways to install plugins with Hindenburg:</p>
+				<ul>
+					<li><a href="#install-through-npm">Install through NPM</a></li>
+					<li><a href="#manual-install">Manual install</a></li>
 				</ul>
-			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="rpcevent.html#rpc" class="tsd-kind-icon">rpc</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="rpc" class="tsd-anchor"></a>
-					<h3>rpc</h3>
-					<div class="tsd-signature tsd-kind-icon">rpc<span class="tsd-signature-symbol">:</span> <a href="../classes/baserpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseRpcMessage</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/events/RpcEvent.ts#L7">src/api/events/RpcEvent.ts:7</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The rpc message for this event.</p>
-						</div>
-					</div>
-				</section>
-			</section>
+				<a href="#install-through-npm" id="install-through-npm" style="color: inherit; text-decoration: none;">
+					<h1>Install Through NPM</h1>
+				</a>
+				<p>Plugin developers can publish their plugins to the <a href="https://npmjs.com">npm</a> registry,
+				this allows you to install and setup plugins using a single command:</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn install-plugin hbplugin-&lt;plugin name&gt;</span>
+</code></pre>
+				<p>This will download and install your plugin with <code>yarn</code>, and update your configuration
+				file to reflect the plugin&#39;s default config.</p>
+				<a href="#manual-install" id="manual-install" style="color: inherit; text-decoration: none;">
+					<h1>Manual Install</h1>
+				</a>
+				<p>Hindenburg also loads plugin folders in your plugin directory. This is helpful
+					to use as a development environment for plugins, although can also be used to
+				install unpublished plugins or to get the latest version of plugins.</p>
+				<p>This method also requires you to build the plugins yourself, if required.</p>
+				<p>You can either create a folder or <code>git clone</code> a repository into your plugin
+				directory.</p>
+				<pre><code><span style="color: #001080">plugins</span>
+<span style="color: #000000">|- </span><span style="color: #001080">hbplugin</span><span style="color: #000000">-</span><span style="color: #001080">my</span><span style="color: #000000">-</span><span style="color: #001080">plugin</span>
+<span style="color: #000000">   |- </span><span style="color: #001080">package</span><span style="color: #000000">.</span><span style="color: #001080">json</span>
+<span style="color: #000000">   |- </span><span style="color: #001080">yarn</span><span style="color: #000000">.</span><span style="color: #001080">lock</span>
+<span style="color: #000000">   |- </span><span style="color: #001080">index</span><span style="color: #000000">.</span><span style="color: #001080">ts</span>
+<span style="color: #000000">   |- </span><span style="color: #001080">dist</span>
+<span style="color: #000000">      |- </span><span style="color: #001080">index</span><span style="color: #000000">.</span><span style="color: #001080">js</span>
+<span style="color: #000000">|- </span><span style="color: #001080">package</span><span style="color: #000000">.</span><span style="color: #001080">json</span>
+<span style="color: #000000">|- </span><span style="color: #001080">yarn</span><span style="color: #000000">.</span><span style="color: #001080">lock</span>
+</code></pre>
+			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -114,60 +116,51 @@
 						<span>Setting <wbr>Up</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Setting Up/Installation.html">Installation</a>
+						<a href="Installation.html">Installation</a>
 					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../pages/Setting Up/Installing Plugins.html">Installing <wbr>Plugins</a>
+					<li class="current pp-nav pp-page">
+						<a href="Installing Plugins.html">Installing <wbr>Plugins</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Using <wbr>Hindenburg</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Using Hindenburg/CLI.html">CLI</a>
+						<a href="../Using Hindenburg/CLI.html">CLI</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Writing <wbr>Plugins</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Getting Started.html">Writing <wbr>Plugins</a>
+						<a href="../Writing Plugins/Getting Started.html">Writing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
+						<a href="../Writing Plugins/Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="../Writing Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../Writing Plugins/Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
+						<a href="../Writing Plugins/Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Splitting Plugin Listeners.html">Splitting <wbr>Plugin <wbr>Listeners</a>
+						<a href="../Writing Plugins/Splitting Plugin Listeners.html">Splitting <wbr>Plugin <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Terminal Commands.html">Terminal <wbr>Commands</a>
+						<a href="../Writing Plugins/Terminal Commands.html">Terminal <wbr>Commands</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
 					</li>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="rpcevent.html" class="tsd-kind-icon">Rpc<wbr>Event</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="rpcevent.html#rpc" class="tsd-kind-icon">rpc</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>
@@ -204,7 +197,7 @@
 	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.json"><' + '/script>');</script>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
 </body>
 </html>

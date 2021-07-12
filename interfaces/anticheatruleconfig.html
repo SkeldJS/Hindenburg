@@ -75,10 +75,6 @@
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-kind-interface">
-				<h3 class="tsd-before-signature">Indexable</h3>
-				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></div>
-			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -87,6 +83,8 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatruleconfig.html#penalty" class="tsd-kind-icon">penalty</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatruleconfig.html#rules" class="tsd-kind-icon">rules</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatruleconfig.html#value" class="tsd-kind-icon">value</a></li>
 							</ul>
 						</section>
 					</div>
@@ -97,32 +95,32 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="penalty" class="tsd-anchor"></a>
 					<h3>penalty</h3>
-					<div class="tsd-signature tsd-kind-icon">penalty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>action<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">&quot;disconnect&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ban&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ignore&quot;</span><span class="tsd-signature-symbol">; </span>banAfterXDisconnects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>banDuration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>disconnectMessage<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>strikes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">penalty<span class="tsd-signature-symbol">:</span> <a href="anticheatpenalty.html" class="tsd-signature-type" data-tsd-kind="Interface">AnticheatPenalty</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/234899e/src/interfaces/HindenburgConfig.ts#L13">src/interfaces/HindenburgConfig.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L15">src/interfaces/HindenburgConfig.ts:15</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> action<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">&quot;disconnect&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ban&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ignore&quot;</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> ban<wbr>AfterXDisconnects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> ban<wbr>Duration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> disconnect<wbr>Message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> strikes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
-							</li>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="rules" class="tsd-anchor"></a>
+					<h3>rules</h3>
+					<div class="tsd-signature tsd-kind-icon">rules<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="anticheatruleconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">AnticheatRuleConfig</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L17">src/interfaces/HindenburgConfig.ts:17</a></li>
 						</ul>
-					</div>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="value" class="tsd-anchor"></a>
+					<h3>value</h3>
+					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L16">src/interfaces/HindenburgConfig.ts:16</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -173,6 +171,12 @@
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="anticheatruleconfig.html#penalty" class="tsd-kind-icon">penalty</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="anticheatruleconfig.html#rules" class="tsd-kind-icon">rules</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="anticheatruleconfig.html#value" class="tsd-kind-icon">value</a>
 							</li>
 						</ul>
 					</li>

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VorpalCommandInformation | @skeldjs/hindenburg</title>
+	<title>AnticheatPenalty | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="vorpalcommandinformation.html">VorpalCommandInformation</a>
+					<a href="anticheatpenalty.html">AnticheatPenalty</a>
 				</li>
 			</ul>
-			<h1>Interface VorpalCommandInformation</h1>
+			<h1>Interface AnticheatPenalty</h1>
 		</div>
 	</div>
 </header>
@@ -71,12 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="vorpalcommandoptioninformation.html" class="tsd-signature-type" data-tsd-kind="Interface">VorpalCommandOptionInformation</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">VorpalCommandInformation</span>
-							</li>
-						</ul>
+						<span class="target">AnticheatPenalty</span>
 					</li>
 				</ul>
 			</section>
@@ -87,9 +82,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="vorpalcommandinformation.html#description" class="tsd-kind-icon">description</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vorpalcommandinformation.html#options" class="tsd-kind-icon">options</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="vorpalcommandinformation.html#usage" class="tsd-kind-icon">usage</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatpenalty.html#action" class="tsd-kind-icon">action</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatpenalty.html#banafterxdisconnects" class="tsd-kind-icon">ban<wbr>AfterXDisconnects</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatpenalty.html#banduration" class="tsd-kind-icon">ban<wbr>Duration</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatpenalty.html#disconnectmessage" class="tsd-kind-icon">disconnect<wbr>Message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatpenalty.html#strikes" class="tsd-kind-icon">strikes</a></li>
 							</ul>
 						</section>
 					</div>
@@ -97,35 +94,53 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="description" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> description</h3>
-					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="action" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> action</h3>
+					<div class="tsd-signature tsd-kind-icon">action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;disconnect&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ban&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ignore&quot;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="vorpalcommandoptioninformation.html">VorpalCommandOptionInformation</a>.<a href="vorpalcommandoptioninformation.html#description">description</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/api/hooks/CliCommand.ts#L6">src/api/hooks/CliCommand.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L2">src/interfaces/HindenburgConfig.ts:2</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="options" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> options</h3>
-					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="vorpalcommandoptioninformation.html" class="tsd-signature-type" data-tsd-kind="Interface">VorpalCommandOptionInformation</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="banafterxdisconnects" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ban<wbr>AfterXDisconnects</h3>
+					<div class="tsd-signature tsd-kind-icon">ban<wbr>AfterXDisconnects<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/api/hooks/CliCommand.ts#L10">src/api/hooks/CliCommand.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L4">src/interfaces/HindenburgConfig.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="usage" class="tsd-anchor"></a>
-					<h3>usage</h3>
-					<div class="tsd-signature tsd-kind-icon">usage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="banduration" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ban<wbr>Duration</h3>
+					<div class="tsd-signature tsd-kind-icon">ban<wbr>Duration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="vorpalcommandoptioninformation.html">VorpalCommandOptionInformation</a>.<a href="vorpalcommandoptioninformation.html#usage">usage</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/api/hooks/CliCommand.ts#L5">src/api/hooks/CliCommand.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L5">src/interfaces/HindenburgConfig.ts:5</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="disconnectmessage" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> disconnect<wbr>Message</h3>
+					<div class="tsd-signature tsd-kind-icon">disconnect<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L6">src/interfaces/HindenburgConfig.ts:6</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="strikes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> strikes</h3>
+					<div class="tsd-signature tsd-kind-icon">strikes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fc8490f/src/interfaces/HindenburgConfig.ts#L3">src/interfaces/HindenburgConfig.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -174,16 +189,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="vorpalcommandinformation.html" class="tsd-kind-icon">Vorpal<wbr>Command<wbr>Information</a>
+						<a href="anticheatpenalty.html" class="tsd-kind-icon">Anticheat<wbr>Penalty</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="vorpalcommandinformation.html#description" class="tsd-kind-icon">description</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="anticheatpenalty.html#action" class="tsd-kind-icon">action</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vorpalcommandinformation.html#options" class="tsd-kind-icon">options</a>
+								<a href="anticheatpenalty.html#banafterxdisconnects" class="tsd-kind-icon">ban<wbr>AfterXDisconnects</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="vorpalcommandinformation.html#usage" class="tsd-kind-icon">usage</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="anticheatpenalty.html#banduration" class="tsd-kind-icon">ban<wbr>Duration</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="anticheatpenalty.html#disconnectmessage" class="tsd-kind-icon">disconnect<wbr>Message</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="anticheatpenalty.html#strikes" class="tsd-kind-icon">strikes</a>
 							</li>
 						</ul>
 					</li>

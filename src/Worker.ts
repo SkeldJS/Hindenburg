@@ -268,7 +268,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                         i,
                                         new ReactorMod(
                                             plugin.meta.id,
-                                            plugin.meta.version,
+                                            "1.0.0", // todo: get plugin's package.json
                                             ModPluginSide.Both
                                         )
                                     )

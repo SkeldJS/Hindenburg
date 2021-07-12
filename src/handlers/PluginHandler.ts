@@ -43,7 +43,6 @@ type PluginOrder = "last"|"first"|"none"|number;
 
 export interface PluginMeta {
     id: string;
-    version: string;
     order: PluginOrder;
 }
 

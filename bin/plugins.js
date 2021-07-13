@@ -41,6 +41,25 @@ export default class extends Plugin {
         ev.room.sendChat("Hello, world!");
     }
 }\n`.trim();
+}   
+
+const spinnerFrames = [ "|", "/", "-", "\\", "|", "/", "-", "\\" ];
+function createSpinner(text) {
+    let frame = 0;
+    const interval = setInterval(() => {
+        process.stdout.clearLine(1);
+        process.stdout.cursorTo(0);
+        process.stdout.write(text + " " + spinnerFrames[frame % spinnerFrames.length]);
+        frame++;
+    }, 100);
+    return { text, interval };
+}
+
+function stopSpinner(spinner, success) {
+    clearInterval(spinner.interval);
+    process.stdout.clearLine(1);
+    process.stdout.cursorTo(0);
+    process.stdout.write(spinner.text + " " + (success ? chalk.green("✓") : chalk.red("❌")) + "\n");
 }
 
 (async () => {
@@ -93,7 +112,7 @@ export default class extends Plugin {
             return;
         }
 
-        console.log("Initialising yarn..");
+        const yarnSpinner = createSpinner("Initialising yarn..");
         try {
             await runCommandInDir(pluginDirectory, "yarn init -y");
             await runCommandInDir(pluginDirectory, "yarn set version berry");
@@ -101,22 +120,27 @@ export default class extends Plugin {
 
             await fs.writeFile(path.resolve(pluginDirectory, "yarn.lock"), "", "utf8");
         } catch (e) {
-            console.error("Failed to initialise yarn, deleting directory..");
+            stopSpinner(yarnSpinner, false);
+            const deleteSpinner = createSpinner("Failed to initialise yarn, deleting directory..");
             await runCommandInDir(
                 pluginsDirectory,
                 "yarn exec rm -r " + pluginDirectory
             );
+            stopSpinner(deleteSpinner, true);
             return;
         }
+        stopSpinner(yarnSpinner, true);
 
-        console.log("Creating git repository..");
+        const gitSpinner = createSpinner("Creating git repository..");
         try {
             await runCommandInDir(pluginDirectory, "git init");
+            stopSpinner(gitSpinner, true);
         } catch (e) {
             console.warn("Failed to create git repository, moving on anyway..");
+            stopSpinner(gitSpinner, false);
         }
 
-        console.log("Installing dependencies..");
+        const dependenciesSpinner = createSpinner("Installing dependencies..");
         try {
             await runCommandInDir(
                 pluginDirectory,
@@ -124,15 +148,18 @@ export default class extends Plugin {
                     + (isTypescript ? " typescript" : "")
             );
         } catch (e) {
-            console.error("Failed to install dependencies, deleting directory..");
+            stopSpinner(dependenciesSpinner, false);
+            const deleteSpinner = createSpinner("Failed to install dependencies, deleting directory..");
             await runCommandInDir(
                 pluginsDirectory,
                 "yarn exec rm -r " + pluginDirectory
             );
+            stopSpinner(deleteSpinner, true);
             return;
         }
+        stopSpinner(dependenciesSpinner, true);
 
-        console.log("Configuring files..");
+        const configureSpinner = createSpinner("Configuring files..");
         try {
             const packageJsonFile = path.resolve(pluginDirectory, "package.json");
             const packageJson = require(packageJsonFile);
@@ -169,16 +196,19 @@ export default class extends Plugin {
                 "utf8"
             );
         } catch (e) {
-            console.error("Failed to configure files, deleting directory..");
+            stopSpinner(configureSpinner, false);
+            const deleteSpinner = createSpinner("Failed to configure files, deleting directory..");
             await runCommandInDir(
                 pluginsDirectory,
                 "yarn exec rm -r " + pluginDirectory
             );
+            stopSpinner(deleteSpinner);
             console.log(e);
             return;
         }
+        stopSpinner(configureSpinner, true);
 
-        console.log("Creating entrypoint file..");
+        const entryPointSpinner = createSpinner("Creating entrypoint file..");
         try {
             await fs.writeFile(
                 path.resolve(pluginDirectory, isTypescript ? "index.ts" : "index.js"),
@@ -186,19 +216,24 @@ export default class extends Plugin {
                 "utf8"
             );
         } catch (e) {
-            console.error("Failed to create entrypoint, deleting directory..");
+            stopSpinner(entryPointSpinner, false);
+            const deleteSpinner = createSpinner("Failed to create entrypoint, deleting directory..");
             await runCommandInDir(
                 pluginsDirectory,
                 "yarn exec rm -r " + pluginDirectory
             );
+            stopSpinner(deleteSpinner);
             return;
         }
+        stopSpinner(entryPointSpinner, true);
         
         if (isTypescript) {
-            console.log("Building plugin..");
+            const buildingSpinner = createSpinner("Building plugin..");
             try {
                 await runCommandInDir(pluginDirectory, "yarn build");
+                stopSpinner(buildingSpinner, true);
             } catch (e) {
+                stopSpinner(buildingSpinner, false);
                 console.error("Failed to build plugin.");
                 console.error(e);
             }
@@ -217,6 +252,7 @@ export default class extends Plugin {
             pluginName = "hbplugin-" + pluginName;
         }
 
+        console.log("Plugin name: " + chalk.green(pluginName));
         const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
         try {
             await fs.stat(pluginDirectory);
@@ -225,12 +261,13 @@ export default class extends Plugin {
             return;
         } catch (e) {}
 
-        console.log("Getting plugin information..");
+        const pluginInfoSpinner = createSpinner("Getting plugin information..");
         let packageInfoJson;
         try {
             const packageInfoData = await runCommandInDir(pluginsDirectory, "yarn npm info " + pluginName + " --json");
             packageInfoJson = JSON.parse(packageInfoData);
         } catch (e) {
+            stopSpinner(pluginInfoSpinner, false);
             try {
                 const errorJson = JSON.parse(e);
                 if (errorJson.data.includes("EAI_AGAIN")) {
@@ -241,34 +278,49 @@ export default class extends Plugin {
                     console.error("Plugin does not exist on the NPM registry, or it's private");
                     return;
                 }
+                throw e;
             } catch (e) {
                 console.error("Failed to get plugin package information, either it doesn't exist, it's private, or couldn't connect to the internet");
                 return;
             }
         }
-        process.stdout.write("Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version));
+        stopSpinner(pluginInfoSpinner, true);
+
+        let installingText = "Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version);
         if (packageInfoJson.maintainers[0]) {
-            process.stdout.write(" by " + packageInfoJson.maintainers[0].name);
+            installingText += " by " + packageInfoJson.maintainers[0].name;
         }
-        process.stdout.write("..\n");
+        installingText += "..";
 
-        await runCommandInDir(pluginsDirectory, "yarn add " + packageInfoJson.name + "@" + packageInfoJson.version + " --json");
+        const installingSpinner = createSpinner(installingText);
+        try {
+            await runCommandInDir(pluginsDirectory, "yarn add " + packageInfoJson.name + "@" + packageInfoJson.version + " --json");
+        } catch (e) {
+            stopSpinner(installingSpinner, false);
+            console.error("Failed to install plugin package.");
+            return;
+        }
+        stopSpinner(installingSpinner, true);
 
-        console.log("Checking installed plugin..");
+        const verifySpinner = createSpinner("Verifying installed plugin..");
         const packageLocation = resolveFrom(pluginsDirectory, packageInfoJson.name);
         const { default: importedPlugin } = require(packageLocation);
 
         if (!importedPlugin || !isHindenburgPlugin(importedPlugin)) {
-            console.error("Installed package was not a hindenburg plugin, uninstalling..");
+            stopSpinner(verifySpinner, false);
+            const uninstallSpinner = createSpinner("Installed package was not a hindenburg plugin, uninstalling..");
             try {
                 await runCommandInDir(pluginsDirectory, "yarn remove " + packageInfoJson.name);
+                stopSpinner(uninstallSpinner, true);
             } catch (e) {
+                stopSpinner(uninstallSpinner, false);
                 console.error("Failed to uninstall package, run either 'yarn plugins uninstall\"" + packageInfoJson + "\"', or enter the directory yourself and use 'yarn remove \"" + packageInfoJson.name + "\"'");
             }
             return;
         }
+        stopSpinner(verifySpinner, true);
 
-        console.log("Adding plugin's default config to Hindenburg config..");
+        const configSpinner = createSpinner("Creating config entry for plugin..");
         const defaultConfig = importedPlugin.meta.defaultConfig;
         
         try {
@@ -286,6 +338,7 @@ export default class extends Plugin {
                 "utf8"
             );
         } catch (e) {
+            stopSpinner(configSpinner, false);
             if (!e.code || e.code !== "ENOENT") {
                 if (e.code) {
                     console.error("Could not open config file: " + e.code);
@@ -294,6 +347,7 @@ export default class extends Plugin {
                 }
             }
         }
+        stopSpinner(configSpinner, true);
 
         console.log("Installed plugin!");
     } else if (action === "uninstall") {
@@ -310,15 +364,16 @@ export default class extends Plugin {
 
         const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
 
+        const resolvingPlugin = createSpinner("Resolving plugin..");
         let packageLocation;
         try {
             packageLocation = resolveFrom(pluginsDirectory, pluginName);
         } catch (e) {
+            stopSpinner(resolvingPlugin, false);
             console.error("Plugin with name '" + pluginName + "' not installed or inaccessible");
             return;
         }
-
-        console.log("Found plugin at: " + packageLocation);
+        stopSpinner(resolvingPlugin, true);
 
         try {
             await fs.stat(pluginDirectory);
@@ -327,16 +382,18 @@ export default class extends Plugin {
             return;
         } catch (e) {}
 
-        console.log("Uninstalling plugin..");
+        const uninstallingSpinner = createSpinner("Uninstalling plugin..");
         try {
             await runCommandInDir(pluginsDirectory, "yarn remove " + pluginName);
         } catch (e) {
+            stopSpinner(uninstallingSpinner, false);
             console.log("Failed to uninstall plugin, try entering the plugin directory yourself and running 'yarn remove \"" + pluginName + "\"'");
             return;
         }
+        stopSpinner(uninstallingSpinner, true);
 
         // todo: maybe remove anti-cheat rule definitions too? or is that too extreme?
-        console.log("Removing plugin from config.json..");
+        const removePluginSpinner = createSpinner("Removing plugin from config.json..");
         try {
             const configData = await fs.readFile(configFile, "utf8");
             const configJson = JSON.parse(configData);
@@ -350,7 +407,9 @@ export default class extends Plugin {
                 JSON.stringify(configJson, undefined, 4),
                 "utf8"
             );
+            stopSpinner(removePluginSpinner, true);
         } catch (e) {
+            stopSpinner(removePluginSpinner, false);
             if (!e.code || e.code !== "ENOENT") {
                 if (e.code) {
                     console.error("Could not open config file: " + e.code);

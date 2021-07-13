@@ -21,7 +21,10 @@ function createDefault() {
             },
             rules: {}
         },
-        logging: {}
+        logging: {},
+        reactor: {
+            blockClientSideOnly: true
+        }
     };
 }
 module.exports = { createDefault };

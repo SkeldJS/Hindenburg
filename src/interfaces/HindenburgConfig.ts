@@ -138,6 +138,13 @@ export interface LoggingConfig {
     };
 }
 
+export interface ReactorConfig {
+    /**
+     * Whether to block reactor RPCs from mods that are declared as being client-side-only.
+     */
+    blockClientSideOnly: boolean;
+}
+
 export interface HindenburgConfig {
     /**
      * An array of game versions that Hindenburg will accept.
@@ -168,4 +175,9 @@ export interface HindenburgConfig {
      * Options for logging.
      */
     logging: LoggingConfig;
+
+    /**
+     * Options for Hindenburg's reactor integration.
+     */
+    reactor: ReactorConfig;
 }

@@ -148,8 +148,8 @@ const logMaps = {
 export type RoomEvents = HostableEvents<Room> & ExtractEventTypes<[RoomDestroyEvent]>;
 
 export class Room extends Hostable<RoomEvents> {
+    createdAt: number;
     connections: Map<number, Connection>;
-
     waiting: Set<Connection>;
 
     /**
@@ -170,6 +170,7 @@ export class Room extends Hostable<RoomEvents> {
     ) {
         super({ doFixedUpdate: true });
 
+        this.createdAt = Date.now();
         this.connections = new Map;
         this.waiting = new Set;
 

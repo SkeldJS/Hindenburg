@@ -13,7 +13,9 @@ import {
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
+    GameListing,
     GameOptions,
+    GetGameListMessage,
     HostGameMessage,
     JoinGameMessage,
     KickPlayerMessage,
@@ -481,7 +483,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]);
         });
 
-        this.decoder.on([ KickPlayerMessage ], async (message, direction, connection) => {
+        this.decoder.on(KickPlayerMessage, async (message, direction, connection) => {
             const player = connection.getPlayer();
             if (!player)
                 return;
@@ -498,6 +500,62 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             await targetConnection.kick(message.banned);
 */
+        });
+
+        this.decoder.on(GetGameListMessage, async (message, direction, connection) => {
+            const returnList: GameListing[] = [];
+            for (const [ gameCode, room ] of this.rooms) {
+                if (gameCode === 0x20 /* local game */) {
+                    continue;
+                }
+
+                const roomHost = room.connections.get(room.hostid);
+
+                if (roomHost) {
+                    const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
+
+                    console.log(message.options.map);
+                    console.log(room.settings.map);
+                    console.log(1 << room.settings.map);
+                    console.log(message.options.map & (1 << room.settings.map));
+                    if (
+                        room.settings.keywords === message.options.keywords &&
+                        (message.options.map & (1 << room.settings.map)) !== 0 &&
+                        (
+                            room.settings.numImpostors === message.options.numImpostors ||
+                            message.options.numImpostors === 0
+                        )
+                    ) {
+                        const gameListing = new GameListing(
+                            room.code,
+                            "127.0.0.1", /* todo: get ip somehow */
+                            this.config.socket.port,
+                            roomHost.username,
+                            room.players.size,
+                            roomAge,
+                            room.settings.map,
+                            room.settings.numImpostors,
+                            room.settings.maxPlayers
+                        );
+    
+                        returnList.push(gameListing);
+                        
+                        if (returnList.length >= 10)
+                            break;
+                    }
+                }
+            }
+
+            if (returnList.length) {
+                await connection.sendPacket(
+                    new ReliablePacket(
+                        connection.getNextNonce(),
+                        [
+                            new GetGameListMessage(returnList)
+                        ]
+                    )
+                );
+            }
         });
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();

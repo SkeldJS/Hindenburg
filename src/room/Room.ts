@@ -541,6 +541,11 @@ export class Room extends Hostable<RoomEvents> {
                         this.host!.id,
                         [...this.connections]
                             .map(([, client]) => client.clientId)
+                    ),
+                    new AlterGameMessage(
+                        this.code,
+                        AlterGameTag.ChangePrivacy,
+                        this.privacy === "public" ? 1 : 0
                     )
                 ]
             )
@@ -551,11 +556,6 @@ export class Room extends Hostable<RoomEvents> {
                 this.code,
                 client.clientId,
                 this.host!.id
-            ),
-            new AlterGameMessage(
-                this.code,
-                AlterGameTag.ChangePrivacy,
-                this.privacy === "public" ? 1 : 0
             )
         ]);
         

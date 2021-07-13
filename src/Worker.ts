@@ -443,10 +443,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
-            if (message.alterTag === AlterGameTag.ChangePrivacy) {
-                connection.room?.setPrivacy(message.value === 1 ? "public" : "private");
-            }
-
             connection.room?.decoder.emitDecoded(message, direction, player);
             await connection.room?.broadcastMessages([], [
                 new AlterGameMessage(connection.room.code, message.alterTag, message.value)

@@ -52,7 +52,7 @@ import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
 
-import { PluginHandler, ChatCommandHandler } from "./handlers";
+import { PluginLoader, ChatCommandHandler } from "./handlers";
 import { Room, RoomEvents, MessageSide } from "./room";
 
 import {
@@ -104,7 +104,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * The server's plugin loader.
      */
-    pluginHandler: PluginHandler;
+    pluginHandler: PluginLoader;
 
     chatCommandHandler: ChatCommandHandler;
 
@@ -192,7 +192,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]
         });
 
-        this.pluginHandler = new PluginHandler(this, pluginDir);
+        this.pluginHandler = new PluginLoader(this, pluginDir);
         this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.socket = dgram.createSocket("udp4");

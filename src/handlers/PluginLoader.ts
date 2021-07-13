@@ -133,7 +133,7 @@ function registerMessageToMessageMap(message: Deserializable, map: Map<string, M
     messageType.set(message.tag, message);
 }
 
-export class PluginHandler {
+export class PluginLoader {
     loadedPlugins: Map<string, Plugin>;
 
     constructor(

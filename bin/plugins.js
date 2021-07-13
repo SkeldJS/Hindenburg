@@ -143,7 +143,7 @@ export default class extends Plugin {
             if (isTypescript) {
                 await runCommandInDir(
                     pluginDirectory,
-                    "yarn tsc --init --outDir ./dist --experimentalDecorators --sourceMap --declaration --allowJs"
+                    "yarn tsc --init --outDir ./dist --experimentalDecorators --sourceMap --declaration --allowJs --target es2017"
                 );
 
                 packageJson.main = "./dist/index.js";

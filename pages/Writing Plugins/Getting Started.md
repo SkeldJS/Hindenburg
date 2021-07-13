@@ -74,9 +74,9 @@ yarn add --dev typescript
 
 ### Configure files
 #### If you are using Typescript
-Run the following command to create a `tsconfig.json`:
+Run the following rather long command to create a `tsconfig.json`:
 ```sh
-yarn tsc --init --outDir ./dist --experimentalDecorators
+yarn tsc --init --outDir ./dist --experimentalDecorators --sourceMap --declaration --allowJs --target es2017
 ```
 Add the following to your `package.json`:
 ```json

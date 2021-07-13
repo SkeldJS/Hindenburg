@@ -31,9 +31,8 @@ export class ReactorRpcMessage extends BaseRpcMessage {
         return this.customRpc.canceled;
     }
 
-    set canceled(canceled: boolean) {
-        if (canceled)
-            this.customRpc.cancel();
+    cancel() {
+        this.customRpc.cancel();
     }
 
     static Deserialize(

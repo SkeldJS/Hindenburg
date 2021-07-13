@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Writing Plugins | @skeldjs/hindenburg</title>
+	<title>Getting Started | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -60,10 +60,10 @@
 					<a href="Getting Started.html">Writing Plugins</a>
 				</li>
 				<li>
-					<a href="Getting Started.html">Writing Plugins</a>
+					<a href="Getting Started.html">Getting Started</a>
 				</li>
 			</ul>
-			<h1>Writing Plugins</h1>
+			<h1>Getting Started</h1>
 		</div>
 	</div>
 </header>
@@ -81,12 +81,9 @@
 				<a href="#setting-up" id="setting-up" style="color: inherit; text-decoration: none;">
 					<h2>Setting Up</h2>
 				</a>
-				<p>Hindenburg comes with a small utility script to automatically initialise
-				a new plugin for development:</p>
-				<pre><code class="language-sh"><span style="color: #000000">yarn init-plugin &lt;plugin name&gt;</span>
-</code></pre>
-				<p>If you want to use typescript:</p>
-				<pre><code class="language-sh"><span style="color: #000000">yarn init-plugin ts &lt;plugin name&gt;</span>
+				<p>Hindenburg comes with a small utility script to automatically create a new plugin
+				in a development environment:</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn plugins create &lt;plugin name&gt;</span>
 </code></pre>
 				<a href="#setting-up-manually" id="setting-up-manually" style="color: inherit; text-decoration: none;">
 					<h2>Setting Up Manually</h2>
@@ -148,8 +145,8 @@
 				<a href="#if-you-are-using-typescript-1" id="if-you-are-using-typescript-1" style="color: inherit; text-decoration: none;">
 					<h4>If you are using Typescript</h4>
 				</a>
-				<p>Run the following command to create a <code>tsconfig.json</code>:</p>
-				<pre><code class="language-sh"><span style="color: #000000">yarn tsc --init --outDir ./dist --experimentalDecorators</span>
+				<p>Run the following rather long command to create a <code>tsconfig.json</code>:</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn tsc --init --outDir ./dist --experimentalDecorators --sourceMap --declaration --allowJs --target es2017</span>
 </code></pre>
 				<p>Add the following to your <code>package.json</code>:</p>
 				<pre><code class="language-json"><span style="color: #000000">{</span>
@@ -172,7 +169,7 @@
 				<a href="#create-an-entrypoint" id="create-an-entrypoint" style="color: inherit; text-decoration: none;">
 					<h3>Create an entrypoint</h3>
 				</a>
-				<p>If you want to use <a href="https://typescriptlang.org">typescript</a>, you can create an
+				<p>If you want to use typescript, you can create an
 				<code>index.ts</code> file in your plugin&#39;s folder. If you want to use plain javascript, you can create a <code>index.js</code> file instead.</p>
 			</div>
 		</div>
@@ -186,19 +183,19 @@
 						<a href="../Setting Up/Installation.html">Installation</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Setting Up/Installing Plugins.html">Installing <wbr>Plugins</a>
+						<a href="../Setting Up/Plugins.html">Plugins</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Using <wbr>Hindenburg</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Using Hindenburg/CLI.html">CLI</a>
+						<a href="../Using Hindenburg/Interactive CLI.html">Interactive CLI</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Writing <wbr>Plugins</span>
 					</li>
 					<li class="current pp-nav pp-page">
-						<a href="Getting Started.html">Writing <wbr>Plugins</a>
+						<a href="Getting Started.html">Getting <wbr>Started</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
@@ -243,6 +240,11 @@
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
@@ -253,9 +255,6 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 			</ul>
 		</div>
 	</div>

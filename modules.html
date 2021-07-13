@@ -93,6 +93,7 @@
 								<li class="tsd-kind-enum tsd-is-external"><a href="enums/movingplatformside.html" class="tsd-kind-icon">Moving<wbr>Platform<wbr>Side</a></li>
 								<li class="tsd-kind-enum tsd-is-external"><a href="enums/pet.html" class="tsd-kind-icon">Pet</a></li>
 								<li class="tsd-kind-enum tsd-is-external"><a href="enums/platform.html" class="tsd-kind-icon">Platform</a></li>
+								<li class="tsd-kind-enum tsd-is-external"><a href="enums/playerdataflags.html" class="tsd-kind-icon">Player<wbr>Data<wbr>Flags</a></li>
 								<li class="tsd-kind-enum tsd-is-external"><a href="enums/polusvent.html" class="tsd-kind-icon">Polus<wbr>Vent</a></li>
 								<li class="tsd-kind-enum tsd-is-external"><a href="enums/quickchatmode.html" class="tsd-kind-icon">Quick<wbr>Chat<wbr>Mode</a></li>
 								<li class="tsd-kind-enum tsd-is-external"><a href="enums/reportoutcome.html" class="tsd-kind-icon">Report<wbr>Outcome</a></li>
@@ -293,6 +294,7 @@
 								<li class="tsd-kind-class tsd-has-type-parameter tsd-is-external"><a href="classes/systemsabotageevent.html" class="tsd-kind-icon">System<wbr>Sabotage<wbr>Event</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter tsd-is-external"><a href="classes/systemstatus.html" class="tsd-kind-icon">System<wbr>Status</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/taskstate.html" class="tsd-kind-icon">Task<wbr>State</a></li>
+								<li class="tsd-kind-class"><a href="classes/unknownreactorrpcmessage.html" class="tsd-kind-icon">Unknown<wbr>Reactor<wbr>Rpc<wbr>Message</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/unreliablepacket.html" class="tsd-kind-icon">Unreliable<wbr>Packet</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/updatesystemmessage.html" class="tsd-kind-icon">Update<wbr>System<wbr>Message</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/useplatformmessage.html" class="tsd-kind-icon">Use<wbr>Platform<wbr>Message</a></li>
@@ -415,7 +417,6 @@
 								<li class="tsd-kind-variable tsd-is-external"><a href="modules.html#maptaskdata" class="tsd-kind-icon">Map<wbr>Task<wbr>Data</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="modules.html#mapventdata" class="tsd-kind-icon">Map<wbr>Vent<wbr>Data</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="modules.html#matchmakingservers" class="tsd-kind-icon">Matchmaking<wbr>Servers</a></li>
-								<li class="tsd-kind-variable tsd-is-external"><a href="modules.html#playerdataflags" class="tsd-kind-icon">Player<wbr>Data<wbr>Flags</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="modules.html#spawnprefabs" class="tsd-kind-icon">Spawn<wbr>Prefabs</a></li>
 								<li class="tsd-kind-variable"><a href="modules.html#hindenburgchatcommanddesckey" class="tsd-kind-icon">hindenburg<wbr>Chat<wbr>Command<wbr>Desc<wbr>Key</a></li>
 								<li class="tsd-kind-variable"><a href="modules.html#hindenburgchatcommandkey" class="tsd-kind-icon">hindenburg<wbr>Chat<wbr>Command<wbr>Key</a></li>
@@ -434,6 +435,7 @@
 								<li class="tsd-kind-function"><a href="modules.html#hindenburgplugin" class="tsd-kind-icon">Hindenburg<wbr>Plugin</a></li>
 								<li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#messagelistener" class="tsd-kind-icon">Message<wbr>Listener</a></li>
 								<li class="tsd-kind-function tsd-has-type-parameter"><a href="modules.html#registermessage" class="tsd-kind-icon">Register<wbr>Message</a></li>
+								<li class="tsd-kind-function"><a href="modules.html#ishindenburgplugin" class="tsd-kind-icon">is<wbr>Hindenburg<wbr>Plugin</a></li>
 								<li class="tsd-kind-function"><a href="modules.html#parsecommandusage" class="tsd-kind-icon">parse<wbr>Command<wbr>Usage</a></li>
 							</ul>
 						</section>
@@ -480,7 +482,7 @@
 					<div class="tsd-signature tsd-kind-icon">Chat<wbr>Command<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>ctx<span class="tsd-signature-symbol">: </span><a href="classes/chatcommandcontext.html" class="tsd-signature-type" data-tsd-kind="Class">ChatCommandContext</a>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/handlers/CommandHander.ts#L64">src/handlers/CommandHander.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/CommandHander.ts#L64">src/handlers/CommandHander.ts:64</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -514,7 +516,7 @@
 					<div class="tsd-signature tsd-kind-icon">Connections<wbr>Format<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;id&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ip&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ping&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;room&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;language&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/interfaces/HindenburgConfig.ts#L29">src/interfaces/HindenburgConfig.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/interfaces/HindenburgConfig.ts#L29">src/interfaces/HindenburgConfig.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -874,7 +876,7 @@
 					<div class="tsd-signature tsd-kind-icon">Player<wbr>Format<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;id&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ping&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ishost&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/interfaces/HindenburgConfig.ts#L31">src/interfaces/HindenburgConfig.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/interfaces/HindenburgConfig.ts#L31">src/interfaces/HindenburgConfig.ts:31</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -936,7 +938,7 @@
 					<div class="tsd-signature tsd-kind-icon">Reliable<wbr>Serializable<span class="tsd-signature-symbol">:</span> <a href="classes/baserootpacket.html" class="tsd-signature-type" data-tsd-kind="Class">BaseRootPacket</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>nonce<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/Worker.ts#L74">src/Worker.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/Worker.ts#L77">src/Worker.ts:77</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -946,7 +948,7 @@
 					<div class="tsd-signature tsd-kind-icon">Room<wbr>Events<span class="tsd-signature-symbol">:</span> <a href="modules.html#hostableevents" class="tsd-signature-type" data-tsd-kind="Type alias">HostableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="classes/room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ExtractEventTypes</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="classes/roomdestroyevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomDestroyEvent</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/room/Room.ts#L146">src/room/Room.ts:146</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/room/Room.ts#L148">src/room/Room.ts:148</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -956,7 +958,7 @@
 					<div class="tsd-signature tsd-kind-icon">Room<wbr>Format<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;players&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;map&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/interfaces/HindenburgConfig.ts#L30">src/interfaces/HindenburgConfig.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/interfaces/HindenburgConfig.ts#L30">src/interfaces/HindenburgConfig.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1076,7 +1078,7 @@
 					<div class="tsd-signature tsd-kind-icon">Worker<wbr>Events<span class="tsd-signature-symbol">:</span> <a href="modules.html#roomevents" class="tsd-signature-type" data-tsd-kind="Type alias">RoomEvents</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ExtractEventTypes</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="classes/clientbanevent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientBanEvent</a><span class="tsd-signature-symbol">, </span><a href="classes/clientconnectevent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientConnectEvent</a><span class="tsd-signature-symbol">, </span><a href="classes/workerbeforecreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerBeforeCreateEvent</a><span class="tsd-signature-symbol">, </span><a href="classes/workerbeforejoinevent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerBeforeJoinEvent</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/Worker.ts#L76">src/Worker.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/Worker.ts#L79">src/Worker.ts:79</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1552,30 +1554,6 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external">
-					<a name="playerdataflags" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> Player<wbr>Data<wbr>Flags</h3>
-					<div class="tsd-signature tsd-kind-icon">Player<wbr>Data<wbr>Flags<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>IsDead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol">; </span>IsDisconnected<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol">; </span>IsImpostor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> }</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/constant/dist/lib/bitfields/PlayerDataFlags.d.ts:1</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagReadonly">Readonly</span> Is<wbr>Dead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">4</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagReadonly">Readonly</span> Is<wbr>Disconnected<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">1</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagReadonly">Readonly</span> Is<wbr>Impostor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">2</span></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external">
 					<a name="spawnprefabs" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> Spawn<wbr>Prefabs</h3>
 					<div class="tsd-signature tsd-kind-icon">Spawn<wbr>Prefabs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></div>
@@ -1591,7 +1569,7 @@
 					<div class="tsd-signature tsd-kind-icon">hindenburg<wbr>Chat<wbr>Command<wbr>Desc<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="modules.html#hindenburgchatcommanddesckey" class="tsd-signature-type" data-tsd-kind="Variable">hindenburgChatCommandDescKey</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/ChatCommand.ts#L4">src/api/hooks/ChatCommand.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/ChatCommand.ts#L4">src/api/hooks/ChatCommand.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1601,7 +1579,7 @@
 					<div class="tsd-signature tsd-kind-icon">hindenburg<wbr>Chat<wbr>Command<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="modules.html#hindenburgchatcommandkey" class="tsd-signature-type" data-tsd-kind="Variable">hindenburgChatCommandKey</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/ChatCommand.ts#L3">src/api/hooks/ChatCommand.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/ChatCommand.ts#L3">src/api/hooks/ChatCommand.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1611,7 +1589,7 @@
 					<div class="tsd-signature tsd-kind-icon">hindenburg<wbr>Event<wbr>Listeners<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="modules.html#hindenburgeventlistenerskey" class="tsd-signature-type" data-tsd-kind="Variable">hindenburgEventListenersKey</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/EventListener.ts#L4">src/api/hooks/EventListener.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/EventListener.ts#L4">src/api/hooks/EventListener.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1621,7 +1599,7 @@
 					<div class="tsd-signature tsd-kind-icon">hindenburg<wbr>Message<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="modules.html#hindenburgmessagekey" class="tsd-signature-type" data-tsd-kind="Variable">hindenburgMessageKey</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/MessageListener.ts#L3">src/api/hooks/MessageListener.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/MessageListener.ts#L3">src/api/hooks/MessageListener.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1631,7 +1609,7 @@
 					<div class="tsd-signature tsd-kind-icon">hindenburg<wbr>Register<wbr>Message<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="modules.html#hindenburgregistermessagekey" class="tsd-signature-type" data-tsd-kind="Variable">hindenburgRegisterMessageKey</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/RegisterMessage.ts#L3">src/api/hooks/RegisterMessage.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/RegisterMessage.ts#L3">src/api/hooks/RegisterMessage.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1641,7 +1619,7 @@
 					<div class="tsd-signature tsd-kind-icon">hindenburg<wbr>Vorpal<wbr>Command<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">typeof </span><a href="modules.html#hindenburgvorpalcommand" class="tsd-signature-type" data-tsd-kind="Variable">hindenburgVorpalCommand</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/CliCommand.ts#L2">src/api/hooks/CliCommand.ts:2</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/CliCommand.ts#L2">src/api/hooks/CliCommand.ts:2</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1658,7 +1636,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/ChatCommand.ts#L6">src/api/hooks/ChatCommand.ts:6</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/ChatCommand.ts#L6">src/api/hooks/ChatCommand.ts:6</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1708,7 +1686,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/CliCommand.ts#L13">src/api/hooks/CliCommand.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/CliCommand.ts#L13">src/api/hooks/CliCommand.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1756,7 +1734,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/EventListener.ts#L6">src/api/hooks/EventListener.ts:6</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/EventListener.ts#L6">src/api/hooks/EventListener.ts:6</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1800,7 +1778,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/EventListener.ts#L14">src/api/hooks/EventListener.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/EventListener.ts#L14">src/api/hooks/EventListener.ts:14</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1850,26 +1828,26 @@
 					<a name="hindenburgplugin" class="tsd-anchor"></a>
 					<h3>Hindenburg<wbr>Plugin</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">Hindenburg<wbr>Plugin<span class="tsd-signature-symbol">(</span>meta<span class="tsd-signature-symbol">: </span><a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span>&lt;T&gt;<span class="tsd-signature-symbol">(</span>constructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></li>
+						<li class="tsd-signature tsd-kind-icon">Hindenburg<wbr>Plugin<span class="tsd-signature-symbol">(</span>meta<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span>&lt;T&gt;<span class="tsd-signature-symbol">(</span>constructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/HindenburgPlugin.ts#L7">src/api/HindenburgPlugin.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/HindenburgPlugin.ts#L10">src/api/HindenburgPlugin.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>meta: <a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
+									<h5>meta: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns &lt;T&gt;<span class="tsd-signature-symbol">(</span>constructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></h4>
+							<h4 class="tsd-returns-title">Returns &lt;T&gt;<span class="tsd-signature-symbol">(</span>constructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></h4>
 							<ul class="tsd-parameters">
 								<li class="tsd-parameter-signature">
 									<ul class="tsd-signatures tsd-kind-type-literal tsd-has-type-parameter">
-										<li class="tsd-signature tsd-kind-icon">&lt;T&gt;<span class="tsd-signature-symbol">(</span>constructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></li>
+										<li class="tsd-signature tsd-kind-icon">&lt;T&gt;<span class="tsd-signature-symbol">(</span>constructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></li>
 									</ul>
 									<ul class="tsd-descriptions">
 										<li class="tsd-description">
@@ -1885,7 +1863,7 @@
 													<h5>constructor: <span class="tsd-signature-type">T</span></h5>
 												</li>
 											</ul>
-											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></h4>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="interfaces/pluginmeta.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMeta</a><span class="tsd-signature-symbol">; </span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">T</span></h4>
 										</li>
 									</ul>
 								</li>
@@ -1903,7 +1881,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/MessageListener.ts#L9">src/api/hooks/MessageListener.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/MessageListener.ts#L9">src/api/hooks/MessageListener.ts:9</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1959,7 +1937,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/api/hooks/RegisterMessage.ts#L5">src/api/hooks/RegisterMessage.ts:5</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/hooks/RegisterMessage.ts#L5">src/api/hooks/RegisterMessage.ts:5</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1997,6 +1975,29 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="ishindenburgplugin" class="tsd-anchor"></a>
+					<h3>is<wbr>Hindenburg<wbr>Plugin</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Hindenburg<wbr>Plugin<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/api/HindenburgPlugin.ts#L32">src/api/HindenburgPlugin.ts:32</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>object: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="parsecommandusage" class="tsd-anchor"></a>
 					<h3>parse<wbr>Command<wbr>Usage</h3>
 					<ul class="tsd-signatures tsd-kind-function">
@@ -2006,7 +2007,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/fdf052c/src/handlers/CommandHander.ts#L66">src/handlers/CommandHander.ts:66</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/CommandHander.ts#L66">src/handlers/CommandHander.ts:66</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2031,19 +2032,19 @@
 						<a href="pages/Setting Up/Installation.html">Installation</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="pages/Setting Up/Installing Plugins.html">Installing <wbr>Plugins</a>
+						<a href="pages/Setting Up/Plugins.html">Plugins</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Using <wbr>Hindenburg</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="pages/Using Hindenburg/CLI.html">CLI</a>
+						<a href="pages/Using Hindenburg/Interactive CLI.html">Interactive CLI</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Writing <wbr>Plugins</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="pages/Writing Plugins/Getting Started.html">Writing <wbr>Plugins</a>
+						<a href="pages/Writing Plugins/Getting Started.html">Getting <wbr>Started</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="pages/Writing Plugins/Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
@@ -2138,6 +2139,9 @@
 					</li>
 					<li class=" tsd-kind-enum tsd-is-external">
 						<a href="enums/platform.html" class="tsd-kind-icon">Platform</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-external">
+						<a href="enums/playerdataflags.html" class="tsd-kind-icon">Player<wbr>Data<wbr>Flags</a>
 					</li>
 					<li class=" tsd-kind-enum tsd-is-external">
 						<a href="enums/polusvent.html" class="tsd-kind-icon">Polus<wbr>Vent</a>
@@ -2724,6 +2728,9 @@
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/taskstate.html" class="tsd-kind-icon">Task<wbr>State</a>
 					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/unknownreactorrpcmessage.html" class="tsd-kind-icon">Unknown<wbr>Reactor<wbr>Rpc<wbr>Message</a>
+					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/unreliablepacket.html" class="tsd-kind-icon">Unreliable<wbr>Packet</a>
 					</li>
@@ -3046,9 +3053,6 @@
 						<a href="modules.html#matchmakingservers" class="tsd-kind-icon">Matchmaking<wbr>Servers</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-external">
-						<a href="modules.html#playerdataflags" class="tsd-kind-icon">Player<wbr>Data<wbr>Flags</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-external">
 						<a href="modules.html#spawnprefabs" class="tsd-kind-icon">Spawn<wbr>Prefabs</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -3088,6 +3092,9 @@
 						<a href="modules.html#registermessage" class="tsd-kind-icon">Register<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-function">
+						<a href="modules.html#ishindenburgplugin" class="tsd-kind-icon">is<wbr>Hindenburg<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-function">
 						<a href="modules.html#parsecommandusage" class="tsd-kind-icon">parse<wbr>Command<wbr>Usage</a>
 					</li>
 				</ul>
@@ -3105,6 +3112,11 @@
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
@@ -3115,9 +3127,6 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 			</ul>
 		</div>
 	</div>

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MedScanSystemData | @skeldjs/hindenburg</title>
+	<title>PlayerDataFlags | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,52 +57,60 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="medscansystemdata.html">MedScanSystemData</a>
+					<a href="playerdataflags.html">PlayerDataFlags</a>
 				</li>
 			</ul>
-			<h1>Interface MedScanSystemData</h1>
+			<h1>Enumeration PlayerDataFlags</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">MedScanSystemData</span>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implemented by</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../classes/medscansystem.html" class="tsd-signature-type" data-tsd-kind="Class">MedScanSystem</a></li>
-				</ul>
-			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
+							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="medscansystemdata.html#queue" class="tsd-kind-icon">queue</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="playerdataflags.html#isdead" class="tsd-kind-icon">Is<wbr>Dead</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="playerdataflags.html#isdisconnected" class="tsd-kind-icon">Is<wbr>Disconnected</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="playerdataflags.html#isimpostor" class="tsd-kind-icon">Is<wbr>Impostor</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="queue" class="tsd-anchor"></a>
-					<h3>queue</h3>
-					<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <a href="../classes/playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="isdead" class="tsd-anchor"></a>
+					<h3>Is<wbr>Dead</h3>
+					<div class="tsd-signature tsd-kind-icon">Is<wbr>Dead<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 4</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/system/MedScanSystem.d.ts:12</li>
+							<li>Defined in node_modules/@skeldjs/constant/dist/lib/enum/protocol/PlayerDataFlags.d.ts:4</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="isdisconnected" class="tsd-anchor"></a>
+					<h3>Is<wbr>Disconnected</h3>
+					<div class="tsd-signature tsd-kind-icon">Is<wbr>Disconnected<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 1</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/constant/dist/lib/enum/protocol/PlayerDataFlags.d.ts:2</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="isimpostor" class="tsd-anchor"></a>
+					<h3>Is<wbr>Impostor</h3>
+					<div class="tsd-signature tsd-kind-icon">Is<wbr>Impostor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/constant/dist/lib/enum/protocol/PlayerDataFlags.d.ts:3</li>
 						</ul>
 					</aside>
 				</section>
@@ -159,11 +167,17 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-is-external">
-						<a href="medscansystemdata.html" class="tsd-kind-icon">Med<wbr>Scan<wbr>System<wbr>Data</a>
+					<li class="current tsd-kind-enum tsd-is-external">
+						<a href="playerdataflags.html" class="tsd-kind-icon">Player<wbr>Data<wbr>Flags</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="medscansystemdata.html#queue" class="tsd-kind-icon">queue</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+								<a href="playerdataflags.html#isdead" class="tsd-kind-icon">Is<wbr>Dead</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+								<a href="playerdataflags.html#isdisconnected" class="tsd-kind-icon">Is<wbr>Disconnected</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+								<a href="playerdataflags.html#isimpostor" class="tsd-kind-icon">Is<wbr>Impostor</a>
 							</li>
 						</ul>
 					</li>

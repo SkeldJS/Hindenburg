@@ -3,6 +3,7 @@ import chalk from "chalk";
 
 import { DisconnectReason, Language } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
+import { ModPluginSide } from "@skeldjs/reactor";
 import { VersionInfo } from "@skeldjs/util";
 
 import {
@@ -20,13 +21,14 @@ import { fmtLogFormat } from "./util/fmtLogFormat";
 
 export class ClientMod {
     constructor(
-        public readonly netid: number,
-        public readonly modid: string,
-        public readonly modversion: string
+        public readonly netId: number,
+        public readonly modId: string,
+        public readonly modVersion: string,
+        public readonly networkSide: ModPluginSide
     ) {}
     
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        return chalk.green(this.modid) + chalk.grey("@" + this.modversion);
+        return chalk.green(this.modId) + chalk.grey("@" + this.modVersion);
     }
 }
 

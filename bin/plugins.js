@@ -28,7 +28,17 @@ export default class extends Plugin {
         ev.room.sendChat("Hello, world!");
     }
 }\n`.trim();
-}   
+}
+
+function readChar() {
+    return new Promise(resolve => {
+        process.stdin.setRawMode(true);
+        process.stdin.once("data", data => {
+            resolve(data.toString("utf8").trim());
+            process.stdin.setRawMode(false);
+        });
+    });
+}
 
 (async () => {
     const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
@@ -50,10 +60,21 @@ export default class extends Plugin {
 
     const action = process.argv[2];
     if (action === "init") {
-        const isTypescript = process.argv[3] === "ts";
-        let pluginName = isTypescript
-            ? process.argv[4]
-            : process.argv[3];
+        let isTypescript;
+        while (isTypescript === undefined) {
+            process.stdout.write("Use typescript? (Y/N): ");
+            const readLine = await readChar();
+            if (readLine === "y" || readLine === "Y") {
+                isTypescript = true;
+            } else if (readLine === "n" || readLine === "N") {
+                isTypescript = false;
+            } else {
+                process.stdout.clearLine();
+                process.stdout.cursorTo(0);
+            }
+        }
+        process.stdout.write("\n");
+        let pluginName = process.argv[3];
 
         if (!pluginName) {
             console.error("Expected plugin name");
@@ -216,6 +237,7 @@ export default class extends Plugin {
         }
 
         console.log("Initialised plugin!");
+        process.exit();
     } else if (action === "install") {
         let pluginName = process.argv[3];
 

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PluginHandler | @skeldjs/hindenburg</title>
+	<title>PluginLoader | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="pluginhandler.html">PluginHandler</a>
+					<a href="pluginloader.html">PluginLoader</a>
 				</li>
 			</ul>
-			<h1>Class PluginHandler</h1>
+			<h1>Class PluginLoader</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">PluginHandler</span>
+						<span class="target">PluginLoader</span>
 					</li>
 				</ul>
 			</section>
@@ -82,26 +82,26 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="pluginhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="pluginloader.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginhandler.html#loadedplugins" class="tsd-kind-icon">loaded<wbr>Plugins</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginhandler.html#plugindir" class="tsd-kind-icon">plugin<wbr>Dir</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginhandler.html#worker" class="tsd-kind-icon">worker</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#loadedplugins" class="tsd-kind-icon">loaded<wbr>Plugins</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#plugindir" class="tsd-kind-icon">plugin<wbr>Dir</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#worker" class="tsd-kind-icon">worker</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginhandler.html#loadfromdirectory" class="tsd-kind-icon">load<wbr>From<wbr>Directory</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginhandler.html#loadplugin" class="tsd-kind-icon">load<wbr>Plugin</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginhandler.html#reregisterchatcommands" class="tsd-kind-icon">reregister<wbr>Chat<wbr>Commands</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginhandler.html#reregistermessages" class="tsd-kind-icon">reregister<wbr>Messages</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginhandler.html#resolveloadplugin" class="tsd-kind-icon">resolve<wbr>Load<wbr>Plugin</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginhandler.html#unloadplugin" class="tsd-kind-icon">unload<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#loadfromdirectory" class="tsd-kind-icon">load<wbr>From<wbr>Directory</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#loadplugin" class="tsd-kind-icon">load<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#reregisterchatcommands" class="tsd-kind-icon">reregister<wbr>Chat<wbr>Commands</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#reregistermessages" class="tsd-kind-icon">reregister<wbr>Messages</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#resolveloadplugin" class="tsd-kind-icon">resolve<wbr>Load<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#unloadplugin" class="tsd-kind-icon">unload<wbr>Plugin</a></li>
 							</ul>
 						</section>
 					</div>
@@ -113,13 +113,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Plugin<wbr>Handler<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a>, pluginDir<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pluginhandler.html" class="tsd-signature-type" data-tsd-kind="Class">PluginHandler</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Plugin<wbr>Loader<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a>, pluginDir<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pluginloader.html" class="tsd-signature-type" data-tsd-kind="Class">PluginLoader</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L137">src/handlers/PluginHandler.ts:137</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L137">src/handlers/PluginLoader.ts:137</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -131,7 +131,7 @@
 									<h5>pluginDir: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="pluginhandler.html" class="tsd-signature-type" data-tsd-kind="Class">PluginHandler</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="pluginloader.html" class="tsd-signature-type" data-tsd-kind="Class">PluginLoader</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -144,7 +144,7 @@
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Plugins<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L137">src/handlers/PluginHandler.ts:137</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L137">src/handlers/PluginLoader.ts:137</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -175,7 +175,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L327">src/handlers/PluginHandler.ts:327</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L327">src/handlers/PluginLoader.ts:327</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -192,7 +192,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L176">src/handlers/PluginHandler.ts:176</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L176">src/handlers/PluginLoader.ts:176</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -215,7 +215,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L168">src/handlers/PluginHandler.ts:168</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L168">src/handlers/PluginLoader.ts:168</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -232,7 +232,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L146">src/handlers/PluginHandler.ts:146</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L146">src/handlers/PluginLoader.ts:146</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -249,7 +249,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L361">src/handlers/PluginHandler.ts:361</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L361">src/handlers/PluginLoader.ts:361</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -272,7 +272,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/9eb2f04/src/handlers/PluginHandler.ts#L302">src/handlers/PluginHandler.ts:302</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b715322/src/handlers/PluginLoader.ts#L302">src/handlers/PluginLoader.ts:302</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -339,37 +339,37 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="pluginhandler.html" class="tsd-kind-icon">Plugin<wbr>Handler</a>
+						<a href="pluginloader.html" class="tsd-kind-icon">Plugin<wbr>Loader</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="pluginhandler.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="pluginloader.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="pluginhandler.html#loadedplugins" class="tsd-kind-icon">loaded<wbr>Plugins</a>
+								<a href="pluginloader.html#loadedplugins" class="tsd-kind-icon">loaded<wbr>Plugins</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="pluginhandler.html#plugindir" class="tsd-kind-icon">plugin<wbr>Dir</a>
+								<a href="pluginloader.html#plugindir" class="tsd-kind-icon">plugin<wbr>Dir</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="pluginhandler.html#worker" class="tsd-kind-icon">worker</a>
+								<a href="pluginloader.html#worker" class="tsd-kind-icon">worker</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginhandler.html#loadfromdirectory" class="tsd-kind-icon">load<wbr>From<wbr>Directory</a>
+								<a href="pluginloader.html#loadfromdirectory" class="tsd-kind-icon">load<wbr>From<wbr>Directory</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginhandler.html#loadplugin" class="tsd-kind-icon">load<wbr>Plugin</a>
+								<a href="pluginloader.html#loadplugin" class="tsd-kind-icon">load<wbr>Plugin</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginhandler.html#reregisterchatcommands" class="tsd-kind-icon">reregister<wbr>Chat<wbr>Commands</a>
+								<a href="pluginloader.html#reregisterchatcommands" class="tsd-kind-icon">reregister<wbr>Chat<wbr>Commands</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginhandler.html#reregistermessages" class="tsd-kind-icon">reregister<wbr>Messages</a>
+								<a href="pluginloader.html#reregistermessages" class="tsd-kind-icon">reregister<wbr>Messages</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginhandler.html#resolveloadplugin" class="tsd-kind-icon">resolve<wbr>Load<wbr>Plugin</a>
+								<a href="pluginloader.html#resolveloadplugin" class="tsd-kind-icon">resolve<wbr>Load<wbr>Plugin</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginhandler.html#unloadplugin" class="tsd-kind-icon">unload<wbr>Plugin</a>
+								<a href="pluginloader.html#unloadplugin" class="tsd-kind-icon">unload<wbr>Plugin</a>
 							</li>
 						</ul>
 					</li>

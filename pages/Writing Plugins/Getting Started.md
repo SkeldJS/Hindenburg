@@ -6,14 +6,10 @@ You can either set up a new plugin using [an automated script](#setting-up),
 or [manually](#setting-up-manually).
 
 ## Setting Up
-Hindenburg comes with a small utility script to automatically initialise
-a new plugin for development:
+Hindenburg comes with a small utility script to automatically create a new plugin
+in a development environment:
 ```sh
-yarn init-plugin <plugin name>
-```
-If you want to use typescript:
-```sh
-yarn init-plugin ts <plugin name>
+yarn plugins create <plugin name>
 ```
 
 ## Setting Up Manually

@@ -84,7 +84,7 @@ async function getYesOrNo(question) {
     console.log("Found plugins directory: " + pluginsDirectory);
 
     const action = process.argv[2];
-    if (action === "init") {
+    if (action === "create") {
         const isTypescript = await getYesOrNo("Use typescript?");
         let pluginName = process.argv[3];
 
@@ -248,7 +248,7 @@ async function getYesOrNo(question) {
             }
         }
 
-        console.log("Initialised plugin!");
+        console.log("Created plugin!");
     } else if (action === "install") {
         let pluginName = process.argv[3];
 
@@ -374,9 +374,8 @@ async function getYesOrNo(question) {
         const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
 
         const resolvingPlugin = createSpinner("Resolving plugin..");
-        let packageLocation;
         try {
-            packageLocation = resolveFrom(pluginsDirectory, pluginName);
+            resolveFrom(pluginsDirectory, pluginName);
         } catch (e) {
             stopSpinner(resolvingPlugin, false);
             console.error("Plugin with name '" + pluginName + "' not installed or inaccessible");
@@ -435,6 +434,6 @@ async function getYesOrNo(question) {
         console.log("       yarn plugins init [ts] <plugin name> " + chalk.gray("# initialise a new plugin"));
         console.log("       yarn plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
         console.log("       yarn plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
-        console.error("Expected 'action' to be one of 'init', 'install', 'uninstall'.");
+        console.error("Expected 'action' to be one of 'install', 'uninstall', 'list', or 'create'.");
     }
 })();

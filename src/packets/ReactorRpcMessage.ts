@@ -3,6 +3,19 @@ import { HazelReader, HazelWriter } from "@skeldjs/util";
 
 import { BaseReactorRpcMessage } from "../api";
 
+export class UnknownReactorRpcMessage extends BaseReactorRpcMessage {
+    constructor(
+        public readonly tag: number,
+        public readonly bytes: Buffer
+    ) {
+        super();
+    }
+
+    Serialize(writer: HazelWriter) {
+        writer.bytes(this.bytes);
+    }
+}
+
 export class ReactorRpcMessage extends BaseRpcMessage {
     static tag = 255 as const;
     tag = 255 as const;
@@ -24,14 +37,15 @@ export class ReactorRpcMessage extends BaseRpcMessage {
 
         const rpcMessages = decoder.types.get("reactorRpc");
 
-        if (!rpcMessages)
-            return new ReactorRpcMessage(modNetId, new BaseReactorRpcMessage);
-
         const [ , mreader ] = reader.message();
+
+        if (!rpcMessages)
+            return new ReactorRpcMessage(modNetId, new UnknownReactorRpcMessage(callId, mreader.buffer));
+
         const rpcMessageClass = rpcMessages.get(callId);
 
         if (!rpcMessageClass)
-            return new ReactorRpcMessage(modNetId, new BaseReactorRpcMessage);
+            return new ReactorRpcMessage(modNetId, new UnknownReactorRpcMessage(callId, mreader.buffer));
 
         const rpc = rpcMessageClass.Deserialize(mreader, direction, decoder);
 
@@ -45,6 +59,8 @@ export class ReactorRpcMessage extends BaseRpcMessage {
     ) {
         writer.upacked(this.modNetId);
         writer.upacked(this.customRpc.tag);
+        writer.begin(0);
         writer.write(this.customRpc, direction, decoder);
+        writer.end();
     }
 }

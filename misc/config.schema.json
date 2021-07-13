@@ -37,6 +37,9 @@
         "nodeId": {
             "type": "number"
         },
+        "checkForUpdates": {
+            "type": "boolean"
+        },
         "socket": {
             "type": "object",
             "properties": {

@@ -25,6 +25,9 @@ your terminal or end your SSH session.
 Look into using something like [`pm2`](https://pm2.keymetrics.io) if you want a
 solution to keep your server alive.
 
+By default, Hindenburg will check for updates every time it is run. Set the
+`checkForUpdates` property in your `config.json` to `false` to disable this.
+
 ## Via Docker (to come)
 ### Prerequisites
 * [Docker](https://docker.com)

@@ -152,6 +152,10 @@ export interface HindenburgConfig {
      */
     nodeId: number;
     /**
+     * Whether or not to check for updates.
+     */
+    checkForUpdates: boolean;
+    /**
      * Options regarding the socket that the server listens on.
      */
     socket: SocketConfig;

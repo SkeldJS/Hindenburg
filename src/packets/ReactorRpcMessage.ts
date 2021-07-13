@@ -27,6 +27,15 @@ export class ReactorRpcMessage extends BaseRpcMessage {
         super();
     }
 
+    get canceled() {
+        return this.customRpc.canceled;
+    }
+
+    set canceled(canceled: boolean) {
+        if (canceled)
+            this.customRpc.cancel();
+    }
+
     static Deserialize(
         reader: HazelReader,
         direction: MessageDirection,

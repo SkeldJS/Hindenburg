@@ -1,69 +1,118 @@
 const path = require("path");
-const fs = require("fs");
-const child_process = require("child_process");
-const { createDefault } = require("./createDefault");
+const fs = require("fs/promises");
+const { createDefault: createDefaultConfig } = require("./createDefault");
+const { runCommandInDir, createSpinner, stopSpinner } = require("./util");
 
-module.exports = { createDefault };
+module.exports = { createDefault: createDefaultConfig };
 
-function doesExist(path) {
+async function doesExist(path) {
     try {
-        fs.statSync(path);
+        await fs.stat(path);
         return true;
     } catch (e) {
         return false;
     }
 }
 
-const default_package_json = `{
-    "dependencies": {
-        "hbplugin-ban-textfile": "*"
+const defaultPackageJson = {
+    dependencies: {
+        "hbplugin-ban-textfile": "latest"
     }
-}`
+};
 
-const plugins_dir = process.env.HINDENBURG_PLUGINS || path.join(process.cwd(), "./plugins");
-const config_file = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
+const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.join(process.cwd(), "./plugins");
+const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 
-function installPlugins() {
-    console.log("Installing plugins..");
-    child_process.exec("yarn install" ,{
-        cwd: plugins_dir
-    }, (err, stdout, stdin) => {
-        if (err) {
-            console.log("An error occurred while installing plugin:");
-            console.error(err);
+(async () => {
+    const yarnLockFile = path.join(pluginsDirectory, "yarn.lock");
+
+    const packageJsonFile = path.join(pluginsDirectory, "package.json");
+    const pluginsSpinner = createSpinner("Creating plugins directory..");
+    if (!await doesExist(pluginsDirectory)) {
+        try {
+            await fs.mkdir(pluginsDirectory);
+            await fs.writeFile(yarnLockFile, "", "utf8");
+            await fs.writeFile(packageJsonFile, JSON.stringify(defaultPackageJson, undefined, 4), "utf8");
+        } catch (e) {
+            stopSpinner(pluginsSpinner, false);
+            console.log("Failed to create plugins directory:");
+            console.error(e);
             return;
         }
-        console.log("Installed plugins!");
-    });
-}
-
-if (!doesExist(plugins_dir)) {
-    console.log("No plugins directory, creating folder, yarn.lock and package.json.");
-    fs.mkdirSync(plugins_dir);
-    fs.writeFileSync(path.join(plugins_dir, "yarn.lock"), "", "utf8");
-    fs.writeFileSync(path.join(plugins_dir, "package.json"), default_package_json);
-    console.log("Created plugins/ at " + plugins_dir);
-    installPlugins();
-} else {
-    const yarnExist = doesExist(path.join(plugins_dir, "yarn.lock"));
-    const packageJsonExist = doesExist(path.join(plugins_dir, "package.json"));
-    if (!yarnExist) {
-        console.log("No yarn.lock for plugins, creating one.");
-        fs.writeFileSync(path.join(plugins_dir, "yarn.lock"), "", "utf8");
     }
-    if (!packageJsonExist) {
-        console.log("No package.json for plugins, creating one.");
-        fs.writeFileSync(path.join(plugins_dir, "package.json"), default_package_json, "utf8");
+    
+    if (!await doesExist(yarnLockFile)) {
+        try {
+            await fs.writeFile(yarnLockFile, "", "utf8");
+        } catch (e) {
+            stopSpinner(pluginsSpinner, false);
+            console.log("Failed to create plugins directory:");
+            console.error(e);
+            return;
+        }
     }
-    if (!yarnExist || !packageJsonExist) {
-        installPlugins();
+    
+    if (!await doesExist(packageJsonFile)) {
+        try {
+            await fs.writeFile(
+                packageJsonFile,
+                JSON.stringify(defaultPackageJson, undefined, 4),
+                "utf8"
+            );
+        } catch (e) {
+            stopSpinner(pluginsSpinner, false);
+            console.log("Failed to create plugins directory:");
+            console.error(e);
+            return;
+        }
     }
-}
+    stopSpinner(pluginsSpinner, true);
 
-if (!doesExist(config_file)) {
-    console.log("No config.json, creating one.");
-    fs.writeFileSync(config_file, JSON.stringify(createDefault(), undefined, 4), "utf8");
-    console.log("Created config.json at " + config_file);
-}
+    const installingSpinner = createSpinner("Installing plugins..");
+    try {
+        await runCommandInDir(pluginsDirectory, "yarn install");
+        stopSpinner(installingSpinner, true);
+    } catch (e) {
+        stopSpinner(installingSpinner, false);
+    }
 
-console.log("Setup complete!");
+    let flag = false;
+    if (await doesExist(configFile)) {
+        const verifySpinner = createSpinner("Verifying config.json..");
+        let configJsonData;
+        try {
+            configJsonData = await fs.readFile(configFile, "utf8");
+        } catch (e) {
+            stopSpinner(verifySpinner);
+            console.error("Failed to read config.json:", e.code);
+        }
+
+        try {
+            JSON.parse(configJsonData);
+            stopSpinner(verifySpinner, true);
+        } catch (e) {
+            stopSpinner(verifySpinner, false);
+            flag = true;
+        }
+    } else {
+        flag = true;
+    }
+    
+    if (flag) {
+        const configSpinner = createSpinner("Creating config.json..");
+        try {
+            const defaultConfig = createDefaultConfig();
+            await fs.writeFile(
+                configFile,
+                JSON.stringify(defaultConfig, undefined, 4),
+                "utf8"
+            );
+            stopSpinner(configSpinner, true);
+        } catch (e) {
+            stopSpinner(configSpinner, false);
+            console.error("Failed to create config.json:", e.code);
+        }
+    }
+
+    console.log("Setup complete!");
+})();

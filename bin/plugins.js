@@ -6,7 +6,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const resolveFrom = require("resolve-from");
 const { isHindenburgPlugin } = require("../src");
-const { runCommandInDir, createSpinner, stopSpinner } = require("./spinner");
+const { runCommandInDir, createSpinner, stopSpinner } = require("./util");
 
 function createHelloWorldPlugin(pluginName, typescript) {
     return `import {

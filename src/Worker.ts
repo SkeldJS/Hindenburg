@@ -21,6 +21,7 @@ import {
     PacketDecoder,
     PingPacket,
     ReliablePacket,
+    RpcMessage,
     StartGameMessage
 } from "@skeldjs/protocol";
 
@@ -62,6 +63,7 @@ import {
 
 import { recursiveAssign } from "./util/recursiveAssign";
 import { recursiveCompare } from "./util/recursiveCompare";
+import { ReactorRpcMessage } from "./packets";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -292,10 +294,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const clientMod = new ClientMod(
                 message.netId,
                 message.mod.modId,
-                message.mod.version
+                message.mod.version,
+                message.mod.networkSide
             );
 
-            connection.mods.set(clientMod.netid, clientMod);
+            connection.mods.set(clientMod.netId, clientMod);
 
             if (connection.mods.size === 4) {
                 this.logger.info("... Got more mods from %s, use '%s' to see more",
@@ -397,6 +400,45 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.logger.info("%s joining room %s",
                 connection, foundRoom);
             await ev.alteredRoom.handleRemoteJoin(connection);
+        });
+
+        this.decoder.on(RpcMessage, async (message, direction, connection) => {
+            const player = connection.getPlayer();
+            if (!player)
+                return;
+
+            const reactorRpc = message.data as unknown as ReactorRpcMessage;
+            if (reactorRpc.tag === 255) {
+                const componentNetId = message.netid;
+                const modNetId = reactorRpc.modNetId;
+
+                const component = connection.room!.netobjects.get(componentNetId);
+                const clientMod = connection.mods.get(modNetId);
+
+                if (component) {
+                    if (clientMod) {
+                        if (clientMod.networkSide === ModPluginSide.Clientside) {
+                            this.logger.warn("Got reactor Rpc from %s for client-side-only reactor mod %s",
+                                connection, clientMod);
+
+                            if (this.config.reactor.blockClientSideOnly) {
+                                message.cancel();
+                                return;
+                            }
+                        }
+
+                        
+                    } else {
+                        message.cancel();
+                        this.logger.warn("Got reactor Rpc from %s for unknown mod with netid %s",
+                            connection, modNetId);
+                    }
+                } else {
+                    message.cancel();
+                    this.logger.warn("Got reactor Rpc from %s for unknown component with netid %s",
+                        connection, componentNetId)
+                }
+            }
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, connection) => {

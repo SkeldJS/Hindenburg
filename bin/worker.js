@@ -21,7 +21,7 @@ async function resolveConfig() {
 
 function getLatestVersion() {
     return new Promise((resolve, reject) => {
-        const req = https.get("https://cdn.jsdelivr.net/gh/SkeldJS/Hindenburg/package.json", res => {
+        const req = https.get("https://raw.githubusercontent.com/SkeldJS/Hindenburg/master/package.json", res => {
             const buffers = [];
             res.on("data", data => {
                 buffers.push(data);

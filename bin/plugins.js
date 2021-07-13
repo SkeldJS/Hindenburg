@@ -429,11 +429,64 @@ async function getYesOrNo(question) {
         }
 
         console.log("Uninstalled plugin!");
+    } else if (action === "list") {
+        const resolveNpmSpinner = createSpinner("Resolving NPM plugins..");
+        const allInstalledPlugins = [];
+        try {
+            const packageJson = await fs.readFile(path.join(pluginsDirectory, "package.json"), "utf8");
+            const json = JSON.parse(packageJson);
+
+            for (const depenencyName in json.dependencies) {
+                allInstalledPlugins.push({
+                    name: depenencyName,
+                    type: "npm"
+                });
+            }
+        } catch (e) {
+            stopSpinner(resolveNpmSpinner, false);
+            if (e.code === "ENOENT") {
+                return;
+            }
+            console.error(e);
+            return;
+        }
+        stopSpinner(resolveNpmSpinner, true);
+
+        const resolveLocalSpinner = createSpinner("Resolving local plugins..");
+        try {
+            const files = await fs.readdir(pluginsDirectory);
+            for (const file of files) {
+                if (!file.startsWith("hbplugin-"))
+                    continue;
+                
+                allInstalledPlugins.push({
+                    name: path.basename(path.basename(file, ".ts"), ".js"),
+                    type: "local"
+                });
+            }
+        } catch (e) {
+            stopSpinner(resolveLocalSpinner, false);
+            console.error("Could not read plugin directory: " + e.code);
+            return;
+        }
+        stopSpinner(resolveLocalSpinner, true);
+
+        console.log("There are %s plugin%s installed",
+            allInstalledPlugins.length, allInstalledPlugins.length === 1 ? "" : "s");
+        for (let i = 0; i < allInstalledPlugins.length; i++) {
+            const installedPlugin = allInstalledPlugins[i];
+            console.log("%s) %s (%s)",
+                i + 1, chalk.green(installedPlugin.name), installedPlugin.type);
+        }
+    } else if (action === "info") {
+
     } else {
         console.log("Usage: yarn plugins <action>");
         console.log("       yarn plugins init [ts] <plugin name> " + chalk.gray("# initialise a new plugin"));
         console.log("       yarn plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
         console.log("       yarn plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
+        console.log("       yarn plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
+        console.log("       yarn plugins list                    " + chalk.gray("# list all installed plugins"));
         console.error("Expected 'action' to be one of 'install', 'uninstall', 'list', or 'create'.");
     }
 })();

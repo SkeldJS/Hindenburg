@@ -16,6 +16,7 @@ export function HindenburgPlugin(meta: Partial<PluginMeta>) {
         id: "",
         defaultConfig: {},
         order: "none",
+        modId: "",
         ...meta
     };
 

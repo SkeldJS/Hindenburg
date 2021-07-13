@@ -156,6 +156,10 @@ export interface HindenburgConfig {
      */
     checkForUpdates: boolean;
     /**
+     * Whether or not to auto-update Hindenburg when there is an update available.
+     */
+    autoUpdate: boolean;
+    /**
      * Options regarding the socket that the server listens on.
      */
     socket: SocketConfig;

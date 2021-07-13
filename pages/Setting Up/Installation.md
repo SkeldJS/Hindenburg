@@ -28,6 +28,8 @@ solution to keep your server alive.
 By default, Hindenburg will check for updates every time it is run. Set the
 `checkForUpdates` property in your `config.json` to `false` to disable this.
 
+Or, you can enable auto-updating by setting the `autoUpdate` property to `true`.
+
 ## Via Docker (to come)
 ### Prerequisites
 * [Docker](https://docker.com)

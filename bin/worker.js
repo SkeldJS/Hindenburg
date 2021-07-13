@@ -5,7 +5,7 @@ const https = require("https");
 const compareVersions = require("compare-versions");
 const chokidar = require("chokidar");
 
-const { createSpinner, stopSpinner, createDefault } = require("./util");
+const { createSpinner, stopSpinner, createDefault, runCommandInDir } = require("./util");
 const { Worker } = require("../src");
 const { recursiveAssign } = require("../src/util/recursiveAssign");
 const chalk = require("chalk");
@@ -60,18 +60,43 @@ function getLatestVersion() {
             stopSpinner(versionSpinner, true);
     
             if (compare === 1) {
-                console.log(chalk.yellow("New version of Hindenburg available: " + latestVersion + ", use 'git pull && yarn build' to update"));
+                if (worker.config.autoUpdate) {
+                    console.log(chalk.yellow("New version of Hindenburg available: " + latestVersion));
+
+                    const gitPullSpinner = createSpinner("Running 'git pull'..");
+                    try {
+                        await runCommandInDir(process.cwd(), "git pull");
+                        stopSpinner(gitPullSpinner, true);
+                        
+                        const yarnBuildSpinner = createSpinner("Running 'yarn build'..");
+                        
+                        try {
+                            await runCommandInDir(process.cwd(), "yarn build");
+                            stopSpinner(yarnBuildSpinner, true);
+
+                            console.log(chalk.yellow("Please restart Hindenburg to apply the latest changes"));
+                        } catch (e) {
+                            stopSpinner(gitPullSpinner, false);
+                            console.error("Failed to build latest changes.");
+                        }
+                    } catch (e) {
+                        stopSpinner(gitPullSpinner, false);
+                        console.error("Failed to pull latest changes.");
+                    }
+                } else {
+                    console.log(chalk.yellow("New version of Hindenburg available: " + latestVersion + ", use 'git pull && yarn build' to update"));
+                }
             } else {
                 console.log("Up to date!");
             }
         } catch (e) {
             stopSpinner(versionSpinner, false);
-            console.error("Failed to check for updates, nevermind.");
+            console.error("Failed to check for updates, nevermind");
         }
     }
 
     if (!resolvedConfig) {
-        worker.logger.warn("Cannot open config file; using default config.");
+        worker.logger.warn("Cannot open config file; using default config");
     }
 
     await worker.listen(worker.config.socket.port);

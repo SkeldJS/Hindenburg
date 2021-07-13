@@ -40,6 +40,9 @@
         "checkForUpdates": {
             "type": "boolean"
         },
+        "autoUpdate": {
+            "type": "boolean"
+        },
         "socket": {
             "type": "object",
             "properties": {

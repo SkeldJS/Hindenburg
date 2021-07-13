@@ -36,5 +36,5 @@ yarn plugins list
 ```
 
 ## Creating Plugins
-See the page on [Getting Started Writing Plugins](https://skeldjs.github.io/Hindenburg/pages/Writing%20Plugins/Getting%20Started.html)
+See the page on [Writing Plugins](https://skeldjs.github.io/Hindenburg/pages/Writing%20Plugins/Getting%20Started.html)
 to learn how to start writing your own plugin.

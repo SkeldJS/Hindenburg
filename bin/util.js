@@ -34,4 +34,35 @@ function stopSpinner(spinner, success) {
     process.stdout.write(spinner.text + " " + (success ? chalk.green("✓") : chalk.red("❌")) + "\n");
 }
 
-module.exports = { runCommandInDir, createSpinner, stopSpinner };
+/**
+ * @returns {HindenburgConfig}
+ */
+function createDefaultConfig() {
+    return {
+        $schema: "./misc/config.schema.json",
+        versions: ["2021.6.30"],
+        clusterName: "Capybara",
+        nodeId: 0,
+        checkForUpdates: true,
+        socket: {
+            port: 22023
+        },
+        plugins: {},
+        anticheat: {
+            penalty: {
+                action: "disconnect",
+                strikes: 2,
+                banAfterXDisconnects: 3,
+                banDuration: 3600,
+                disconnectMessage: "You have been banned for $duration."
+            },
+            rules: {}
+        },
+        logging: {},
+        reactor: {
+            blockClientSideOnly: true
+        }
+    };
+}
+
+module.exports = { runCommandInDir, createSpinner, stopSpinner, createDefault: createDefaultConfig };

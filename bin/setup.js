@@ -1,7 +1,6 @@
 const path = require("path");
 const fs = require("fs/promises");
-const { createDefault: createDefaultConfig } = require("./createDefault");
-const { runCommandInDir, createSpinner, stopSpinner } = require("./util");
+const { runCommandInDir, createSpinner, stopSpinner, createDefault } = require("./util");
 
 module.exports = { createDefault: createDefaultConfig };
 

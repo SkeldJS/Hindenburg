@@ -74,7 +74,7 @@ function getLatestVersion() {
                             await runCommandInDir(process.cwd(), "yarn build");
                             stopSpinner(yarnBuildSpinner, true);
 
-                            console.log(chalk.yellow("Please restart Hindenburg to apply the latest changes"));
+                            console.log(chalk.yellow("Successfully updated, please restart Hindenburg to apply the latest changes"));
                         } catch (e) {
                             stopSpinner(gitPullSpinner, false);
                             console.error("Failed to build latest changes.");

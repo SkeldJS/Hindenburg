@@ -318,6 +318,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (sentPacket.nonce === message.nonce) {
                     sentPacket.acked = true;
                     connection.roundTripPing = Date.now() - sentPacket.sentAt;
+                    break;
                 }
             } 
         });
@@ -808,6 +809,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.memUsages.splice(numEntries);
 
             for (const [ , connection ] of this.connections) {
+                if (connection.sentPackets.every(packet => !packet.acked)) {
+                    this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
+                        connection);
+                        
+                    connection.disconnect();
+                    continue;
+                }
+
                 connection.sendPacket(
                     new PingPacket(
                         connection.getNextNonce()

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Plugin, PluginMeta } from "../handlers/PluginHandler";
+import { Plugin, PluginMeta } from "../handlers/PluginLoader";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin

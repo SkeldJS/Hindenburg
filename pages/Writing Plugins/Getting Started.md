@@ -6,14 +6,10 @@ You can either set up a new plugin using [an automated script](#setting-up),
 or [manually](#setting-up-manually).
 
 ## Setting Up
-Hindenburg comes with a small utility script to automatically initialise
-a new plugin for development:
+Hindenburg comes with a small utility script to automatically create a new plugin
+in a development environment:
 ```sh
-yarn init-plugin <plugin name>
-```
-If you want to use typescript:
-```sh
-yarn init-plugin ts <plugin name>
+yarn plugins create <plugin name>
 ```
 
 ## Setting Up Manually
@@ -42,7 +38,7 @@ Optionally, use yarn v3.0.0:
 ```sh
 # Yarn requires you to install v2 first to install a specific v3 version.
 yarn set version berry
-yarn set verison version 3.0.0-rc.9
+yarn set version version 3.0.0-rc.9
 ```
 
 For reasons related to yarn and workspaces being kept separate from Hindenburg
@@ -74,9 +70,9 @@ yarn add --dev typescript
 
 ### Configure files
 #### If you are using Typescript
-Run the following command to create a `tsconfig.json`:
+Run the following rather long command to create a `tsconfig.json`:
 ```sh
-yarn tsc --init --outDir ./dist --experimentalDecorators
+yarn tsc --init --outDir ./dist --experimentalDecorators --sourceMap --declaration --allowJs --target es2017
 ```
 Add the following to your `package.json`:
 ```json

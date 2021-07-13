@@ -3,7 +3,7 @@ import winston from "winston";
 import vorpal from "vorpal";
 import chalk from "chalk";
 
-import { DisconnectReason, Language, GameState } from "@skeldjs/constant";
+import { DisconnectReason, Language, GameState, AlterGameTag } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
@@ -13,7 +13,9 @@ import {
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
+    GameListing,
     GameOptions,
+    GetGameListMessage,
     HostGameMessage,
     JoinGameMessage,
     KickPlayerMessage,
@@ -51,7 +53,7 @@ import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
 
-import { PluginHandler, ChatCommandHandler } from "./handlers";
+import { PluginLoader, ChatCommandHandler } from "./handlers";
 import { Room, RoomEvents, MessageSide } from "./room";
 
 import {
@@ -104,7 +106,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * The server's plugin loader.
      */
-    pluginHandler: PluginHandler;
+    pluginHandler: PluginLoader;
 
     chatCommandHandler: ChatCommandHandler;
 
@@ -192,7 +194,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]
         });
 
-        this.pluginHandler = new PluginHandler(this, pluginDir);
+        this.pluginHandler = new PluginLoader(this, pluginDir);
         this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.socket = dgram.createSocket("udp4");
@@ -321,6 +323,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (sentPacket.nonce === message.nonce) {
                     sentPacket.acked = true;
                     connection.roundTripPing = Date.now() - sentPacket.sentAt;
+                    break;
                 }
             } 
         });
@@ -484,7 +487,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room?.room.decoder.emitDecoded(message, direction, player);
+            connection.room?.decoder.emitDecoded(message, direction, player);
             await connection.room?.broadcastMessages([], [
                 new AlterGameMessage(connection.room.code, message.alterTag, message.value)
             ]);
@@ -522,7 +525,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]);
         });
 
-        this.decoder.on([ KickPlayerMessage ], async (message, direction, connection) => {
+        this.decoder.on(KickPlayerMessage, async (message, direction, connection) => {
             const player = connection.getPlayer();
             if (!player)
                 return;
@@ -539,6 +542,58 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             await targetConnection.kick(message.banned);
 */
+        });
+
+        this.decoder.on(GetGameListMessage, async (message, direction, connection) => {
+            const returnList: GameListing[] = [];
+            for (const [ gameCode, room ] of this.rooms) {
+                if (gameCode === 0x20 /* local game */) {
+                    continue;
+                }
+
+                const roomHost = room.connections.get(room.hostid);
+
+                if (roomHost) {
+                    const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
+
+                    if (
+                        room.settings.keywords === message.options.keywords &&
+                        (message.options.map & (1 << room.settings.map)) !== 0 &&
+                        (
+                            room.settings.numImpostors === message.options.numImpostors ||
+                            message.options.numImpostors === 0
+                        )
+                    ) {
+                        const gameListing = new GameListing(
+                            room.code,
+                            "127.0.0.1", /* todo: get ip somehow */
+                            this.config.socket.port,
+                            roomHost.username,
+                            room.players.size,
+                            roomAge,
+                            room.settings.map,
+                            room.settings.numImpostors,
+                            room.settings.maxPlayers
+                        );
+    
+                        returnList.push(gameListing);
+                        
+                        if (returnList.length >= 10)
+                            break;
+                    }
+                }
+            }
+
+            if (returnList.length) {
+                await connection.sendPacket(
+                    new ReliablePacket(
+                        connection.getNextNonce(),
+                        [
+                            new GetGameListMessage(returnList)
+                        ]
+                    )
+                );
+            }
         });
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
@@ -850,6 +905,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.memUsages.splice(numEntries);
 
             for (const [ , connection ] of this.connections) {
+                if (connection.sentPackets.every(packet => !packet.acked)) {
+                    this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
+                        connection);
+
+                    connection.disconnect();
+                    continue;
+                }
+
                 connection.sendPacket(
                     new PingPacket(
                         connection.getNextNonce()

@@ -2,6 +2,7 @@ import chalk from "chalk";
 import winston from "winston";
 
 import {
+    AlterGameTag,
     Color,
     DisconnectReason,
     GameMap,
@@ -11,6 +12,7 @@ import {
 } from "@skeldjs/constant";
 
 import {
+    AlterGameMessage,
     BaseGameDataMessage,
     BaseRootMessage,
     ComponentSpawnData,
@@ -146,8 +148,8 @@ const logMaps = {
 export type RoomEvents = HostableEvents<Room> & ExtractEventTypes<[RoomDestroyEvent]>;
 
 export class Room extends Hostable<RoomEvents> {
+    createdAt: number;
     connections: Map<number, Connection>;
-
     waiting: Set<Connection>;
 
     /**
@@ -168,6 +170,7 @@ export class Room extends Hostable<RoomEvents> {
     ) {
         super({ doFixedUpdate: true });
 
+        this.createdAt = Date.now();
         this.connections = new Map;
         this.waiting = new Set;
 
@@ -539,6 +542,11 @@ export class Room extends Hostable<RoomEvents> {
                         this.host!.id,
                         [...this.connections]
                             .map(([, client]) => client.clientId)
+                    ),
+                    new AlterGameMessage(
+                        this.code,
+                        AlterGameTag.ChangePrivacy,
+                        this.privacy === "public" ? 1 : 0
                     )
                 ]
             )

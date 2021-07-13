@@ -8,8 +8,8 @@
           "source": "./pages/Setting Up/Installation.md"
         },
         {
-          "title": "Installing Plugins",
-          "source": "./pages/Setting Up/Installing Plugins.md"
+          "title": "Plugins",
+          "source": "./pages/Setting Up/Plugins.md"
         }
       ]
     },
@@ -17,8 +17,8 @@
       "title": "Using Hindenburg",
       "pages": [
         {
-          "title": "CLI",
-          "source": "./pages/Using Hindenburg/CLI.md"
+          "title": "Interactive CLI",
+          "source": "./pages/Using Hindenburg/Interactive CLI.md"
         }
       ]
     },
@@ -26,7 +26,7 @@
       "title": "Writing Plugins",
       "pages": [
         {
-          "title": "Writing Plugins",
+          "title": "Getting Started",
           "source": "./pages/Writing Plugins/Getting Started.md"
         },
         {

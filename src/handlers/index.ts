@@ -1,2 +1,2 @@
 export * from "./CommandHander";
-export * from "./PluginHandler";
+export * from "./PluginLoader";

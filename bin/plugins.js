@@ -13,7 +13,7 @@ function createHelloWorldPlugin(pluginName, typescript) {
     HindenburgPlugin,
     Plugin,
     EventListener,
-    PlayerJoinEvent,
+    PlayerSetNameEvent,
     Room
 } from "@skeldjs/hindenburg";
 
@@ -23,12 +23,47 @@ function createHelloWorldPlugin(pluginName, typescript) {
     order: "none"
 })
 export default class extends Plugin {
-    @EventListener("player.join")
-    onPlayerJoin(ev${typescript ? ": PlayerJoinEvent<Room>" : ""}) {
+    @EventListener("player.setname")
+    onPlayerSetName(ev${typescript ? ": PlayerSetNameEvent<Room>" : ""}) {
         ev.room.sendChat("Hello, world!");
     }
 }\n`.trim();
-}   
+}
+
+function readChar() {
+    return new Promise(resolve => {
+        process.stdin.setRawMode(true);
+        process.stdin.once("data", data => {
+            resolve(data.toString("utf8").trim());
+            process.stdin.setRawMode(false);
+            process.stdin.pause();
+        });
+    });
+}
+
+async function getYesOrNo(question) {
+    let output;
+    while (output === undefined) {
+        process.stdout.write(question + " (Y/N): ");
+        const char = await readChar();
+
+        if (char === "\x03") {
+            process.stdout.write("\n");
+            process.exit();
+        }
+
+        if (char === "y" || char === "Y") {
+            output = true;
+        } else if (char === "n" || char === "N") {
+            output = false;
+        } else {
+            process.stdout.clearLine();
+            process.stdout.cursorTo(0);
+        }
+    }
+    process.stdout.write("\n");
+    return output;
+}
 
 (async () => {
     const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
@@ -49,11 +84,9 @@ export default class extends Plugin {
     console.log("Found plugins directory: " + pluginsDirectory);
 
     const action = process.argv[2];
-    if (action === "init") {
-        const isTypescript = process.argv[3] === "ts";
-        let pluginName = isTypescript
-            ? process.argv[4]
-            : process.argv[3];
+    if (action === "create") {
+        const isTypescript = await getYesOrNo("Use typescript?");
+        let pluginName = process.argv[3];
 
         if (!pluginName) {
             console.error("Expected plugin name");
@@ -143,7 +176,7 @@ export default class extends Plugin {
             if (isTypescript) {
                 await runCommandInDir(
                     pluginDirectory,
-                    "yarn tsc --init --outDir ./dist --experimentalDecorators --sourceMap --declaration --allowJs"
+                    "yarn tsc --init --outDir ./dist --experimentalDecorators --sourceMap --declaration --allowJs --target es2017"
                 );
 
                 packageJson.main = "./dist/index.js";
@@ -215,7 +248,7 @@ export default class extends Plugin {
             }
         }
 
-        console.log("Initialised plugin!");
+        console.log("Created plugin!");
     } else if (action === "install") {
         let pluginName = process.argv[3];
 
@@ -341,9 +374,8 @@ export default class extends Plugin {
         const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
 
         const resolvingPlugin = createSpinner("Resolving plugin..");
-        let packageLocation;
         try {
-            packageLocation = resolveFrom(pluginsDirectory, pluginName);
+            resolveFrom(pluginsDirectory, pluginName);
         } catch (e) {
             stopSpinner(resolvingPlugin, false);
             console.error("Plugin with name '" + pluginName + "' not installed or inaccessible");
@@ -397,11 +429,64 @@ export default class extends Plugin {
         }
 
         console.log("Uninstalled plugin!");
+    } else if (action === "list") {
+        const resolveNpmSpinner = createSpinner("Resolving NPM plugins..");
+        const allInstalledPlugins = [];
+        try {
+            const packageJson = await fs.readFile(path.join(pluginsDirectory, "package.json"), "utf8");
+            const json = JSON.parse(packageJson);
+
+            for (const depenencyName in json.dependencies) {
+                allInstalledPlugins.push({
+                    name: depenencyName,
+                    type: "npm"
+                });
+            }
+        } catch (e) {
+            stopSpinner(resolveNpmSpinner, false);
+            if (e.code === "ENOENT") {
+                return;
+            }
+            console.error(e);
+            return;
+        }
+        stopSpinner(resolveNpmSpinner, true);
+
+        const resolveLocalSpinner = createSpinner("Resolving local plugins..");
+        try {
+            const files = await fs.readdir(pluginsDirectory);
+            for (const file of files) {
+                if (!file.startsWith("hbplugin-"))
+                    continue;
+                
+                allInstalledPlugins.push({
+                    name: path.basename(path.basename(file, ".ts"), ".js"),
+                    type: "local"
+                });
+            }
+        } catch (e) {
+            stopSpinner(resolveLocalSpinner, false);
+            console.error("Could not read plugin directory: " + e.code);
+            return;
+        }
+        stopSpinner(resolveLocalSpinner, true);
+
+        console.log("There are %s plugin%s installed",
+            allInstalledPlugins.length, allInstalledPlugins.length === 1 ? "" : "s");
+        for (let i = 0; i < allInstalledPlugins.length; i++) {
+            const installedPlugin = allInstalledPlugins[i];
+            console.log("%s) %s (%s)",
+                i + 1, chalk.green(installedPlugin.name), installedPlugin.type);
+        }
+    } else if (action === "info") {
+
     } else {
         console.log("Usage: yarn plugins <action>");
         console.log("       yarn plugins init [ts] <plugin name> " + chalk.gray("# initialise a new plugin"));
         console.log("       yarn plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
         console.log("       yarn plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
-        console.error("Expected 'action' to be one of 'init', 'install', 'uninstall'.");
+        console.log("       yarn plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
+        console.log("       yarn plugins list                    " + chalk.gray("# list all installed plugins"));
+        console.error("Expected 'action' to be one of 'install', 'uninstall', 'list', or 'create'.");
     }
 })();

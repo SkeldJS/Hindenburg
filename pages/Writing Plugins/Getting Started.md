@@ -38,7 +38,7 @@ Optionally, use yarn v3.0.0:
 ```sh
 # Yarn requires you to install v2 first to install a specific v3 version.
 yarn set version berry
-yarn set verison version 3.0.0-rc.9
+yarn set version version 3.0.0-rc.9
 ```
 
 For reasons related to yarn and workspaces being kept separate from Hindenburg

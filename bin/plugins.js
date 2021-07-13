@@ -13,7 +13,7 @@ function createHelloWorldPlugin(pluginName, typescript) {
     HindenburgPlugin,
     Plugin,
     EventListener,
-    PlayerJoinEvent,
+    PlayerSetNameEvent,
     Room
 } from "@skeldjs/hindenburg";
 
@@ -23,8 +23,8 @@ function createHelloWorldPlugin(pluginName, typescript) {
     order: "none"
 })
 export default class extends Plugin {
-    @EventListener("player.join")
-    onPlayerJoin(ev${typescript ? ": PlayerJoinEvent<Room>" : ""}) {
+    @EventListener("player.setname")
+    onPlayerSetName(ev${typescript ? ": PlayerSetNameEvent<Room>" : ""}) {
         ev.room.sendChat("Hello, world!");
     }
 }\n`.trim();
@@ -36,8 +36,33 @@ function readChar() {
         process.stdin.once("data", data => {
             resolve(data.toString("utf8").trim());
             process.stdin.setRawMode(false);
+            process.stdin.pause();
         });
     });
+}
+
+async function getYesOrNo(question) {
+    let output;
+    while (output === undefined) {
+        process.stdout.write(question + " (Y/N): ");
+        const char = await readChar();
+
+        if (char === "\x03") {
+            process.stdout.write("\n");
+            process.exit();
+        }
+
+        if (char === "y" || char === "Y") {
+            output = true;
+        } else if (char === "n" || char === "N") {
+            output = false;
+        } else {
+            process.stdout.clearLine();
+            process.stdout.cursorTo(0);
+        }
+    }
+    process.stdout.write("\n");
+    return output;
 }
 
 (async () => {
@@ -60,20 +85,7 @@ function readChar() {
 
     const action = process.argv[2];
     if (action === "init") {
-        let isTypescript;
-        while (isTypescript === undefined) {
-            process.stdout.write("Use typescript? (Y/N): ");
-            const readLine = await readChar();
-            if (readLine === "y" || readLine === "Y") {
-                isTypescript = true;
-            } else if (readLine === "n" || readLine === "N") {
-                isTypescript = false;
-            } else {
-                process.stdout.clearLine();
-                process.stdout.cursorTo(0);
-            }
-        }
-        process.stdout.write("\n");
+        const isTypescript = await getYesOrNo("Use typescript?");
         let pluginName = process.argv[3];
 
         if (!pluginName) {
@@ -237,7 +249,6 @@ function readChar() {
         }
 
         console.log("Initialised plugin!");
-        process.exit();
     } else if (action === "install") {
         let pluginName = process.argv[3];
 

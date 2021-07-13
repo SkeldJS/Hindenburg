@@ -3,7 +3,7 @@ import winston from "winston";
 import vorpal from "vorpal";
 import chalk from "chalk";
 
-import { DisconnectReason, Language, GameState } from "@skeldjs/constant";
+import { DisconnectReason, Language, GameState, AlterGameTag } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
@@ -443,7 +443,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room?.room.decoder.emitDecoded(message, direction, player);
+            if (message.alterTag === AlterGameTag.ChangePrivacy) {
+                connection.room?.setPrivacy(message.value === 1 ? "public" : "private");
+            }
+
+            connection.room?.decoder.emitDecoded(message, direction, player);
             await connection.room?.broadcastMessages([], [
                 new AlterGameMessage(connection.room.code, message.alterTag, message.value)
             ]);
@@ -812,7 +816,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (connection.sentPackets.every(packet => !packet.acked)) {
                     this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
                         connection);
-                        
+
                     connection.disconnect();
                     continue;
                 }

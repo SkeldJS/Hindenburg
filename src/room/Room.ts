@@ -2,6 +2,7 @@ import chalk from "chalk";
 import winston from "winston";
 
 import {
+    AlterGameTag,
     Color,
     DisconnectReason,
     GameMap,
@@ -11,6 +12,7 @@ import {
 } from "@skeldjs/constant";
 
 import {
+    AlterGameMessage,
     BaseGameDataMessage,
     BaseRootMessage,
     ComponentSpawnData,
@@ -549,6 +551,11 @@ export class Room extends Hostable<RoomEvents> {
                 this.code,
                 client.clientId,
                 this.host!.id
+            ),
+            new AlterGameMessage(
+                this.code,
+                AlterGameTag.ChangePrivacy,
+                this.privacy === "public" ? 1 : 0
             )
         ]);
         

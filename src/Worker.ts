@@ -514,10 +514,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (roomHost) {
                     const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
 
-                    console.log(message.options.map);
-                    console.log(room.settings.map);
-                    console.log(1 << room.settings.map);
-                    console.log(message.options.map & (1 << room.settings.map));
                     if (
                         room.settings.keywords === message.options.keywords &&
                         (message.options.map & (1 << room.settings.map)) !== 0 &&

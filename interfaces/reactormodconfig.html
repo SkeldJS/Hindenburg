@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ClientMod | @skeldjs/hindenburg</title>
+	<title>ReactorModConfig | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="clientmod.html">ClientMod</a>
+					<a href="reactormodconfig.html">ReactorModConfig</a>
 				</li>
 			</ul>
-			<h1>Class ClientMod</h1>
+			<h1>Interface ReactorModConfig</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ClientMod</span>
+						<span class="target">ReactorModConfig</span>
 					</li>
 				</ul>
 			</section>
@@ -80,87 +80,82 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="clientmod.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#modid" class="tsd-kind-icon">mod<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#modversion" class="tsd-kind-icon">mod<wbr>Version</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#netid" class="tsd-kind-icon">net<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#networkside" class="tsd-kind-icon">network<wbr>Side</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactormodconfig.html#banned" class="tsd-kind-icon">banned</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactormodconfig.html#donetworking" class="tsd-kind-icon">do<wbr>Networking</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactormodconfig.html#optional" class="tsd-kind-icon">optional</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactormodconfig.html#version" class="tsd-kind-icon">version</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Client<wbr>Mod<span class="tsd-signature-symbol">(</span>netId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, modId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, networkSide<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ModPluginSide</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L23">src/Connection.ts:23</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>netId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>modId: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>modVersion: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>networkSide: <span class="tsd-signature-type">ModPluginSide</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="modid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mod<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">mod<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="banned" class="tsd-anchor"></a>
+					<h3>banned</h3>
+					<div class="tsd-signature tsd-kind-icon">banned<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L192">src/interfaces/HindenburgConfig.ts:192</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether this mod is banned, only really applies when <a href="reactorconfig.html#allowextramods">ReactorConfig.allowExtraMods</a>
+								is enabled, as otherwise, only mods in the <a href="reactorconfig.html#mods">ReactorConfig.mods</a> would
+							be accepted anyway.</p>
+						</div>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="modversion" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mod<wbr>Version</h3>
-					<div class="tsd-signature tsd-kind-icon">mod<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="donetworking" class="tsd-anchor"></a>
+					<h3>do<wbr>Networking</h3>
+					<div class="tsd-signature tsd-kind-icon">do<wbr>Networking<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L200">src/interfaces/HindenburgConfig.ts:200</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether to broadcast messages sent by this mod.</p>
+						</div>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="netid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> net<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">net<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="optional" class="tsd-anchor"></a>
+					<h3>optional</h3>
+					<div class="tsd-signature tsd-kind-icon">optional<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L186">src/interfaces/HindenburgConfig.ts:186</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether this mod is optional, and clients can connect without it. If the
+								client does have this mod, then it still must be the same version as the
+							one specified in <a href="reactormodconfig.html#version">ReactorModConfig.version</a>.</p>
+						</div>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="networkside" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> network<wbr>Side</h3>
-					<div class="tsd-signature tsd-kind-icon">network<wbr>Side<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ModPluginSide</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="version" class="tsd-anchor"></a>
+					<h3>version</h3>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L196">src/interfaces/HindenburgConfig.ts:196</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Enforce a specific version glob for this mod.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -215,23 +210,20 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class">
-						<a href="clientmod.html" class="tsd-kind-icon">Client<wbr>Mod</a>
+					<li class="current tsd-kind-interface">
+						<a href="reactormodconfig.html" class="tsd-kind-icon">Reactor<wbr>Mod<wbr>Config</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="clientmod.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactormodconfig.html#banned" class="tsd-kind-icon">banned</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#modid" class="tsd-kind-icon">mod<wbr>Id</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactormodconfig.html#donetworking" class="tsd-kind-icon">do<wbr>Networking</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#modversion" class="tsd-kind-icon">mod<wbr>Version</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactormodconfig.html#optional" class="tsd-kind-icon">optional</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#netid" class="tsd-kind-icon">net<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#networkside" class="tsd-kind-icon">network<wbr>Side</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactormodconfig.html#version" class="tsd-kind-icon">version</a>
 							</li>
 						</ul>
 					</li>

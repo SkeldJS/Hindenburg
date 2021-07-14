@@ -117,6 +117,9 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="connection.html#disconnect" class="tsd-kind-icon">disconnect</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="connection.html#fgetlocale" class="tsd-kind-icon">fget<wbr>Locale</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="connection.html#getlocale" class="tsd-kind-icon">get<wbr>Locale</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="connection.html#getmodbynetid" class="tsd-kind-icon">get<wbr>Mod<wbr>ByNet<wbr>Id</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="connection.html#getnextnonce" class="tsd-kind-icon">get<wbr>Next<wbr>Nonce</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="connection.html#getplayer" class="tsd-kind-icon">get<wbr>Player</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="connection.html#joinerror" class="tsd-kind-icon">join<wbr>Error</a></li>
@@ -139,7 +142,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L143">src/Connection.ts:143</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L165">src/Connection.ts:165</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -167,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">_incr<wbr>Nonce<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L120">src/Connection.ts:120</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L142">src/Connection.ts:142</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -184,7 +187,7 @@
 					<div class="tsd-signature tsd-kind-icon">client<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">VersionInfo</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L99">src/Connection.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L121">src/Connection.ts:121</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -200,7 +203,7 @@
 					<div class="tsd-signature tsd-kind-icon">has<wbr>Identified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L68">src/Connection.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L90">src/Connection.ts:90</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -217,7 +220,7 @@
 					<div class="tsd-signature tsd-kind-icon">language<span class="tsd-signature-symbol">:</span> <a href="../enums/language.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Language</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L93">src/Connection.ts:93</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L115">src/Connection.ts:115</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -232,7 +235,7 @@
 					<div class="tsd-signature tsd-kind-icon">last<wbr>Nonce<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L119">src/Connection.ts:119</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L141">src/Connection.ts:141</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -245,10 +248,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="mods" class="tsd-anchor"></a>
 					<h3>mods</h3>
-					<div class="tsd-signature tsd-kind-icon">mods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">mods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L112">src/Connection.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L134">src/Connection.ts:134</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -265,7 +268,7 @@
 					<div class="tsd-signature tsd-kind-icon">num<wbr>Mods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L105">src/Connection.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L127">src/Connection.ts:127</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -281,7 +284,7 @@
 					<div class="tsd-signature tsd-kind-icon">received<wbr>Packets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L132">src/Connection.ts:132</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L154">src/Connection.ts:154</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -304,7 +307,7 @@
 					<div class="tsd-signature tsd-kind-icon">room<span class="tsd-signature-symbol">:</span> <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L143">src/Connection.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L165">src/Connection.ts:165</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -319,7 +322,7 @@
 					<div class="tsd-signature tsd-kind-icon">round<wbr>Trip<wbr>Ping<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L138">src/Connection.ts:138</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L160">src/Connection.ts:160</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -335,7 +338,7 @@
 					<div class="tsd-signature tsd-kind-icon">sent<wbr>Disconnect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L76">src/Connection.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L98">src/Connection.ts:98</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -352,7 +355,7 @@
 					<div class="tsd-signature tsd-kind-icon">sent<wbr>Packets<span class="tsd-signature-symbol">:</span> <a href="sentpacket.html" class="tsd-signature-type" data-tsd-kind="Class">SentPacket</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L126">src/Connection.ts:126</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L148">src/Connection.ts:148</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -368,7 +371,7 @@
 					<div class="tsd-signature tsd-kind-icon">username<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L88">src/Connection.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L110">src/Connection.ts:110</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -384,7 +387,7 @@
 					<div class="tsd-signature tsd-kind-icon">using<wbr>Reactor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L82">src/Connection.ts:82</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L104">src/Connection.ts:104</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -414,7 +417,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L202">src/Connection.ts:202</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L224">src/Connection.ts:224</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -439,13 +442,13 @@
 					<a name="disconnect" class="tsd-anchor"></a>
 					<h3>disconnect</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">disconnect<span class="tsd-signature-symbol">(</span>reason<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">disconnect<span class="tsd-signature-symbol">(</span>reason<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, <span class="tsd-signature-symbol">...</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L275">src/Connection.ts:275</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L312">src/Connection.ts:312</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -467,14 +470,14 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> reason: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> reason: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The reason for why the client is being disconnected. Set to
 										a string to use a custom message.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> message: <span class="tsd-signature-type">string</span></h5>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>message: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>If the reason is custom, the message for why the client
 										is being disconnected.</p>
@@ -482,6 +485,78 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="fgetlocale" class="tsd-anchor"></a>
+					<h3>fget<wbr>Locale</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">fget<wbr>Locale<span class="tsd-signature-symbol">(</span>i18n<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, <span class="tsd-signature-symbol">...</span>fmt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L287">src/Connection.ts:287</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>i18n: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>fmt: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getlocale" class="tsd-anchor"></a>
+					<h3>get<wbr>Locale</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Locale<span class="tsd-signature-symbol">(</span>i18n<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L278">src/Connection.ts:278</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>i18n: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getmodbynetid" class="tsd-anchor"></a>
+					<h3>get<wbr>Mod<wbr>ByNet<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Mod<wbr>ByNet<wbr>Id<span class="tsd-signature-symbol">(</span>netId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L417">src/Connection.ts:417</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>netId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -495,7 +570,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L229">src/Connection.ts:229</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L251">src/Connection.ts:251</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -528,7 +603,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L213">src/Connection.ts:213</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L235">src/Connection.ts:235</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -550,13 +625,13 @@
 					<a name="joinerror" class="tsd-anchor"></a>
 					<h3>join<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">join<wbr>Error<span class="tsd-signature-symbol">(</span>reason<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">join<wbr>Error<span class="tsd-signature-symbol">(</span>reason<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, <span class="tsd-signature-symbol">...</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L328">src/Connection.ts:328</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L371">src/Connection.ts:371</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -582,14 +657,14 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>reason: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></h5>
+									<h5>reason: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The error that the client encountered while creating or
 										joining their room. Set to a string to use a custom message.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> message: <span class="tsd-signature-type">string</span></h5>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>message: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>If the reason is custom, a custom message for the error
 										that the client encountered.</p>
@@ -610,7 +685,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L355">src/Connection.ts:355</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L404">src/Connection.ts:404</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -645,7 +720,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/543a3d9/src/Connection.ts#L252">src/Connection.ts:252</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L274">src/Connection.ts:274</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -799,6 +874,15 @@
 								<a href="connection.html#disconnect" class="tsd-kind-icon">disconnect</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="connection.html#fgetlocale" class="tsd-kind-icon">fget<wbr>Locale</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="connection.html#getlocale" class="tsd-kind-icon">get<wbr>Locale</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="connection.html#getmodbynetid" class="tsd-kind-icon">get<wbr>Mod<wbr>ByNet<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="connection.html#getnextnonce" class="tsd-kind-icon">get<wbr>Next<wbr>Nonce</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -832,13 +916,12 @@
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>

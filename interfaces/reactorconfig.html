@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ClientMod | @skeldjs/hindenburg</title>
+	<title>ReactorConfig | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="clientmod.html">ClientMod</a>
+					<a href="reactorconfig.html">ReactorConfig</a>
 				</li>
 			</ul>
-			<h1>Class ClientMod</h1>
+			<h1>Interface ReactorConfig</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ClientMod</span>
+						<span class="target">ReactorConfig</span>
 					</li>
 				</ul>
 			</section>
@@ -80,87 +80,97 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="clientmod.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#modid" class="tsd-kind-icon">mod<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#modversion" class="tsd-kind-icon">mod<wbr>Version</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#netid" class="tsd-kind-icon">net<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientmod.html#networkside" class="tsd-kind-icon">network<wbr>Side</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactorconfig.html#allowextramods" class="tsd-kind-icon">allow<wbr>Extra<wbr>Mods</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactorconfig.html#allownormalclients" class="tsd-kind-icon">allow<wbr>Normal<wbr>Clients</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactorconfig.html#blockclientsideonly" class="tsd-kind-icon">block<wbr>Client<wbr>Side<wbr>Only</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactorconfig.html#mods" class="tsd-kind-icon">mods</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="reactorconfig.html#requirehostmods" class="tsd-kind-icon">require<wbr>Host<wbr>Mods</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Client<wbr>Mod<span class="tsd-signature-symbol">(</span>netId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, modId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modVersion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, networkSide<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ModPluginSide</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/Connection.ts#L23">src/Connection.ts:23</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>netId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>modId: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>modVersion: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>networkSide: <span class="tsd-signature-type">ModPluginSide</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="clientmod.html" class="tsd-signature-type" data-tsd-kind="Class">ClientMod</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="modid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mod<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">mod<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="allowextramods" class="tsd-anchor"></a>
+					<h3>allow<wbr>Extra<wbr>Mods</h3>
+					<div class="tsd-signature tsd-kind-icon">allow<wbr>Extra<wbr>Mods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L218">src/interfaces/HindenburgConfig.ts:218</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether to allow extra mods aside from those in <a href="reactorconfig.html#mods">ReactorConfig.mods</a>,
+								which would still be used to enforce certain version of mods, and to require
+							certain mods.</p>
+						</div>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="modversion" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mod<wbr>Version</h3>
-					<div class="tsd-signature tsd-kind-icon">mod<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="allownormalclients" class="tsd-anchor"></a>
+					<h3>allow<wbr>Normal<wbr>Clients</h3>
+					<div class="tsd-signature tsd-kind-icon">allow<wbr>Normal<wbr>Clients<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L222">src/interfaces/HindenburgConfig.ts:222</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether to allow normal clients to connect.</p>
+						</div>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="netid" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> net<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">net<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="blockclientsideonly" class="tsd-anchor"></a>
+					<h3>block<wbr>Client<wbr>Side<wbr>Only</h3>
+					<div class="tsd-signature tsd-kind-icon">block<wbr>Client<wbr>Side<wbr>Only<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L207">src/interfaces/HindenburgConfig.ts:207</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether to block reactor RPCs from mods that are declared as being client-side-only.</p>
+						</div>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="networkside" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> network<wbr>Side</h3>
-					<div class="tsd-signature tsd-kind-icon">network<wbr>Side<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ModPluginSide</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="mods" class="tsd-anchor"></a>
+					<h3>mods</h3>
+					<div class="tsd-signature tsd-kind-icon">mods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="reactormodconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">ReactorModConfig</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L212">src/interfaces/HindenburgConfig.ts:212</a></li>
+						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Individual configuration for each mod in regards to how Hindenburg should
+							treat them.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="requirehostmods" class="tsd-anchor"></a>
+					<h3>require<wbr>Host<wbr>Mods</h3>
+					<div class="tsd-signature tsd-kind-icon">require<wbr>Host<wbr>Mods<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/8fa2c83/src/interfaces/HindenburgConfig.ts#L226">src/interfaces/HindenburgConfig.ts:226</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether or not to require joining clients to have the same mods as the host.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -215,23 +225,23 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class">
-						<a href="clientmod.html" class="tsd-kind-icon">Client<wbr>Mod</a>
+					<li class="current tsd-kind-interface">
+						<a href="reactorconfig.html" class="tsd-kind-icon">Reactor<wbr>Config</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="clientmod.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactorconfig.html#allowextramods" class="tsd-kind-icon">allow<wbr>Extra<wbr>Mods</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#modid" class="tsd-kind-icon">mod<wbr>Id</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactorconfig.html#allownormalclients" class="tsd-kind-icon">allow<wbr>Normal<wbr>Clients</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#modversion" class="tsd-kind-icon">mod<wbr>Version</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactorconfig.html#blockclientsideonly" class="tsd-kind-icon">block<wbr>Client<wbr>Side<wbr>Only</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#netid" class="tsd-kind-icon">net<wbr>Id</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactorconfig.html#mods" class="tsd-kind-icon">mods</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="clientmod.html#networkside" class="tsd-kind-icon">network<wbr>Side</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="reactorconfig.html#requirehostmods" class="tsd-kind-icon">require<wbr>Host<wbr>Mods</a>
 							</li>
 						</ul>
 					</li>

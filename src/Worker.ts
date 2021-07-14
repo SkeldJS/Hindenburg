@@ -1017,13 +1017,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
         if (config.plugins) {
             const pluginKeys = Object.keys(config.plugins);
             for (const key of pluginKeys) {
-                const loadedPlugin = this.pluginHandler.loadedPlugins.get(key);
+                const loadedPlugin = this.pluginLoader.loadedPlugins.get(key);
 
                 if (!config.plugins[key]) {
-                    this.pluginHandler.unloadPlugin(key);
+                    this.pluginLoader.unloadPlugin(key);
                 } else {
                     if (!loadedPlugin) {
-                        this.pluginHandler.resolveLoadPlugin(key);
+                        this.pluginLoader.resolveImportPath(key);
                         continue;
                     }
 

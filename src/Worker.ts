@@ -1102,7 +1102,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             if (parsedReliable.nonce <= cachedConnection.lastNonce) {
                                 this.logger.warn("%s is behind (got %s, last nonce was %s)",
                                     cachedConnection, parsedReliable.nonce, cachedConnection.lastNonce);
+
+                                if (buffer[5] !== 0xff) { // reactor sucks and sends the mod declaration message with a nonce of 0 because it sucks
                                 return;
+                            }
                             }
                             cachedConnection.lastNonce = parsedReliable.nonce;
                         }

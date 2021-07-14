@@ -674,7 +674,17 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal
             .command("load <import>", "Load a plugin by its import relative to the base plugin directory.")
             .action(async args => {
-                this.pluginHandler.resolveLoadPlugin(args.import);
+                const importPath = this.pluginLoader.resolveImportPath(args.import);
+
+                if (importPath) {
+                    const pluginCtr = await this.pluginLoader.importPlugin(importPath);
+                    if (this.pluginLoader.loadedPlugins.has(pluginCtr.meta.id))
+                        this.pluginLoader.unloadPlugin(pluginCtr.meta.id);
+    
+                    await this.pluginLoader.loadPlugin(pluginCtr);
+                } else {
+                    this.logger.error("Couldn't find installed plugin: " + args.import);
+                }
             });
 
         this.vorpal
@@ -683,11 +693,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const pluginId: string = args["plugin id"];
                 const loadedPlugin = 
                     typeof pluginId === "number"
-                    ? [...this.pluginHandler.loadedPlugins][pluginId - 1]?.[1]
-                    : this.pluginHandler.loadedPlugins.get(pluginId);
+                    ? [...this.pluginLoader.loadedPlugins][pluginId - 1]?.[1]
+                    : this.pluginLoader.loadedPlugins.get(pluginId);
 
                 if (loadedPlugin) {
-                    this.pluginHandler.unloadPlugin(loadedPlugin);
+                    this.pluginLoader.unloadPlugin(loadedPlugin);
                 } else {    
                     this.logger.error("Plugin not loaded: %s", pluginId);
                 }
@@ -715,8 +725,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                     break;
                 case "plugins":
-                    this.logger.info("%s plugins(s) loaded", this.pluginHandler.loadedPlugins.size);
-                    const loadedPlugins = [...this.pluginHandler.loadedPlugins];
+                    this.logger.info("%s plugins(s) loaded", this.pluginLoader.loadedPlugins.size);
+                    const loadedPlugins = [...this.pluginLoader.loadedPlugins];
                     for (let i = 0; i < loadedPlugins.length; i++) {
                         const [ , plugin ] = loadedPlugins[i];
                         this.logger.info("%s) %s", i + 1, plugin.meta.id);

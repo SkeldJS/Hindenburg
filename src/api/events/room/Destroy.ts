@@ -1,5 +1,5 @@
 import { BasicEvent } from "@skeldjs/events";
-import { Room } from "../../../room";
+import { Room } from "../../../Room";
 
 /**
  * Emitted after a room has been destroyed.

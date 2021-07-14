@@ -1,6 +1,6 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { Connection } from "../../../Connection";
-import { Room } from "../../../room";
+import { Room } from "../../../Room";
 
 /**
  * Emitted before a player successfully or unsuccessfully joins a room on the

@@ -56,7 +56,7 @@ import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 import { Connection, ClientMod, SentPacket } from "./Connection";
 
 import { PluginLoader, ChatCommandHandler } from "./handlers";
-import { Room, RoomEvents, MessageSide } from "./room";
+import { Room, RoomEvents, MessageSide } from "./Room";
 
 import {
     ClientBanEvent,

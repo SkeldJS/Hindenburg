@@ -43,18 +43,18 @@ import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
 import { Code2Int, HazelWriter } from "@skeldjs/util";
 
-import { VorpalConsole } from "../util/VorpalConsoleTransport";
+import { VorpalConsole } from "./util/VorpalConsoleTransport";
 
-import { Connection } from "../Connection";
-import { Worker } from "../Worker";
+import { Connection } from "./Connection";
+import { Worker } from "./Worker";
 
 import {
     RoomBeforeDestroyEvent,
     RoomDestroyEvent
-} from "../api";
+} from "./api";
 
-import { fmtCode } from "../util/fmtCode";
-import { fmtLogFormat } from "../util/fmtLogFormat";
+import { fmtCode } from "./util/fmtCode";
+import { fmtLogFormat } from "./util/fmtLogFormat";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Room>) {
     const connection = this.room.connections.get(this.id);

@@ -15,7 +15,7 @@ import {
 } from "@skeldjs/protocol";
 
 import { Worker } from "./Worker";
-import { Room } from "./room";
+import { Room } from "./Room";
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
 

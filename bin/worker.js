@@ -5,7 +5,7 @@ const https = require("https");
 const compareVersions = require("compare-versions");
 const chokidar = require("chokidar");
 
-const { createSpinner, stopSpinner, createDefault, runCommandInDir } = require("./util");
+const { createSpinner, stopSpinner, createDefaultConfig, runCommandInDir } = require("./util");
 const { Worker } = require("../src");
 const { recursiveAssign } = require("../src/util/recursiveAssign");
 const chalk = require("chalk");
@@ -46,7 +46,7 @@ function getLatestVersion() {
 }
 
 (async () => {
-    const defaultConfig = createDefault();
+    const defaultConfig = createDefaultConfig();
     const resolvedConfig = await resolveConfig();
     recursiveAssign(defaultConfig, resolvedConfig || {});
 
@@ -100,7 +100,10 @@ function getLatestVersion() {
     }
 
     await worker.listen(worker.config.socket.port);
-    await worker.pluginHandler.loadFromDirectory();
+    
+    if (worker.config.plugins.loadDirectory) {
+        await worker.pluginLoader.loadFromDirectory();
+    }
 
     const configWatch = chokidar.watch(configFile, {
         persistent: false,
@@ -110,7 +113,7 @@ function getLatestVersion() {
     configWatch.on("change", async eventType => {
         worker.logger.info("Config file updated, reloading..");
         try {
-            const defaultConfig = createDefault();
+            const defaultConfig = createDefaultConfig();
             const updatedConfig = JSON.parse(await fs.promises.readFile(configFile, "utf8"));
             recursiveAssign(defaultConfig, updatedConfig || {});
 

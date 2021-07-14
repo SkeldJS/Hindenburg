@@ -34,7 +34,8 @@ import {
     MessageListenerOptions,
     hindenburgVorpalCommand,
     VorpalCommandInformation,
-    BaseReactorRpcMessage
+    BaseReactorRpcMessage,
+    isHindenburgPlugin
 } from "../api";
 
 import { RegisteredChatCommand } from "./CommandHander";
@@ -45,10 +46,11 @@ export interface PluginMeta {
     id: string;
     version?: string;
     defaultConfig: any;
-    order: PluginOrder; // todo: load in plugin order
+    order: PluginOrder;
+    modId: string;
 }
 
-export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc to a seperate interface so plugins can't see those types
+export class Plugin {
     static meta: PluginMeta;
     meta!: PluginMeta;
 
@@ -173,19 +175,23 @@ export class PluginLoader {
         }
     }
 
-    async loadPlugin(importPath: string) {
+    async importPlugin(importPath: string) {
         const { default: loadedPluginCtr } = await import(importPath) as { default: typeof Plugin };
 
-        if (typeof loadedPluginCtr !== "function")
-            throw new Error("Expected default export of plugin class, got " + typeof loadedPluginCtr + ".");
+        if (!isHindenburgPlugin(loadedPluginCtr))
+            throw new Error("Expected default export of a hindenburg plugin.");
 
+        return loadedPluginCtr;
+    }
+
+    async loadPlugin(loadedPluginCtr: typeof Plugin) {
         const config = this.worker.config.plugins[loadedPluginCtr.meta.id] || {};
 
         if (typeof config === "boolean" && !config)
             throw new Error("Plugin is disabled.");
 
         if (this.loadedPlugins.get(loadedPluginCtr.meta.id))
-            await this.unloadPlugin(loadedPluginCtr.meta.id);
+            throw new Error("Plugin already loaded.");
 
         const loadedPlugin = new loadedPluginCtr(this.worker, config);
 
@@ -348,34 +354,55 @@ export class PluginLoader {
             allImportNames.push("./" + file);
         }
 
+        const pluginCtrs: typeof Plugin[] = [];
         for (const importName of allImportNames) {
             try {
                 const importPath = resolveFrom(this.pluginDir, importName);
-                await this.loadPlugin(importPath);
+                const pluginCtr = await this.importPlugin(importPath);
+                pluginCtrs.push(pluginCtr);
             } catch (e) {
                 this.worker.logger.warn("Failed to load plugin from '%s': %s", importName, e);
             }
         }
+
+        pluginCtrs.sort((a, b) => {
+            // first = -1
+            // last = 1
+            // none = 0
+            // sort from lowest to highest
+            const aInteger = a.meta.order === "first" ? -1 :
+                a.meta.order === "last" ? 1 :
+                    a.meta.order === "none" ? 0 : a.meta.order;
+                    
+            const bInteger = b.meta.order === "first" ? -1 :
+                b.meta.order === "last" ? 1 :
+                    b.meta.order === "none" ? 0 : b.meta.order;
+
+            if (bInteger < aInteger) {
+                return 1;
+            }
+            if (aInteger < bInteger) {
+                return -1;
+            }
+
+            return 0;
+        });
+
+        for (const pluginCtr of pluginCtrs) {
+            await this.loadPlugin(pluginCtr);
+        }
     }
 
-    async resolveLoadPlugin(importName: string) {
+    resolveImportPath(importName: string) {
         try {
             const importPath = resolveFrom(this.pluginDir, importName);
-            try {
-                await this.loadPlugin(importPath);
-            } catch (e) {
-                this.worker.logger.warn("Failed to load plugin from '%s': %s", importName, e);
-            }
+            return importPath;
         } catch (e) {
             try {
                 const importPath = resolveFrom(this.pluginDir, "./" + importName);
-                try {
-                    await this.loadPlugin(importPath);
-                } catch (e) {
-                    this.worker.logger.error("Failed to load plugin from '%s': %s", importName, e);
-                }
+                return importPath;
             } catch (e) {
-                this.worker.logger.warn("Could not find plugin %s from %s", importName, this.pluginDir);
+                return undefined;
             }
         }
     }

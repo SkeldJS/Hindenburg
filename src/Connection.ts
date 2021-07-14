@@ -1,8 +1,10 @@
 import dgram from "dgram";
 import chalk from "chalk";
+import util from "util";
 
 import { DisconnectReason, Language } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
+import { ModPluginSide } from "@skeldjs/reactor";
 import { VersionInfo } from "@skeldjs/util";
 
 import {
@@ -20,13 +22,14 @@ import { fmtLogFormat } from "./util/fmtLogFormat";
 
 export class ClientMod {
     constructor(
-        public readonly netid: number,
-        public readonly modid: string,
-        public readonly modversion: string
+        public readonly netId: number,
+        public readonly modId: string,
+        public readonly modVersion: string,
+        public readonly networkSide: ModPluginSide
     ) {}
     
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        return chalk.green(this.modid) + chalk.grey("@" + this.modversion);
+        return chalk.green(this.modId) + chalk.grey("@" + this.modVersion);
     }
 }
 
@@ -57,6 +60,25 @@ const logLanguages = {
     [Language.ChineseTraditional]: "chinese (traditional)",
     [Language.Irish]: "irish"
 };
+
+export const locales = {
+    [Language.English]: "en_US",
+    [Language.SpanishAmericas]: "es_US",
+    [Language.PortugueseBrazil]: "pt_BR",
+    [Language.Portuguese]: "pt",
+    [Language.Korean]: "ko",
+    [Language.Russian]: "ru",
+    [Language.Dutch]: "nl",
+    [Language.Filipino]: "fil",
+    [Language.French]: "fr",
+    [Language.German]: "de",
+    [Language.Italian]: "it",
+    [Language.Japanese]: "ja",
+    [Language.Spanish]: "es",
+    [Language.ChineseSimplified]: "zh-CN",
+    [Language.ChineseTraditional]: "zh-CN",
+    [Language.Irish]: "ga"
+}
 
 export class Connection {
     /**
@@ -109,7 +131,7 @@ export class Connection {
      * {@link Connection.numMods} to compare the list size whether
      * it is complete.
      */
-    mods: Map<number, ClientMod>;
+    mods: Map<string, ClientMod>;
 
     /**
      * The last nonce that was received by this client.
@@ -253,6 +275,21 @@ export class Connection {
         await this.worker.sendPacket(this, packet);
     }
 
+    getLocale(i18n: Record<typeof locales[keyof typeof locales], string>) {
+        const myLocale = locales[this.language] || "en_US";
+        const myI18n = i18n[myLocale] || i18n["en_US"];
+        if (!myI18n)
+            return undefined;
+
+        return myI18n;
+    }
+
+    fgetLocale(i18n: Record<typeof locales[keyof typeof locales], string>, ...fmt: string[]) {
+        const locale = this.getLocale(i18n);
+        const formatted = util.format(locale, ...fmt);
+        return formatted;
+    }
+
     /**
      * Gracefully disconnect the client for this connection.
      * 
@@ -272,21 +309,27 @@ export class Connection {
      * await player.connection.disconnect("You have been very naughty.");
      * ```
      */
-    async disconnect(reason?: string | DisconnectReason, message?: string): Promise<void> {
+    async disconnect(reason?: string | DisconnectReason | Record<string, string>, ...message: string[]): Promise<void> {
+        if (typeof reason === "object") {
+            const formatted = this.fgetLocale(reason, ...message);
+            return this.disconnect(DisconnectReason.Custom, formatted);
+        }
+
         if (typeof reason === "string") {
             return this.disconnect(DisconnectReason.Custom, reason);
         }
 
+        const messageJoined = message.join(" ");
         await this.sendPacket(
             new DisconnectPacket(
                 reason,
-                message,
+                messageJoined,
                 true
             )
         );
         
         this.worker.logger.info("%s disconnected: %s (%s)",
-            this, reason ? DisconnectReason[reason] : "None", (message || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
+            this, reason ? DisconnectReason[reason] : "None", (messageJoined || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
 
         this.sentDisconnect = true;
         this.hasIdentified = false;
@@ -325,22 +368,28 @@ export class Connection {
      * await client.joinError("Alas, thou art barred from entering said establishment.")
      * ```
      */
-    async joinError(reason: string | DisconnectReason, message?: string): Promise<void> {
+    async joinError(reason: string | DisconnectReason | Record<string, string> = DisconnectReason.None, ...message: string[]): Promise<void> {
+        if (typeof reason === "object") {
+            const formatted = this.fgetLocale(reason, ...message);
+            return this.disconnect(DisconnectReason.Custom, formatted);
+        }
+
         if (typeof reason === "string") {
             return this.joinError(DisconnectReason.Custom, reason);
         }
 
+        const messageJoined = message.join(" ");
         await this.sendPacket(
             new ReliablePacket(
                 this.getNextNonce(),
                 [
-                    new JoinGameMessage(reason, message)
+                    new JoinGameMessage(reason, messageJoined)
                 ]
             )
         );
 
         this.worker.logger.info("%s join error: %s (%s)",
-            this, reason, (message || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
+            this, reason, (messageJoined || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
     }
 
     /**
@@ -363,5 +412,14 @@ export class Connection {
         );
         await this.room?.handleRemoteLeave(this, reason);
         this.room = undefined;
+    }
+
+    getModByNetId(netId: number) {
+        for (const [ modNetId, clientMod ] of this.mods) {
+            if (clientMod.netId === netId) {
+                return clientMod;
+            }
+        }
+        return undefined;
     }
 }

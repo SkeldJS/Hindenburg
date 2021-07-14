@@ -47,7 +47,9 @@ function createDefaultConfig() {
         socket: {
             port: 22023
         },
-        plugins: {},
+        plugins: {
+            loadDirectory: true
+        },
         anticheat: {
             penalty: {
                 action: "disconnect",
@@ -58,8 +60,25 @@ function createDefaultConfig() {
             },
             rules: {}
         },
-        logging: {}
+        logging: {
+            hideSensitiveInfo: false,
+            connections: {
+                format: ["id", "ip", "ping", "room"]
+            },
+            rooms: {
+                format: ["players", "map"]
+            },
+            players: {
+                format: ["id", "ping", "ishost"]
+            }
+        },
+        reactor: {
+            blockClientSideOnly: true,
+            mods: {},
+            allowExtraMods: true,
+            requireHostMods: true
+        }
     };
 }
 
-module.exports = { runCommandInDir, createSpinner, stopSpinner, createDefault: createDefaultConfig };
+module.exports = { runCommandInDir, createSpinner, stopSpinner, createDefaultConfig };

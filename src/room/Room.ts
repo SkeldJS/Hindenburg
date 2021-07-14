@@ -46,9 +46,30 @@ import { VorpalConsole } from "../util/VorpalConsoleTransport";
 
 import { Connection } from "../Connection";
 import { Worker } from "../Worker";
+
+import {
+    RoomBeforeDestroyEvent,
+    RoomDestroyEvent
+} from "../api";
+
 import { fmtCode } from "../util/fmtCode";
-import { RoomDestroyEvent } from "../api";
 import { fmtLogFormat } from "../util/fmtLogFormat";
+
+(PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Room>) {
+    const connection = this.room.connections.get(this.id);
+
+    const paren = fmtLogFormat(
+        this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
+        {
+            id: this.id,
+            ping: connection?.roundTripPing,
+            ishost: this.ishost ? "host" : undefined
+        }
+    );
+
+    return chalk.blue(this.info?.name || "<No Name>")
+        + (paren ? " " + chalk.grey("(" + paren + ")") : "");
+}
 
 export enum MessageSide {
     Left,
@@ -115,21 +136,13 @@ export interface SendChatOptions {
     color: Color;
 }
 
-(PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Room>) {
-    const connection = this.room.connections.get(this.id);
-
-    const paren = fmtLogFormat(
-        this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
-        {
-            id: this.id,
-            ping: connection?.roundTripPing,
-            ishost: this.ishost ? "host" : undefined
-        }
-    );
-
-    return chalk.blue(this.info?.name || "<No Name>")
-        + (paren ? " " + chalk.grey("(" + paren + ")") : "");
-}
+const logMaps = {
+    [GameMap.TheSkeld]: "the skeld",
+    [GameMap.MiraHQ]: "mira",
+    [GameMap.Polus]: "polus",
+    [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
+    [GameMap.Airship]: "airship"
+};
 
 enum SpecialClientId {
     Nil = 2 ** 31 - 1,
@@ -137,15 +150,10 @@ enum SpecialClientId {
     Temp = 2 ** 31 - 3
 }
 
-const logMaps = {
-    [GameMap.TheSkeld]: "the skeld",
-    [GameMap.MiraHQ]: "mira",
-    [GameMap.Polus]: "polus",
-    [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
-    [GameMap.Airship]: "airship"
-}
-
-export type RoomEvents = HostableEvents<Room> & ExtractEventTypes<[RoomDestroyEvent]>;
+export type RoomEvents = HostableEvents<Room> & ExtractEventTypes<[
+    RoomBeforeDestroyEvent,
+    RoomDestroyEvent
+]>;
 
 export class Room extends Hostable<RoomEvents> {
     createdAt: number;
@@ -248,7 +256,12 @@ export class Room extends Hostable<RoomEvents> {
     }
 
     async destroy(reason = DisconnectReason.Destroy) {
-        // todo: room before destroy event
+        const ev = await this.emit(new RoomBeforeDestroyEvent(this, reason));
+
+        if (ev.canceled) {
+            return;
+        }
+
         super.destroy();
 
         await this.broadcastMessages([], [

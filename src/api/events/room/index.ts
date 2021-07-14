@@ -1,1 +1,2 @@
-export * from "./RoomDestroy";
+export * from "./BeforeDestroy";
+export * from "./Destroy";

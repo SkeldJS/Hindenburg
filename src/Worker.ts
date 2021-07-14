@@ -553,7 +553,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
             
             // todo: handle movement packets with care
-            // todo: pipe packets to the room for state
             await connection.room?.broadcastMessages(
                 message.children
                     .filter(child => !child.canceled)

@@ -46,11 +46,11 @@ export interface PluginMeta {
     id: string;
     version?: string;
     defaultConfig: any;
-    order: PluginOrder; // todo: load in plugin order
+    order: PluginOrder;
     modId: string;
 }
 
-export class Plugin { // todo, maybe move eventHandlers, chatCommandHandlers etc to a seperate interface so plugins can't see those types
+export class Plugin {
     static meta: PluginMeta;
     meta!: PluginMeta;
 

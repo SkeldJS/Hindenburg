@@ -27,7 +27,7 @@ export default {
         // %1 = ID of mod that has a bad version
         // %2 = The version of the mod that the client has
         // %3 = The version of the mod that the client needs
-        "en_US": "Bad mod version for %1: v%2, needs v%3"
+        "en_US": "Bad mod version for %1: %2, needs %3"
     },
     "mod_not_recognised": {
         // %1 = The ID of the mod that is not allowed

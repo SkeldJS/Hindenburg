@@ -1182,7 +1182,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (modConfig.version) {
                     if (!minimatch(clientMod.modVersion, modConfig.version)) {
                         connection.disconnect(i18n.bad_mod_version,
-                            modId, clientMod.modVersion, modConfig.version)
+                            modId, "v" + clientMod.modVersion, "v" + modConfig.version)
                         return false;
                     }
                 }

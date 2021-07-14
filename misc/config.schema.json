@@ -1,30 +1,8 @@
 {
-    "definitions": {
-        "anticheatPenalty": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string",
-                    "enum": ["disconnect", "ban", "ignore"]
-                },
-                "strikes": {
-                    "type": "number"
-                },
-                "banAfterXDisconnects": {
-                    "type": "number"
-                },
-                "banDuration": {
-                    "type": "number"
-                },
-                "disconnectMessage": {
-                    "type": "string"
-                }
-            }
-        }
-    },
     "properties": {
         "versions": {
             "type": "array",
+            "description": "An array of game versions that Hindenburg will accept.",
             "items": [
                 {
                     "type": "string"
@@ -32,30 +10,38 @@
             ]
         },
         "clusterName": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the cluster that this node belongs to."
         },
         "nodeId": {
-            "type": "number"
+            "type": "number",
+            "description": "The ID of this node in relation to other nodes in the cluster."
         },
         "checkForUpdates": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether or not to check for updates."
         },
         "autoUpdate": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether or not to auto-update Hindenburg when there is an update available."
         },
         "socket": {
             "type": "object",
+            "description": "Options regarding the socket that the server listens on.",
             "properties": {
                 "port": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "The port to listen on."
                 }
             }
         },
         "plugins": {
             "type": "object",
+            "description": "Options regarding plugins, such as disabling them or passing configuration options.",
             "properties": {
                 "loadDirectory": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Whether to load all plugins in the plugin directory."
                 }
             },
             "patternProperties": {
@@ -73,16 +59,58 @@
         },
         "anticheat": {
             "type": "object",
+            "description": "Advanced options for HACS, Hindenburg's Anti-Cheat System.",
             "properties": {
                 "penalty": {
-                    "$ref": "#/definitions/anticheatPenalty"
+                    "type": "object",
+                    "description": "The penalty to give a player for breaking this rule.",
+                    "properties": {
+                        "action": {
+                            "type": "string",
+                            "description": "The action that should be applied on this user for breaking this rule.",
+                            "enum": ["disconnect", "ban", "ignore"]
+                        },
+                        "strikes": {
+                            "type": "number",
+                            "description": "The number of strikes that this user has before they are penalised."
+                        },
+                        "banAfterXDisconnects": {
+                            "type": "number",
+                            "description": "The number of general disconnects the player should have to have had for breaking this rule until they are banned."
+                        },
+                        "banDuration": {
+                            "type": "number",
+                            "description": "The length, in seconds, of how long to ban a player for breaking this rule."
+                        },
+                        "disconnectMessage": {
+                            "type": "string",
+                            "description": "The message to give this player when disconnecting or banning this player."
+                        }
+                    }
                 },
                 "rules": {
+                    "description": "Configuration for each individual sub-rule.",
                     "patternProperties": {
                         ".+": {
                             "anyOf": [
                                 {
-                                    "$ref": "#/properties/anticheat"
+                                    "$ref": "#/properties/anticheat",
+                                    "properties": {
+                                        "value": {
+                                            "description": "The value of this rule, a boolean if it's a simple toggle, or an integer or string if it requires more specific configuration.",
+                                            "anyOf": [
+                                                {
+                                                    "type": "boolean"
+                                                },
+                                                {
+                                                    "type": "number"
+                                                },
+                                                {
+                                                    "type": "boolean"
+                                                }
+                                            ]
+                                        }
+                                    }
                                 },
                                 {
                                     "type": "boolean"
@@ -98,6 +126,121 @@
                     }
                 }
             }
+        },
+        "logging": {
+            "type": "object",
+            "description": "Options for logging.",
+            "properties": {
+                "hideSensitiveInfo": {
+                    "type": "boolean",
+                    "description": "Whether to hide sensitive information from logging, such as ip addresses."
+                },
+                "connections": {
+                    "type": "object",
+                    "description": "Logging options for client connections.",
+                    "properties": {
+                        "format": {
+                            "type": "array",
+                            "description": "Custom formatting for the extra information provided when logging client connections. (The part in parenthesis after their username.)",
+                            "items": [{
+                                "type": "string",
+                                "enum": ["id", "ip", "ping", "room", "language"]
+                            }]
+                        }
+                    }
+                },
+                "rooms": {
+                    "type": "object",
+                    "description": "Logging options for game rooms.",
+                    "properties": {
+                        "format": {
+                            "type": "array",
+                            "description": "Custom formatting for the extra information provided when rooms are logged. (The part in parenthesis after the game code.)",
+                            "items": [{
+                                "type": "string",
+                                "enum": ["players", "map"]
+                            }]
+                        }
+                    }
+                },
+                "players": {
+                    "type": "object",
+                    "description": "Logging options for logging players in-game.",
+                    "properties": {
+                        "format": {
+                            "type": "array",
+                            "description": "Custom formatting for the extra information provided when players are logged. (The part in parenthesis after the player's name.)",
+                            "items": [{
+                                "type": "string",
+                                "enum": ["id", "ping", "ishost"]
+                            }]
+                        }
+                    }
+                }
+            }
+        },
+        "reactor": {
+            "description": "Options for Hindenburg's reactor integration.",
+            "anyOf": [
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "blockClientSideOnly": {
+                            "type": "boolean",
+                            "description": "Whether to block reactor RPCs from mods that are declared as being client-side-only."
+                        },
+                        "mods": {
+                            "description": "Individual configuration for each mod in regards to how Hindenburg should treat them.",
+                            "type": "object",
+                            "patternProperties": {
+                                ".+": {
+                                    "anyOf": [
+                                        {
+                                            "type": "boolean"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "optional": {
+                                                    "type": "boolean",
+                                                    "description": "Whether this mod is optional, and clients can connect without it. If the client does have this mod, then it still must be the same version as the one specified in {@link ReactorModConfig.version}."
+                                                },
+                                                "banned": {
+                                                    "type": "boolean",
+                                                    "description": "Whether this mod is banned, only really applies when 'allowExtraMods' is enabled, as otherwise, only mods in the {@link ReactorConfig.mods} would be accepted anyway."
+                                                },
+                                                "version": {
+                                                    "type": "string",
+                                                    "description": "Enforce a specific version glob for this mod."
+                                                },
+                                                "doNetworking": {
+                                                    "type": "boolean",
+                                                    "description": "Whether to broadcast messages sent by this mod."
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "allowExtraMods": {
+                            "type": "boolean",
+                            "description": "Whether to allow extra mods aside from those in 'mods' which would still be used to enforce certain version of mods, and to require certain mods."
+                        },
+                        "allowNormalClients": {
+                            "type": "boolean",
+                            "description": "Whether to allow normal clients to connect."
+                        },
+                        "requireHostMods": {
+                            "type": "boolean",
+                            "description": "Whether or not to require joining clients to have the same mods as the host."
+                        }
+                    }
+                }
+            ]
         }
     }
 }

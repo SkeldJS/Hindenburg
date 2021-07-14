@@ -299,6 +299,8 @@ export class Connection {
         this.numMods = 0;
         this.mods = new Map;
 
+        this.worker.removeConnection(this);
+
         if (this.room) {
             await this.room.handleRemoteLeave(this, reason || DisconnectReason.None);
         }

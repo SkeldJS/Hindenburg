@@ -2,8 +2,9 @@ import dgram from "dgram";
 import winston from "winston";
 import vorpal from "vorpal";
 import chalk from "chalk";
+import minimatch from "minimatch";
 
-import { DisconnectReason, Language, GameState, AlterGameTag } from "@skeldjs/constant";
+import { DisconnectReason, Language, GameState } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
@@ -66,6 +67,9 @@ import {
 import { recursiveAssign } from "./util/recursiveAssign";
 import { recursiveCompare } from "./util/recursiveCompare";
 import { ReactorRpcMessage } from "./packets";
+import { chunkArr } from "./util/chunkArr";
+
+import i18n from "./i18n";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -106,7 +110,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * The server's plugin loader.
      */
-    pluginHandler: PluginLoader;
+    pluginLoader: PluginLoader;
 
     chatCommandHandler: ChatCommandHandler;
 
@@ -194,7 +198,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]
         });
 
-        this.pluginHandler = new PluginLoader(this, pluginDir);
+        this.pluginLoader = new PluginLoader(this, pluginDir);
         this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.socket = dgram.createSocket("udp4");
@@ -205,7 +209,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.rooms = new Map;
 
         this.decoder = new PacketDecoder;
-        this.pluginHandler.reregisterMessages();
+        this.pluginLoader.reregisterMessages();
 
         this.memUsages = [];
 
@@ -245,10 +249,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.logger.info("%s connected, language: %s",
                 connection, Language[connection.language] || "Unknown");
 
-            // todo: if reactor is disabled and client is using it, disconnect client
-            // todo: if reactor is required and client is not using it, disconnect client
-
             if (connection.usingReactor) {
+                if (!this.config.reactor) {
+                    connection.disconnect(i18n.reactor_not_enabled_on_server);
+                    return;
+                }
+
                 await connection.sendPacket(
                     new ReliablePacket(
                         connection.getNextNonce(),
@@ -260,14 +266,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     )
                 );
                 
-                const entries = [...this.pluginHandler.loadedPlugins];
-                for (let i = 0; i < entries.length; i++) {
-                    const [, plugin] = entries[i];
+                const entries = [...this.pluginLoader.loadedPlugins];
+                const chunkedPlugins = chunkArr(entries, 4);
+                for (let i = 0; i < chunkedPlugins.length; i++) {
+                    const chunk = chunkedPlugins[i];
                     
                     connection.sendPacket(
                         new ReliablePacket(
                             connection.getNextNonce(),
-                            [
+                            chunk.map(([ , plugin ]) => 
                                 new ReactorMessage(
                                     new ReactorModDeclarationMessage(
                                         i,
@@ -278,9 +285,18 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                         )
                                     )
                                 )
-                            ]
+                            )
                         )
                     );
+                }
+            } else {
+                if (
+                    this.config.reactor !== false &&
+                    (this.config.reactor === true ||
+                    !this.config.reactor.allowNormalClients)
+                ) {
+                    connection.disconnect(i18n.reactor_required_on_server);
+                    return;
                 }
             }
 
@@ -300,7 +316,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 message.mod.networkSide
             );
 
-            connection.mods.set(clientMod.netId, clientMod);
+            connection.mods.set(clientMod.modId, clientMod);
 
             if (connection.mods.size === 4) {
                 this.logger.info("... Got more mods from %s, use '%s' to see more",
@@ -362,6 +378,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (connection.room)
                 return;
 
+            if (!this.checkClientMods(connection))
+                return;
+
             const foundRoom = this.rooms.get(message.code);
 
             const ev = await this.emit(
@@ -394,14 +413,71 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return connection.joinError(DisconnectReason.GameFull);
             }
 
-            if (ev.alteredRoom.state === GameState.Started) { // Use Room.state when that is implemented
+            if (ev.alteredRoom.state === GameState.Started) {
                 this.logger.warn("%s attempted to join %s but the game had already started",
                     connection, foundRoom);
                 return connection.joinError(DisconnectReason.GameStarted);
             }
+
+            if (this.config.reactor !== false && (
+                this.config.reactor === true ||
+                this.config.reactor.requireHostMods
+            ) && ev.alteredRoom.hostid) {
+                const hostConnection = ev.alteredRoom.connections.get(ev.alteredRoom.hostid);
+                if (hostConnection) {
+                    if (hostConnection.usingReactor && !connection.usingReactor) {
+                        return connection.joinError(i18n.reactor_required_for_room);
+                    }
+
+                    if (!hostConnection.usingReactor && connection.usingReactor) {
+                        return connection.joinError(i18n.reactor_not_enabled_for_room);
+                    }
+
+                    for (const [ hostModId, hostMod ] of hostConnection.mods) {
+                        if (
+                            hostMod.networkSide === ModPluginSide.Clientside &&
+                            (
+                                this.config.reactor === true ||
+                                this.config.reactor.blockClientSideOnly
+                            )
+                        )
+                            continue;
+                        
+                        const clientMod = connection.mods.get(hostModId);
+
+                        if (!clientMod) {
+                            return connection.joinError(i18n.missing_required_mod,
+                                hostMod.modId, hostMod.modVersion);
+                        }
+
+                        if (clientMod.modVersion !== hostMod.modVersion) {
+                            return connection.joinError(i18n.bad_mod_version,
+                                clientMod.modId, clientMod.modVersion, hostMod.modVersion);
+                        }
+                    }
+
+                    for (const [ clientModId, clientMod ] of connection.mods) {
+                        if (
+                            clientMod.networkSide === ModPluginSide.Clientside &&
+                            (
+                                this.config.reactor === true ||
+                                this.config.reactor.blockClientSideOnly
+                            )
+                        )
+                            continue;
+
+                        const hostMod = hostConnection.mods.get(clientModId);
+
+                        if (!hostMod) {
+                            return connection.joinError(i18n.mod_not_recognised,
+                                clientMod.modId);
+                        }
+                    }
+                }
+            }
             
             this.logger.info("%s joining room %s",
-                connection, foundRoom);
+                connection, ev.alteredRoom);
             await ev.alteredRoom.handleRemoteJoin(connection);
         });
 
@@ -411,35 +487,55 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
 
             const reactorRpc = message.data as unknown as ReactorRpcMessage;
-            if (reactorRpc.tag === 255) {
+            if (reactorRpc.tag === 0xff) {
+                message.cancel();
                 const componentNetId = message.netid;
                 const modNetId = reactorRpc.modNetId;
 
-                const component = connection.room!.netobjects.get(componentNetId);
-                const clientMod = connection.mods.get(modNetId);
+                const component = connection.room?.netobjects.get(componentNetId);
+                const senderMod = connection.getModByNetId(modNetId);
 
-                if (component) {
-                    if (clientMod) {
-                        if (clientMod.networkSide === ModPluginSide.Clientside) {
-                            this.logger.warn("Got reactor Rpc from %s for client-side-only reactor mod %s",
-                                connection, clientMod);
-
-                            if (this.config.reactor.blockClientSideOnly) {
-                                message.cancel();
-                                return;
-                            }
-                        }
-
-                        
-                    } else {
-                        message.cancel();
-                        this.logger.warn("Got reactor Rpc from %s for unknown mod with netid %s",
-                            connection, modNetId);
-                    }
-                } else {
-                    message.cancel();
+                if (!component) {
                     this.logger.warn("Got reactor Rpc from %s for unknown component with netid %s",
-                        connection, componentNetId)
+                        connection, componentNetId);
+                    return;
+                }
+
+                if (!senderMod) {
+                    this.logger.warn("Got reactor Rpc from %s for unknown mod with netid %s",
+                        connection, modNetId);
+                    return;
+                }
+
+                if (senderMod.networkSide === ModPluginSide.Clientside) {
+                    this.logger.warn("Got reactor Rpc from %s for client-side-only reactor mod %s",
+                        connection, senderMod);
+
+                    if (this.config.reactor && (this.config.reactor === true || this.config.reactor.blockClientSideOnly)) {
+                        return;
+                    }
+                }
+
+                // todo: send it to plugins
+
+                for (const [ , receiveClient ] of connection.room!.connections) {
+                    if (receiveClient === connection)
+                        continue;
+
+                    const receiverMods = receiveClient.mods.get(senderMod.modId);
+
+                    if (!receiverMods)
+                        continue;
+
+                    connection.room!.broadcastMessages([
+                        new RpcMessage(
+                            message.netid,
+                            new ReactorRpcMessage(
+                                receiverMods.netId,
+                                reactorRpc.customRpc
+                            )
+                        )
+                    ], undefined, [ receiveClient ]);
                 }
             }
         });
@@ -453,7 +549,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 .filter(child => !child.canceled);
 
             for (const child of canceled) {
-                await connection.room!.room.decoder.emitDecoded(child, direction, connection);
+                await connection.room?.decoder.emitDecoded(child, direction, connection);
             }
             
             // todo: handle movement packets with care
@@ -1038,6 +1134,77 @@ export class Worker extends EventEmitter<WorkerEvents> {
         recursiveAssign(this.config, config, { removeKeys: true });
     }
 
+    checkClientMods(connection: Connection) {
+        if (!connection.usingReactor)
+            return true;
+
+        if (connection.mods.size < connection.numMods) {
+            connection.disconnect(i18n.havent_received_all_mods);
+            return false;
+        }
+
+        if (!this.config.reactor) {
+            connection.disconnect(i18n.reactor_not_enabled_on_server);
+            return false;
+        }
+
+        if (this.config.reactor === true)
+            return true;
+
+        const configEntries = Object.entries(this.config.reactor.mods);
+        for (const [ modId, modConfig ] of configEntries) {
+            const clientMod = connection.mods.get(modId);
+
+            if (!clientMod) {
+                if (modConfig === false) {
+                    return;
+                }
+
+                if (modConfig === true || !modConfig.optional) {
+                    connection.disconnect(i18n.missing_required_mod,
+                        modId, modConfig !== true && modConfig.version
+                            ? "v" + modConfig.version : "any");
+                }
+
+                continue;
+            }
+
+            if (modConfig === false) {
+                connection.disconnect(i18n.mod_banned_on_server, modId);
+                return false;
+            }
+
+            if (typeof modConfig === "object") {
+                if (modConfig.banned) {
+                    connection.disconnect(i18n.mod_banned_on_server, modId);
+                    return false;
+                }
+    
+                if (modConfig.version) {
+                    if (!minimatch(clientMod.modVersion, modConfig.version)) {
+                        connection.disconnect(i18n.bad_mod_version,
+                            modId, clientMod.modVersion, modConfig.version)
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (!this.config.reactor.allowExtraMods) {
+            for (const [ , clientMod ] of connection.mods) {
+                const modConfig = this.config.reactor.mods[clientMod.modId];
+
+                if (!modConfig) {
+                    connection.disconnect(i18n.mod_not_recognised,
+                        clientMod.modId);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Serialize and reliable or unreliably send a packet to a client.
      * 
@@ -1104,8 +1271,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                     cachedConnection, parsedReliable.nonce, cachedConnection.lastNonce);
 
                                 if (buffer[5] !== 0xff) { // reactor sucks and sends the mod declaration message with a nonce of 0 because it sucks
-                                return;
-                            }
+                                    return;
+                                }
                             }
                             cachedConnection.lastNonce = parsedReliable.nonce;
                         }

@@ -1,6 +1,5 @@
 import dgram from "dgram";
 import chalk from "chalk";
-import util from "util";
 
 import { DisconnectReason, Language } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
@@ -286,7 +285,9 @@ export class Connection {
 
     fgetLocale(i18n: Record<typeof locales[keyof typeof locales], string>, ...fmt: string[]) {
         const locale = this.getLocale(i18n);
-        const formatted = util.format(locale, ...fmt);
+        const formatted = locale?.replace(/%\d+/g, x => {
+            return fmt[parseInt(x.slice(1)) - 1];
+        });
         return formatted;
     }
 
@@ -312,6 +313,9 @@ export class Connection {
     async disconnect(reason?: string | DisconnectReason | Record<string, string>, ...message: string[]): Promise<void> {
         if (typeof reason === "object") {
             const formatted = this.fgetLocale(reason, ...message);
+            if (!formatted)
+                return this.disconnect(DisconnectReason.None);
+                
             return this.disconnect(DisconnectReason.Custom, formatted);
         }
 
@@ -371,6 +375,9 @@ export class Connection {
     async joinError(reason: string | DisconnectReason | Record<string, string> = DisconnectReason.None, ...message: string[]): Promise<void> {
         if (typeof reason === "object") {
             const formatted = this.fgetLocale(reason, ...message);
+            if (!formatted)
+                return this.disconnect(DisconnectReason.None);
+
             return this.disconnect(DisconnectReason.Custom, formatted);
         }
 

@@ -4,12 +4,13 @@ import vorpal from "vorpal";
 import chalk from "chalk";
 import minimatch from "minimatch";
 
-import { DisconnectReason, Language, GameState } from "@skeldjs/constant";
+import { DisconnectReason, Language, GameState, GameDataMessageTag } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
     AlterGameMessage,
     BaseRootPacket,
+    DataMessage,
     DisconnectPacket,
     EndGameMessage,
     GameDataMessage,
@@ -548,15 +549,24 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const canceled = message.children
                 .filter(child => !child.canceled);
 
+            let reliable = false;
             for (const child of canceled) {
+                if (child.tag !== GameDataMessageTag.Data) {
+                    reliable = true;
+                } else {
+                    const dataMessage = child as DataMessage;
+                    const component = connection.room!.netobjects.get(dataMessage.netid);
+                    if (component?.classname !== "CustomNetworkTransform") {
+                        reliable = true;
+                    }
+                }
                 await connection.room?.decoder.emitDecoded(child, direction, connection);
             }
             
-            // todo: handle movement packets with care
             await connection.room?.broadcastMessages(
                 message.children
                     .filter(child => !child.canceled)
-            , [], undefined, [connection]);
+            , [], undefined, [connection], reliable);
         });
 
         this.decoder.on(GameDataToMessage, async (message, direction, connection) => {

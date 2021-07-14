@@ -34,6 +34,7 @@ import {
     SetNameMessage,
     SpawnMessage,
     StartGameMessage,
+    UnreliablePacket,
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
@@ -336,7 +337,8 @@ export class Room extends Hostable<RoomEvents> {
         gamedata: BaseGameDataMessage[],
         payload: BaseRootMessage[] = [],
         include?: Connection[],
-        exclude?: Connection[]
+        exclude?: Connection[],
+        reliable = true
     ) {
         const clientsToBroadcast = include || [...this.connections.values()];
         const clientsToExclude = new Set(exclude);
@@ -367,10 +369,12 @@ export class Room extends Hostable<RoomEvents> {
             if (messages.length) {
                 promises.push(
                     connection.sendPacket(
-                        new ReliablePacket(
-                            connection.getNextNonce(),
-                            messages
-                        )
+                        reliable
+                            ? new ReliablePacket(
+                                connection.getNextNonce(),
+                                messages
+                            )
+                            : new UnreliablePacket(messages)
                     )
                 );
             }

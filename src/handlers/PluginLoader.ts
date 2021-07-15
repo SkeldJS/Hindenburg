@@ -107,20 +107,29 @@ export class Plugin {
         return this.config;
     }
 
-    async sendRpc(component: Networkable, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
+    async sendReactorRpc(component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
+        if (!rpc.modId)
+            throw new TypeError("Bad reactor rpc: invalid mod id.");
+
         for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
-            /*
-            todo: find this player's mod netid
+            const playerConnection = component.room.connections.get(player.id);
+
+            if (playerConnection) {
+                const targetMod = playerConnection.mods.get(rpc.modId);
+
+                if (!targetMod)
+                    continue;
+                
             await player.room.broadcast([
                 new RpcMessage(
                     component.netid,
                     new ReactorRpcMessage(
-                        targetMod.netid,
+                            targetMod.netId,
                         rpc
                     )
                 )
             ], true, player);
-            */
+            }
         }
     }
 }

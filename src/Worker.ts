@@ -1020,7 +1020,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.memUsages.splice(numEntries);
 
             for (const [ , connection ] of this.connections) {
-                if (connection.sentPackets.every(packet => !packet.acked)) {
+                if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
                     this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
                         connection);
 

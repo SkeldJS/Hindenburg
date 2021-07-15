@@ -519,9 +519,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 // todo: find better way of doing this because this is very slow (probably some sort of event listener on the plugin loader)
                 for (const [ , loadedPlugin ] of this.pluginLoader.loadedPlugins) {
-                    for (const [ classname, modId, tag, handlerFn ] of loadedPlugin.reactorRpcHandlers) {
-                        if (classname === component.classname && modId === senderMod.modId && tag === reactorRpc.customRpc.tag) {
-                            handlerFn(component, reactorRpc.customRpc);
+                    for (const { classname, modId, rpcTag, handler } of loadedPlugin.reactorRpcHandlers) {
+                        if (classname === component.classname && modId === senderMod.modId && rpcTag === reactorRpc.customRpc.tag) {
+                            handler(component, reactorRpc.customRpc);
                         }
                     }
                 }

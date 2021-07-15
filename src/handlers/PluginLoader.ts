@@ -30,7 +30,6 @@ import {
     hindenburgChatCommandKey,
     hindenburgMessageKey,
     hindenburgRegisterMessageKey,
-    MessageListenerOptions,
     hindenburgVorpalCommand,
     VorpalCommandInformation,
     BaseReactorRpcMessage,
@@ -40,6 +39,7 @@ import {
 
 import { RegisteredChatCommand } from "./ChatCommandHander";
 import { Room } from "../Room";
+import { Connection } from "..";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -57,11 +57,22 @@ export class Plugin {
     logger: winston.Logger;
     
     // todo refactor tuples to objects because this is hard to understand af
-    eventHandlers: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
+    eventHandlers: {
+        eventName: keyof WorkerEvents;
+        handler: (ev: WorkerEvents[keyof WorkerEvents]) => any
+    }[];
     registeredChatCommands: RegisteredChatCommand[];
-    messageHandlers: [Deserializable, (ev: Serializable) => any][];
-    reactorRpcHandlers: [string, string, number, (component: Networkable, rpc: BaseReactorRpcMessage) => any][];
-    registeredMessages: Map<string, Map<number, Deserializable>>;  // todo: maybe switch to using sets of messages? unsure.
+    messageHandlers: {
+        messageClass: Deserializable,
+        handler: (ev: Serializable) => any
+    }[];
+    reactorRpcHandlers: {
+        classname: string;
+        modId: string;
+        rpcTag: number;
+        handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
+    }[];
+    registeredMessages: Deserializable[];
     registeredVorpalCommands: vorpal.Command[];
 
     constructor(
@@ -93,7 +104,7 @@ export class Plugin {
         this.registeredChatCommands = [];
         this.messageHandlers = [];
         this.reactorRpcHandlers = [];
-        this.registeredMessages = new Map;
+        this.registeredMessages = [];
         this.registeredVorpalCommands = [];
     }
 
@@ -138,15 +149,6 @@ export class Plugin {
     }
 }
 
-function registerMessageToMessageMap(message: Deserializable, map: Map<string, Map<number, Deserializable>>) {
-    const cachedType = map.get(message.type);
-    const messageType = cachedType || new Map;
-    if (!cachedType)
-        map.set(message.type, messageType);
-
-    messageType.set(message.tag, message);
-}
-
 export class PluginLoader {
     loadedPlugins: Map<string, Plugin>;
 
@@ -171,10 +173,8 @@ export class PluginLoader {
 
         const loadedPluginsArr = [...this.loadedPlugins];
         for (const [ , loadedPlugin ] of loadedPluginsArr) {
-            for (const [ , messageTags ] of loadedPlugin.registeredMessages) {
-                for (const [ , messageClass ] of messageTags) {
-                    this.worker.decoder.register(messageClass);
-                }
+            for (const messageClass of loadedPlugin.registeredMessages) {
+                this.worker.decoder.register(messageClass);
             }
         }
     }
@@ -251,19 +251,19 @@ export class PluginLoader {
             const chatCommandUsageAndDescription = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
             
             if (chatCommandUsageAndDescription) {
-                const [ chatCommandUsage, chatCommandDescription ] = chatCommandUsageAndDescription;
+                const { usage, description } = chatCommandUsageAndDescription;
                 // todo: maybe some sort of a stack system for commands that have the same trigger,
                 // or allow multiple commands to have the same trigger (triggers all of them).
                 const fn = property.bind(loadedPlugin);
-                const registeredCommand = this.worker.chatCommandHandler.registerCommand(chatCommandUsage, chatCommandDescription, fn);
+                const registeredCommand = this.worker.chatCommandHandler.registerCommand(usage, description, fn);
                 loadedPlugin.registeredChatCommands.push(registeredCommand);
             }
 
             const messageClassAndOptions = Reflect.getMetadata(hindenburgMessageKey, loadedPlugin, propertyName);
             if (messageClassAndOptions) {
-                const [ messageClass, handlerOptions ] = messageClassAndOptions as [ Deserializable, MessageListenerOptions ];
+                const { messageClass, options } = messageClassAndOptions;
 
-                if (handlerOptions.override) {
+                if (options.override) {
                     // todo: handle overriding message listeners, this is difficult:
                     // must implement a "stack" system which captures the listeners
                     // of each layer of plugin added.
@@ -271,15 +271,23 @@ export class PluginLoader {
 
                 const fn = property.bind(loadedPlugin);
                 this.worker.decoder.on(messageClass, fn);
-                loadedPlugin.messageHandlers.push([ messageClass, fn ]);
+                loadedPlugin.messageHandlers.push({
+                    messageClass,
+                    handler: fn
+                });
             }
 
             const reactorRpcClassnameModIdAndTag = Reflect.getMetadata(hindenburgReactorRpcKey, loadedPlugin, propertyName);
             if (reactorRpcClassnameModIdAndTag) {
-                const [ classname, modId, tag ] = reactorRpcClassnameModIdAndTag as [ string, string, number ];
+                const { classname, modId, rpcTag } = reactorRpcClassnameModIdAndTag;
 
                 const fn = property.bind(loadedPlugin);
-                loadedPlugin.reactorRpcHandlers.push([ classname, modId, tag, fn ]);
+                loadedPlugin.reactorRpcHandlers.push({
+                    classname,
+                    modId,
+                    rpcTag,
+                    handler: fn 
+                });
             }
 
             const vorpalCommand = Reflect.getMetadata(hindenburgVorpalCommand, loadedPlugin, propertyName) as undefined|VorpalCommandInformation;
@@ -304,20 +312,20 @@ export class PluginLoader {
         const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin) as Set<Deserializable>|undefined;
         if (messagesToRegister) {
             for (const messageClass of messagesToRegister) {
-                registerMessageToMessageMap(
-                    messageClass,
-                    loadedPlugin.registeredMessages
-                );
+                loadedPlugin.registeredMessages.push(messageClass);
             }
             this.reregisterMessages();
         }
 
-        const eventListeners = Reflect.getMetadata(hindenburgEventListenersKey, loadedPlugin) as Set<[ (ev: WorkerEvents[keyof WorkerEvents]) => any, keyof WorkerEvents ]>|undefined;
+        const eventListeners = Reflect.getMetadata(hindenburgEventListenersKey, loadedPlugin);
         if (eventListeners) {
-            for (const [ listener, eventName ] of eventListeners) {
-                const fn = listener.bind(loadedPlugin);
+            for (const { eventName, handler } of eventListeners) {
+                const fn = handler.bind(loadedPlugin);
                 this.worker.on(eventName, fn);
-                loadedPlugin.eventHandlers.push([ eventName, fn ]);
+                loadedPlugin.eventHandlers.push({
+                    eventName,
+                    handler: fn
+                });
             }
         }
         
@@ -337,8 +345,8 @@ export class PluginLoader {
             return this.unloadPlugin(plugin);
         }
 
-        for (const [ eventName, listenerFn ] of pluginId.eventHandlers) {
-            this.worker.off(eventName, listenerFn);
+        for (const { eventName, handler } of pluginId.eventHandlers) {
+            this.worker.off(eventName, handler);
         }
 
         for (const vorpalCommand of pluginId.registeredVorpalCommands) {

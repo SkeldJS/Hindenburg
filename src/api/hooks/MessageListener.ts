@@ -18,6 +18,9 @@ export function MessageListener<T extends Deserializable>(messageClass: T, optio
             override: true,
             ...options
         };
-        Reflect.defineMetadata(hindenburgMessageKey, [ messageClass, allOptions ], target, propertyKey);
+        Reflect.defineMetadata(hindenburgMessageKey, {
+            messageClass,
+            options: allOptions
+        }, target, propertyKey);
     }
 }

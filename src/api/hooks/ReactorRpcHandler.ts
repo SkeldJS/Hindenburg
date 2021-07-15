@@ -38,6 +38,10 @@ export function ReactorRpcHandler<
 
         messagesToRegister.add(reactorRpc);
         
-        Reflect.defineMetadata(hindenburgReactorRpcKey, [ componentCtr.classname, reactorRpc.modId, reactorRpc.tag ], target, propertyKey);
+        Reflect.defineMetadata(hindenburgReactorRpcKey, {
+            className: componentCtr.classname,
+            modId: reactorRpc.modId,
+            rpctag: reactorRpc.tag
+        }, target, propertyKey);
     }
 }

@@ -31,12 +31,15 @@ export function EventListener<EventName extends keyof WorkerEvents>(pluginClassO
             ? target
             : pluginClassOrEventName.prototype;
 
-        const cachedSet: Set<[ (ev: WorkerEvents[EventName]) => any, EventName ]>|undefined = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
+        const cachedSet = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
         const messagesToRegister = cachedSet || new Set;
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgEventListenersKey, messagesToRegister, actualTarget);
         }
         
-        messagesToRegister.add([ descriptor.value!, eventName || pluginClassOrEventName ]);
+        messagesToRegister.add({
+            handler: descriptor.value!,
+            eventName: eventName || pluginClassOrEventName
+        });
     }
 }

@@ -31,7 +31,7 @@ export interface ChatCommandParameter {
     name: string;
 }
 
-export class CallError extends Error {};
+export class CommandCallError extends Error {};
 export class ChatCommandContext {
     constructor(
         /**
@@ -151,7 +151,7 @@ export class RegisteredChatCommand {
 
             if (!consume) {
                 if (param.required) {
-                    throw new CallError("Usage: <color=#12a50a>" + this.createUsage() + "</color>\n\<color=#f7584e>Missing: " + param.name + "</color>\n\n" + this.description);
+                    throw new CommandCallError("Usage: <color=#12a50a>" + this.createUsage() + "</color>\n\<color=#f7584e>Missing: " + param.name + "</color>\n\n" + this.description);
                 }
                 return parsed; // No more arguments are left to consume
             }
@@ -170,29 +170,6 @@ export class ChatCommandHandler {
         public readonly worker: Worker
     ) {
         this.commands = new Map;
-
-        this.worker.on("player.chat", async ev => {
-            if (ev.chatMessage.startsWith("/")) {
-                const room = this.worker.rooms.get(ev.room.code);
-                
-                if (!room)
-                    return;
-
-                ev.message?.cancel(); // Prevent message from being broadcasted
-                const restMessage = ev.chatMessage.substr(1);
-                const context = new ChatCommandContext(room, ev.player, ev.chatMessage);
-                try {
-                    await this.parseMessage(context, restMessage);
-                } catch (e) {
-                    if (e instanceof CallError) {
-                        await context.reply(e.message);
-                    } else {
-                        this.worker.logger.error("Error while executing command %s: %s",
-                            ev.message, e);
-                    }
-                }
-            }
-        });
 
         this.registerCommand("help [command/page]", "Get a list of commands and how to use them, or get help for a specific command.", async (ctx, args) => {
             const maxDisplay = 4;
@@ -298,12 +275,12 @@ export class ChatCommandHandler {
         const commandName = args.shift();
 
         if (!commandName)
-            throw new CallError("Bad command call.");
+            throw new CommandCallError("Bad command call.");
 
         const command = this.commands.get(commandName);
 
         if (!command)
-            throw new CallError("No command with name: " + commandName);
+            throw new CommandCallError("No command with name: " + commandName);
 
         const parsed = command.verify(args);
 

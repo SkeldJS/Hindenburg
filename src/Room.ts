@@ -21,7 +21,7 @@ import {
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
-    GameOptions,
+    GameSettings,
     HostGameMessage,
     JoinedGameMessage,
     JoinGameMessage,
@@ -55,6 +55,8 @@ import {
 
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
+import { RoomsConfig } from "./interfaces";
+import { CommandCallError, ChatCommandContext, Plugin } from "./handlers";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Room>) {
     const connection = this.room.connections.get(this.id);
@@ -171,11 +173,17 @@ export class Room extends Hostable<RoomEvents> {
      */
     bans: Set<string>;
 
+    /**
+     * Plugins that are enabled for this room.
+     */
+    plugins: Set<Plugin>;
+
     state: GameState;
 
     constructor(
         public readonly worker: Worker,
-        settings: GameOptions
+        public readonly config: RoomsConfig,
+        settings: GameSettings
     ) {
         super({ doFixedUpdate: true });
 
@@ -205,6 +213,7 @@ export class Room extends Hostable<RoomEvents> {
         });
 
         this.bans = new Set;
+        this.plugins = new Set;
         this.settings = settings;
 
         this.state = GameState.NotStarted;
@@ -219,9 +228,30 @@ export class Room extends Hostable<RoomEvents> {
             }
         });
 
-        this.on("player.chat", chat => {
+        this.on("player.chat", async chat => {
             this.logger.info("%s sent message: %s",
                 chat.player, chalk.red(chat.chatMessage));
+                
+            if (chat.chatMessage.startsWith("/") && this.config.chatCommands) {
+                const room = this.worker.rooms.get(chat.room.code);
+                
+                if (!room)
+                    return;
+
+                chat.message?.cancel(); // Prevent message from being broadcasted
+                const restMessage = chat.chatMessage.substr(1);
+                const context = new ChatCommandContext(room, chat.player, chat.chatMessage);
+                try {
+                    await this.worker.chatCommandHandler.parseMessage(context, restMessage);
+                } catch (e) {
+                    if (e instanceof CommandCallError) {
+                        await context.reply(e.message);
+                    } else {
+                        this.worker.logger.error("Error while executing command %s: %s",
+                            chat.chatMessage, e);
+                    }
+                }
+            }
         });
     }
 

@@ -197,7 +197,10 @@ export class PluginLoader {
     }
 
     async loadPlugin(loadedPluginCtr: typeof Plugin) {
-        const config = this.worker.config.plugins[loadedPluginCtr.meta.id] || {};
+        const config = this.worker.config.plugins[loadedPluginCtr.meta.id] || loadedPluginCtr.meta.defaultConfig;
+
+        if (!isHindenburgPlugin(loadedPluginCtr))
+            throw new Error("Imported variable was not a hindenburg plugin.");
 
         if (typeof config === "boolean" && !config)
             throw new Error("Plugin is disabled.");

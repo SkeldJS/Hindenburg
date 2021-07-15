@@ -241,14 +241,14 @@ export class PluginLoader {
             if (typeof property !== "function")
                 continue;
 
-            const chatCommand = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
-            const chatCommandDescription = Reflect.getMetadata(hindenburgChatCommandDescKey, loadedPlugin, propertyName);
+            const chatCommandUsageAndDescription = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
             
-            if (chatCommand) {
+            if (chatCommandUsageAndDescription) {
+                const [ chatCommandUsage, chatCommandDescription ] = chatCommandUsageAndDescription;
                 // todo: maybe some sort of a stack system for commands that have the same trigger,
                 // or allow multiple commands to have the same trigger (triggers all of them).
                 const fn = property.bind(loadedPlugin);
-                const registeredCommand = this.worker.chatCommandHandler.registerCommand(chatCommand, chatCommandDescription, fn);
+                const registeredCommand = this.worker.chatCommandHandler.registerCommand(chatCommandUsage, chatCommandDescription, fn);
                 loadedPlugin.registeredChatCommands.push(registeredCommand);
             }
 

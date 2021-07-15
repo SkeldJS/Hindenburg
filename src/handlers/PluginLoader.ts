@@ -286,7 +286,7 @@ export class PluginLoader {
 
         this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
         
-        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPluginCtr) as Set<Deserializable>|undefined;
+        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin) as Set<Deserializable>|undefined;
         if (messagesToRegister) {
             for (const messageClass of messagesToRegister) {
                 registerMessageToMessageMap(

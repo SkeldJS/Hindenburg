@@ -13,8 +13,8 @@ import {
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
 
-import { Deserializable, Serializable } from "@skeldjs/protocol";
-import { Networkable, PlayerData } from "@skeldjs/core";
+import { Deserializable, RpcMessage, Serializable } from "@skeldjs/protocol";
+import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
 
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
 
@@ -27,7 +27,6 @@ import {
 
 import {
     hindenburgEventListenersKey,
-    hindenburgChatCommandDescKey,
     hindenburgChatCommandKey,
     hindenburgMessageKey,
     hindenburgRegisterMessageKey,
@@ -35,10 +34,12 @@ import {
     hindenburgVorpalCommand,
     VorpalCommandInformation,
     BaseReactorRpcMessage,
-    isHindenburgPlugin
+    isHindenburgPlugin,
+    hindenburgReactorRpcKey
 } from "../api";
 
 import { RegisteredChatCommand } from "./CommandHander";
+import { Room } from "../Room";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -55,9 +56,11 @@ export class Plugin {
 
     logger: winston.Logger;
     
+    // todo refactor tuples to objects because this is hard to understand af
     eventHandlers: [keyof WorkerEvents, (ev: WorkerEvents[keyof WorkerEvents]) => any][];
     registeredChatCommands: RegisteredChatCommand[];
     messageHandlers: [Deserializable, (ev: Serializable) => any][];
+    reactorRpcHandlers: [string, string, number, (component: Networkable, rpc: BaseReactorRpcMessage) => any][];
     registeredMessages: Map<string, Map<number, Deserializable>>;  // todo: maybe switch to using sets of messages? unsure.
     registeredVorpalCommands: vorpal.Command[];
 
@@ -89,6 +92,7 @@ export class Plugin {
         this.eventHandlers = [];
         this.registeredChatCommands = [];
         this.messageHandlers = [];
+        this.reactorRpcHandlers = [];
         this.registeredMessages = new Map;
         this.registeredVorpalCommands = [];
     }
@@ -120,15 +124,15 @@ export class Plugin {
                 if (!targetMod)
                     continue;
                 
-            await player.room.broadcast([
-                new RpcMessage(
-                    component.netid,
-                    new ReactorRpcMessage(
+                await player.room.broadcast([
+                    new RpcMessage(
+                        component.netid,
+                        new ReactorRpcMessage(
                             targetMod.netId,
-                        rpc
+                            rpc
+                        )
                     )
-                )
-            ], true, player);
+                ], true, player);
             }
         }
     }
@@ -265,6 +269,14 @@ export class PluginLoader {
                 const fn = property.bind(loadedPlugin);
                 this.worker.decoder.on(messageClass, fn);
                 loadedPlugin.messageHandlers.push([ messageClass, fn ]);
+            }
+
+            const reactorRpcClassnameModIdAndTag = Reflect.getMetadata(hindenburgReactorRpcKey, loadedPlugin, propertyName);
+            if (reactorRpcClassnameModIdAndTag) {
+                const [ classname, modId, tag ] = reactorRpcClassnameModIdAndTag as [ string, string, number ];
+
+                const fn = property.bind(loadedPlugin);
+                loadedPlugin.reactorRpcHandlers.push([ classname, modId, tag, fn ]);
             }
 
             const vorpalCommand = Reflect.getMetadata(hindenburgVorpalCommand, loadedPlugin, propertyName) as undefined|VorpalCommandInformation;

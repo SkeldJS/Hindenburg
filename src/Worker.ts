@@ -517,7 +517,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 }
 
-                // todo: send it to plugins
+                // todo: find better way of doing this because this is very slow (probably some sort of event listener on the plugin loader)
+                for (const [ , loadedPlugin ] of this.pluginLoader.loadedPlugins) {
+                    for (const [ classname, modId, tag, handlerFn ] of loadedPlugin.reactorRpcHandlers) {
+                        if (classname === component.classname && modId === senderMod.modId && tag === reactorRpc.customRpc.tag) {
+                            handlerFn(component, reactorRpc.customRpc);
+                        }
+                    }
+                }
 
                 for (const [ , receiveClient ] of connection.room!.connections) {
                     if (receiveClient === connection)

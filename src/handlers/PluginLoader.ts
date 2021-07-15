@@ -47,7 +47,6 @@ export interface PluginMeta {
     version?: string;
     defaultConfig: any;
     order: PluginOrder;
-    modId: string;
 }
 
 export class Plugin {

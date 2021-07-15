@@ -1,2 +1,2 @@
-export * from "./CommandHander";
+export * from "./ChatCommandHander";
 export * from "./PluginLoader";

@@ -38,7 +38,7 @@ import {
     hindenburgReactorRpcKey
 } from "../api";
 
-import { RegisteredChatCommand } from "./CommandHander";
+import { RegisteredChatCommand } from "./ChatCommandHander";
 import { Room } from "../Room";
 
 type PluginOrder = "last"|"first"|"none"|number;

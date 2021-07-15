@@ -41,7 +41,7 @@ export class ChatCommandContext {
         /**
          * The player that sent the message calling the command.
          */
-        public readonly player: PlayerData,
+        public readonly player: PlayerData<Room>,
         /**
          * The original message that the player sent (without the leading '/').
          */
@@ -208,7 +208,7 @@ export class ChatCommandHandler {
                     return;
                 }
 
-                await ctx.reply("Usage: <color=#12a50a>" + command.createUsage() + "</color>\n\n" + command.description);
+                await ctx.reply("Usage: " + command.createUsage() + "\n\n" + command.description);
                 return;
             }
 
@@ -231,17 +231,17 @@ export class ChatCommandHandler {
                 i++
             ) {
                 const command = allCommands[i];
-                outMessage += "\n<space=1em><color=#12a50a>" + command.createUsage() + "</color> - " + command.description;
+                outMessage += "\n\n" + command.createUsage() + " - " + command.description;
                 num++;
             }
 
             if (num === maxDisplay && displayPage < maxPages) {
-                outMessage += "\n\nUse <color=#12a50a>/help " + (displayPage + 1) + "</color> for more commands.";
+                outMessage += "\n\nUse /help " + (displayPage + 1) + " for more commands.";
             }
 
             await ctx.reply(
-                "Listing " + num + " command" + (num === 1 ? "" : "s") + " on page " + displayPage + "/" + maxPages + ":\n"
-                + outMessage
+                "Listing " + num + " command" + (num === 1 ? "" : "s") + " on page " + displayPage + "/" + maxPages + ":\n\n"
+                + outMessage.trim()
             );
         });
     }

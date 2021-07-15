@@ -1,3 +1,5 @@
+import { AllGameSettings } from "@skeldjs/protocol";
+
 export interface AnticheatPenalty {
     /**
      * The action that should be applied on this user for breaking this rule.
@@ -226,6 +228,12 @@ export interface ReactorConfig {
     requireHostMods: boolean;
 }
 
+export interface RoomsConfig {
+    chatCommands: boolean;
+    enforceSettings: AllGameSettings;
+    plugins: string[];
+}
+
 export interface HindenburgConfig {
     /**
      * An array of game versions that Hindenburg will accept.
@@ -264,9 +272,12 @@ export interface HindenburgConfig {
      * Options for logging.
      */
     logging: LoggingConfig;
-
     /**
      * Options for Hindenburg's reactor integration.
      */
     reactor: ReactorConfig|boolean;
+    /**
+     * Configuration for rooms, such as enabling/disabling features 
+     */
+    rooms: RoomsConfig;
 }

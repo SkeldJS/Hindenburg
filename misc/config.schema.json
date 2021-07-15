@@ -241,6 +241,122 @@
                     }
                 }
             ]
+        },
+        "rooms": {
+            "type": "object",
+            "properties": {
+                "chatCommands": {
+                    "type": "boolean"
+                },
+                "enforceSettings": {
+                    "type": "object",
+                    "properties": {
+                        "versions": {
+                            "type": "number"
+                        },
+                        "maxPlayers": {
+                            "type": "number"
+                        },
+                        "keywords": {
+                            "type": "string",
+                            "enum": [
+                                "All",
+                                "Other",
+                                "Spanish (Latin America)",
+                                "Korean",
+                                "Russian",
+                                "Portuguese",
+                                "Arabic",
+                                "Filipino",
+                                "Polish",
+                                "English",
+                                "Japanese",
+                                "Spanish",
+                                "Portuguese Brazil",
+                                "Dutch",
+                                "French",
+                                "German",
+                                "Italian",
+                                "ChineseSimplified",
+                                "ChineseTraditional",
+                                "Irish"
+                            ]
+                        },
+                        "map": {
+                            "type": "string",
+                            "enum": [
+                                "The Skeld",
+                                "Mira HQ",
+                                "Polus",
+                                "The Skeld April Fools",
+                                "Airship"
+                            ]
+                        },
+                        "playerSpeed": {
+                            "type": "number"
+                        },
+                        "crewmateVision": {
+                            "type": "number"
+                        },
+                        "impostorVision": {
+                            "type": "number"
+                        },
+                        "killCooldown": {
+                            "type": "number"
+                        },
+                        "commonTasks": {
+                            "type": "number"
+                        },
+                        "longTasks": {
+                            "type": "number"
+                        },
+                        "shortTasks": {
+                            "type": "number"
+                        },
+                        "numEmergencies": {
+                            "type": "number"
+                        },
+                        "numImpostors": {
+                            "type": "number"
+                        },
+                        "killDistance": {
+                            "type": "string",
+                            "enum": ["Short", "Medium", "Long"]
+                        },
+                        "discussionTime": {
+                            "type": "number"
+                        },
+                        "votingTime": {
+                            "type": "number"
+                        },
+                        "isDefaults": {
+                            "type": "number"
+                        },
+                        "emergencyCooldown": {
+                            "type": "number"
+                        },
+                        "confirmEjects": {
+                            "type": "number"
+                        },
+                        "visualTasks": {
+                            "type": "number"
+                        },
+                        "anonymousVotes": {
+                            "type": "number"
+                        },
+                        "taskbarUpdates": {
+                            "type": "string",
+                            "enum": ["Always", "Meetings", "Never"]
+                        }
+                    }
+                },
+                "plugins": {
+                    "type": "array",
+                    "items": [{
+                        "type": "string"
+                    }]
+                }
+            }
         }
     }
 }

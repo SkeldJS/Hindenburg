@@ -16,7 +16,7 @@ import {
     GameDataMessage,
     GameDataToMessage,
     GameListing,
-    GameOptions,
+    GameSettings,
     GetGameListMessage,
     HostGameMessage,
     JoinGameMessage,
@@ -50,7 +50,7 @@ import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { fmtCode } from "./util/fmtCode";
 
-import { HindenburgConfig } from "./interfaces/HindenburgConfig";
+import { HindenburgConfig, RoomsConfig } from "./interfaces/HindenburgConfig";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
@@ -1362,11 +1362,19 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * @param options Game options for the room.
      * @returns The created room.
      */
-    async createRoom(code: number, options: GameOptions) {
+    async createRoom(code: number, options: GameSettings) {
         if (this.rooms.has(code))
             throw new Error("A room with code '" + Int2Code(code) + "' already exists.");
 
-        const createdRoom = new Room(this, options);
+        const copyConfiguration: RoomsConfig = {
+            ...this.config.rooms,
+            enforceSettings: {
+                ...this.config.rooms.enforceSettings
+            },
+            plugins: [...this.config.rooms.plugins]
+        };
+
+        const createdRoom = new Room(this, copyConfiguration, options);
         await createdRoom.room.setCode(code);
         this.rooms.set(code, createdRoom);
 

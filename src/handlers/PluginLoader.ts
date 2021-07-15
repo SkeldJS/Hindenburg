@@ -154,7 +154,7 @@ export class PluginLoader {
     }
 
     async reregisterMessages() {
-        const listeners = this.worker.decoder.listeners;
+        const listeners = new Map([...this.worker.decoder.listeners]);
         this.worker.decoder.reset();
         this.worker.decoder.listeners = listeners;
         this.worker.decoder.register(

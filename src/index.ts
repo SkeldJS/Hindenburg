@@ -9,3 +9,4 @@ export * from "./Worker";
 
 export * from "@skeldjs/core";
 export * from "@skeldjs/protocol";
+export * from "@skeldjs/util";

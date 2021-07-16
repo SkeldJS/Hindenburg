@@ -164,7 +164,9 @@ export class PluginLoader {
     }
 
     async resetMessages() {
-        this.worker.decoder.types.clear();
+        const listeners = new Map([...this.worker.decoder.listeners]);
+        this.worker.decoder.reset();
+        this.worker.decoder.listeners = listeners;
         this.worker.decoder.register(
             ModdedHelloPacket,
             ReactorMessage,

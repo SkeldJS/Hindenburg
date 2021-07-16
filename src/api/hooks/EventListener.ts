@@ -32,13 +32,13 @@ export function EventListener<EventName extends keyof WorkerEvents>(pluginClassO
             : pluginClassOrEventName.prototype;
 
         const cachedSet = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
-        const messagesToRegister = cachedSet || new Set;
+        const eventListeners = cachedSet || new Set;
         if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgEventListenersKey, messagesToRegister, actualTarget);
+            Reflect.defineMetadata(hindenburgEventListenersKey, eventListeners, actualTarget);
         }
         
-        messagesToRegister.add({
-            handler: descriptor.value!,
+        eventListeners.add({
+            handler: descriptor.value,
             eventName: eventName || pluginClassOrEventName
         });
     }

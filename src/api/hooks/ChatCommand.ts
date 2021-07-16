@@ -8,6 +8,16 @@ export function ChatCommand(usage: string, description: string) {
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) {
-        Reflect.defineMetadata(hindenburgChatCommandKey, { usage, description }, target, propertyKey);
+        const cachedSet = Reflect.getMetadata(hindenburgChatCommandKey, target);
+        const chatCommands = cachedSet || new Set;
+        if (!cachedSet) {
+            Reflect.defineMetadata(hindenburgChatCommandKey, chatCommands, target);
+        }
+
+        chatCommands.add({
+            usage,
+            handler: descriptor.value,
+            description
+        });
     }
 }

@@ -13,7 +13,7 @@ import {
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
 
-import { Deserializable, RpcMessage, Serializable } from "@skeldjs/protocol";
+import { Deserializable, MessageDirection, RpcMessage, Serializable } from "@skeldjs/protocol";
 import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
 
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
@@ -28,18 +28,18 @@ import {
 import {
     hindenburgEventListenersKey,
     hindenburgChatCommandKey,
-    hindenburgMessageKey,
+    hindenburgMessageHandlersKey,
     hindenburgRegisterMessageKey,
     hindenburgVorpalCommand,
     VorpalCommandInformation,
     BaseReactorRpcMessage,
     isHindenburgPlugin,
-    hindenburgReactorRpcKey
+    hindenburgReactorRpcKey,
+    MessageListenerOptions
 } from "../api";
 
 import { RegisteredChatCommand } from "./ChatCommandHander";
 import { Room } from "../Room";
-import { Connection } from "..";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -56,7 +56,6 @@ export class Plugin {
 
     logger: winston.Logger;
     
-    // todo refactor tuples to objects because this is hard to understand af
     eventHandlers: {
         eventName: keyof WorkerEvents;
         handler: (ev: WorkerEvents[keyof WorkerEvents]) => any
@@ -64,6 +63,7 @@ export class Plugin {
     registeredChatCommands: RegisteredChatCommand[];
     messageHandlers: {
         messageClass: Deserializable,
+        options: MessageListenerOptions,
         handler: (ev: Serializable) => any
     }[];
     reactorRpcHandlers: {
@@ -156,13 +156,11 @@ export class PluginLoader {
         public readonly worker: Worker,
         public readonly pluginDir: string
     ) {
-        this.loadedPlugins = new Map; 
+        this.loadedPlugins = new Map;
     }
 
-    async reregisterMessages() {
-        const listeners = new Map([...this.worker.decoder.listeners]);
-        this.worker.decoder.reset();
-        this.worker.decoder.listeners = listeners;
+    async resetMessages() {
+        this.worker.decoder.types.clear();
         this.worker.decoder.register(
             ModdedHelloPacket,
             ReactorMessage,
@@ -179,7 +177,26 @@ export class PluginLoader {
         }
     }
 
-    async reregisterChatCommands() {
+    async resetMessageHandlers() {
+        this.worker.decoder.listeners.clear();
+        this.worker.registerPacketHandlers();
+
+        const loadedPluginsArr = [...this.loadedPlugins];
+        for (const [ , loadedPlugin ] of loadedPluginsArr) {
+            for (const { messageClass, handler, options } of loadedPlugin.messageHandlers) {
+                if (options.override) {
+                    this.worker.decoder.listeners.delete(`${messageClass.type}:${messageClass.tag}`);
+                }
+
+                this.worker.decoder.on(messageClass, handler.bind(loadedPlugin));
+            }
+        }
+    }
+
+    async resetChatCommands() {
+        this.worker.chatCommandHandler.commands.clear();
+        this.worker.chatCommandHandler.registerHelpCommand();
+
         for (const [ , loadedPlugin ] of this.loadedPlugins) {
             for (const registeredCommand of loadedPlugin.registeredChatCommands) {
                 this.worker.chatCommandHandler.commands.set(registeredCommand.name, registeredCommand);
@@ -248,35 +265,6 @@ export class PluginLoader {
             if (typeof property !== "function")
                 continue;
 
-            const chatCommandUsageAndDescription = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin, propertyName);
-            
-            if (chatCommandUsageAndDescription) {
-                const { usage, description } = chatCommandUsageAndDescription;
-                // todo: maybe some sort of a stack system for commands that have the same trigger,
-                // or allow multiple commands to have the same trigger (triggers all of them).
-                const fn = property.bind(loadedPlugin);
-                const registeredCommand = this.worker.chatCommandHandler.registerCommand(usage, description, fn);
-                loadedPlugin.registeredChatCommands.push(registeredCommand);
-            }
-
-            const messageClassAndOptions = Reflect.getMetadata(hindenburgMessageKey, loadedPlugin, propertyName);
-            if (messageClassAndOptions) {
-                const { messageClass, options } = messageClassAndOptions;
-
-                if (options.override) {
-                    // todo: handle overriding message listeners, this is difficult:
-                    // must implement a "stack" system which captures the listeners
-                    // of each layer of plugin added.
-                }
-
-                const fn = property.bind(loadedPlugin);
-                this.worker.decoder.on(messageClass, fn);
-                loadedPlugin.messageHandlers.push({
-                    messageClass,
-                    handler: fn
-                });
-            }
-
             const reactorRpcClassnameModIdAndTag = Reflect.getMetadata(hindenburgReactorRpcKey, loadedPlugin, propertyName);
             if (reactorRpcClassnameModIdAndTag) {
                 const { classname, modId, rpcTag } = reactorRpcClassnameModIdAndTag;
@@ -308,13 +296,16 @@ export class PluginLoader {
         }
 
         this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
+
+        const chatCommands = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin);
         
-        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin) as Set<Deserializable>|undefined;
-        if (messagesToRegister) {
-            for (const messageClass of messagesToRegister) {
-                loadedPlugin.registeredMessages.push(messageClass);
+        if (chatCommands) {
+            for (const { usage, description, handler } of chatCommands) {
+                const fn = handler.bind(loadedPlugin);
+                const registeredCommand = RegisteredChatCommand.parse(usage, description, fn);
+                loadedPlugin.registeredChatCommands.push(registeredCommand);
             }
-            this.reregisterMessages();
+            this.resetChatCommands();
         }
 
         const eventListeners = Reflect.getMetadata(hindenburgEventListenersKey, loadedPlugin);
@@ -328,9 +319,22 @@ export class PluginLoader {
                 });
             }
         }
+
+        const messageHandlers = Reflect.getMetadata(hindenburgMessageHandlersKey, loadedPlugin);
+        if (messageHandlers) {
+            loadedPlugin.messageHandlers = messageHandlers;
+            this.resetMessageHandlers();
+        }
+        
+        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin) as Set<Deserializable>|undefined;
+        if (messagesToRegister) {
+            for (const messageClass of messagesToRegister) {
+                loadedPlugin.registeredMessages.push(messageClass);
+            }
+            this.resetMessages();
+        }
         
         await loadedPlugin.onPluginLoad?.();
-
         this.worker.logger.info("Loaded plugin '%s'", loadedPlugin.meta.id);
 
         return loadedPlugin;
@@ -356,8 +360,9 @@ export class PluginLoader {
         pluginId.onPluginUnload?.();
         this.loadedPlugins.delete(pluginId.meta.id);
 
-        this.reregisterMessages();
-        this.reregisterChatCommands();
+        this.resetMessages();
+        this.resetMessageHandlers();
+        this.resetChatCommands();
         this.worker.logger.info("Unloaded plugin '%s'", pluginId.meta.id);
     }
     

@@ -170,7 +170,10 @@ export class ChatCommandHandler {
         public readonly worker: Worker
     ) {
         this.commands = new Map;
+        this.registerHelpCommand();
+    }
 
+    registerHelpCommand() {
         this.registerCommand("help [command/page]", "Get a list of commands and how to use them, or get help for a specific command.", async (ctx, args) => {
             const maxDisplay = 4;
 

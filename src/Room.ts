@@ -182,7 +182,7 @@ export class Room extends Hostable<RoomEvents> {
 
     constructor(
         public readonly worker: Worker,
-        public readonly config: RoomsConfig,
+        public readonly config: RoomsConfig, // todo: handle plugins & enforce settings configs
         settings: GameSettings
     ) {
         super({ doFixedUpdate: true });

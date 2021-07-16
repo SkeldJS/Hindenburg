@@ -400,7 +400,6 @@ async function getYesOrNo(question) {
         }
         stopSpinner(uninstallingSpinner, true);
 
-        // todo: maybe remove anti-cheat rule definitions too? or is that too extreme?
         const removePluginSpinner = createSpinner("Removing plugin from config.json..");
         try {
             const configData = await fs.readFile(configFile, "utf8");

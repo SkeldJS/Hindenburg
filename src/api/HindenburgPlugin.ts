@@ -14,6 +14,7 @@ export function HindenburgPlugin(meta: Partial<PluginMeta>) {
 
     const actualMeta: PluginMeta = {
         id: "",
+        version: "1.0.0",
         defaultConfig: {},
         order: "none",
         ...meta

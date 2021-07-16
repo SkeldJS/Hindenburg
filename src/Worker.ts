@@ -33,6 +33,7 @@ import {
     Code2Int,
     HazelWriter,
     Int2Code,
+    V1Gen,
     V2Gen,
     VersionInfo
 } from "@skeldjs/util";
@@ -777,7 +778,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (ev.canceled)
                 return;
 
-            const roomCode = this.generateRoomCode(6); // todo: handle config for 4 letter game codes
+            const roomCode = this.generateRoomCode(this.config.rooms.gameCodes === "v1" ? 4 : 6);
             const room = await this.createRoom(roomCode, message.options);
 
             this.logger.info("%s created room %s",
@@ -1322,7 +1323,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             } else {
                 const connection = this.getOrCreateConnection(rinfo);
-                this.logger.error("%s sent an unknown root packet", connection);
+                this.logger.error("%s sent an unknown root packet (%s)", connection, buffer[0]);
             }
         } catch (e) {
             const connection = this.getOrCreateConnection(rinfo);
@@ -1354,9 +1355,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
             throw new RangeError("Expected to generate a 4 or 6 digit room code.");
         }
         
-        let roomCode = V2Gen();
+        let roomCode = len === 4 ? V1Gen() : V2Gen();
         while (this.rooms.get(roomCode))
-            roomCode = V2Gen();
+            roomCode = len === 4 ? V1Gen() : V2Gen();
 
         return roomCode;
     }
@@ -1373,11 +1374,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             throw new Error("A room with code '" + Int2Code(code) + "' already exists.");
 
         const copyConfiguration: RoomsConfig = {
-            ...this.config.rooms,
-            enforceSettings: {
-                ...this.config.rooms.enforceSettings
-            },
-            plugins: [...this.config.rooms.plugins]
+            ...this.config.rooms
         };
 
         const createdRoom = new Room(this, copyConfiguration, options);

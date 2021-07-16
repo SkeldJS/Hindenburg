@@ -230,8 +230,9 @@ export interface ReactorConfig {
 
 export interface RoomsConfig {
     chatCommands: boolean;
-    enforceSettings: AllGameSettings;
-    plugins: string[];
+    gameCodes: "v1" | "v2";
+    enforceSettings?: AllGameSettings;
+    plugins?: string[];
 }
 
 export interface HindenburgConfig {

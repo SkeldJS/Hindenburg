@@ -248,6 +248,10 @@
                 "chatCommands": {
                     "type": "boolean"
                 },
+                "gameCodes": {
+                    "type": "string",
+                    "enum": [ "v1", "v2" ]
+                },
                 "enforceSettings": {
                     "type": "object",
                     "properties": {

@@ -77,6 +77,10 @@ function createDefaultConfig() {
             mods: {},
             allowExtraMods: true,
             requireHostMods: true
+        },
+        rooms: {
+            chatCommands: true,
+            gameCodes: "v1"
         }
     };
 }

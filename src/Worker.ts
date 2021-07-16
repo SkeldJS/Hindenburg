@@ -210,9 +210,427 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.rooms = new Map;
 
         this.decoder = new PacketDecoder;
-        this.pluginLoader.reregisterMessages();
+        this.pluginLoader.resetMessages();
+        this.pluginLoader.resetMessageHandlers();
+        this.pluginLoader.resetChatCommands();
 
         this.memUsages = [];
+
+        this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
+        this.vorpal
+            .command("dc", "Forcefully disconnect a client or several clients.")
+            .option("--clientid, -i <clientid>", "client id(s) of the client(s) to disconnect")
+            .option("--username, -u <username>", "username of the client(s) to disconnect")
+            .option("--address, -a <ip address>", "ip address of the client(s) to disconnect")
+            .option("--room, -c <room code>", "room code of the client(s) to disconnect")
+            .option("--reason, -r <reason>", "reason for why to disconnect the client")
+            .option("--ban, -b [duration]", "ban this client, duration in seconds")
+            .action(async args => {
+                const reason = (typeof args.options.reason === "number"
+                    ? args.options.reason
+                    : DisconnectReason[args.options.reason]) || DisconnectReason.None;
+
+                const roomName = args["room code"]?.toUpperCase();
+                const codeId = roomName && (roomName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(roomName));
+
+                let num_disconnected = 0;
+
+                for (const [ , connection ] of this.connections) {
+                    if (
+                        (Array.isArray(args.options.clientid)
+                            ? args.options.clientid.includes(connection.clientId)
+                            : connection.clientId === args.options.clientid
+                        ) ||
+                        connection.username === args.options.username ||
+                        connection.rinfo.address === args.options.address ||
+                        connection.room?.code === codeId
+                    ) {
+                        if (args.options.ban) {
+                            await this.emit(
+                                new ClientBanEvent(
+                                    connection,
+                                    DisconnectReason[reason as any],
+                                    parseInt(args.options.ban) || 3600
+                                )
+                            );
+                        }
+                        await connection.disconnect(reason);
+                        num_disconnected++;
+                    }
+                }
+
+                this.logger.info("Disconnected %s clients.", num_disconnected);
+            });
+
+        this.vorpal
+            .command("destroy <room code>", "Destroy and remove a room from the server.")
+            .option("--reason, r <reason>", "reason to destroy this room",)
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
+            .action(async args => {
+                const reason = (typeof args.options.reason === "number"
+                    ? args.options.reason
+                    : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
+
+                const roomName = args["room code"].toUpperCase();
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(roomName);
+
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    await room.destroy(reason as unknown as number);
+                } else {
+                    this.logger.error("Couldn't find room: " + args["room code"]);
+                }
+            });
+
+        this.vorpal
+            .command("load <import>", "Load a plugin by its import relative to the base plugin directory.")
+            .action(async args => {
+                const importPath = this.pluginLoader.resolveImportPath(args.import);
+
+                if (importPath) {
+                    const pluginCtr = await this.pluginLoader.importPlugin(importPath);
+                    if (this.pluginLoader.loadedPlugins.has(pluginCtr.meta.id))
+                        this.pluginLoader.unloadPlugin(pluginCtr.meta.id);
+    
+                    await this.pluginLoader.loadPlugin(pluginCtr);
+                } else {
+                    this.logger.error("Couldn't find installed plugin: " + args.import);
+                }
+            });
+
+        this.vorpal
+            .command("unload <plugin id>", "Unload a plugin.")
+            .action(async args => {
+                const pluginId: string = args["plugin id"];
+                const loadedPlugin = 
+                    typeof pluginId === "number"
+                    ? [...this.pluginLoader.loadedPlugins][pluginId - 1]?.[1]
+                    : this.pluginLoader.loadedPlugins.get(pluginId);
+
+                if (loadedPlugin) {
+                    this.pluginLoader.unloadPlugin(loadedPlugin);
+                } else {    
+                    this.logger.error("Plugin not loaded: %s", pluginId);
+                }
+            });
+
+        this.vorpal
+            .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
+            .alias("ls")
+            .action(async args => {
+                switch (args.something) {
+                case "clients":
+                    this.logger.info("%s client(s)", this.connections.size);
+                    const connections = [...this.connections];
+                    for (let i = 0; i < connections.length; i++) {
+                        const [ , connection ] = connections[i];
+                        this.logger.info("%s) %s", i + 1, connection);
+                    }
+                    break;
+                case "rooms":
+                    this.logger.info("%s room(s)", this.rooms.size);
+                    const rooms = [...this.rooms];
+                    for (let i = 0; i < rooms.length; i++) {
+                        const [ , room ] = rooms[i];
+                        this.logger.info("%s) %s", i + 1, room);
+                    }
+                    break;
+                case "plugins":
+                    this.logger.info("%s plugins(s) loaded", this.pluginLoader.loadedPlugins.size);
+                    const loadedPlugins = [...this.pluginLoader.loadedPlugins];
+                    for (let i = 0; i < loadedPlugins.length; i++) {
+                        const [ , plugin ] = loadedPlugins[i];
+                        this.logger.info("%s) %s", i + 1, plugin.meta.id);
+                    }
+                    break;
+                default:
+                    this.logger.error("Expected either \"clients\", \"rooms\" or \"plugins\": %s", args.something);
+                    break;
+                }
+            });
+            
+        this.vorpal
+            .command("list mods <client id>", "List all of a client's mods.")
+            .alias("ls mods")
+            .action(async args => {
+                for (const [ , connection ] of this.connections) {
+                    if (
+                        connection.clientId === args["client id"]
+                    ) {
+                        this.logger.info("%s has %s mod(s)", connection, connection.mods.size);
+                        const mods = [...connection.mods];
+                        for (let i = 0; i < mods.length; i++) {
+                            const [ , mod ] = mods[i];
+                            this.logger.info("%s) %s", i + 1, mod)
+                        }
+                        return;
+                    }
+                }
+                this.logger.error("Couldn't find client with id: " + args["client id"]);
+            });
+            
+        this.vorpal
+            .command("list players <room code>", "List all players in a room.")
+            .alias("ls players")
+            .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(roomName);
+                    
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    this.logger.info("%s player(s) in %s", room.room.players.size, room);
+                    const players = [...room.room.players];
+                    for (let i = 0; i < players.length; i++) {
+                        const [ , player ] = players[i];
+                        this.logger.info("%s) %s", i + 1, player);
+                    }
+                } else {
+                    this.logger.error("Couldn't find room: " + args["room code"]);
+                }
+            });
+
+        this.vorpal
+            .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
+            .option("--room, -c <room code>", "the room to send a message to")
+            .action(async args => {
+                const message = args.message.join(" ");
+                const roomCode = args.options.room
+                    ? Code2Int(args.options.room.toUpperCase?.())
+                    : 0;
+
+                const foundRoom = this.rooms.get(roomCode);
+
+                if (foundRoom) {
+                    foundRoom.sendChat(message, {
+                        side: MessageSide.Left
+                    });
+                    this.logger.info("Broadcasted message to %s player(s)", foundRoom.connections.size);
+                    return;
+                } else if (roomCode) {
+                    this.logger.error("Couldn't find room: " + args.options.room);
+                }
+
+                let numPlayers = 0;
+                for (const [ , room ] of this.rooms) {
+                    room.sendChat(message, {
+                        side: MessageSide.Left
+                    });
+                    numPlayers += room.connections.size;
+                }
+                this.logger.info("Broadcasted message to %s player(s)", numPlayers);
+            });
+
+        this.vorpal
+            .command("mem", "View the memory usage of this server.")
+            .option("--graph", "View a formatted graph of the last 60s of memory usage.")
+            .action(async args => {
+                if (args.options.graph) {
+                    const numEntries = 60000 / pingInterval;
+                    const numRows = 8;
+                    const numColumns = 125;
+                    const displayDiff = numColumns / numEntries;
+
+                    const displaySeconds = new Array(numEntries).fill(0).map((_, i) => 58000 - Math.floor(i * pingInterval));
+                    const secondsXAxis = displaySeconds.map((ms, i) => {
+                        const secondsStr = (~~(ms / 1000)).toString();
+                        const padded = secondsStr.padStart(displayDiff);
+                        return padded;
+                    }).join("");
+                    let numRoomsAxis = "";
+                    for (let i = 0; i < numEntries; i++) {
+                        const entryI = numEntries - i;
+                        const roomsStr = this.memUsages[entryI]
+                            ? this.memUsages[entryI].numRooms + "L"
+                            : "";
+                        const padded = roomsStr.padStart(displayDiff);
+                        numRoomsAxis += padded;
+                    }
+                    let numConnectionsAxis = "";
+                    for (let i = 0; i < numEntries; i++) {
+                        const entryI = numEntries - i;
+                        const connectionsStr = this.memUsages[entryI]
+                            ? this.memUsages[entryI].numConnections + "C"
+                            : "";
+                        const padded = connectionsStr.padStart(displayDiff);
+                        numConnectionsAxis += padded;
+                    }
+
+                    const maxUsageUnrounded = this.memUsages.reduce((prev, cur) => cur.used > prev ? cur.used : prev, 0);
+                    const maxUsage = Math.round(maxUsageUnrounded / 5242880) * 5242880;
+                    const maxUsageFmt = formatBytes(maxUsage);
+
+                    const marginWidth = maxUsageFmt.length + 1;
+                    const margin = " ".repeat(marginWidth);
+
+                    const rows = new Array(numRows).fill(0).map(_ => new Array(marginWidth + numColumns).fill(" "));
+
+                    for (let i = 0; i < this.memUsages.length; i++) {
+                        const entry = this.memUsages[i];
+                        const displayI = numEntries - i;
+                        const displayColumn = Math.floor((displayI * displayDiff) - displayDiff);
+                        const usagePerc = (entry.used / maxUsage);
+                        const displayRow = numRows - Math.floor(Math.min(usagePerc * numRows, numRows));
+                        rows[displayRow][marginWidth + displayColumn] = "-";
+                    }
+
+                    const latest = this.memUsages[0];
+                    if (latest) {
+                        const usagePerc = (latest.used / maxUsage);
+                        const displayRow = numRows - Math.floor(Math.min(usagePerc * numRows, numRows));
+                        for (let i = 0; i < rows[displayRow].length; i++) {
+                            if (rows[displayRow][i] !== "-") {
+                                rows[displayRow].splice(i, 1, chalk.green("-"));
+                            }
+                        }
+                        
+                        const latestUsageFmt = formatBytes(latest.used);
+
+                        rows[displayRow].push(" ", ...chalk.green(latestUsageFmt));
+                    }
+                    
+                    for (let i = 0; i < rows.length; i += 2) {
+                        const yAxisMem = (maxUsage / rows.length) * (rows.length - i);
+                        const memFmt = formatBytes(yAxisMem);
+                        rows[i].splice(0, memFmt.length, ...memFmt.split(""));
+                    }
+
+                    console.log(rows.map(row => row.join("")).join("\n"));
+                    console.log(margin + secondsXAxis);
+                    console.log(margin + numRoomsAxis);
+                    console.log(margin + numConnectionsAxis);
+                } else {
+                    const usage = process.memoryUsage();
+    
+                    this.logger.info("Using: %s",
+                        chalk.green(formatBytes(usage.heapUsed)));
+                        
+                    this.logger.info("Allocated: %s",
+                        chalk.green(formatBytes(usage.heapTotal)));
+                }
+            });
+
+        // todo: handle report player
+
+        const pingInterval = 2000;
+        setInterval(() => {
+            const numEntries = 60000 / pingInterval;
+            const usage = process.memoryUsage();
+            this.memUsages.unshift({
+                used: usage.heapUsed,
+                numRooms: this.rooms.size,
+                numConnections: this.connections.size
+            });
+            this.memUsages.splice(numEntries);
+
+            for (const [ , connection ] of this.connections) {
+                if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
+                    this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
+                        connection);
+
+                    connection.disconnect();
+                    continue;
+                }
+
+                connection.sendPacket(
+                    new PingPacket(
+                        connection.getNextNonce()
+                    )
+                );
+                for (const sent of connection.sentPackets) {
+                    if (!sent.acked) {
+                        if (Date.now() - sent.sentAt > 500) {
+                            this._sendPacket(connection.rinfo, sent.buffer)
+                            sent.sentAt = Date.now();
+                        }
+                    }
+                }
+            }
+        }, pingInterval);
+
+        this.registerPacketHandlers();
+    }
+
+    /**
+     * Bind the socket to the configured port.
+     */
+    listen(port: number) {
+        return new Promise<void>(resolve => {
+            this.socket.bind(port);
+
+            this.socket.once("listening", () => {
+                this.logger.info("Listening on *:" + port);
+                resolve();
+            });
+        });
+    }
+
+    /**
+     * Get the next available client ID.
+     * @example
+     * ```ts
+     * console.log(worker.getNextClientId()); // => 1
+     * console.log(worker.getNextClientId()); // => 2
+     * console.log(worker.getNextClientId()); // => 3
+     * console.log(worker.getNextClientId()); // => 4
+     * console.log(worker.getNextClientId()); // => 5
+     * ```
+     */
+    getNextClientId() {
+        return ++this.lastClientId;
+    }
+
+    /**
+     * Retrieve or create a connection based on its remote information received
+     * from a [socket `message` event](https://nodejs.org/api/dgram.html#dgram_event_message).
+     */
+    getOrCreateConnection(rinfo: dgram.RemoteInfo): Connection {
+        const fmt = rinfo.address + ":" + rinfo.port;
+        const cached = this.connections.get(fmt);
+        if (cached)
+            return cached;
+
+        const clientid = this.getNextClientId();
+        const connection = new Connection(this, rinfo, clientid);
+        this.connections.set(fmt, connection);
+        return connection;
+    }
+
+    /**
+     * Remove a connection from this server.
+     * 
+     * Note that this does not notify the client of the connection that they have
+     * been disconnected, see {@link Connection.disconnect}.
+     * @param connection The connection to remove.
+     */
+    removeConnection(connection: Connection) {
+        this.connections.delete(connection.rinfo.address + ":" + connection.rinfo.port);
+        this.logger.info("Remove %s", connection);
+    }
+
+    private _sendPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
+        return new Promise((resolve, reject) => {
+            this.socket.send(buffer, remote.port, remote.address, (err, bytes) => {
+                if (err) return reject(err);
+
+                resolve(bytes);
+            });
+        });
+    }
+
+    registerPacketHandlers() {
+        this.decoder.listeners.clear();
 
         this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, connection) => {
             connection.receivedPackets.unshift(message.nonce);
@@ -706,416 +1124,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     )
                 );
             }
-        });
-
-        this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
-        this.vorpal
-            .command("dc", "Forcefully disconnect a client or several clients.")
-            .option("--clientid, -i <clientid>", "client id(s) of the client(s) to disconnect")
-            .option("--username, -u <username>", "username of the client(s) to disconnect")
-            .option("--address, -a <ip address>", "ip address of the client(s) to disconnect")
-            .option("--room, -c <room code>", "room code of the client(s) to disconnect")
-            .option("--reason, -r <reason>", "reason for why to disconnect the client")
-            .option("--ban, -b [duration]", "ban this client, duration in seconds")
-            .action(async args => {
-                const reason = (typeof args.options.reason === "number"
-                    ? args.options.reason
-                    : DisconnectReason[args.options.reason]) || DisconnectReason.None;
-
-                const roomName = args["room code"]?.toUpperCase();
-                const codeId = roomName && (roomName === "LOCAL"
-                    ? 0x20
-                    : Code2Int(roomName));
-
-                let num_disconnected = 0;
-
-                for (const [ , connection ] of this.connections) {
-                    if (
-                        (Array.isArray(args.options.clientid)
-                            ? args.options.clientid.includes(connection.clientId)
-                            : connection.clientId === args.options.clientid
-                        ) ||
-                        connection.username === args.options.username ||
-                        connection.rinfo.address === args.options.address ||
-                        connection.room?.code === codeId
-                    ) {
-                        if (args.options.ban) {
-                            await this.emit(
-                                new ClientBanEvent(
-                                    connection,
-                                    DisconnectReason[reason as any],
-                                    parseInt(args.options.ban) || 3600
-                                )
-                            );
-                        }
-                        await connection.disconnect(reason);
-                        num_disconnected++;
-                    }
-                }
-
-                this.logger.info("Disconnected %s clients.", num_disconnected);
-            });
-
-        this.vorpal
-            .command("destroy <room code>", "Destroy and remove a room from the server.")
-            .option("--reason, r <reason>", "reason to destroy this room",)
-            .autocomplete({
-                data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
-                }
-            })
-            .action(async args => {
-                const reason = (typeof args.options.reason === "number"
-                    ? args.options.reason
-                    : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
-
-                const roomName = args["room code"].toUpperCase();
-                const codeId = roomName === "LOCAL"
-                    ? 0x20
-                    : Code2Int(roomName);
-
-                const room = this.rooms.get(codeId);
-
-                if (room) {
-                    await room.destroy(reason as unknown as number);
-                } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
-                }
-            });
-
-        this.vorpal
-            .command("load <import>", "Load a plugin by its import relative to the base plugin directory.")
-            .action(async args => {
-                const importPath = this.pluginLoader.resolveImportPath(args.import);
-
-                if (importPath) {
-                    const pluginCtr = await this.pluginLoader.importPlugin(importPath);
-                    if (this.pluginLoader.loadedPlugins.has(pluginCtr.meta.id))
-                        this.pluginLoader.unloadPlugin(pluginCtr.meta.id);
-    
-                    await this.pluginLoader.loadPlugin(pluginCtr);
-                } else {
-                    this.logger.error("Couldn't find installed plugin: " + args.import);
-                }
-            });
-
-        this.vorpal
-            .command("unload <plugin id>", "Unload a plugin.")
-            .action(async args => {
-                const pluginId: string = args["plugin id"];
-                const loadedPlugin = 
-                    typeof pluginId === "number"
-                    ? [...this.pluginLoader.loadedPlugins][pluginId - 1]?.[1]
-                    : this.pluginLoader.loadedPlugins.get(pluginId);
-
-                if (loadedPlugin) {
-                    this.pluginLoader.unloadPlugin(loadedPlugin);
-                } else {    
-                    this.logger.error("Plugin not loaded: %s", pluginId);
-                }
-            });
-
-        this.vorpal
-            .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
-            .alias("ls")
-            .action(async args => {
-                switch (args.something) {
-                case "clients":
-                    this.logger.info("%s client(s)", this.connections.size);
-                    const connections = [...this.connections];
-                    for (let i = 0; i < connections.length; i++) {
-                        const [ , connection ] = connections[i];
-                        this.logger.info("%s) %s", i + 1, connection);
-                    }
-                    break;
-                case "rooms":
-                    this.logger.info("%s room(s)", this.rooms.size);
-                    const rooms = [...this.rooms];
-                    for (let i = 0; i < rooms.length; i++) {
-                        const [ , room ] = rooms[i];
-                        this.logger.info("%s) %s", i + 1, room);
-                    }
-                    break;
-                case "plugins":
-                    this.logger.info("%s plugins(s) loaded", this.pluginLoader.loadedPlugins.size);
-                    const loadedPlugins = [...this.pluginLoader.loadedPlugins];
-                    for (let i = 0; i < loadedPlugins.length; i++) {
-                        const [ , plugin ] = loadedPlugins[i];
-                        this.logger.info("%s) %s", i + 1, plugin.meta.id);
-                    }
-                    break;
-                default:
-                    this.logger.error("Expected either \"clients\", \"rooms\" or \"plugins\": %s", args.something);
-                    break;
-                }
-            });
-            
-        this.vorpal
-            .command("list mods <client id>", "List all of a client's mods.")
-            .alias("ls mods")
-            .action(async args => {
-                for (const [ , connection ] of this.connections) {
-                    if (
-                        connection.clientId === args["client id"]
-                    ) {
-                        this.logger.info("%s has %s mod(s)", connection, connection.mods.size);
-                        const mods = [...connection.mods];
-                        for (let i = 0; i < mods.length; i++) {
-                            const [ , mod ] = mods[i];
-                            this.logger.info("%s) %s", i + 1, mod)
-                        }
-                        return;
-                    }
-                }
-                this.logger.error("Couldn't find client with id: " + args["client id"]);
-            });
-            
-        this.vorpal
-            .command("list players <room code>", "List all players in a room.")
-            .alias("ls players")
-            .action(async args => {
-                const roomName = args["room code"].toUpperCase();
-                const codeId = roomName === "LOCAL"
-                    ? 0x20
-                    : Code2Int(roomName);
-                    
-                const room = this.rooms.get(codeId);
-
-                if (room) {
-                    this.logger.info("%s player(s) in %s", room.room.players.size, room);
-                    const players = [...room.room.players];
-                    for (let i = 0; i < players.length; i++) {
-                        const [ , player ] = players[i];
-                        this.logger.info("%s) %s", i + 1, player);
-                    }
-                } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
-                }
-            });
-
-        this.vorpal
-            .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
-            .option("--room, -c <room code>", "the room to send a message to")
-            .action(async args => {
-                const message = args.message.join(" ");
-                const roomCode = args.options.room
-                    ? Code2Int(args.options.room.toUpperCase?.())
-                    : 0;
-
-                const foundRoom = this.rooms.get(roomCode);
-
-                if (foundRoom) {
-                    foundRoom.sendChat(message, {
-                        side: MessageSide.Left
-                    });
-                    this.logger.info("Broadcasted message to %s player(s)", foundRoom.connections.size);
-                    return;
-                } else if (roomCode) {
-                    this.logger.error("Couldn't find room: " + args.options.room);
-                }
-
-                let numPlayers = 0;
-                for (const [ , room ] of this.rooms) {
-                    room.sendChat(message, {
-                        side: MessageSide.Left
-                    });
-                    numPlayers += room.connections.size;
-                }
-                this.logger.info("Broadcasted message to %s player(s)", numPlayers);
-            });
-
-        this.vorpal
-            .command("mem", "View the memory usage of this server.")
-            .option("--graph", "View a formatted graph of the last 60s of memory usage.")
-            .action(async args => {
-                if (args.options.graph) {
-                    const numEntries = 60000 / pingInterval;
-                    const numRows = 8;
-                    const numColumns = 125;
-                    const displayDiff = numColumns / numEntries;
-
-                    const displaySeconds = new Array(numEntries).fill(0).map((_, i) => 58000 - Math.floor(i * pingInterval));
-                    const secondsXAxis = displaySeconds.map((ms, i) => {
-                        const secondsStr = (~~(ms / 1000)).toString();
-                        const padded = secondsStr.padStart(displayDiff);
-                        return padded;
-                    }).join("");
-                    let numRoomsAxis = "";
-                    for (let i = 0; i < numEntries; i++) {
-                        const entryI = numEntries - i;
-                        const roomsStr = this.memUsages[entryI]
-                            ? this.memUsages[entryI].numRooms + "L"
-                            : "";
-                        const padded = roomsStr.padStart(displayDiff);
-                        numRoomsAxis += padded;
-                    }
-                    let numConnectionsAxis = "";
-                    for (let i = 0; i < numEntries; i++) {
-                        const entryI = numEntries - i;
-                        const connectionsStr = this.memUsages[entryI]
-                            ? this.memUsages[entryI].numConnections + "C"
-                            : "";
-                        const padded = connectionsStr.padStart(displayDiff);
-                        numConnectionsAxis += padded;
-                    }
-
-                    const maxUsageUnrounded = this.memUsages.reduce((prev, cur) => cur.used > prev ? cur.used : prev, 0);
-                    const maxUsage = Math.round(maxUsageUnrounded / 5242880) * 5242880;
-                    const maxUsageFmt = formatBytes(maxUsage);
-
-                    const marginWidth = maxUsageFmt.length + 1;
-                    const margin = " ".repeat(marginWidth);
-
-                    const rows = new Array(numRows).fill(0).map(_ => new Array(marginWidth + numColumns).fill(" "));
-
-                    for (let i = 0; i < this.memUsages.length; i++) {
-                        const entry = this.memUsages[i];
-                        const displayI = numEntries - i;
-                        const displayColumn = Math.floor((displayI * displayDiff) - displayDiff);
-                        const usagePerc = (entry.used / maxUsage);
-                        const displayRow = numRows - Math.floor(Math.min(usagePerc * numRows, numRows));
-                        rows[displayRow][marginWidth + displayColumn] = "-";
-                    }
-
-                    const latest = this.memUsages[0];
-                    if (latest) {
-                        const usagePerc = (latest.used / maxUsage);
-                        const displayRow = numRows - Math.floor(Math.min(usagePerc * numRows, numRows));
-                        for (let i = 0; i < rows[displayRow].length; i++) {
-                            if (rows[displayRow][i] !== "-") {
-                                rows[displayRow].splice(i, 1, chalk.green("-"));
-                            }
-                        }
-                        
-                        const latestUsageFmt = formatBytes(latest.used);
-
-                        rows[displayRow].push(" ", ...chalk.green(latestUsageFmt));
-                    }
-                    
-                    for (let i = 0; i < rows.length; i += 2) {
-                        const yAxisMem = (maxUsage / rows.length) * (rows.length - i);
-                        const memFmt = formatBytes(yAxisMem);
-                        rows[i].splice(0, memFmt.length, ...memFmt.split(""));
-                    }
-
-                    console.log(rows.map(row => row.join("")).join("\n"));
-                    console.log(margin + secondsXAxis);
-                    console.log(margin + numRoomsAxis);
-                    console.log(margin + numConnectionsAxis);
-                } else {
-                    const usage = process.memoryUsage();
-    
-                    this.logger.info("Using: %s",
-                        chalk.green(formatBytes(usage.heapUsed)));
-                        
-                    this.logger.info("Allocated: %s",
-                        chalk.green(formatBytes(usage.heapTotal)));
-                }
-            });
-
-        // todo: handle report player
-
-        const pingInterval = 2000;
-        setInterval(() => {
-            const numEntries = 60000 / pingInterval;
-            const usage = process.memoryUsage();
-            this.memUsages.unshift({
-                used: usage.heapUsed,
-                numRooms: this.rooms.size,
-                numConnections: this.connections.size
-            });
-            this.memUsages.splice(numEntries);
-
-            for (const [ , connection ] of this.connections) {
-                if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
-                    this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
-                        connection);
-
-                    connection.disconnect();
-                    continue;
-                }
-
-                connection.sendPacket(
-                    new PingPacket(
-                        connection.getNextNonce()
-                    )
-                );
-                for (const sent of connection.sentPackets) {
-                    if (!sent.acked) {
-                        if (Date.now() - sent.sentAt > 500) {
-                            this._sendPacket(connection.rinfo, sent.buffer)
-                            sent.sentAt = Date.now();
-                        }
-                    }
-                }
-            }
-        }, pingInterval);
-    }
-
-    /**
-     * Bind the socket to the configured port.
-     */
-    listen(port: number) {
-        return new Promise<void>(resolve => {
-            this.socket.bind(port);
-
-            this.socket.once("listening", () => {
-                this.logger.info("Listening on *:" + port);
-                resolve();
-            });
-        });
-    }
-
-    /**
-     * Get the next available client ID.
-     * @example
-     * ```ts
-     * console.log(worker.getNextClientId()); // => 1
-     * console.log(worker.getNextClientId()); // => 2
-     * console.log(worker.getNextClientId()); // => 3
-     * console.log(worker.getNextClientId()); // => 4
-     * console.log(worker.getNextClientId()); // => 5
-     * ```
-     */
-    getNextClientId() {
-        return ++this.lastClientId;
-    }
-
-    /**
-     * Retrieve or create a connection based on its remote information received
-     * from a [socket `message` event](https://nodejs.org/api/dgram.html#dgram_event_message).
-     */
-    getOrCreateConnection(rinfo: dgram.RemoteInfo): Connection {
-        const fmt = rinfo.address + ":" + rinfo.port;
-        const cached = this.connections.get(fmt);
-        if (cached)
-            return cached;
-
-        const clientid = this.getNextClientId();
-        const connection = new Connection(this, rinfo, clientid);
-        this.connections.set(fmt, connection);
-        return connection;
-    }
-
-    /**
-     * Remove a connection from this server.
-     * 
-     * Note that this does not notify the client of the connection that they have
-     * been disconnected, see {@link Connection.disconnect}.
-     * @param connection The connection to remove.
-     */
-    removeConnection(connection: Connection) {
-        this.connections.delete(connection.rinfo.address + ":" + connection.rinfo.port);
-        this.logger.info("Remove %s", connection);
-    }
-
-    private _sendPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
-        return new Promise((resolve, reject) => {
-            this.socket.send(buffer, remote.port, remote.address, (err, bytes) => {
-                if (err) return reject(err);
-
-                resolve(bytes);
-            });
         });
     }
 

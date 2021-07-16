@@ -30,18 +30,9 @@ export function ReactorRpcHandler<
             (component: ComponentType, rpc: RpcType) => any
         >
     ) {
-        const cachedSet: Set<Deserializable>|undefined = Reflect.getMetadata(hindenburgRegisterMessageKey, target);
-        const messagesToRegister = cachedSet || new Set;
-        if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgRegisterMessageKey, messagesToRegister, target);
-        }
-
-        messagesToRegister.add(reactorRpc);
-        
         Reflect.defineMetadata(hindenburgReactorRpcKey, {
-            className: componentCtr.classname,
-            modId: reactorRpc.modId,
-            rpctag: reactorRpc.tag
+            componentCtr,
+            reactorRpc
         }, target, propertyKey);
     }
 }

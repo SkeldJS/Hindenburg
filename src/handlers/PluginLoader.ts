@@ -45,7 +45,7 @@ type PluginOrder = "last"|"first"|"none"|number;
 
 export interface PluginMeta {
     id: string;
-    version?: string;
+    version: string;
     defaultConfig: any;
     order: PluginOrder;
 }
@@ -58,18 +58,17 @@ export class Plugin {
     
     eventHandlers: {
         eventName: keyof WorkerEvents;
-        handler: (ev: WorkerEvents[keyof WorkerEvents]) => any
+        handler: (ev: WorkerEvents[keyof WorkerEvents]) => any;
     }[];
     registeredChatCommands: RegisteredChatCommand[];
     messageHandlers: {
-        messageClass: Deserializable,
-        options: MessageListenerOptions,
-        handler: (ev: Serializable) => any
+        messageClass: Deserializable;
+        options: MessageListenerOptions;
+        handler: (ev: Serializable) => any;
     }[];
     reactorRpcHandlers: {
-        classname: string;
-        modId: string;
-        rpcTag: number;
+        componentCtr: typeof Networkable;
+        reactorRpc: typeof BaseReactorRpcMessage;
         handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
     }[];
     registeredMessages: Deserializable[];
@@ -151,12 +150,17 @@ export class Plugin {
 
 export class PluginLoader {
     loadedPlugins: Map<string, Plugin>;
+    /**
+     * classname : mod id : rpc tag
+     */
+    reactorRpcHandlers: Map<`${string}:${string}:${number}`, Set<(component: Networkable, rpc: BaseReactorRpcMessage) => any>>;
 
     constructor(
         public readonly worker: Worker,
         public readonly pluginDir: string
     ) {
         this.loadedPlugins = new Map;
+        this.reactorRpcHandlers = new Map;
     }
 
     async resetMessages() {
@@ -202,6 +206,16 @@ export class PluginLoader {
                 this.worker.chatCommandHandler.commands.set(registeredCommand.name, registeredCommand);
             }
         }
+    }
+
+    getReactorRpcHandlers(component: Networkable|typeof Networkable, rpc: BaseReactorRpcMessage|typeof BaseReactorRpcMessage) {
+        const cached = this.reactorRpcHandlers.get(`${component.classname}:${rpc.modId}:${rpc.tag}`);
+        const handlers = cached || new Set;
+
+        if (!cached)
+            this.reactorRpcHandlers.set(`${component.classname}:${rpc.modId}:${rpc.tag}`, handlers);
+
+        return handlers;
     }
 
     async importPlugin(importPath: string) {
@@ -267,13 +281,15 @@ export class PluginLoader {
 
             const reactorRpcClassnameModIdAndTag = Reflect.getMetadata(hindenburgReactorRpcKey, loadedPlugin, propertyName);
             if (reactorRpcClassnameModIdAndTag) {
-                const { classname, modId, rpcTag } = reactorRpcClassnameModIdAndTag;
+                const { componentCtr, reactorRpc } = reactorRpcClassnameModIdAndTag;
 
                 const fn = property.bind(loadedPlugin);
+                const rpcHandlers = this.getReactorRpcHandlers(componentCtr, reactorRpc);
+                rpcHandlers.add(fn);
+                loadedPlugin.registeredMessages.push(reactorRpc);
                 loadedPlugin.reactorRpcHandlers.push({
-                    classname,
-                    modId,
-                    rpcTag,
+                    componentCtr,
+                    reactorRpc,
                     handler: fn 
                 });
             }
@@ -355,6 +371,11 @@ export class PluginLoader {
 
         for (const vorpalCommand of pluginId.registeredVorpalCommands) {
             vorpalCommand.remove();
+        }
+
+        for (const { componentCtr, reactorRpc, handler } of pluginId.reactorRpcHandlers) {
+            const rpcHandlers = this.getReactorRpcHandlers(componentCtr, reactorRpc);
+            rpcHandlers.delete(handler);
         }
 
         pluginId.onPluginUnload?.();

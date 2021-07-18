@@ -212,29 +212,29 @@ export class Room extends Hostable<RoomEvents> {
 
         this.state = GameState.NotStarted;
 
-        this.on("player.setname", setname => {
-            if (setname.oldName) {
+        this.on("player.setname", ev => {
+            if (ev.oldName) {
                 this.logger.info("%s changed their name from %s to %s",
-                    setname.player, setname.oldName, setname.newName);
+                    ev.player, ev.oldName, ev.newName);
             } else {
                 this.logger.info("%s set their name to %s",
-                    setname.player, setname.newName);
+                    ev.player, ev.newName);
             }
         });
 
-        this.on("player.chat", async chat => {
+        this.on("player.chat", async ev => {
             this.logger.info("%s sent message: %s",
-                chat.player, chalk.red(chat.chatMessage));
+                ev.player, chalk.red(ev.chatMessage));
                 
-            if (chat.chatMessage.startsWith("/") && this.config.chatCommands) {
-                const room = this.worker.rooms.get(chat.room.code);
+            if (ev.chatMessage.startsWith("/") && this.config.chatCommands) {
+                const room = this.worker.rooms.get(ev.room.code);
                 
                 if (!room)
                     return;
 
-                chat.message?.cancel(); // Prevent message from being broadcasted
-                const restMessage = chat.chatMessage.substr(1);
-                const context = new ChatCommandContext(room, chat.player, chat.chatMessage);
+                ev.message?.cancel(); // Prevent message from being broadcasted
+                const restMessage = ev.chatMessage.substr(1);
+                const context = new ChatCommandContext(room, ev.player, ev.chatMessage);
                 try {
                     await this.worker.chatCommandHandler.parseMessage(context, restMessage);
                 } catch (e) {
@@ -242,9 +242,15 @@ export class Room extends Hostable<RoomEvents> {
                         await context.reply(e.message);
                     } else {
                         this.worker.logger.error("Error while executing command %s: %s",
-                            chat.chatMessage, e);
+                            ev.chatMessage, e);
                     }
                 }
+            }
+        });
+
+        this.on("player.syncsettings", async ev => {
+            if (this.config.enforceSettings) {
+                ev.setSettings(this.config.enforceSettings);
             }
         });
     }

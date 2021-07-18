@@ -232,7 +232,6 @@ export interface RoomsConfig {
     chatCommands: boolean;
     gameCodes: "v1" | "v2";
     enforceSettings?: AllGameSettings;
-    plugins?: string[];
 }
 
 export interface HindenburgConfig {

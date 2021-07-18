@@ -173,11 +173,6 @@ export class Room extends Hostable<RoomEvents> {
      */
     bans: Set<string>;
 
-    /**
-     * Plugins that are enabled for this room.
-     */
-    plugins: Set<Plugin>;
-
     state: GameState;
 
     constructor(
@@ -213,7 +208,6 @@ export class Room extends Hostable<RoomEvents> {
         });
 
         this.bans = new Set;
-        this.plugins = new Set;
         this.settings = settings;
 
         this.state = GameState.NotStarted;

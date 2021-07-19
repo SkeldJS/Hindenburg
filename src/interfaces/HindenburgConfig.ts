@@ -283,7 +283,9 @@ export interface HindenburgConfig {
      */
     logging: LoggingConfig;
     /**
-     * Options for Hindenburg's reactor integration.
+     * Options for Hindenburg's reactor integration. Set to `true` to force
+     * reactor, allow any mods and require clients joining a room to have the
+     * same mods as the host.
      */
     reactor: ReactorConfig|boolean;
     /**

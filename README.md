@@ -2,6 +2,9 @@
 Hindenburg is a completely customisable, performant and scalable Among Us server,
 complete with plugins and a sophisticated and configurable anti-cheat.
 
+With unparalleled support for [Reactor](https://github.com/NuclearPowered/Reactor),
+it's perfect for developers and for private modded game servers.
+
 It uses [SkeldJS](https://github.com/skeldjs/SkeldJS) to interface with the Among Us
 protocol, as well as keeping state.
 
@@ -26,8 +29,9 @@ Hindenburg's Anti-Cheat System, you can make sure that cheaters are stopped quic
 and effectively through a highly customisable and easy anti-cheat config.
 
 ### 🧬 Reactor Support
-Hindenburg also natively supports clients using Reactor, allowing plugins to
-communicate directly with mods.
+Hindenburg also natively supports clients using [Reactor](https://github.com/NuclearPowered/Reactor),
+allowing plugins to communicate directly with mods, and giving you the ability
+to leverage the full potential of the Reactor protocol.
 
 ## Getting Started
 Check out the [installation docs](https://skeldjs.github.io/Hindenburg/pages/Setting%20Up/Installation.html)

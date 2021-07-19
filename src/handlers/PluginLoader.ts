@@ -234,7 +234,7 @@ export class PluginLoader {
     async loadPlugin(loadedPluginCtr: typeof Plugin) {
         const setConfig = this.worker.config.plugins[loadedPluginCtr.meta.id];
         const config = recursiveClone(loadedPluginCtr.meta.defaultConfig);
-        if (setConfig) {
+        if (setConfig && setConfig !== true) {
             recursiveAssign(config, setConfig);
         }
 

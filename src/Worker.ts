@@ -1067,10 +1067,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     if (!recursiveCompare(newConfig.plugins[key], this.config.plugins[key])) {
                         const setConfig = newConfig.plugins[loadedPlugin.meta.id];
                         const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig);
-                        if (setConfig) {
+                        if (setConfig && setConfig !== true) {
                             recursiveAssign(pluginConfig, setConfig);
                         }
-                        loadedPlugin.setConfig(pluginConfig.plugins[key]);
+                        loadedPlugin.setConfig(pluginConfig);
                     }
                 }
             }

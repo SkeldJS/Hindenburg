@@ -2,6 +2,9 @@
 Hindenburg has some useful scripts that can be used to manage plugins, such as
 installing, uninstalling and creating your own.
 
+> You can use the `HINDENBURG_PLUGINS` environment variable to specify the location
+of your plugins.
+
 ## Install Plugins
 Install a plugin via NPM:
 ```sh

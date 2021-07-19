@@ -95,21 +95,8 @@
                             "anyOf": [
                                 {
                                     "$ref": "#/properties/anticheat",
-                                    "properties": {
-                                        "value": {
-                                            "description": "The value of this rule, a boolean if it's a simple toggle, or an integer or string if it requires more specific configuration.",
-                                            "anyOf": [
-                                                {
-                                                    "type": "boolean"
-                                                },
-                                                {
-                                                    "type": "number"
-                                                },
-                                                {
-                                                    "type": "boolean"
-                                                }
-                                            ]
-                                        }
+                                    "patternProperties": {
+                                        ".+": {}
                                     }
                                 },
                                 {
@@ -246,14 +233,17 @@
             "type": "object",
             "properties": {
                 "chatCommands": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Whether to allow players to use chat commands."
                 },
                 "gameCodes": {
                     "type": "string",
-                    "enum": [ "v1", "v2" ]
+                    "enum": [ "v1", "v2" ],
+                    "description": "The type of game code to generate for rooms, \"v1\" for a 4-letter code and \"v2\" for a 6-letter code."
                 },
                 "enforceSettings": {
                     "type": "object",
+                    "description": "Enforce certain settings, preventing the host from changing them.",
                     "properties": {
                         "versions": {
                             "type": "number"

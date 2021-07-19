@@ -73,6 +73,7 @@ import { chunkArr } from "./util/chunkArr";
 
 import i18n from "./i18n";
 import { recursiveClone } from "./util/recursiveClone";
+import { UnknownGameData } from "./packets/GameData";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -888,26 +889,32 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            const canceled = message.children
+            const notCanceled = message.children
                 .filter(child => !child.canceled);
 
-            let reliable = false;
-            for (const child of canceled) {
-                if (child.tag !== GameDataMessageTag.Data) {
-                    reliable = true;
-                } else {
-                    const dataMessage = child as DataMessage;
+            let reliable = true;
+            if (notCanceled.length === 1) {
+                if (notCanceled[0].tag === GameDataMessageTag.Data) {
+                    // if the data message comes from a custom network transform,
+                    // then it is a movement packet and must be broadcasted
+                    // unreliably
+                    const dataMessage = notCanceled[0] as DataMessage;
                     const component = connection.room!.netobjects.get(dataMessage.netid);
-                    if (component?.classname !== "CustomNetworkTransform") {
-                        reliable = true;
+                    if (component?.classname === "CustomNetworkTransform") {
+                        reliable = false;
                     }
                 }
+            }
+            for (const child of notCanceled) {
                 await connection.room?.decoder.emitDecoded(child, direction, connection);
             }
             
             await connection.room?.broadcastMessages(
-                message.children
-                    .filter(child => !child.canceled)
+                notCanceled
+                    .filter(child => !child.canceled &&
+                        (this.config.socket.broadcastUnknownGamedata ||
+                            !(child instanceof UnknownGameData)
+                        ))
             , [], undefined, [connection], reliable);
         });
 

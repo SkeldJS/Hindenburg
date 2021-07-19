@@ -65,6 +65,10 @@ export interface SocketConfig {
      * The port to listen on.
      */
     port: number;
+    /**
+     * Whether or not to broadcast gamedata not handled by the server.
+     */
+    broadcastUnknownGamedata: boolean;
 }
 
 export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"language";

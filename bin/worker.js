@@ -102,7 +102,7 @@ function getLatestVersion() {
     await worker.listen(worker.config.socket.port);
     
     if (worker.config.plugins.loadDirectory) {
-        await worker.pluginLoader.loadFromDirectory();
+        await worker.pluginLoader.loadAll();
     }
 
     const configWatch = chokidar.watch(configFile, {

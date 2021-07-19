@@ -395,7 +395,7 @@ export class PluginLoader {
         this.worker.logger.info("Unloaded plugin '%s'", pluginId.meta.id);
     }
     
-    async loadFromDirectory() {
+    async loadAll() {
         const allImportNames = [];
         try {
             const packageJson = await fs.readFile(path.join(this.pluginDir, "package.json"), "utf8");
@@ -411,12 +411,14 @@ export class PluginLoader {
             throw e;
         }
 
-        const files = await fs.readdir(this.pluginDir);
-        for (const file of files) {
-            if (!file.startsWith("hbplugin-"))
-                continue;
-            
-            allImportNames.push("./" + file);
+        if (this.worker.config.plugins.loadDirectory) {
+            const files = await fs.readdir(this.pluginDir);
+            for (const file of files) {
+                if (!file.startsWith("hbplugin-"))
+                    continue;
+                
+                allImportNames.push("./" + file);
+            }
         }
 
         const pluginCtrs: typeof Plugin[] = [];

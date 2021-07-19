@@ -40,6 +40,8 @@ import {
 
 import { RegisteredChatCommand } from "./ChatCommandHander";
 import { Room } from "../Room";
+import { recursiveAssign } from "../util/recursiveAssign";
+import { recursiveClone } from "../util/recursiveClone";
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -230,7 +232,11 @@ export class PluginLoader {
     }
 
     async loadPlugin(loadedPluginCtr: typeof Plugin) {
-        const config = this.worker.config.plugins[loadedPluginCtr.meta.id] || loadedPluginCtr.meta.defaultConfig;
+        const setConfig = this.worker.config.plugins[loadedPluginCtr.meta.id];
+        const config = recursiveClone(loadedPluginCtr.meta.defaultConfig);
+        if (setConfig) {
+            recursiveAssign(config, setConfig);
+        }
 
         if (!isHindenburgPlugin(loadedPluginCtr))
             throw new Error("Imported variable was not a hindenburg plugin.");

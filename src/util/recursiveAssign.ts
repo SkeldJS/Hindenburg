@@ -14,7 +14,8 @@ export interface RecursiveAssignOptions {
  */
 export function recursiveAssign(target: any, source: any, options: RecursiveAssignOptions = {}) {
     const sourceKeys = Object.keys(source);
-    for (const key of sourceKeys) {
+    for (let i = 0; i < sourceKeys.length; i++) {
+        const key = sourceKeys[i];
         if (
             typeof target[key] === "object" &&
             typeof source[key] === "object"
@@ -27,7 +28,8 @@ export function recursiveAssign(target: any, source: any, options: RecursiveAssi
 
     if (options.removeKeys) {
         const targetKeys = Object.keys(target);
-        for (const key of targetKeys) {
+        for (let i = 0; i < targetKeys.length; i++) {
+            const key = targetKeys[i];
             if (typeof source[key] === "undefined") {
                 delete target[key];
             }

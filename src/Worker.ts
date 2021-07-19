@@ -72,6 +72,7 @@ import { ReactorRpcMessage } from "./packets";
 import { chunkArr } from "./util/chunkArr";
 
 import i18n from "./i18n";
+import { recursiveClone } from "./util/recursiveClone";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -1043,19 +1044,19 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
     }
 
-    updateConfig(config: Partial<HindenburgConfig>) {
-        if (config.socket && config.socket?.port !== this.config.socket.port) {
+    updateConfig(newConfig: Partial<HindenburgConfig>) {
+        if (newConfig.socket && newConfig.socket?.port !== this.config.socket.port) {
             this.socket.close();
             this.socket = dgram.createSocket("udp4");
-            this.listen(config.socket.port);
+            this.listen(newConfig.socket.port);
         }
 
-        if (config.plugins) {
-            const pluginKeys = Object.keys(config.plugins);
+        if (newConfig.plugins) {
+            const pluginKeys = Object.keys(newConfig.plugins);
             for (const key of pluginKeys) {
                 const loadedPlugin = this.pluginLoader.loadedPlugins.get(key);
 
-                if (!config.plugins[key]) {
+                if (!newConfig.plugins[key]) {
                     this.pluginLoader.unloadPlugin(key);
                 } else {
                     if (!loadedPlugin) {
@@ -1063,15 +1064,20 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         continue;
                     }
 
-                    if (!recursiveCompare(config.plugins[key], this.config.plugins[key])) {
-                        loadedPlugin.setConfig(config.plugins[key]);
+                    if (!recursiveCompare(newConfig.plugins[key], this.config.plugins[key])) {
+                        const setConfig = newConfig.plugins[loadedPlugin.meta.id];
+                        const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig);
+                        if (setConfig) {
+                            recursiveAssign(pluginConfig, setConfig);
+                        }
+                        loadedPlugin.setConfig(pluginConfig.plugins[key]);
                     }
                 }
             }
         }
 
         this.validVersions = this.config.versions.map(version => VersionInfo.from(version).encode());
-        recursiveAssign(this.config, config, { removeKeys: true });
+        recursiveAssign(this.config, newConfig, { removeKeys: true });
     }
 
     checkClientMods(connection: Connection) {

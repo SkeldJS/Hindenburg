@@ -12,13 +12,15 @@
         return false;
 
     const aKeys = Object.keys(a);
-    for (const key of aKeys) {
+    for (let i = 0; i < aKeys.length; i++) {
+        const key = aKeys[i];
         if (!recursiveCompare(a[key], b[key]))
             return false;
     }
 
     const bKeys = Object.keys(b);
-    for (const key of bKeys) {
+    for (let i = 0; i < bKeys.length; i++) {
+        const key = bKeys[i];
         if (typeof a[key] === "undefined")
             return false;
     }

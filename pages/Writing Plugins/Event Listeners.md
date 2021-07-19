@@ -13,6 +13,7 @@ and also allows you to use the same API for them.
 * {@link WorkerBeforeCreateEvent | `worker.beforecreate`}
 * {@link ClientBanEvent | `client.ban`}
 * {@link ClientConnectEvent | `client.connect`}
+* {@link RoomBeforeDestroyEvent | `room.beforedestroy`}
 * {@link RoomDestroyEvent | `room.destroy`}
 
 ## Declaring Events

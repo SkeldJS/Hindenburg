@@ -229,8 +229,18 @@ export interface ReactorConfig {
 }
 
 export interface RoomsConfig {
+    /**
+     * Whether to allow players to use chat commands.
+     */
     chatCommands: boolean;
+    /**
+     * The type of game code to generate for rooms, "v1" for a 4-letter code and
+     * "v2" for a 6-letter code.
+     */
     gameCodes: "v1" | "v2";
+    /**
+     * Enforce certain settings, preventing the host from changing them.
+     */
     enforceSettings?: AllGameSettings;
 }
 

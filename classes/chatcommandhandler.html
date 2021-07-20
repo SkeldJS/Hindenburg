@@ -97,6 +97,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="chatcommandhandler.html#parsemessage" class="tsd-kind-icon">parse<wbr>Message</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="chatcommandhandler.html#registercommand" class="tsd-kind-icon">register<wbr>Command</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="chatcommandhandler.html#registerhelpcommand" class="tsd-kind-icon">register<wbr>Help<wbr>Command</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="chatcommandhandler.html#removecommand" class="tsd-kind-icon">remove<wbr>Command</a></li>
 							</ul>
 						</section>
@@ -115,7 +116,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/handlers/CommandHander.ts#L167">src/handlers/CommandHander.ts:167</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/handlers/ChatCommandHander.ts#L167">src/handlers/ChatCommandHander.ts:167</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -137,7 +138,7 @@
 					<div class="tsd-signature tsd-kind-icon">commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="registeredchatcommand.html" class="tsd-signature-type" data-tsd-kind="Class">RegisteredChatCommand</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/handlers/CommandHander.ts#L167">src/handlers/CommandHander.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/handlers/ChatCommandHander.ts#L167">src/handlers/ChatCommandHander.ts:167</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -161,7 +162,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/handlers/CommandHander.ts#L296">src/handlers/CommandHander.ts:296</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/handlers/ChatCommandHander.ts#L276">src/handlers/ChatCommandHander.ts:276</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -207,7 +208,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/handlers/CommandHander.ts#L263">src/handlers/CommandHander.ts:263</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/handlers/ChatCommandHander.ts#L243">src/handlers/ChatCommandHander.ts:243</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -251,6 +252,23 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="registerhelpcommand" class="tsd-anchor"></a>
+					<h3>register<wbr>Help<wbr>Command</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">register<wbr>Help<wbr>Command<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/handlers/ChatCommandHander.ts#L176">src/handlers/ChatCommandHander.ts:176</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="removecommand" class="tsd-anchor"></a>
 					<h3>remove<wbr>Command</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -260,7 +278,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/handlers/CommandHander.ts#L276">src/handlers/CommandHander.ts:276</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/handlers/ChatCommandHander.ts#L256">src/handlers/ChatCommandHander.ts:256</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -353,6 +371,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="chatcommandhandler.html#registercommand" class="tsd-kind-icon">register<wbr>Command</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="chatcommandhandler.html#registerhelpcommand" class="tsd-kind-icon">register<wbr>Help<wbr>Command</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="chatcommandhandler.html#removecommand" class="tsd-kind-icon">remove<wbr>Command</a>

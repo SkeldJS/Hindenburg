@@ -100,6 +100,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="room.html#bans" class="tsd-kind-icon">bans</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#code" class="tsd-kind-icon">code</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#components" class="tsd-kind-icon">components</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="room.html#config" class="tsd-kind-icon">config</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="room.html#connections" class="tsd-kind-icon">connections</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#counter" class="tsd-kind-icon">counter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="room.html#createdat" class="tsd-kind-icon">created<wbr>At</a></li>
@@ -193,14 +194,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a>, settings<span class="tsd-signature-symbol">: </span><a href="gameoptions.html" class="tsd-signature-type" data-tsd-kind="Class">GameOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a>, config<span class="tsd-signature-symbol">: </span><a href="../interfaces/roomsconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">RoomsConfig</a>, settings<span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L174">src/Room.ts:174</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L176">src/Room.ts:176</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -209,7 +210,10 @@
 									<h5>worker: <a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></h5>
 								</li>
 								<li>
-									<h5>settings: <a href="gameoptions.html" class="tsd-signature-type" data-tsd-kind="Class">GameOptions</a></h5>
+									<h5>config: <a href="../interfaces/roomsconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">RoomsConfig</a></h5>
+								</li>
+								<li>
+									<h5>settings: <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h4>
@@ -274,7 +278,7 @@
 					<div class="tsd-signature tsd-kind-icon">bans<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L172">src/Room.ts:172</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L174">src/Room.ts:174</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -316,12 +320,19 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="config" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> config</h3>
+					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/roomsconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">RoomsConfig</a></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="connections" class="tsd-anchor"></a>
 					<h3>connections</h3>
 					<div class="tsd-signature tsd-kind-icon">connections<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L161">src/Room.ts:161</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L163">src/Room.ts:163</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -347,7 +358,7 @@
 					<div class="tsd-signature tsd-kind-icon">created<wbr>At<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L160">src/Room.ts:160</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L162">src/Room.ts:162</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -416,7 +427,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Logger</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L167">src/Room.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L169">src/Room.ts:169</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -530,7 +541,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="settings" class="tsd-anchor"></a>
 					<h3>settings</h3>
-					<div class="tsd-signature tsd-kind-icon">settings<span class="tsd-signature-symbol">:</span> <a href="gameoptions.html" class="tsd-signature-type" data-tsd-kind="Class">GameOptions</a></div>
+					<div class="tsd-signature tsd-kind-icon">settings<span class="tsd-signature-symbol">:</span> <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="hostable.html">Hostable</a>.<a href="hostable.html#settings">settings</a></p>
 						<ul>
@@ -549,7 +560,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">:</span> <a href="../enums/gamestate.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L174">src/Room.ts:174</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L176">src/Room.ts:176</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -575,7 +586,7 @@
 					<div class="tsd-signature tsd-kind-icon">waiting<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L162">src/Room.ts:162</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L164">src/Room.ts:164</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -637,7 +648,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L255">src/Room.ts:255</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L285">src/Room.ts:285</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -764,7 +775,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L251">src/Room.ts:251</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L281">src/Room.ts:281</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -851,7 +862,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#fixedupdate">FixedUpdate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L280">src/Room.ts:280</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L310">src/Room.ts:310</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -893,7 +904,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#broadcast">broadcast</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L386">src/Room.ts:386</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L416">src/Room.ts:416</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -925,7 +936,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L336">src/Room.ts:336</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L366">src/Room.ts:366</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1030,7 +1041,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L259">src/Room.ts:259</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L289">src/Room.ts:289</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1055,7 +1066,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L228">src/Room.ts:228</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L258">src/Room.ts:258</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1076,7 +1087,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L231">src/Room.ts:231</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L261">src/Room.ts:261</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1361,7 +1372,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#handleend">handleEnd</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L596">src/Room.ts:596</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L626">src/Room.ts:626</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1485,7 +1496,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L476">src/Room.ts:476</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L506">src/Room.ts:506</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1508,7 +1519,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L449">src/Room.ts:449</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L479">src/Room.ts:479</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1535,7 +1546,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#handlestart">handleStart</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L588">src/Room.ts:588</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L618">src/Room.ts:618</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1913,7 +1924,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L633">src/Room.ts:633</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L663">src/Room.ts:663</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1975,7 +1986,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#setcode">setCode</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L399">src/Room.ts:399</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L429">src/Room.ts:429</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2004,7 +2015,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="hostable.html">Hostable</a>.<a href="hostable.html#sethost">setHost</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L434">src/Room.ts:434</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L464">src/Room.ts:464</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2062,7 +2073,7 @@
 					<a name="setsettings" class="tsd-anchor"></a>
 					<h3>set<wbr>Settings</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Settings<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgameoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameOptions</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Settings<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -2089,7 +2100,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>settings: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgameoptions.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameOptions</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>settings: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The settings to set to (Can be partial).</p>
 									</div>
@@ -2202,7 +2213,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2d394fe/src/Room.ts#L418">src/Room.ts:418</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/2881aa7/src/Room.ts#L448">src/Room.ts:448</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2340,6 +2351,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="room.html#components" class="tsd-kind-icon">components</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="room.html#config" class="tsd-kind-icon">config</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="room.html#connections" class="tsd-kind-icon">connections</a>

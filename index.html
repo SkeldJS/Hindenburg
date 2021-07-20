@@ -70,6 +70,8 @@
 				</a>
 				<p>Hindenburg is a completely customisable, performant and scalable Among Us server,
 				complete with plugins and a sophisticated and configurable anti-cheat.</p>
+				<p>With unparalleled support for <a href="https://github.com/NuclearPowered/Reactor">Reactor</a>,
+				it&#39;s perfect for developers and for private modded game servers.</p>
 				<p>It uses <a href="https://github.com/skeldjs/SkeldJS">SkeldJS</a> to interface with the Among Us
 				protocol, as well as keeping state.</p>
 				<a href="#discord-server" id="discord-server" style="color: inherit; text-decoration: none;">
@@ -101,8 +103,9 @@
 				<a href="#🧬-reactor-support" id="🧬-reactor-support" style="color: inherit; text-decoration: none;">
 					<h3>🧬 Reactor Support</h3>
 				</a>
-				<p>Hindenburg also natively supports clients using Reactor, allowing plugins to
-				communicate directly with mods.</p>
+				<p>Hindenburg also natively supports clients using <a href="https://github.com/NuclearPowered/Reactor">Reactor</a>,
+					allowing plugins to communicate directly with mods, and giving you the ability
+				to leverage the full potential of the Reactor protocol.</p>
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h2>Getting Started</h2>
 				</a>
@@ -345,9 +348,6 @@
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/basesystemmessage.html" class="tsd-kind-icon">Base<wbr>System<wbr>Message</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/callerror.html" class="tsd-kind-icon">Call<wbr>Error</a>
-					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/castvotemessage.html" class="tsd-kind-icon">Cast<wbr>Vote<wbr>Message</a>
 					</li>
@@ -386,6 +386,9 @@
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/closemessage.html" class="tsd-kind-icon">Close<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/commandcallerror.html" class="tsd-kind-icon">Command<wbr>Call<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/completetaskmessage.html" class="tsd-kind-icon">Complete<wbr>Task<wbr>Message</a>
@@ -469,7 +472,7 @@
 						<a href="classes/gamelisting.html" class="tsd-kind-icon">Game<wbr>Listing</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
-						<a href="classes/gameoptions.html" class="tsd-kind-icon">Game<wbr>Options</a>
+						<a href="classes/gamesettings.html" class="tsd-kind-icon">Game<wbr>Settings</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/getgamelistmessage.html" class="tsd-kind-icon">Get<wbr>Game<wbr>List<wbr>Message</a>
@@ -892,7 +895,7 @@
 						<a href="classes/workerbeforejoinevent.html" class="tsd-kind-icon">Worker<wbr>Before<wbr>Join<wbr>Event</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
-						<a href="interfaces/allgameoptions.html" class="tsd-kind-icon">All<wbr>Game<wbr>Options</a>
+						<a href="interfaces/allgamesettings.html" class="tsd-kind-icon">All<wbr>Game<wbr>Settings</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/anticheatconfig.html" class="tsd-kind-icon">Anticheat<wbr>Config</a>
@@ -986,6 +989,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/reactorsystemdata.html" class="tsd-kind-icon">Reactor<wbr>System<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/roomsconfig.html" class="tsd-kind-icon">Rooms<wbr>Config</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/rpcevent.html" class="tsd-kind-icon">Rpc<wbr>Event</a>
@@ -1088,6 +1094,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter tsd-is-external">
 						<a href="modules.html#meetinghudevents" class="tsd-kind-icon">Meeting<wbr>Hud<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="modules.html#messagemapkey" class="tsd-kind-icon">Message<wbr>Map<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="modules.html#missingpackets" class="tsd-kind-icon">Missing<wbr>Packets</a>
@@ -1195,7 +1204,7 @@
 						<a href="modules.html#hindenburgeventlistenerskey" class="tsd-kind-icon">hindenburg<wbr>Event<wbr>Listeners<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-variable">
-						<a href="modules.html#hindenburgmessagekey" class="tsd-kind-icon">hindenburg<wbr>Message<wbr>Key</a>
+						<a href="modules.html#hindenburgmessagehandlerskey" class="tsd-kind-icon">hindenburg<wbr>Message<wbr>Handlers<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="modules.html#hindenburgreactorrpckey" class="tsd-kind-icon">hindenburg<wbr>Reactor<wbr>Rpc<wbr>Key</a>
@@ -1228,7 +1237,7 @@
 						<a href="modules.html#int2code" class="tsd-kind-icon">Int2<wbr>Code</a>
 					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter">
-						<a href="modules.html#messagelistener" class="tsd-kind-icon">Message<wbr>Listener</a>
+						<a href="modules.html#messagehandler" class="tsd-kind-icon">Message<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-function tsd-has-type-parameter">
 						<a href="modules.html#reactorrpchandler" class="tsd-kind-icon">Reactor<wbr>Rpc<wbr>Handler</a>

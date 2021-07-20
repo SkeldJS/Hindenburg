@@ -43,14 +43,9 @@ export class ReactorRpcMessage extends BaseRpcMessage {
         const modNetId = reader.upacked();
         const callId = reader.upacked();
 
-        const rpcMessages = decoder.types.get("reactorRpc");
+        const rpcMessageClass = decoder.types.get(`reactorRpc:${callId}`);
 
         const [ , mreader ] = reader.message();
-
-        if (!rpcMessages)
-            return new ReactorRpcMessage(modNetId, new UnknownReactorRpcMessage(callId, mreader.buffer));
-
-        const rpcMessageClass = rpcMessages.get(callId);
 
         if (!rpcMessageClass)
             return new ReactorRpcMessage(modNetId, new UnknownReactorRpcMessage(callId, mreader.buffer));

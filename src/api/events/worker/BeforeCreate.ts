@@ -1,5 +1,5 @@
 import { CancelableEvent } from "@skeldjs/events";
-import { GameOptions } from "@skeldjs/protocol";
+import { GameSettings } from "@skeldjs/protocol";
 import { Connection } from "../../../Connection";
 import { Room } from "../../../Room";
 
@@ -32,7 +32,7 @@ export class WorkerBeforeCreateEvent extends CancelableEvent {
         /**
          * The game options that the player is attempting to create a room with.
          */
-        public readonly gameOptions: GameOptions
+        public readonly gameOptions: GameSettings
     ) {
         super();
     }

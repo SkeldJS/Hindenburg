@@ -481,7 +481,7 @@ export class Room extends Hostable<RoomEvents> {
 
         this.connections.delete(client.clientId);
 
-        if (this.connections.size === 0) {
+        if (this.players.size === 0) {
             await this.destroy();
             return;
         }

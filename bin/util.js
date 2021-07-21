@@ -81,7 +81,7 @@ function createDefaultConfig() {
         },
         rooms: {
             chatCommands: true,
-            gameCodes: "v1"
+            gameCodes: "v2"
         }
     };
 }

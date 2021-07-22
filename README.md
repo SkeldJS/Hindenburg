@@ -1,6 +1,6 @@
 # Hindenburg
-Hindenburg is a completely customisable, performant and scalable Among Us server,
-complete with plugins and a sophisticated and configurable anti-cheat.
+Hindenburg is a completely customisable and scalable Among Us server, complete
+with advanced plugins and a sophisticated and configurable anti-cheat.
 
 With unparalleled support for [Reactor](https://github.com/NuclearPowered/Reactor),
 it's perfect for developers and for private modded game servers.

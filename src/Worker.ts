@@ -452,8 +452,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         const pingInterval = 2000;
         setInterval(() => {
-            const numEntries = 60000 / pingInterval;
-
             for (const [ , connection ] of this.connections) {
                 if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
                     this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",

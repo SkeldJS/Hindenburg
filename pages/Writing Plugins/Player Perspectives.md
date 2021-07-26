@@ -30,7 +30,7 @@ These bubbles, when created, are exact clones of the room that they are created
 from. The only difference being that messages sent from these bubbles are only
 sent to the players that the bubble is representing the perspectives of.
 
-![Hindenburg Player Perspectives Diagram](https://user-images.githubusercontent.com/60631511/127015170-1a4f8154-01fc-46c3-a351-a92b493b1782.png)
+![Hindenburg Player Perspectives Diagram](https://user-images.githubusercontent.com/60631511/127015294-087b951e-80e9-4f3b-a85a-6220097d15a9.png)
 
 Messages sent from the main room are sent to these clones through a filter, allowing
 you to choose what information the player gets updated on. For example, if you

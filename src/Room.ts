@@ -44,6 +44,7 @@ import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 import { Code2Int, HazelWriter } from "@skeldjs/util";
 
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
+import { SendChatOptions, MessageSide } from "./interfaces";
 
 import { Connection } from "./Connection";
 import { Worker } from "./Worker";
@@ -74,84 +75,19 @@ import { CommandCallError, ChatCommandContext, Plugin } from "./handlers";
         + (paren ? " " + chalk.grey("(" + paren + ")") : "");
 }
 
-export enum MessageSide {
-    Left,
-    Right
-}
-
-/**
- * Options regarding sending a chat message into the room as the server, see
- * {@link Room.sendChat}
- */
-export interface SendChatOptions {
-    /**
-     * The side of the chat box for the message to appear on for each player.
-     * @example
-     * ```ts
-     * room.sendChat("Slide to the left", {
-     *   side: MessageSide.Left
-     * });
-     * 
-     * room.sendChat("Slide to the right", {
-     *   side: MessageSide.Right
-     * });
-     * ```
-     */
-    side: MessageSide;
-    /**
-     * The player to send the message to, if omitted, sends to all players.
-     * @example
-     * ```ts
-     * // Alert the host of a hacker
-     * .@EventListener("anticheat.potential")
-     * onPotentialCheater(ev: AnticheatPotentialEvent) {
-     *   if (!ev.player.info)
-     *     return;
-     * 
-     *   ev.room.sendChat("<color=red>Potential cheater detected: " + ev.player.info.name + "</color>", {
-     *     target: ev.room.players.host
-     *   });
-     * }
-     * ```
-     */
-    target: PlayerData|undefined;
-    /**
-     * The name of the player to appear as.
-     * @example
-     * ```ts
-     * ev.room.sendChat("i am the impostor", {
-     *   name: "<color=red>The Impostor</color>",
-     *   color: Color.Red
-     * });
-     * ```
-     */
-    name: string;
-    /**
-     * The color of the player to appear as.
-     * @example
-     * ```ts
-     * ev.room.sendChat("i am the impostor", {
-     *   name: "<color=red>The Impostor</color>",
-     *   color: Color.Red
-     * });
-     * ```
-     */
-    color: Color;
-}
-
-const logMaps = {
-    [GameMap.TheSkeld]: "the skeld",
-    [GameMap.MiraHQ]: "mira",
-    [GameMap.Polus]: "polus",
-    [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
-    [GameMap.Airship]: "airship"
-};
-
-enum SpecialClientId {
+export enum SpecialClientId {
     Nil = 2 ** 31 - 1,
     Server = 2 ** 31 - 2,
     Temp = 2 ** 31 - 3
 }
+
+const logMaps = {
+    [GameMap.TheSkeld]: "the skeld",
+    [GameMap.MiraHQ]: "mira hq",
+    [GameMap.Polus]: "polus",
+    [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
+    [GameMap.Airship]: "airship"
+};
 
 export type RoomEvents = HostableEvents<Room> & ExtractEventTypes<[
     RoomBeforeDestroyEvent,

@@ -51,13 +51,14 @@ import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { fmtCode } from "./util/fmtCode";
 
-import { HindenburgConfig, RoomsConfig } from "./interfaces/HindenburgConfig";
+import { HindenburgConfig, RoomsConfig, MessageSide } from "./interfaces";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
 
 import { PluginLoader, ChatCommandHandler } from "./handlers";
-import { Room, RoomEvents, MessageSide } from "./Room";
+import { Room } from "./Room";
+import { RoomEvents } from "./BaseRoom";
 
 import {
     ClientBanEvent,

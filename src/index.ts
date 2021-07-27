@@ -3,6 +3,7 @@ export * from "./handlers";
 export * from "./interfaces";
 export * from "./packets";
 
+export * from "./BaseRoom";
 export * from "./Connection";
 export * from "./Room";
 export * from "./Worker";

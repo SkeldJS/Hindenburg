@@ -38,7 +38,7 @@ import {
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
-import { Hostable, HostableEvents, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
+import { Hostable, HostableEvents, HostableOptions, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
 import { Code2Int, HazelWriter } from "@skeldjs/util";
@@ -58,6 +58,7 @@ import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
 import { RoomsConfig } from "./interfaces";
 import { CommandCallError, ChatCommandContext, Plugin } from "./handlers";
+import { Perspective, PerspectiveFilters } from "./Perspective";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<Room>) {
     const connection = this.room.connections.get(this.id);
@@ -109,6 +110,9 @@ export class Room extends Hostable<RoomEvents> {
      */
     bans: Set<string>;
 
+    playerPerspectives: Map<number, Perspective>;
+    activePerspectives: Perspective[];
+
     state: GameState;
 
     constructor(
@@ -144,6 +148,8 @@ export class Room extends Hostable<RoomEvents> {
         });
 
         this.bans = new Set;
+        this.playerPerspectives = new Map;
+        this.activePerspectives = [];
         this.settings = settings;
 
         this.state = GameState.NotStarted;
@@ -187,6 +193,12 @@ export class Room extends Hostable<RoomEvents> {
         this.on("player.syncsettings", async ev => {
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
+
+                // todo: activePerspectives can be undefined and perspectives must be enabled by a configuration option (probably faster)
+                for (let i = 0; i < this.activePerspectives.length; i++) {
+                    const activePerspective = this.activePerspectives[i];
+                    
+                }
             }
         });
     }
@@ -726,5 +738,29 @@ export class Room extends Hostable<RoomEvents> {
                 ], true, defaultOptions.target);
             }
         }
+    }
+
+    createPerspective(player: PlayerData, blockFilter?: number): Perspective;
+    createPerspective(players: PlayerData[], blockFilter?: number): Perspective;
+    createPerspective(players: PlayerData|PlayerData[], blockFilter: number = PerspectiveFilters.None): Perspective {
+        if (!Array.isArray(players)) {
+            return this.createPerspective([ players ], blockFilter);
+        }
+
+        for (let i = 0; i < players.length; i++) {
+            if (this.playerPerspectives.has(players[i].id)) {
+                throw new TypeError("Player already has active perspective.");
+            }
+        }
+
+        const allowFilter = PerspectiveFilters.All & ~blockFilter;
+        const perspective = new Perspective(this, players, allowFilter);
+
+        this.activePerspectives.push(perspective);
+        for (let i = 0; i < players.length; i++) {
+            this.playerPerspectives.set(players[i].id, perspective);
+        }
+
+        return perspective;
     }
 }

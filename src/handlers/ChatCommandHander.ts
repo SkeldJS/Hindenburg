@@ -11,7 +11,9 @@ function betterSplitOnSpaces(input: string) {
     let collector = "";
     let output = [];
     let in_string = false;
-    for (const char of input) {
+    for (let i = 0; i < input.length; i++) {
+        const char = input[i];
+
         if (char === "'") {
             in_string = !in_string;
         } else if (char === " " && !in_string) {
@@ -146,7 +148,8 @@ export class RegisteredChatCommand {
         const argsCloned = [...args]; // Clone the array to not affect the original arguments array
         const parsed: Record<string, string> = {};
 
-        for (const param of this.params) {
+        for (let i = 0; i < this.params.length; i++) {
+            const param = this.params[i];
             const consume = param.variadic
                 ? argsCloned.join(" ")
                 : argsCloned.shift();

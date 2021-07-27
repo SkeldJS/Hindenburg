@@ -34,7 +34,7 @@ import {
     VoteBanSystem
 } from "@skeldjs/core";
 
-import { GameSettings, PacketDecoder } from "@skeldjs/protocol";
+import { GameSettings } from "@skeldjs/protocol";
 import { Vector2 } from "@skeldjs/util";
 import { BaseRoom } from "./BaseRoom";
 import { MasketDecoder } from "./util/MasketDecoder";
@@ -221,7 +221,8 @@ export class Perspective extends BaseRoom {
 
                 newAd.dirtyBit = autoDoors.dirtyBit;
                 
-                for (const door of autoDoors.doors) {
+                for (let i = 0; i < autoDoors.doors.length; i++) {
+                    const door = autoDoors.doors[i];
                     const newDoor = new AutoOpenDoor(newAd, door.id, door.isOpen);
                     newDoor.timer = door.timer;
                     newAd.doors.push(newDoor);
@@ -242,7 +243,8 @@ export class Perspective extends BaseRoom {
 
                 newDoors.cooldowns = new Map(doors.cooldowns.entries());
                 
-                for (const door of doors.doors) {
+                for (let i = 0; i < doors.doors.length; i++) {
+                    const door = doors.doors[i];
                     const newDoor = new Door(newDoors, door.id, door.isOpen);
                     newDoors.doors.push(newDoor);
                 }
@@ -252,7 +254,8 @@ export class Perspective extends BaseRoom {
                 const electricalDoors = system as ElectricalDoorsSystem<this>;
                 const newEd = new ElectricalDoorsSystem(ship);
 
-                for (const door of electricalDoors.doors) {
+                for (let i = 0; i < electricalDoors.doors.length; i++) {
+                    const door = electricalDoors.doors[i];
                     const newDoor = new Door(newEd, door.id, door.isOpen);
                     newEd.doors.push(newDoor);
                 }
@@ -289,7 +292,8 @@ export class Perspective extends BaseRoom {
                 const medScan = system as MedScanSystem<this>;
                 const newMs = new MedScanSystem(ship);
 
-                for (const queuePlayer of medScan.queue) {
+                for (let i = 0; i < medScan.queue.length; i++) {
+                    const queuePlayer = medScan.queue[i];
                     const newPlayer = this.players.get(queuePlayer.id);
                     newMs.queue.push(newPlayer!);
                 }

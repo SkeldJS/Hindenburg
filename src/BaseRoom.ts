@@ -57,8 +57,9 @@ import {
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
 import { RoomsConfig } from "./interfaces";
-import { CommandCallError, ChatCommandContext, Plugin } from "./handlers";
-import { Perspective, PerspectiveFilters } from "./Perspective";
+import { CommandCallError, ChatCommandContext } from "./handlers";
+import { Perspective } from "./Perspective";
+import { MasketDecoder } from "./util/MasketDecoder";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<BaseRoom>) {
     const connection = this.room.connections.get(this.id);
@@ -317,7 +318,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
         const clientsToExclude = new Set(exclude);
         const promises: Promise<void>[] = [];
 
-        for (const connection of clientsToBroadcast) {
+        for (let i = 0; i < clientsToBroadcast.length; i++) {
+            const connection = clientsToBroadcast[i];
+
             if (clientsToExclude.has(connection))
                 continue;
 

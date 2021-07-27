@@ -179,7 +179,8 @@ export class PluginLoader {
 
         const loadedPluginsArr = [...this.loadedPlugins];
         for (const [ , loadedPlugin ] of loadedPluginsArr) {
-            for (const messageClass of loadedPlugin.registeredMessages) {
+            for (let i = 0; i <  loadedPlugin.registeredMessages.length; i++) {
+                const messageClass = loadedPlugin.registeredMessages[i];
                 this.worker.decoder.register(messageClass);
             }
         }
@@ -190,8 +191,10 @@ export class PluginLoader {
         this.worker.registerPacketHandlers();
 
         const loadedPluginsArr = [...this.loadedPlugins];
-        for (const [ , loadedPlugin ] of loadedPluginsArr) {
-            for (const { messageClass, handler, options } of loadedPlugin.messageHandlers) {
+        for (let i = 0; i < loadedPluginsArr.length; i++) {
+            const [, loadedPlugin ] = loadedPluginsArr[i];
+            for (let i = 0; i < loadedPlugin.messageHandlers.length; i++) {
+                const  { messageClass, handler, options } = loadedPlugin.messageHandlers[i];
                 if (options.override) {
                     this.worker.decoder.listeners.delete(`${messageClass.type}:${messageClass.tag}`);
                 }
@@ -281,7 +284,8 @@ export class PluginLoader {
         const pluginPrototype = Object.getPrototypeOf(Object.getPrototypeOf(loadedPlugin));
         const propertyNames = Object.getOwnPropertyNames(pluginPrototype);
 
-        for (const propertyName of propertyNames) {
+        for (let i = 0; i < propertyNames.length; i++) {
+            const propertyName = propertyNames[i];
             const property = pluginPrototype[propertyName] as (...args: any[]) => any;
 
             if (typeof property !== "function")
@@ -307,7 +311,8 @@ export class PluginLoader {
                 const command = this.worker.vorpal.command(vorpalCommand.usage, vorpalCommand.description);
 
                 if (vorpalCommand.options) {
-                    for (const option of vorpalCommand.options) {
+                    for (let i = 0; i < vorpalCommand.options.length; i++) {
+                        const option = vorpalCommand.options[i];
                         command.option(option.usage, option.description || "");
                     }
                 }
@@ -373,15 +378,18 @@ export class PluginLoader {
             return this.unloadPlugin(plugin);
         }
 
-        for (const { eventName, handler } of pluginId.eventHandlers) {
+        for (let i = 0; i < pluginId.eventHandlers.length; i++) {
+            const { eventName, handler } = pluginId.eventHandlers[i];
             this.worker.off(eventName, handler);
         }
 
-        for (const vorpalCommand of pluginId.registeredVorpalCommands) {
+        for (let i = 0; i < pluginId.registeredVorpalCommands.length; i++) {
+            const vorpalCommand = pluginId.registeredVorpalCommands[i];
             vorpalCommand.remove();
         }
 
-        for (const { componentCtr, reactorRpc, handler } of pluginId.reactorRpcHandlers) {
+        for (let i = 0; i < pluginId.reactorRpcHandlers.length; i++) {
+            const { componentCtr, reactorRpc, handler } = pluginId.reactorRpcHandlers[i];
             const rpcHandlers = this.getReactorRpcHandlers(componentCtr, reactorRpc);
             rpcHandlers.delete(handler);
         }
@@ -413,7 +421,8 @@ export class PluginLoader {
 
         if (this.worker.config.plugins.loadDirectory) {
             const files = await fs.readdir(this.pluginDir);
-            for (const file of files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
                 if (!file.startsWith("hbplugin-"))
                     continue;
                 
@@ -422,7 +431,8 @@ export class PluginLoader {
         }
 
         const pluginCtrs: typeof Plugin[] = [];
-        for (const importName of allImportNames) {
+        for (let i = 0; i < allImportNames.length; i++) {
+            const importName = allImportNames[i];
             try {
                 const importPath = resolveFrom(this.pluginDir, importName);
                 const pluginCtr = await this.importPlugin(importPath);
@@ -455,7 +465,8 @@ export class PluginLoader {
             return 0;
         });
 
-        for (const pluginCtr of pluginCtrs) {
+        for (let i = 0; i < pluginCtrs.length; i++) {
+            const pluginCtr = pluginCtrs[i];
             await this.loadPlugin(pluginCtr);
         }
     }

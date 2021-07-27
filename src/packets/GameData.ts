@@ -79,7 +79,8 @@ export class GameDataMessage extends BaseRootMessage {
     ) {
         writer.int32(this.code);
 
-        for (const message of this.children) {
+        for (let i = 0; i < this.children.length; i++) {
+            const message = this.children[i];
             if (!decoder.types.has(`gamedata:${message.tag}`))
                 continue;
 

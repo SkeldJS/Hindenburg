@@ -467,7 +467,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         connection.getNextNonce()
                     )
                 );
-                for (const sent of connection.sentPackets) {
+                for (let i = 0; i < connection.sentPackets.length; i++) {
+                    const sent = connection.sentPackets[i];
                     if (!sent.acked) {
                         if (Date.now() - sent.sentAt > 500) {
                             this._sendPacket(connection.rinfo, sent.buffer)
@@ -904,7 +905,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 }
             }
-            for (const child of notCanceled) {
+            for (let i = 0; i < notCanceled.length; i++) {
+                const child = notCanceled[i];
                 await connection.room?.decoder.emitDecoded(child, direction, connection);
             }
             
@@ -1059,7 +1061,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         if (newConfig.plugins) {
             const pluginKeys = Object.keys(newConfig.plugins);
-            for (const key of pluginKeys) {
+            for (let i = 0; i < pluginKeys.length; i++) {
+                const key = pluginKeys[i];
                 const loadedPlugin = this.pluginLoader.loadedPlugins.get(key);
 
                 if (!newConfig.plugins[key]) {

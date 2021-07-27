@@ -99,6 +99,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
     createdAt: number;
     connections: Map<number, Connection>;
     waiting: Set<Connection>;
+    
+    decoder: MasketDecoder;
     playerPerspectives!: Map<number, Perspective>;
     activePerspectives!: Perspective[];
 
@@ -124,6 +126,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.createdAt = Date.now();
         this.connections = new Map;
         this.waiting = new Set;
+
+        this.decoder = new MasketDecoder(worker.decoder);
 
         this.logger = winston.createLogger({
             transports: [

@@ -37,17 +37,13 @@ import {
 import { GameSettings, PacketDecoder } from "@skeldjs/protocol";
 import { Vector2 } from "@skeldjs/util";
 import { BaseRoom } from "./BaseRoom";
-
-export enum PerspectiveFilters {
-    None = 0,
-    All = 1
-}
+import { MasketDecoder } from "./util/MasketDecoder";
 
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
 
 export class Perspective extends BaseRoom {
-    public readonly incomingFilter: PacketDecoder;
-    public readonly outgoingFilter: PacketDecoder;
+    public readonly incomingFilter: MasketDecoder;
+    public readonly outgoingFilter: MasketDecoder;
 
     constructor(
         private readonly parentRoom: BaseRoom,
@@ -55,8 +51,8 @@ export class Perspective extends BaseRoom {
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
-        this.incomingFilter = new PacketDecoder;
-        this.outgoingFilter = new PacketDecoder;
+        this.incomingFilter = new MasketDecoder(parentRoom.worker.decoder);
+        this.outgoingFilter = new MasketDecoder(parentRoom.worker.decoder);
 
         for (const [ clientId ] of parentRoom.players) {
             const newPlayer = new PlayerData(this, clientId);

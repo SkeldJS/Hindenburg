@@ -511,6 +511,49 @@ export class Perspective extends BaseRoom {
                         )
                     );
 
+                    const playerPhysics = player.physics;
+
+                    if (playerPhysics.ventid) {
+                        messages.push(
+                            new RpcMessage(
+                                playerPhysics.netid,
+                                new EnterVentMessage(playerPhysics.ventid)
+                            )
+                        );
+                    }
+
+                    const ctrl = player.transform;
+                    const ctrlWriter = HazelWriter.alloc(1);
+                    ctrlWriter.write(ctrl, false);
+
+                    messages.push(
+                        new DataMessage(
+                            ctrl.netid,
+                            ctrlWriter.buffer
+                        )
+                    );
+
+                    const phys = player.transform;
+                    const physWriter = HazelWriter.alloc(1);
+                    physWriter.write(phys, false);
+
+                    messages.push(
+                        new DataMessage(
+                            phys.netid,
+                            physWriter.buffer
+                        )
+                    );
+
+                    const cnt = player.transform;
+                    const cntWriter = HazelWriter.alloc(10);
+                    cntWriter.write(cnt, false);
+
+                    messages.push(
+                        new DataMessage(
+                            cnt.netid,
+                            cntWriter.buffer
+                        )
+                    );
                 }
 
                 playerConn.sendPacket(

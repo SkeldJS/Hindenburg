@@ -554,6 +554,25 @@ export class Perspective extends BaseRoom {
                             cntWriter.buffer
                         )
                     );
+
+                    if (player.info.isImpostor) {
+                        impostorIds.push(player.playerId);
+
+                        for (let i = 0; i < player.info.taskStates.length; i++) {
+                            const taskState = player.info.taskStates[i];
+
+                            if (taskState.completed) {
+                                messages.push(
+                                    new RpcMessage(
+                                        playerControl.netid,
+                                        new CompleteTaskMessage(taskState.taskidx)
+                                    )
+                                );
+                            };
+                        }
+                    }
+                }
+
                 }
 
                 playerConn.sendPacket(

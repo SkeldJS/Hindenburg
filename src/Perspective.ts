@@ -462,6 +462,12 @@ export class Perspective extends BaseRoom {
                         )
                     );
                 }
+
+                const payloads = [
+                    new AlterGameMessage(
+                        this.parentRoom.code,
+                        AlterGameTag.ChangePrivacy,
+                        this.parentRoom.privacy === "public" ? 1 : 0
                     )
                 ];
 

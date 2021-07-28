@@ -582,6 +582,14 @@ export class Perspective extends BaseRoom {
                         )
                     );
 
+                    messages.push(
+                        new RpcMessage(
+                            hostPlayer.control.netid,
+                            new SyncSettingsMessage(this.parentRoom.settings)
+                        )
+                    );
+
+                    (hostPlayer.control as any).lastStartCounter++;
                 }
 
                 playerConn.sendPacket(

@@ -39,7 +39,7 @@ import {
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
-import { Hostable, HostableEvents, HostableOptions, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
+import { Hostable, HostableEvents, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
 import { Code2Int, HazelWriter } from "@skeldjs/util";
@@ -60,7 +60,6 @@ import { fmtLogFormat } from "./util/fmtLogFormat";
 import { RoomsConfig } from "./interfaces";
 import { CommandCallError, ChatCommandContext } from "./handlers";
 import { Perspective } from "./Perspective";
-import { MasketDecoder } from "./util/MasketDecoder";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<BaseRoom>) {
     const connection = this.room.connections.get(this.id);

@@ -981,8 +981,28 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
             
             const recipientPlayer = recipientConnection.getPlayer();
+            
+            if (!recipientPlayer)
+                return;
 
-            await recipientPlayer?.room.broadcastMessages(message._children, [], [recipientConnection]);
+            const notCanceled = recipientPlayer instanceof Perspective
+                ? []
+                : message._children;
+
+            if (recipientPlayer.room instanceof Perspective) {
+                for (let i = 0; i < message._children.length; i++) {
+                    const child = message._children[i];
+                    
+                    await recipientPlayer.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipientPlayer);
+
+                    if (child.canceled)
+                        continue;
+                    
+                    notCanceled.push(child);
+                }
+            }
+
+            await recipientPlayer?.room.broadcastMessages(notCanceled, [], [recipientConnection]);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, connection) => {

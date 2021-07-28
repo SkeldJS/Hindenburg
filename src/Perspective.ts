@@ -444,6 +444,24 @@ export class Perspective extends BaseRoom {
                 ];
 
                 const shipStatus = this.parentRoom.shipstatus;
+                if (shipStatus) {
+                    const systemTypes = Object.keys(shipStatus.systems);
+                    for (let i = 0; i < systemTypes.length; i++) {
+                        const systemType = systemTypes[i];
+
+                        (shipStatus.systems as any)[systemType].dirty = true; // cast to any because types are complicated LOL
+                    }
+
+                    const shipStatusWriter = HazelWriter.alloc(0);
+                    shipStatusWriter.write(shipStatus, false);
+
+                    messages.push(
+                        new DataMessage(
+                            shipStatus.netid,
+                            shipStatusWriter.buffer
+                        )
+                    );
+                }
                     )
                 ];
 

@@ -157,8 +157,13 @@ export class Perspective extends BaseRoom {
                 }
 
                 this.netobjects.set(netId, newMh);
-            } else if (component.classname === "MiraShipStatus") {
+            } else if (component.classname === "Headquarters") {
+                const hqShipStatus = component as MiraShipStatus<this>;
+                const newHqss = new MiraShipStatus(this, netId, component.ownerid);
 
+                newHqss.systems = this.cloneSystems(hqShipStatus) as typeof hqShipStatus.systems;
+
+                this.netobjects.set(netId, newHqss);
             } else if (component.classname === "PlayerControl") {
                 const playerControl = component as PlayerControl<this>;
                 const newPc = new PlayerControl(this, netId, component.ownerid);
@@ -172,18 +177,18 @@ export class Perspective extends BaseRoom {
 
                 newPp.ventid = playerPhysics.ventid;
                 this.netobjects.set(netId, newPp);
-            } else if (component.classname === "PolusShipStatus") {
-                const aprilShipStatus = component as PolusShipStatus<this>;
+            } else if (component.classname === "PlanetMap") {
+                const polusShipStatus = component as PolusShipStatus<this>;
                 const newPss = new PolusShipStatus(this, netId, component.ownerid);
 
-                newPss.systems = this.cloneSystems(aprilShipStatus) as typeof aprilShipStatus.systems;
+                newPss.systems = this.cloneSystems(polusShipStatus) as typeof polusShipStatus.systems;
 
                 this.netobjects.set(netId, newPss);
-            } else if (component.classname === "SkeldShipStatus") {
-                const aprilShipStatus = component as SkeldShipStatus<this>;
+            } else if (component.classname === "ShipStatus") {
+                const shipStatus = component as SkeldShipStatus<this>;
                 const newSss = new SkeldShipStatus(this, netId, component.ownerid);
 
-                newSss.systems = this.cloneSystems(aprilShipStatus) as typeof aprilShipStatus.systems;
+                newSss.systems = this.cloneSystems(shipStatus) as typeof shipStatus.systems;
 
                 this.netobjects.set(netId, newSss);
             } else if (component.classname === "VoteBanSystem") {

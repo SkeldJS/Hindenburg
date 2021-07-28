@@ -573,6 +573,15 @@ export class Perspective extends BaseRoom {
                     }
                 }
 
+                const hostPlayer = this.parentRoom.host;
+                if (hostPlayer) {
+                    messages.push(
+                        new RpcMessage(
+                            hostPlayer.control.netid,
+                            new SetInfectedMessage(impostorIds)
+                        )
+                    );
+
                 }
 
                 playerConn.sendPacket(

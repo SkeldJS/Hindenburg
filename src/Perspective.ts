@@ -31,20 +31,31 @@ import {
     SwitchSystem,
     SystemStatus,
     SystemType,
-    VoteBanSystem
+    VoteBanSystem,
+    AlterGameTag
 } from "@skeldjs/core";
 
 import {
+    AlterGameMessage,
     BaseGameDataMessage,
     BaseRootMessage,
+    CompleteTaskMessage,
     DataMessage,
+    EnterVentMessage,
     GameDataMessage,
     GameSettings,
     MessageDirection,
+    MurderPlayerMessage,
     ReliablePacket,
     RpcMessage,
     SetColorMessage,
-    SetNameMessage
+    SetHatMessage,
+    SetInfectedMessage,
+    SetNameMessage,
+    SetPetMessage,
+    SetSkinMessage,
+    SetStartCounterMessage,
+    SyncSettingsMessage
 } from "@skeldjs/protocol";
 
 import { HazelWriter, Vector2 } from "@skeldjs/util";
@@ -482,7 +493,8 @@ export class Perspective extends BaseRoom {
                     )
                 ];
 
-                for (const [ clientId, player ] of this.parentRoom.players) {
+                const impostorIds = [];
+                for (const [ , player ] of this.parentRoom.players) {
                     if (!player.info)
                         continue;
 
@@ -619,7 +631,8 @@ export class Perspective extends BaseRoom {
                             new GameDataMessage(
                                 this.parentRoom.code,
                                 messages
-                            )
+                            ),
+                            ...payloads
                         ]
                     )
                 );

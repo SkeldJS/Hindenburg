@@ -397,6 +397,67 @@ export class Perspective extends BaseRoom {
         return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
     }
 
+    async destroyPerspective(restoreState = true) {
+        Hostable.prototype.destroy.call(this);
+
+        for (let i = 0; i < this.playersPov.length; i++) {
+            const playersPov = this.playersPov[i];
+            this.parentRoom.playerPerspectives.delete(playersPov.id);
+
+            if (restoreState) {
+                const playerConn = this.parentRoom.connections.get(playersPov.id);
+
+                if (!playerConn)
+                    continue;
+
+                const gameData = this.parentRoom.gamedata;
+                const gameDataWriter = HazelWriter.alloc(0);
+                gameData.dirtyBit = 0b111111111111111;
+                gameDataWriter.write(gameData, false);
+
+                const messages: BaseGameDataMessage[] = [
+                    new DataMessage(
+                        gameData.netid,
+                        gameDataWriter.buffer
+                    )
+                ];
+
+                for (const [ clientId, player ] of this.parentRoom.players) {
+                    if (!player.info)
+                        continue;
+
+                    messages.push(
+                        new RpcMessage(
+                            player.control.netid,
+                            new SetNameMessage(player.info.name)
+                        )
+                    );
+
+                    messages.push(
+                        new RpcMessage(
+                            player.control.netid,
+                            new SetColorMessage(player.info.color)
+                        )
+                    );
+                }
+
+                playerConn.sendPacket(
+                    new ReliablePacket(
+                        playerConn.getNextNonce(),
+                        [
+                            new GameDataMessage(
+                                this.parentRoom.code,
+                                messages
+                            )
+                        ]
+                    )
+                );
+            }
+        }
+
+        this.parentRoom.activePerspectives.splice(this.parentRoom.activePerspectives.indexOf(this), 1);
+    }
+
     createPerspective(player: PlayerData): Perspective;
     createPerspective(players: PlayerData[]): Perspective;
     createPerspective(players: PlayerData|PlayerData[]): Perspective {

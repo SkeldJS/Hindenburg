@@ -75,6 +75,7 @@ import { chunkArr } from "./util/chunkArr";
 import i18n from "./i18n";
 import { recursiveClone } from "./util/recursiveClone";
 import { UnknownGameData } from "./packets/GameData";
+import { Perspective } from "./Perspective";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -895,7 +896,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (message.children[0].tag === GameDataMessageTag.Data) {
                     // if the data message comes from a custom network transform,
                     // then it is a movement packet and must be broadcasted
-                    // unreliably
+                    // unreliably.
+                    // todo: better way of doing this
                     const dataMessage = message.children[0] as DataMessage;
                     const component = connection.room!.netobjects.get(dataMessage.netid);
                     if (component?.classname === "CustomNetworkTransform") {
@@ -905,7 +907,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             const notCanceled = [];
-            const playerPov = connection.room!.playerPerspectives.get(player.id);
+            // 'player' will be a player object in the perspective, see Connection.getPlayer
+            const playerPov = player.room instanceof Perspective
+                ? player.room
+                : undefined;
 
             for (let i = 0; i < message.children.length; i++) {
                 const child = message.children[i];
@@ -913,6 +918,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (child.canceled)
                     continue;
 
+                // don't broadcast it if it's unknown
+                if (!this.config.socket.broadcastUnknownGamedata && child instanceof UnknownGameData) {
+                    continue;
+                }
+
+                // send message to the player's perspective or their room
                 if (playerPov) {
                     await playerPov.decoder.emitDecoded(child, direction, connection);
                 } else {
@@ -922,14 +933,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (child.canceled)
                     continue;
 
-                if (!this.config.socket.broadcastUnknownGamedata && child instanceof UnknownGameData) {
-                    continue;
-                }
-
                 notCanceled.push(child);
             }
 
             if (playerPov) {
+                // match messages against the perspective's outgoing filter and broadcast those messages to the base room (outgoing perspective -> room)
                 const povNotCanceled = [];
                 for (let i = 0; i < notCanceled.length; i++) {
                     const child = notCanceled[i];
@@ -944,48 +952,20 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 if (povNotCanceled.length) {
+                    // broadcast messages to the room that matched against the outgoing filter
                     await connection.room?.broadcastMessages(povNotCanceled, [], undefined, [connection], reliable);
+                    await connection.room?.broadcastToPerspectives(connection, povNotCanceled, reliable);
                 }
                 
                 if (notCanceled.length) {
+                    // broadcast messages to the player's pov that weren't canceled above
                     await playerPov.broadcastMessages(notCanceled, [], undefined, [connection], reliable);
                 }
             } else {
-                for (let i = 0; i < connection.room!.activePerspectives.length; i++) {
-                    const activePerspective = connection.room?.activePerspectives[i];
-    
-                    if (!activePerspective)
-                        continue;
-    
-                    const povPlayer = activePerspective.players.get(player.id);
-    
-                    if (!povPlayer)
-                        continue;
-    
-                    const povNotCanceled = [];
-                    for (let i = 0; i < notCanceled.length; i++) {
-                        const child = notCanceled[i];
-    
-                        (child as any)._canceled = false; // child._canceled is private
-                        await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, povPlayer);
-    
-                        if (child.canceled)
-                            continue;
-                            
-                        await activePerspective.decoder.emitDecoded(child, direction, connection);
-    
-                        if (child.canceled)
-                            continue;
-                        
-                        povNotCanceled.push(child);
-                    }
+                await connection.room?.broadcastToPerspectives(connection, notCanceled, reliable);
 
-                    if (povNotCanceled.length) {
-                        await activePerspective.broadcastMessages(povNotCanceled, [], undefined, [connection], reliable);
-                    }
-                }
-                
                 if (notCanceled.length) {
+                    // broadcast all messages normally
                     await connection.room?.broadcastMessages(notCanceled, [], undefined, [connection], reliable);
                 }
             }

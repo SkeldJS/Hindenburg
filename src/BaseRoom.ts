@@ -375,26 +375,52 @@ export class BaseRoom extends Hostable<RoomEvents> {
         for (let i = 0; i < this.activePerspectives.length; i++) {
             const activePerspective = this.activePerspectives[i];
 
-            const povNotCanceled = [];
+            const messagesNotCanceled = [];
+            const payloadsNotCanceled = [];
             for (let i = 0; i < messages.length; i++) {
                 const child = messages[i];
 
                 (child as any)._canceled = false; // child._canceled is private
                 await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
-                if (child.canceled)
+                if (child.canceled) {
+                    (child as any)._canceled = false;
                     continue;
+                }
                     
                 await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
-                if (child.canceled)
+                if (child.canceled) {
+                    (child as any)._canceled = false;
                     continue;
+                }
                 
-                povNotCanceled.push(child);
+                messagesNotCanceled.push(child);
             }
 
-            if (povNotCanceled.length) {
-                await activePerspective.broadcastMessages(povNotCanceled)
+            for (let i = 0; i < payloads.length; i++) {
+                const child = payloads[i];
+
+                (child as any)._canceled = false; // child._canceled is private
+                await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                if (child.canceled) {
+                    (child as any)._canceled = false;
+                    continue;
+                }
+                    
+                await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                if (child.canceled) {
+                    (child as any)._canceled = false;
+                    continue;
+                }
+                
+                payloadsNotCanceled.push(child);
+            }
+
+            if (messagesNotCanceled.length || payloadsNotCanceled.length) {
+                await activePerspective.broadcastMessages(messagesNotCanceled, payloadsNotCanceled, recipientConnection ? [ recipientConnection ] : undefined, undefined, true);
             }
         }
             
@@ -769,5 +795,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     createPerspective(players: PlayerData|PlayerData[]): Perspective {
         throw new TypeError("Cannot create a perspective from a base room; create one from the full room instead.");
+    }
+
+    async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
+
     }
 }

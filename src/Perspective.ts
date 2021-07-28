@@ -475,19 +475,42 @@ export class Perspective extends BaseRoom {
                     if (!player.info)
                         continue;
 
+                    const playerControl = player.control;
                     messages.push(
                         new RpcMessage(
-                            player.control.netid,
+                            playerControl.netid,
                             new SetNameMessage(player.info.name)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
-                            player.control.netid,
+                            playerControl.netid,
                             new SetColorMessage(player.info.color)
                         )
                     );
+
+                    messages.push(
+                        new RpcMessage(
+                            playerControl.netid,
+                            new SetHatMessage(player.info.hat)
+                        )
+                    );
+
+                    messages.push(
+                        new RpcMessage(
+                            playerControl.netid,
+                            new SetPetMessage(player.info.pet)
+                        )
+                    );
+
+                    messages.push(
+                        new RpcMessage(
+                            playerControl.netid,
+                            new SetSkinMessage(player.info.skin)
+                        )
+                    );
+
                 }
 
                 playerConn.sendPacket(

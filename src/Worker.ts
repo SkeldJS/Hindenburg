@@ -972,7 +972,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(GameDataToMessage, async (message, direction, connection) => {
-            if (!connection.room)
+            const player = connection.getPlayer();
+
+            if (!connection.room || !player)
                 return;
 
             const recipientConnection = connection.room!.connections.get(message.recipientid);
@@ -985,24 +987,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!recipientPlayer)
                 return;
 
-            const notCanceled = recipientPlayer instanceof Perspective
-                ? []
-                : message._children;
-
-            if (recipientPlayer.room instanceof Perspective) { // match messages against the recipient player's perspective's incoming filter
-                for (let i = 0; i < message._children.length; i++) {
-                    const child = message._children[i];
-                    
-                    await recipientPlayer.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipientPlayer);
-
-                    if (child.canceled)
-                        continue;
-                    
-                    notCanceled.push(child);
-                }
-            }
-
-            await recipientPlayer?.room.broadcastMessages(notCanceled, [], [recipientConnection]);
+            await player.room.broadcast(message._children, true, recipientPlayer, []);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, connection) => {

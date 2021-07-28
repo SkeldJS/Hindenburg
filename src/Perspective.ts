@@ -362,6 +362,41 @@ export class Perspective extends BaseRoom {
         return newSystems;
     }
 
+    async broadcast(
+        messages: BaseGameDataMessage[],
+        reliable: boolean = true,
+        recipient: PlayerData | undefined = undefined,
+        payloads: BaseRootMessage[] = []
+    ) {
+        const recipientConnection = recipient
+            ? this.connections.get(recipient.id)
+            : undefined;
+        
+        const povNotCanceled = [];
+        for (let i = 0; i < messages.length; i++) {
+            const child = messages[i];
+
+            (child as any)._canceled = false; // child._canceled is private
+            await this.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+            if (child.canceled)
+                continue;
+                
+            await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+            if (child.canceled)
+                continue;
+            
+            povNotCanceled.push(child);
+        }
+
+        if (povNotCanceled.length) {
+            await this.parentRoom.broadcastMessages(povNotCanceled)
+        }
+            
+        return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
+    }
+
     createPerspective(player: PlayerData): Perspective;
     createPerspective(players: PlayerData[]): Perspective;
     createPerspective(players: PlayerData|PlayerData[]): Perspective {

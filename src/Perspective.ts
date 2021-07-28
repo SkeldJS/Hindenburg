@@ -192,8 +192,8 @@ export class Perspective extends BaseRoom {
                 const playerObject = this.players.get(ownerId)!;
                 this.objects.set(ownerId, playerObject);
 
-                for (let i = 0; i < playerObject.components.length; i++) {
-                    const component = playerObject.components[i];
+                for (let i = 0; i < obj.components.length; i++) {
+                    const component = obj.components[i];
                     if (component) {
                         playerObject.components[i] = this.netobjects.get(component.netid)!;
                     } else {
@@ -203,8 +203,8 @@ export class Perspective extends BaseRoom {
             }
         }
 
-        for (let i = 0; i < this.components.length; i++) {
-            const component = this.components[i];
+        for (let i = 0; i < parentRoom.components.length; i++) {
+            const component = parentRoom.components[i];
             if (component) {
                 this.components[i] = this.netobjects.get(component.netid)!;
             } else {

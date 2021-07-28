@@ -428,10 +428,22 @@ export class Perspective extends BaseRoom {
                 gameData.dirtyBit = 0b111111111111111;
                 gameDataWriter.write(gameData, false);
 
+                const voteBanSystem = this.parentRoom.votebansystem;
+                const voteBanSystemWriter = HazelWriter.alloc(0);
+                voteBanSystemWriter.write(voteBanSystem, false);
+
                 const messages: BaseGameDataMessage[] = [
                     new DataMessage(
                         gameData.netid,
                         gameDataWriter.buffer
+                    ),
+                    new DataMessage(
+                        voteBanSystem.netid,
+                        voteBanSystemWriter.buffer
+                    )
+                ];
+
+                const shipStatus = this.parentRoom.shipstatus;
                     )
                 ];
 

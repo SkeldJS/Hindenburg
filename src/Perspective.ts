@@ -32,7 +32,8 @@ import {
     SystemStatus,
     SystemType,
     VoteBanSystem,
-    AlterGameTag
+    AlterGameTag,
+    MiraShipStatus
 } from "@skeldjs/core";
 
 import {
@@ -421,7 +422,29 @@ export class Perspective extends BaseRoom {
         }
 
         if (povNotCanceled.length) {
-            await this.parentRoom.broadcastMessages(povNotCanceled)
+            let notCanceled = !recipient || recipient.room === this
+                ? povNotCanceled
+                : [];
+    
+            if (recipient && recipient.room !== this) {
+                if (recipient.room instanceof Perspective) { // match messages against the recipient player's perspective's incoming filter
+                    for (let i = 0; i < povNotCanceled.length; i++) {
+                        const child = povNotCanceled[i];
+                        
+                        (child as any)._canceled = false; // child._canceled is private
+                        await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
+    
+                        if (child.canceled)
+                            continue;
+                        
+                        notCanceled.push(child);
+                    }
+                } else {
+                    notCanceled = povNotCanceled;
+                }
+            }
+
+            await this.parentRoom.broadcastMessages(notCanceled, payloads, recipientConnection ? [recipientConnection] : undefined);
         }
             
         return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);

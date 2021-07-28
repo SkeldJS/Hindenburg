@@ -232,6 +232,11 @@ export class Connection {
      * ```
      */
     getPlayer() {
+        const playerPerspective = this.room?.playerPerspectives.get(this.clientId);
+        if (playerPerspective) {
+            return playerPerspective.players.get(this.clientId);
+        }
+
         return this.room?.room.players.get(this.clientId);
     }
 

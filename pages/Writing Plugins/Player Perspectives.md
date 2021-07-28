@@ -37,11 +37,13 @@ you to choose what information the player gets updated on. For example, if you
 were using perspectives to change the colours of every other player for someone,
 you could do the following:
 ```ts
-const perspective = room.createPerspective(
-    somePlayer, // player to create the perspective for
-    undefined, // events to include in the filter (undefined=all)
-    [ PerspectiveFilter.GameDataUpdates ] // events to exclude from the filter
-);
+const perspective = room.createPerspective(somePlayer);
+
+perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetHatMessage, SetPetMessage, SetSkinMessage ], message => {
+    message.cancel();
+});
+
+perspective.outgoingFilter = perspective.incomingFilter;
 
 for (const [ , player ] of perspective.players) {
     player.control?.setColor(Color.Black);
@@ -51,11 +53,13 @@ for (const [ , player ] of perspective.players) {
 This could be extended into a debuff system where a player is unable to see the
 names, colours, etc. of any other players for 10 seconds.
 ```ts
-const perspective = room.createPerspective(
-    somePlayer,
-    undefined,
-    [ PerspectiveFilter.GameDataUpdates ]
-);
+const perspective = room.createPerspective(somePlayer);
+
+perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetHatMessage, SetPetMessage, SetSkinMessage ], message => {
+    message.cancel();
+});
+
+perspective.outgoingFilter = perspective.incomingFilter;
 
 for (const [ , player ] of perspective.players) {
     player.control?.setColor(Color.Black);
@@ -67,7 +71,7 @@ for (const [ , player ] of perspective.players) {
 
 await sleep(10000);
 
-perspective.destroy();
+perspective.destroyPerspective();
 ```
 
 ### Destroying Perspectives

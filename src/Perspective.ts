@@ -405,6 +405,7 @@ export class Perspective extends BaseRoom {
             this.parentRoom.playerPerspectives.delete(playersPov.id);
 
             if (restoreState) {
+                // todo: (!! before merge !!) add more ways to restore state
                 const playerConn = this.parentRoom.connections.get(playersPov.id);
 
                 if (!playerConn)

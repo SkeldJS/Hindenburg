@@ -992,16 +992,17 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(GameDataToMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
-            if (!player)
+            if (!connection.room)
                 return;
 
             const recipientConnection = connection.room!.connections.get(message.recipientid);
 
             if (!recipientConnection)
                 return;
+            
+            const recipientPlayer = recipientConnection.getPlayer();
 
-            await connection.room?.broadcastMessages(message._children, [], [recipientConnection]);
+            await recipientPlayer?.room.broadcastMessages(message._children, [], [recipientConnection]);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, connection) => {

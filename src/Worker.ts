@@ -989,7 +989,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 ? []
                 : message._children;
 
-            if (recipientPlayer.room instanceof Perspective) {
+            if (recipientPlayer.room instanceof Perspective) { // match messages against the recipient player's perspective's incoming filter
                 for (let i = 0; i < message._children.length; i++) {
                     const child = message._children[i];
                     

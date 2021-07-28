@@ -405,10 +405,12 @@ export class Perspective extends BaseRoom {
             if (child.canceled)
                 continue;
                 
-            await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-            if (child.canceled)
-                continue;
+            if (!recipient) {
+                await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+    
+                if (child.canceled)
+                    continue;
+            }
             
             povNotCanceled.push(child);
         }

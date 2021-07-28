@@ -25,6 +25,7 @@ import {
     HostGameMessage,
     JoinedGameMessage,
     JoinGameMessage,
+    MessageDirection,
     ReliablePacket,
     RemoveGameMessage,
     RemovePlayerMessage,
@@ -101,7 +102,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
     connections: Map<number, Connection>;
     waiting: Set<Connection>;
     
-    decoder: MasketDecoder;
     playerPerspectives!: Map<number, Perspective>;
     activePerspectives!: Perspective[];
 
@@ -119,7 +119,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     constructor(
         public readonly worker: Worker,
-        public readonly config: RoomsConfig, // todo: handle plugins & enforce settings configs
+        public readonly config: RoomsConfig,
         settings: GameSettings
     ) {
         super({ doFixedUpdate: true });
@@ -128,7 +128,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.connections = new Map;
         this.waiting = new Set;
 
-        this.decoder = new MasketDecoder(worker.decoder);
+        this.decoder.types = worker.decoder.types;
 
         this.logger = winston.createLogger({
             transports: [
@@ -323,6 +323,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             if (clientsToExclude.has(connection))
                 continue;
+                
+            if (this.playerPerspectives?.has(connection.clientId))
+                continue;
 
             const messages = [
                 ...(gamedata.length ?
@@ -368,6 +371,32 @@ export class BaseRoom extends Hostable<RoomEvents> {
         const recipientConnection = recipient
             ? this.connections.get(recipient.id)
             : undefined;
+            
+        for (let i = 0; i < this.activePerspectives.length; i++) {
+            const activePerspective = this.activePerspectives[i];
+
+            const povNotCanceled = [];
+            for (let i = 0; i < messages.length; i++) {
+                const child = messages[i];
+
+                (child as any)._canceled = false; // child._canceled is private
+                await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                if (child.canceled)
+                    continue;
+                    
+                await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                if (child.canceled)
+                    continue;
+                
+                povNotCanceled.push(child);
+            }
+
+            if (povNotCanceled.length) {
+                await activePerspective.broadcastMessages(povNotCanceled)
+            }
+        }
             
         return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
     }

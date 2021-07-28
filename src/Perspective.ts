@@ -60,6 +60,16 @@ export class Perspective extends BaseRoom {
             this.players.set(clientId, newPlayer);
         }
 
+        for (let i = 0; i < playersPov.length; i++) {
+            const playerPov = playersPov[i];
+            const playerConnection = parentRoom.connections.get(playerPov.id);
+
+            if (!playerConnection)
+                continue;
+
+            this.connections.set(playerConnection.clientId, playerConnection);
+        }
+
         for (const [ netId, component ] of parentRoom.netobjects) {
             if (component.classname === "AirshipStatus") {
                 const airshipStatus = component as AirshipStatus<this>;

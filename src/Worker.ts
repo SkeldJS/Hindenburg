@@ -886,37 +886,109 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.decoder.on(GameDataMessage, async (message, direction, connection) => {
             const player = connection.getPlayer();
+
             if (!player)
                 return;
 
-            const notCanceled = message.children
-                .filter(child => !child.canceled);
-
             let reliable = true;
-            if (notCanceled.length === 1) {
-                if (notCanceled[0].tag === GameDataMessageTag.Data) {
+            if (message.children.length === 1) {
+                if (message.children[0].tag === GameDataMessageTag.Data) {
                     // if the data message comes from a custom network transform,
                     // then it is a movement packet and must be broadcasted
                     // unreliably
-                    const dataMessage = notCanceled[0] as DataMessage;
+                    const dataMessage = message.children[0] as DataMessage;
                     const component = connection.room!.netobjects.get(dataMessage.netid);
                     if (component?.classname === "CustomNetworkTransform") {
                         reliable = false;
                     }
                 }
             }
-            for (let i = 0; i < notCanceled.length; i++) {
-                const child = notCanceled[i];
-                await connection.room?.decoder.emitDecoded(child, direction, connection);
+
+            const notCanceled = [];
+            const playerPov = connection.room!.playerPerspectives.get(player.id);
+
+            for (let i = 0; i < message.children.length; i++) {
+                const child = message.children[i];
+
+                if (child.canceled)
+                    continue;
+
+                if (playerPov) {
+                    await playerPov.decoder.emitDecoded(child, direction, connection);
+                } else {
+                    await connection.room!.decoder.emitDecoded(child, direction, connection);
+                }
+
+                if (child.canceled)
+                    continue;
+
+                if (!this.config.socket.broadcastUnknownGamedata && child instanceof UnknownGameData) {
+                    continue;
+                }
+
+                notCanceled.push(child);
             }
-            
-            await connection.room?.broadcastMessages(
-                notCanceled
-                    .filter(child => !child.canceled &&
-                        (this.config.socket.broadcastUnknownGamedata ||
-                            !(child instanceof UnknownGameData)
-                        ))
-            , [], undefined, [connection], reliable);
+
+            if (playerPov) {
+                const povNotCanceled = [];
+                for (let i = 0; i < notCanceled.length; i++) {
+                    const child = notCanceled[i];
+
+                    (child as any)._canceled = false; // child._canceled is private
+                    await playerPov.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, playerPov);
+
+                    if (child.canceled)
+                        continue;
+                    
+                    povNotCanceled.push(child);
+                }
+
+                if (povNotCanceled.length) {
+                    await connection.room?.broadcastMessages(povNotCanceled, [], undefined, [connection], reliable);
+                }
+                
+                if (notCanceled.length) {
+                    await playerPov.broadcastMessages(notCanceled, [], undefined, [connection], reliable);
+                }
+            } else {
+                for (let i = 0; i < connection.room!.activePerspectives.length; i++) {
+                    const activePerspective = connection.room?.activePerspectives[i];
+    
+                    if (!activePerspective)
+                        continue;
+    
+                    const povPlayer = activePerspective.players.get(player.id);
+    
+                    if (!povPlayer)
+                        continue;
+    
+                    const povNotCanceled = [];
+                    for (let i = 0; i < notCanceled.length; i++) {
+                        const child = notCanceled[i];
+    
+                        (child as any)._canceled = false; // child._canceled is private
+                        await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, povPlayer);
+    
+                        if (child.canceled)
+                            continue;
+                            
+                        await activePerspective.decoder.emitDecoded(child, direction, connection);
+    
+                        if (child.canceled)
+                            continue;
+                        
+                        povNotCanceled.push(child);
+                    }
+
+                    if (povNotCanceled.length) {
+                        await activePerspective.broadcastMessages(povNotCanceled, [], undefined, [connection], reliable);
+                    }
+                }
+                
+                if (notCanceled.length) {
+                    await connection.room?.broadcastMessages(notCanceled, [], undefined, [connection], reliable);
+                }
+            }
         });
 
         this.decoder.on(GameDataToMessage, async (message, direction, connection) => {

@@ -590,6 +590,15 @@ export class Perspective extends BaseRoom {
                     );
 
                     (hostPlayer.control as any).lastStartCounter++;
+                    messages.push(
+                        new RpcMessage(
+                            hostPlayer.control.netid,
+                            new SetStartCounterMessage(
+                                (hostPlayer.control as any).lastStartCounter,
+                                this.parentRoom.counter
+                            )
+                        )
+                    );
                 }
 
                 playerConn.sendPacket(

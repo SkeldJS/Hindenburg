@@ -306,7 +306,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * ]);
      * ```
      */
-     async broadcastMessages(
+    async broadcastMessages(
         gamedata: BaseGameDataMessage[],
         payload: BaseRootMessage[] = [],
         include?: Connection[],

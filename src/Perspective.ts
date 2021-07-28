@@ -46,7 +46,6 @@ import {
     GameDataMessage,
     GameSettings,
     MessageDirection,
-    MurderPlayerMessage,
     ReliablePacket,
     RpcMessage,
     SetColorMessage,
@@ -66,8 +65,8 @@ import { MasketDecoder } from "./util/MasketDecoder";
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
 
 export class Perspective extends BaseRoom {
-    public readonly incomingFilter: MasketDecoder;
-    public readonly outgoingFilter: MasketDecoder;
+    incomingFilter: MasketDecoder;
+    outgoingFilter: MasketDecoder;
 
     constructor(
         private readonly parentRoom: BaseRoom,
@@ -80,7 +79,6 @@ export class Perspective extends BaseRoom {
 
         for (const [ clientId ] of parentRoom.players) {
             const newPlayer = new PlayerData(this, clientId);
-            newPlayer.stream = [...newPlayer.stream];
             this.players.set(clientId, newPlayer);
         }
 

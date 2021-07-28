@@ -1028,7 +1028,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             connection.room?.room.decoder.emitDecoded(message, direction, player);
-            await connection.room?.broadcastMessages([], [
+            await connection.room?.broadcast([], true, undefined, [
                 new EndGameMessage(connection.room.code, message.reason, false)
             ]);
         });

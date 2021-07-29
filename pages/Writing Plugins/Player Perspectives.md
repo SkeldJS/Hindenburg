@@ -12,76 +12,119 @@ that utilise the ideas behind individual player perspectives, as well as making
 sure that desync is handled correctly and prevent it from getting too out-of-control.
 
 ### When to Use Player Perspectives
-There are 2 main things to consider when deciding whether player perspectives is
-right for your plugin:
-- They can be expensive for the server in memory usage, and also can affect performance
-drastically if used too liberally.
-- They probably won't play too well with other plugins that change the behaviour
-of games.
+Player perspectives in general should be seen as cloning the entire room, and
+doing the same process for rooms when each packet is received.
 
-They shouldn't be used where they would be created often, or where lots would
-be created and destroyed.
+Knowing this, perspectives can be expensive for the server in terms of memory 
+usage _and_ performance..
+
+They shouldn't be used in large loops, or in events that are fired often.
 
 ### How They Work
-A good way to think about player perspectives in Hindenburg is throwing players
-in their own bubble where you can control what information the player hears about.
+Player perspectives can be thought of as a sandbox, or a mirror of the room for
+players, where nothing in that perspective has any effect on the original room
+and players in that room. Only players in the perspective will see any changes.
 
-These bubbles, when created, are exact clones of the room that they are created
-from. The only difference being that messages sent from these bubbles are only
-sent to the players that the bubble is representing the perspectives of.
+By default, the perspective gets updated on every single thing the room gets
+updated on, meaning that they essentially contain the same information and remain
+that way.
 
-![Hindenburg Player Perspectives Diagram](https://user-images.githubusercontent.com/60631511/127015294-087b951e-80e9-4f3b-a85a-6220097d15a9.png)
+It gets interesting, however, when you add filters to incoming and outgoing packets
+from the perspective. This allows you to desychronise features of the room.
 
-Messages sent from the main room are sent to these clones through a filter, allowing
-you to choose what information the player gets updated on. For example, if you
-were using perspectives to change the colours of every other player for someone,
-you could do the following:
 ```ts
-const perspective = room.createPerspective(somePlayer);
-
-perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetHatMessage, SetPetMessage, SetSkinMessage ], message => {
-    message.cancel();
-});
-
-perspective.outgoingFilter = perspective.incomingFilter;
-
-for (const [ , player ] of perspective.players) {
-    player.control?.setColor(Color.Black);
-}
+const perspective = room.createPerspective(somePlayer, [
+    PresetFilter.GameDataUpdates
+]);
 ```
 
-This could be extended into a debuff system where a player is unable to see the
-names, colours, etc. of any other players for 10 seconds.
+### Example
+For example, you might want to make a player get "blinded", and not be able to
+tell players apart by making them all black and giving them a jumbled-up name.
+Every other player, however, would see no difference at all, and the game would
+continue as normal for them.
+
+Note that filters don't block _every_ packet coming in and out, you might still
+want players to move around the same way for the player as they do for everyone
+else, just that their name, colours, hats, etc. give no clues to who the actual
+players are.
+
+This example can be implemented in just 12 lines of code:
 ```ts
-const perspective = room.createPerspective(somePlayer);
-
-perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetHatMessage, SetPetMessage, SetSkinMessage ], message => {
-    message.cancel();
-});
-
-perspective.outgoingFilter = perspective.incomingFilter;
+const perspective = room.createPerspective(somePlayer, [
+    PresetFilter.GameDataUpdates
+]);
 
 for (const [ , player ] of perspective.players) {
-    player.control?.setColor(Color.Black);
-    player.control?.setName("?????");
-    player.control?.setHat(Hat.None);
-    player.control?.setPet(Pet.None);
-    player.control?.setSkin(Skin.None);
+    const playerControl = player.control!;
+
+    playerControl.setColor(Color.Black);
+    playerControl.setName("?????");
+    playerControl.setHat(Hat.None);
+    playerControl.setPet(Pet.None);
+    playerControl.setSkin(Skin.None);
 }
 
 await sleep(10000);
 
-perspective.destroyPerspective();
+await perspective.destroyPerspective();
 ```
 
 ### Destroying Perspectives
-Destroying perspectives has 3 main goals:
-- Remove any references to the perspective anywhere in the original room and
-in any players.
-- Stop the perspective from being able to be used in any networking sense. To
-avoid complications, the perspective can still be used without errors, it just
-won't do anything meaningful.
-- Bring the "perspective-d" player up-to-date on information that they missed out
-while they were in a perspective bubble. In practice, this just means sending
-information about the current state of the game, rather than trying to reverse
-everything that happened in the bubble.
+Destroying a perspective by default will restore the entire room for these players,
+resetting the entire room to what it should be. You can prevent this behaviour:
+```ts
+await perspective.destroyPerspective(false);
+```
+
+### Perspective Packet Filters
+Hindenburg has some preset packet filters in the {@link PresetFilter} enum to
+help you write perspectives quicker and more consicely with common use-cases.
+
+You can pass these presets into the {@link Room.createPerspective} method:
+```ts
+const perspective = room.createPerspective(somePlayer, [
+    PresetFilter.GameDataUpdates
+]);
+```
+
+Otherwise, you can create your own filters via the `incomingFilter` and `outgoingFilter`
+properties. These are instances of skeldjs' {@link PacketDecoder}, and thus have
+the same API. Use `message.cancel` to prevent the message from going through.
+
+Check out [codyphobe's wiki](https://github.com/codyphobe/among-us-protocol) if
+you are unfamiliar with the among us protocol.
+
+For example, you might want to prevent movement packets coming from the host of
+the room from going through:
+```ts
+const perspective = room.createPerspective(somePlayer);
+
+perspective.incomingFilter.on(DataMessage, message => {
+    const netobject = perspective.netobjects.get(message.netid);
+
+    if (
+        netobject?.classname === "CustomNetworkTransform" &&
+        netobject.ownerid === perspective.hostid
+    ) {
+        message.cancel(); // prevent this message from going through
+    }
+});
+```
+
+Note that by default, the incoming filter and the outgoing filter are exactly
+the same, meaning that if you prevent host movement packets from coming in, they're
+not going to be able to get out either.
+
+You can override this behaviour however by simply re-assigning the outgoing filter:
+
+```ts
+const perspective = room.createPerspective(somePlayer);
+perspective.outgoingFilter = new PerspectiveFilter(perspective);
+
+// perspective.outgoingFilter !== perspective.incomingFilter
+```
+
+Other than the above features, the API for perspectives is precisely the same as
+any other room, and other than packets specified in the filters, will affect the
+original room the same as executing the exact same functions on it.

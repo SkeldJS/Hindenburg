@@ -1,3 +1,7 @@
 {
-    "theme": "pages-plugin"
+    "theme": "pages-plugin",
+    "sort": [ "enum-value-ascending", "static-first", "alphabetical" ],
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeInternal": true
 }

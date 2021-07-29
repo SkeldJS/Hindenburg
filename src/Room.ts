@@ -42,7 +42,7 @@ export class Room extends BaseRoom {
      * @param filters Preset filters to use for the perspective.
      * @returns The created perspective.
      */
-    createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[]): Perspective {
+    createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[] = []): Perspective {
         if (!Array.isArray(players)) {
             return this.createPerspective([ players ], filters);
         }

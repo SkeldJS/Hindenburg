@@ -46,11 +46,11 @@ export class Room extends BaseRoom {
 
         for (let i = 0; i < filters.length; i++) {
             const filter = filters[i];
-            if (filter === PerspectiveFilter.GameDataUpdates) {
+            if (filter === PresetFilter.GameDataUpdates) {
                 perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
                     message.cancel();
                 });
-            } else if (filter === PerspectiveFilter.PositionUpdates) {
+            } else if (filter === PresetFilter.PositionUpdates) {
                 perspective.incomingFilter.on([ SnapToMessage ], message => {
                     message.cancel();
                 });
@@ -62,11 +62,11 @@ export class Room extends BaseRoom {
                         message.cancel();
                     }
                 });
-            } else if (filter === PerspectiveFilter.SettingsUpdates) {
+            } else if (filter === PresetFilter.SettingsUpdates) {
                 perspective.incomingFilter.on([ SyncSettingsMessage ], message => {
                     message.cancel();
                 });
-            } else if (filter === PerspectiveFilter.ChatMessages) {
+            } else if (filter === PresetFilter.ChatMessages) {
                 perspective.incomingFilter.on([ SendChatMessage ], message => {
                     message.cancel();
                 });

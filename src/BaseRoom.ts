@@ -59,7 +59,7 @@ import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
 import { RoomsConfig } from "./interfaces";
 import { CommandCallError, ChatCommandContext } from "./handlers";
-import { Perspective, PerspectiveFilter } from "./Perspective";
+import { Perspective, PresetFilter } from "./Perspective";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<BaseRoom>) {
     const connection = this.room.connections.get(this.id);
@@ -290,7 +290,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * Broadcast [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * and root messages to all or some connections.
      * 
-     * Sends GameDataTo if a filter is applied with {@link include}.
+     * Sends GameDataTo if a filter is applied with the include parameter.
      * @param gamedata The [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * to send.
      * @param payload The [Root messages](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/README.md)
@@ -792,7 +792,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
     }
 
-    createPerspective(players: PlayerData|PlayerData[], filters: PerspectiveFilter[]): Perspective {
+    createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[]): Perspective {
         throw new TypeError("Cannot create a perspective from a base room; create one from the full room instead.");
     }
 

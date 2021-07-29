@@ -64,7 +64,7 @@ import { MasketDecoder } from "./util/MasketDecoder";
 
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
 
-export enum PerspectiveFilter {
+export enum PresetFilter {
     GameDataUpdates,
     PositionUpdates,
     SettingsUpdates,

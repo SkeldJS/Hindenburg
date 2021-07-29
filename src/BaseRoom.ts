@@ -59,7 +59,7 @@ import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
 import { RoomsConfig } from "./interfaces";
 import { CommandCallError, ChatCommandContext } from "./handlers";
-import { Perspective } from "./Perspective";
+import { Perspective, PerspectiveFilter } from "./Perspective";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<BaseRoom>) {
     const connection = this.room.connections.get(this.id);
@@ -792,7 +792,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
     }
 
-    createPerspective(players: PlayerData|PlayerData[]): Perspective {
+    createPerspective(players: PlayerData|PlayerData[], filters: PerspectiveFilter[]): Perspective {
         throw new TypeError("Cannot create a perspective from a base room; create one from the full room instead.");
     }
 

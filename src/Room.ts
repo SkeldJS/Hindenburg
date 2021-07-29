@@ -1,10 +1,10 @@
 import { PlayerData } from "@skeldjs/core";
-import { BaseGameDataMessage, GameSettings, MessageDirection } from "@skeldjs/protocol";
+import { BaseGameDataMessage, DataMessage, GameSettings, MessageDirection, SendChatMessage, SetColorMessage, SetHatMessage, SetNameMessage, SetPetMessage, SetSkinMessage, SnapToMessage, SyncSettingsMessage } from "@skeldjs/protocol";
 import { RoomsConfig } from "./interfaces";
 
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
-import { Perspective } from "./Perspective";
+import { Perspective, PerspectiveFilter } from "./Perspective";
 import { Connection } from ".";
 
 export class Room extends BaseRoom {
@@ -22,9 +22,9 @@ export class Room extends BaseRoom {
         this.activePerspectives = [];
     }
 
-    createPerspective(players: PlayerData|PlayerData[]): Perspective {
+    createPerspective(players: PlayerData|PlayerData[], filters: PerspectiveFilter[]): Perspective {
         if (!Array.isArray(players)) {
-            return this.createPerspective([ players ]);
+            return this.createPerspective([ players ], filters);
         }
 
         for (let i = 0; i < players.length; i++) {
@@ -42,6 +42,35 @@ export class Room extends BaseRoom {
         this.activePerspectives.push(perspective);
         for (let i = 0; i < players.length; i++) {
             this.playerPerspectives.set(players[i].id, perspective);
+        }
+
+        for (let i = 0; i < filters.length; i++) {
+            const filter = filters[i];
+            if (filter === PerspectiveFilter.GameDataUpdates) {
+                perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
+                    message.cancel();
+                });
+            } else if (filter === PerspectiveFilter.PositionUpdates) {
+                perspective.incomingFilter.on([ SnapToMessage ], message => {
+                    message.cancel();
+                });
+
+                perspective.incomingFilter.on([ DataMessage ], message => {
+                    const netobject = perspective.netobjects.get(message.netid);
+
+                    if (netobject?.classname === "CustomNetworkTransform") {
+                        message.cancel();
+                    }
+                });
+            } else if (filter === PerspectiveFilter.SettingsUpdates) {
+                perspective.incomingFilter.on([ SyncSettingsMessage ], message => {
+                    message.cancel();
+                });
+            } else if (filter === PerspectiveFilter.ChatMessages) {
+                perspective.incomingFilter.on([ SendChatMessage ], message => {
+                    message.cancel();
+                });
+            }
         }
 
         return perspective;

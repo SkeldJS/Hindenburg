@@ -64,6 +64,13 @@ import { MasketDecoder } from "./util/MasketDecoder";
 
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
 
+export enum PerspectiveFilter {
+    GameDataUpdates,
+    PositionUpdates,
+    SettingsUpdates,
+    ChatMessages
+}
+
 export class Perspective extends BaseRoom {
     incomingFilter: MasketDecoder;
     outgoingFilter: MasketDecoder;
@@ -75,7 +82,7 @@ export class Perspective extends BaseRoom {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
         this.incomingFilter = new MasketDecoder(parentRoom.worker.decoder);
-        this.outgoingFilter = new MasketDecoder(parentRoom.worker.decoder);
+        this.outgoingFilter = this.incomingFilter;
 
         for (const [ clientId ] of parentRoom.players) {
             const newPlayer = new PlayerData(this, clientId);
@@ -670,9 +677,7 @@ export class Perspective extends BaseRoom {
         this.parentRoom.activePerspectives.splice(this.parentRoom.activePerspectives.indexOf(this), 1);
     }
 
-    createPerspective(player: PlayerData): Perspective;
-    createPerspective(players: PlayerData[]): Perspective;
-    createPerspective(players: PlayerData|PlayerData[]): Perspective {
+    createPerspective(): Perspective {
         throw new TypeError("Cannot create a perspective from another perspective; create one from the original room instead.");
     }
 }

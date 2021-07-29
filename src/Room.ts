@@ -1,5 +1,19 @@
 import { PlayerData } from "@skeldjs/core";
-import { BaseGameDataMessage, DataMessage, GameSettings, MessageDirection, SendChatMessage, SetColorMessage, SetHatMessage, SetNameMessage, SetPetMessage, SetSkinMessage, SnapToMessage, SyncSettingsMessage } from "@skeldjs/protocol";
+import {
+    BaseGameDataMessage,
+    DataMessage,
+    GameSettings,
+    MessageDirection,
+    SendChatMessage,
+    SetColorMessage,
+    SetHatMessage,
+    SetNameMessage,
+    SetPetMessage,
+    SetSkinMessage,
+    SnapToMessage,
+    SyncSettingsMessage
+ } from "@skeldjs/protocol";
+ 
 import { RoomsConfig } from "./interfaces";
 
 import { Worker } from "./Worker";

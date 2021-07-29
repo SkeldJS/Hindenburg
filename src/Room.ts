@@ -4,11 +4,19 @@ import { RoomsConfig } from "./interfaces";
 
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
-import { Perspective, PerspectiveFilter } from "./Perspective";
+import { Perspective, PresetFilter } from "./Perspective";
 import { Connection } from ".";
 
 export class Room extends BaseRoom {
+    /**
+     * A map of player client IDs to active perspectives in the room. Used as a
+     * short-hand, as well as being faster than searching each active perspective.
+     */
     playerPerspectives: Map<number, Perspective>;
+
+    /**
+     * A list of perspectives that are currently active in the room, see {@link Room.createPerspective}
+     */
     activePerspectives: Perspective[];
 
     constructor(
@@ -22,7 +30,19 @@ export class Room extends BaseRoom {
         this.activePerspectives = [];
     }
 
-    createPerspective(players: PlayerData|PlayerData[], filters: PerspectiveFilter[]): Perspective {
+    /**
+     * Create a {@link Perspective} object for this room, with preset filters to
+     * use.
+     * 
+     * Note that this function is relatively slow, as it needs to clone the entire
+     * room. As such, it should really not be used in a loop or any events that
+     * occur often.
+     * 
+     * @param players The player, or players, to create this perspective for.
+     * @param filters Preset filters to use for the perspective.
+     * @returns The created perspective.
+     */
+    createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[]): Perspective {
         if (!Array.isArray(players)) {
             return this.createPerspective([ players ], filters);
         }
@@ -76,6 +96,15 @@ export class Room extends BaseRoom {
         return perspective;
     }
 
+    /**
+     * Broadcast gamedata messages to each active perspective, respecting their
+     * incoming filter. As a necessecity, this also broadcasts these messages to
+     * players in the perpsectives whereas they would not normally have received
+     * them.
+     * @param connection The connection that sent these messages.
+     * @param messages The messages in question.
+     * @param reliable Whether these messages should be sent reliably (i.e. movement packets would be unreliable.
+     */
     async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
         const player = this.players.get(connection.clientId);
 

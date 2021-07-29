@@ -64,24 +64,126 @@ import { MasketDecoder } from "./util/MasketDecoder";
 
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
 
+/**
+ * Preset perspective filters to use with {@link Room.createPerspective}.
+ */
 export enum PresetFilter {
+    /**
+     * Block all gamedata updates:
+     * * {@link SetNameMessage}
+     * * {@link SetColorMessage}
+     * * {@link SetHatMessage}
+     * * {@link SetPetMessage}
+     * * {@link SetSkinMessage}
+     */
     GameDataUpdates,
+    /**
+     * Block all movement packets from players:
+     * * {@link DataMessage} (only those coming from {@link CustomNetworkTransform} objects)
+     */
     PositionUpdates,
+    /**
+     * Block all room settings updates:
+     * * {@link SyncSettingsMessage}
+     */
     SettingsUpdates,
+    /**
+     * Block all chat messages:
+     * * {@link SendChatMessage}
+     */
     ChatMessages
 }
 
-export class Perspective extends BaseRoom {
-    incomingFilter: MasketDecoder;
-    outgoingFilter: MasketDecoder;
+/**
+ * Syntactic sugar for a {@link MasketDecoder}, used in perspectives as a way
+ * to filter incoming and outgoing packets, see {@link Perspective.incomingFilter}.
+ */
+export class PerspectiveFilter extends MasketDecoder {
+    constructor(perspective: Perspective) {
+        super(perspective.worker.decoder);
+    }
+}
 
+/**
+ * Represents the entire room from the perspective of a set of players.
+ * Different from the {@link Room}, it allows you to create an entire space
+ * completely separate, affecting only specified players. Think of it like a
+ * sandbox which acts as a mirror, and as a space which allows plugins and
+ * players to do anything without affecting the original room.
+ * 
+ * As a mirror, it is initially a perfect clone of the original room. It has filters,
+ * which allow you to control which incoming packets get sent to the perspective,
+ * and which outgoing packets get sent to the room. See {@link Room.createPerspective}
+ * and {@link PresetFilter} for preset filters to use.
+ * 
+ * Overtime, the perspective will get more and more out of sync with the original
+ * room. When destroyed, all players will be brought back up-to-date with the
+ * current state of the room.
+ * 
+ * This class shouldn't be instantiated directly, instead, see {@link Room.createPerspective}.
+ * 
+ * @example
+ * ```ts
+ * // Make every other player appear black and without a name for somePlayer.
+ * 
+ * const perspective = room.createPerspective(somePlayer, [
+ *   PerspectiveFilter.GameDataUpdates
+ * ]); // Create a perspective for somePlayer, filtering out gamedata updates (names, colours, hats, etc.)
+ *
+ * for (const [ , player ] of perspective.players) {
+ *   player.control?.setColor(Color.Black);
+ *   player.control?.setName("?????");
+ *   player.control?.setHat(Hat.None);
+ *   player.control?.setPet(Pet.None);
+ *   player.control?.setSkin(Skin.None);
+ * }
+ *
+ * await sleep(10000);
+ *
+ * perspective.destroyPerspective(); // destroy and restore state for players in this perspective
+ * ```
+ */
+export class Perspective extends BaseRoom {
+    /**
+     * Filter for packets making their way into the perspective. See {@link Perspective.outgoingFilter}
+     * to handling outgoing packets.
+     * 
+     * @example
+     * ```ts
+     * perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
+     *   message.cancel();
+     * });
+     * ```
+     */
+    incomingFilter: PerspectiveFilter;
+    /**
+     * Filter for packets making their way out of the perspective into the room.
+     * See {@link Perspective.incomingFilter} to handle incoming packets.
+     * 
+     * By default, this is the same as the incomingFilter, and can be manually
+     * re-assigned to a {@link PerspectiveFilter} to change them individually.
+     * 
+     * @example
+     * ```ts
+     * perspective.outgoingFilter = new PerspectiveFilter(perspective);
+     * 
+     * perspective.outgoingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
+     *   message.cancel();
+     * });
+     * ```
+     */
+    outgoingFilter: PerspectiveFilter;
+
+    /**
+     * @internal
+     */
     constructor(
         private readonly parentRoom: BaseRoom,
         public readonly playersPov: PlayerData[]
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
-        this.incomingFilter = new MasketDecoder(parentRoom.worker.decoder);
+        this.incomingFilter = new PerspectiveFilter(this);
         this.outgoingFilter = this.incomingFilter;
 
         for (const [ clientId ] of parentRoom.players) {
@@ -455,6 +557,12 @@ export class Perspective extends BaseRoom {
         return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
     }
 
+    /**
+     * Destroy this perspective, optionally restoring state for any players that
+     * have been affected by it.
+     * 
+     * @param restoreState Whether to restore state for players in this perspective.
+     */
     async destroyPerspective(restoreState = true) {
         Hostable.prototype.destroy.call(this);
 
@@ -464,7 +572,6 @@ export class Perspective extends BaseRoom {
         - Global room state, game started, game ended, room privacy
         - Game state, meetings, vote ban system, ship systems, etc.
         - Task completes
-        - Chat messages MAYBE?, would have to keep track of messages that didn't get through.
 
         Not easy!!!
         */

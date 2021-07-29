@@ -1,0 +1,330 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Chat Commands | @skeldjs/hindenburg</title>
+	<meta name="description" content="Documentation for @skeldjs/hindenburg">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../../index.html" class="title">@skeldjs/hindenburg</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../../modules.html">Globals</a>
+				</li>
+				<li>
+					<a href="Getting Started.html">Writing Plugins</a>
+				</li>
+				<li>
+					<a href="Chat Commands.html">Chat Commands</a>
+				</li>
+			</ul>
+			<h1>Chat Commands</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#chat-commands" id="chat-commands" style="color: inherit; text-decoration: none;">
+					<h1>Chat Commands</h1>
+				</a>
+				<p>Chat commands are messages prefixed with a <code>/</code> which allows players to communicate
+				with your plugin relatively easily without the use of any sort of mods.</p>
+				<p>For example, you might have a chat command on your plugin which allows players
+				to change their name after they join. A player could write in chat:</p>
+				<p><code>/setname weakeyes</code></p>
+				<p>To run this command, and thus a function you have setup in your plugin.</p>
+				<p>Commands are not sent to other players when they are run by players, and replies
+				can only be seen by the player who ran it.</p>
+				<a href="#registering-commands" id="registering-commands" style="color: inherit; text-decoration: none;">
+					<h2>Registering Commands</h2>
+				</a>
+				<p>Hindenburg has built-in support for these kind of commands, with a built-in
+					<code>/help</code> command, so there&#39;s no need to worry about players not knowing how to
+				run your commands.</p>
+				<a href="#skeleton" id="skeleton" style="color: inherit; text-decoration: none;">
+					<h3>Skeleton</h3>
+				</a>
+				<p>To register a global chat command, you can use the <code>@ChatCommand</code> decorator above
+				a method in your plugin class.</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">ChatCommand</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;&lt;usage&gt;&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;&lt;description&gt;&quot;</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onMyChatCommand</span><span style="color: #000000">(</span><span style="color: #001080">ctx</span><span style="color: #000000">: </span><span style="color: #001080">ChatCommandContext</span><span style="color: #000000">, </span><span style="color: #001080">args</span><span style="color: #000000">: </span><span style="color: #001080">any</span><span style="color: #000000">) {</span>
+
+<span style="color: #000000">}</span>
+</code></pre>
+				<p><code>&lt;usage&gt;</code> is a string representation of how to use the command, see below for
+				more information.</p>
+				<p><code>&lt;description&gt;</code> should be replaced by a short description of your command (what
+				it does, how to use it, etc.)</p>
+				<a href="#declaring-command-usage" id="declaring-command-usage" style="color: inherit; text-decoration: none;">
+					<h3>Declaring Command Usage</h3>
+				</a>
+				<p>Hindenburg allows you to declare the usage of a command using a simplfiied version
+					of the <a href="https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax">standard
+				unix command-line command syntax</a></p>
+				<a href="#command-name" id="command-name" style="color: inherit; text-decoration: none;">
+					<h4>Command Name</h4>
+				</a>
+				<p>The first part of the usage before any space or parameter declarations is used
+				as the name of the command (the part after the <code>/</code> to call the command).</p>
+				<p>For example, <code>help [command]</code> would mean that players could call that command using
+				<code>/help</code>.</p>
+				<a href="#parameters" id="parameters" style="color: inherit; text-decoration: none;">
+					<h4>Parameters</h4>
+				</a>
+				<p>After the command name, you can declare parameters to your command using either
+					angled brackets or squared brackets to denote required and optional parameters
+					respectively. All optional parameters must come last, no required parameters can
+				follow an optional parameter.</p>
+				<p>For example, <code>setname &lt;name&gt;</code> would require players to specify an argument to pass
+					into the command, e.g. <code>/setname weakeyes</code>. Missing the argument, such as by writing
+					<code>/setname</code> instead, would remind the player of the usage and tell them where they
+				went wrong.</p>
+				<p>The <code>help [command]</code> from above uses an optional parameter, and so players can
+				leave it out if they desire.</p>
+				<p>Any extra parts not surrounded by <code>[]</code> or <code>&lt;&gt;</code> will be ignored.</p>
+				<a href="#trailing-" id="trailing-" style="color: inherit; text-decoration: none;">
+					<h4>Trailing <code>...</code></h4>
+				</a>
+				<p>You can also use a trailing <code>...</code> in your last parameter name to indicate that the
+				parameter uses &quot;the rest of the message&quot; as an argument.</p>
+				<p>For example, <code>setname &lt;name...&gt;</code> would mean that players could write <code>/setname yo mama</code>,
+					when without the trailing <code>...</code> it would only return the first <code>yo</code> separated by
+				a space.</p>
+				<a href="#to-recap" id="to-recap" style="color: inherit; text-decoration: none;">
+					<h4>To Recap:</h4>
+				</a>
+				<ul>
+					<li>The first part of the usage declaration is the command name.</li>
+					<li>Parameters surrounded by <code>[]</code> indicate an optional parameter.</li>
+					<li>Parameters surrounded by <code>&lt;&gt;</code> indicate a required parameter, and cannot come
+					after an optional parameter.</li>
+					<li>Parameter names ending with <code>...</code> indicate that the parameter consumes the
+					rest of the message, and must come last.</li>
+				</ul>
+				<p><strong>Hindenburg will throw an error and your plugin will fail to load if the command
+				syntax is invalid.</strong></p>
+				<p><strong>Commands are purposely kept very simple to make it as easy as possible for
+						players to understand the commands properly, keep this in mind while writing them
+				yourself.</strong></p>
+				<a href="#callback" id="callback" style="color: inherit; text-decoration: none;">
+					<h3>Callback</h3>
+				</a>
+				<p>The method below the decorator acts as a callback function for when a player
+				uses the command. It takes in 2 arguments:</p>
+				<ul>
+					<li>A simple <code>context</code> argument consisting of information about where the command
+						came from and who called it, as well as supplying a useful <code>.reply</code> method to easily
+					reply to the command. </li>
+					<li>An <code>args</code> object consisting of all arguments that the player used while calling
+					the command.</li>
+				</ul>
+				<p>For example, if a player wrote <code>/setname yo mama</code>, then <code>args</code> would contain:</p>
+				<pre><code class="language-typescript"><span style="color: #000000">{</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;name&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;yo mama&quot;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h2>Example</h2>
+				</a>
+				<p>The following example creates a chat command that allows players to add two numbers
+				together.</p>
+				<p>Note how type-checking is done in the callback rather than in Hindenburg, this
+					is to allow you to personalise error messages, as generalised error messages aren&#39;t
+				very useful for players and can be hard to understand.</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;hbplugin-add-command&quot;</span>
+<span style="color: #000000">})</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    @</span><span style="color: #795E26">ChatCommand</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;add &lt;first&gt; &lt;second&gt;&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;Add two numbers together!&quot;</span><span style="color: #000000">)</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onAddCommand</span><span style="color: #000000">(</span><span style="color: #001080">ctx</span><span style="color: #000000">: </span><span style="color: #267F99">ChatCommandContext</span><span style="color: #000000">, </span><span style="color: #001080">args</span><span style="color: #000000">: </span><span style="color: #267F99">any</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">num1</span><span style="color: #000000"> = </span><span style="color: #795E26">parseFloat</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">first</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">num2</span><span style="color: #000000"> = </span><span style="color: #795E26">parseFloat</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">second</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">num1</span><span style="color: #000000"> || !</span><span style="color: #001080">num2</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Needs two numbers to add together!&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">        }</span>
+
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">result</span><span style="color: #000000"> = (</span><span style="color: #001080">num1</span><span style="color: #000000"> + </span><span style="color: #001080">num2</span><span style="color: #000000">).</span><span style="color: #795E26">toFixed</span><span style="color: #000000">(</span><span style="color: #098658">2</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">first</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; + &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">second</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; = &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">result</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<pre><code class="language-ts"><span style="color: #008000">// This command is already built into Hindenburg, and simply here for display/example purposes.</span>
+<span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;hbplugin-help-command&quot;</span>
+<span style="color: #000000">})</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    @</span><span style="color: #795E26">ChatCommand</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;help [command]&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;Get a list of commands and how to use them, or get help for a specific command.&quot;</span><span style="color: #000000">)</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onHelpCommand</span><span style="color: #000000">(</span><span style="color: #001080">ctx</span><span style="color: #000000">: </span><span style="color: #267F99">ChatCommandContext</span><span style="color: #000000">, </span><span style="color: #001080">args</span><span style="color: #000000">: </span><span style="color: #267F99">any</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">commands</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">chatCommandHandler</span><span style="color: #000000">.</span><span style="color: #001080">commands</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">command</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">command</span><span style="color: #000000"> = </span><span style="color: #001080">commands</span><span style="color: #000000">.</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">command</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">            </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">command</span><span style="color: #000000">) {</span>
+<span style="color: #000000">                </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;No command with name: &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">command</span><span style="color: #000000">);</span>
+<span style="color: #000000">                </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">            }</span>
+
+<span style="color: #000000">            </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span>
+<span style="color: #000000">                </span><span style="color: #A31515">&quot;Usage: &lt;color=#12a50a&gt;&quot;</span>
+<span style="color: #000000">                + </span><span style="color: #001080">command</span><span style="color: #000000">.</span><span style="color: #795E26">createUsage</span><span style="color: #000000">()</span>
+<span style="color: #000000">                + </span><span style="color: #A31515">&quot;&lt;/color&gt;</span><span style="color: #EE0000">\n\n</span><span style="color: #A31515">&quot;</span>
+<span style="color: #000000">                + </span><span style="color: #001080">command</span><span style="color: #000000">.</span><span style="color: #001080">description</span>
+<span style="color: #000000">            );</span>
+<span style="color: #000000">            </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">        </span>
+<span style="color: #000000">        </span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">outMessage</span><span style="color: #000000"> = </span><span style="color: #A31515">&quot;Listing &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">commands</span><span style="color: #000000">.</span><span style="color: #001080">size</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; command(s):&quot;</span><span style="color: #000000">;</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> [ , </span><span style="color: #0070C1">command</span><span style="color: #000000"> ] </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #001080">commands</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #001080">outMessage</span><span style="color: #000000"> += </span><span style="color: #A31515">&quot;</span><span style="color: #EE0000">\n\n</span><span style="color: #A31515">&lt;space=1em&gt;&lt;color=#12a50a&gt;&quot;</span>
+<span style="color: #000000">                + </span><span style="color: #001080">command</span><span style="color: #000000">.</span><span style="color: #795E26">createUsage</span><span style="color: #000000">()</span>
+<span style="color: #000000">                + </span><span style="color: #A31515">&quot;&lt;/color&gt; - &quot;</span>
+<span style="color: #000000">                + </span><span style="color: #001080">command</span><span style="color: #000000">.</span><span style="color: #001080">description</span><span style="color: #000000">;</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #001080">outMessage</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="label pp-nav pp-group">
+						<span>Setting <wbr>Up</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Setting Up/Installation.html">Installation</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Setting Up/Plugins.html">Plugins</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Using <wbr>Hindenburg</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Using Hindenburg/Interactive CLI.html">Interactive CLI</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Writing <wbr>Plugins</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Getting Started.html">Getting <wbr>Started</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Splitting Plugin Listeners.html">Splitting <wbr>Plugin <wbr>Listeners</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Terminal Commands.html">Terminal <wbr>Commands</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Player Perspectives.html">Player <wbr>Perspectives</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
+					</li>
+					<li class=" ">
+						<a href="../../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
+</body>
+</html>

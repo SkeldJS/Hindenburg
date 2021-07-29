@@ -34,24 +34,28 @@
           "source": "./pages/Writing Plugins/Publishing Plugins to NPM.md"
         },
         {
-          "title": "Chat Commands",
-          "source": "./pages/Writing Plugins/Chat Commands.md"
+          "title": "Plugin Lifecycle Methods",
+          "source": "./pages/Writing Plugins/Plugin Lifecycle Methods.md"
         },
         {
           "title": "Event Listeners",
           "source": "./pages/Writing Plugins/Event Listeners.md"
         },
         {
-          "title": "Plugin Lifecycle Methods",
-          "source": "./pages/Writing Plugins/Plugin Lifecycle Methods.md"
-        },
-        {
           "title": "Splitting Plugin Listeners",
           "source": "./pages/Writing Plugins/Splitting Plugin Listeners.md"
         },
         {
+          "title": "Chat Commands",
+          "source": "./pages/Writing Plugins/Chat Commands.md"
+        },
+        {
           "title": "Terminal Commands",
           "source": "./pages/Writing Plugins/Terminal Commands.md"
+        },
+        {
+          "title": "Player Perspectives",
+          "source": "./pages/Writing Plugins/Player Perspectives.md"
         }
       ]
     }

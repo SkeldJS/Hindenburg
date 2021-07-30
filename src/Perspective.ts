@@ -33,7 +33,8 @@ import {
     SystemType,
     VoteBanSystem,
     AlterGameTag,
-    MiraShipStatus
+    MiraShipStatus,
+    DisconnectReason
 } from "@skeldjs/core";
 
 import {
@@ -42,12 +43,16 @@ import {
     BaseRootMessage,
     CompleteTaskMessage,
     DataMessage,
+    DespawnMessage,
     EnterVentMessage,
     GameDataMessage,
     GameSettings,
+    JoinGameMessage,
     MessageDirection,
     ReliablePacket,
+    RemovePlayerMessage,
     RpcMessage,
+    SendChatMessage,
     SetColorMessage,
     SetHatMessage,
     SetInfectedMessage,
@@ -55,11 +60,15 @@ import {
     SetPetMessage,
     SetSkinMessage,
     SetStartCounterMessage,
+    SnapToMessage,
+    SpawnMessage,
     SyncSettingsMessage
 } from "@skeldjs/protocol";
 
 import { HazelWriter, Vector2 } from "@skeldjs/util";
-import { BaseRoom } from "./BaseRoom";
+import { Worker } from "./Worker";
+import { BaseRoom, SpecialClientId } from "./BaseRoom";
+import { chunkArr } from "./util/chunkArr";
 import { MasketDecoder } from "./util/MasketDecoder";
 
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
@@ -168,8 +177,6 @@ export class Perspective extends BaseRoom {
          * Filter for packets making their way into the perspective. See {@link Perspective.outgoingFilter}
          * for handling outgoing packets.
          * 
-     * 
-         * 
          * @example
          * ```ts
          * perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
@@ -182,19 +189,13 @@ export class Perspective extends BaseRoom {
          * Filter for packets making their way out of the perspective into the room.
          * See {@link Perspective.incomingFilter} to handle incoming packets.
          * 
-     * 
-         * 
          * By default, this is different from the incoming filter. You can manually
          * re-assign it to {@link incomingFilter} to have the same filters for
          * both incoming and outgoing packets.
          * 
-     * 
-         * 
          * @example
          * ```ts
          * perspective.outgoingFilter = perspective.incomingFilter;
-         * 
-     * 
          * 
          * perspective.outgoingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
          *   message.cancel();
@@ -204,9 +205,6 @@ export class Perspective extends BaseRoom {
         public outgoingFilter: PerspectiveFilter
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
-
-        this.incomingFilter = new PerspectiveFilter(this);
-        this.outgoingFilter = this.incomingFilter;
 
         for (const [ clientId ] of parentRoom.players) {
             const newPlayer = new PlayerData(this, clientId);

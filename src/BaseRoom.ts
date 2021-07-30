@@ -294,7 +294,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * Sends GameDataTo if a filter is applied with the include parameter.
      * @param gamedata The [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * to send.
-     * @param payload The [Root messages](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/README.md)
+     * @param payloads The [Root messages](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/README.md)
      * to send.
      * @param include The connections to include in the broadcast.
      * @param exclude The connections to exclude in the broadcast.
@@ -309,7 +309,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     async broadcastMessages(
         gamedata: BaseGameDataMessage[],
-        payload: BaseRootMessage[] = [],
+        payloads: BaseRootMessage[] = [],
         include?: Connection[],
         exclude?: Connection[],
         reliable = true

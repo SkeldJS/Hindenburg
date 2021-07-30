@@ -459,12 +459,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
         await this.broadcastMessages([], [
             new JoinGameMessage(
                 this.code,
-                -1,
+                SpecialClientId.Temp,
                 client.clientId
             ),
             new RemovePlayerMessage(
                 this.code,
-                -1,
+                SpecialClientId.Temp,
                 DisconnectReason.None,
                 client.clientId
             )

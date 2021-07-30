@@ -825,18 +825,28 @@ export class Perspective extends BaseRoom {
                     );
                 }
 
-                playerConn.sendPacket(
-                    new ReliablePacket(
-                        playerConn.getNextNonce(),
-                        [
-                            new GameDataMessage(
-                                this.parentRoom.code,
-                                messages
-                            ),
-                            ...payloads
-                        ]
-                    )
-                );
+                const chunkedMessages = chunkArr(messages, 5);
+                const chunkedPayloads = chunkArr(payloads, 3);
+
+                for (let i = 0; i < Math.max(chunkedMessages.length, chunkedPayloads.length); i++) {
+                    playerConn.sendPacket(
+                        new ReliablePacket(
+                            playerConn.getNextNonce(),
+                            [
+                                ...(chunkedMessages[i]
+                                    ? [
+                                        new GameDataMessage(
+                                            this.parentRoom.code,
+                                            chunkedMessages[i]
+                                        )
+                                    ]
+                                    : []
+                                ),
+                                ...chunkedPayloads[i]
+                            ]
+                        )
+                    );
+                }
             }
         }
 

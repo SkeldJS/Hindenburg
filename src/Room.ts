@@ -18,7 +18,7 @@ import { RoomsConfig } from "./interfaces";
 
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
-import { Perspective, PresetFilter } from "./Perspective";
+import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
 import { Connection } from ".";
 
 export class Room extends BaseRoom {
@@ -56,9 +56,36 @@ export class Room extends BaseRoom {
      * @param filters Preset filters to use for the perspective.
      * @returns The created perspective.
      */
-    createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[] = []): Perspective {
+    createPerspective(
+        players: PlayerData|PlayerData[],
+        filters: PresetFilter[]
+    ): Perspective;
+    /**
+     * Create a {@link Perspective} object for this room, with preset filters to
+     * use.
+     * 
+     * This function is relatively slow as it needs to clone the entire room.
+     * It shouldn't really be used in loops or any events that get fired a lot.
+     * 
+     * @param players The player, or players, to create this perspective for.
+     * @param incomingFilters Preset filters to use for incoming packets making
+     * their way into the perspective..
+     * @param outgoingFilters Preset filters to use for outgoing packets from the
+     * perspective to the room. By default, same as the incoming filters.
+     * @returns The created perspective.
+     */
+    createPerspective(
+        players: PlayerData|PlayerData[],
+        incomingFilters: PresetFilter[],
+        outgoingFilters: PresetFilter[]
+    ): Perspective;
+    createPerspective(
+        players: PlayerData|PlayerData[],
+        incomingFilters: PresetFilter[] = [],
+        outgoingFilters: PresetFilter[] = incomingFilters
+    ): Perspective {
         if (!Array.isArray(players)) {
-            return this.createPerspective([ players ], filters);
+            return this.createPerspective([ players ], incomingFilters, outgoingFilters);
         }
 
         for (let i = 0; i < players.length; i++) {
@@ -71,40 +98,17 @@ export class Room extends BaseRoom {
             }
         }
 
-        const perspective = new Perspective(this, players);
+        const incomingFilter = new PerspectiveFilter(this.worker);
+        const outgoingFilter = new PerspectiveFilter(this.worker);
+
+        const perspective = new Perspective(this, players, incomingFilter, outgoingFilter);
+
+        Perspective.applyPerspectiveFilter(perspective, incomingFilter, incomingFilters);
+        Perspective.applyPerspectiveFilter(perspective, outgoingFilter, outgoingFilters);
 
         this.activePerspectives.push(perspective);
         for (let i = 0; i < players.length; i++) {
             this.playerPerspectives.set(players[i].id, perspective);
-        }
-
-        for (let i = 0; i < filters.length; i++) {
-            const filter = filters[i];
-            if (filter === PresetFilter.GameDataUpdates) {
-                perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
-                    message.cancel();
-                });
-            } else if (filter === PresetFilter.PositionUpdates) {
-                perspective.incomingFilter.on([ SnapToMessage ], message => {
-                    message.cancel();
-                });
-
-                perspective.incomingFilter.on([ DataMessage ], message => {
-                    const netobject = perspective.netobjects.get(message.netid);
-
-                    if (netobject?.classname === "CustomNetworkTransform") {
-                        message.cancel();
-                    }
-                });
-            } else if (filter === PresetFilter.SettingsUpdates) {
-                perspective.incomingFilter.on([ SyncSettingsMessage ], message => {
-                    message.cancel();
-                });
-            } else if (filter === PresetFilter.ChatMessages) {
-                perspective.incomingFilter.on([ SendChatMessage ], message => {
-                    message.cancel();
-                });
-            }
         }
 
         return perspective;

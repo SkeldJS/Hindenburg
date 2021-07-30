@@ -99,8 +99,8 @@ export enum PresetFilter {
  * to filter incoming and outgoing packets, see {@link Perspective.incomingFilter}.
  */
 export class PerspectiveFilter extends MasketDecoder {
-    constructor(perspective: Perspective) {
-        super(perspective.worker.decoder);
+    constructor(worker: Worker) {
+        super(worker.decoder);
     }
 }
 
@@ -145,41 +145,57 @@ export class PerspectiveFilter extends MasketDecoder {
  */
 export class Perspective extends BaseRoom {
     /**
-     * Filter for packets making their way into the perspective. See {@link Perspective.outgoingFilter}
-     * to handling outgoing packets.
-     * 
-     * @example
-     * ```ts
-     * perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
-     *   message.cancel();
-     * });
-     * ```
-     */
-    incomingFilter: PerspectiveFilter;
-    /**
-     * Filter for packets making their way out of the perspective into the room.
-     * See {@link Perspective.incomingFilter} to handle incoming packets.
-     * 
-     * By default, this is the same as the incomingFilter, and can be manually
-     * re-assigned to a {@link PerspectiveFilter} to change them individually.
-     * 
-     * @example
-     * ```ts
-     * perspective.outgoingFilter = new PerspectiveFilter(perspective);
-     * 
-     * perspective.outgoingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
-     *   message.cancel();
-     * });
-     * ```
-     */
-    outgoingFilter: PerspectiveFilter;
-
-    /**
      * @internal
      */
     constructor(
+        /**
+         * The original room that this perspective is mirroring.
+         */
         private readonly parentRoom: BaseRoom,
-        public readonly playersPov: PlayerData[]
+        /**
+         * The players that this perspective is from the perspective of. Every
+         * player object is from the original {@link Room} object, rather than
+         * this perspective object.
+         */
+        public readonly playersPov: PlayerData[],
+        /**
+         * Filter for packets making their way into the perspective. See {@link Perspective.outgoingFilter}
+         * for handling outgoing packets.
+         * 
+     * 
+         * 
+         * @example
+         * ```ts
+         * perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
+         *   message.cancel();
+         * });
+         * ```
+         */
+        public incomingFilter: PerspectiveFilter,
+        /**
+         * Filter for packets making their way out of the perspective into the room.
+         * See {@link Perspective.incomingFilter} to handle incoming packets.
+         * 
+     * 
+         * 
+         * By default, this is different from the incoming filter. You can manually
+         * re-assign it to {@link incomingFilter} to have the same filters for
+         * both incoming and outgoing packets.
+         * 
+     * 
+         * 
+         * @example
+         * ```ts
+         * perspective.outgoingFilter = perspective.incomingFilter;
+         * 
+     * 
+         * 
+         * perspective.outgoingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
+         *   message.cancel();
+         * });
+         * ```
+         */
+        public outgoingFilter: PerspectiveFilter
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
@@ -496,6 +512,45 @@ export class Perspective extends BaseRoom {
         }
 
         return newSystems;
+    }
+
+    static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[]) {
+        for (let i = 0; i < filters.length; i++) {
+            const filter = filters[i];
+            if (filter === PresetFilter.GameDataUpdates) {
+                decoder.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
+                    message.cancel();
+                });
+            } else if (filter === PresetFilter.PositionUpdates) {
+                decoder.on([ SnapToMessage ], message => {
+                    message.cancel();
+                });
+
+                decoder.on([ DataMessage ], message => {
+                    const netobject = perspective.netobjects.get(message.netid);
+
+                    if (netobject?.classname === "CustomNetworkTransform") {
+                        message.cancel();
+                    }
+                });
+            } else if (filter === PresetFilter.SettingsUpdates) {
+                decoder.on([ SyncSettingsMessage ], message => {
+                    message.cancel();
+                });
+            } else if (filter === PresetFilter.ChatMessages) {
+                decoder.on([ SendChatMessage ], message => {
+                    message.cancel();
+                });
+            } else if (filter === PresetFilter.ObjectUpdates) {
+                decoder.on([ SpawnMessage ], message => {
+                    message.cancel();
+                });
+
+                decoder.on([ DespawnMessage ], message => {
+                    message.cancel();
+                });
+            }
+        }
     }
 
     async broadcast(

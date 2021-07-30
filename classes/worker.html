@@ -85,6 +85,12 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="worker.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="worker.html#chatcommandhandler" class="tsd-kind-icon">chat<wbr>Command<wbr>Handler</a></li>
@@ -105,6 +111,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="worker.html#_sendpacket" class="tsd-kind-icon">_send<wbr>Packet</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="worker.html#checkclientmods" class="tsd-kind-icon">check<wbr>Client<wbr>Mods</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="worker.html#createroom" class="tsd-kind-icon">create<wbr>Room</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="worker.html#emit" class="tsd-kind-icon">emit</a></li>
@@ -127,13 +134,43 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="worker.html#wait" class="tsd-kind-icon">wait</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="worker.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Worker<span class="tsd-signature-symbol">(</span>clusterName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, nodeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, config<span class="tsd-signature-symbol">: </span><a href="../interfaces/hindenburgconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">HindenburgConfig</a>, pluginDir<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides EventEmitter&lt;WorkerEvents&gt;.constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L157">src/Worker.ts:157</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>clusterName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>nodeId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>config: <a href="../interfaces/hindenburgconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">HindenburgConfig</a></h5>
+								</li>
+								<li>
+									<h5>pluginDir: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -144,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">chat<wbr>Command<wbr>Handler<span class="tsd-signature-symbol">:</span> <a href="chatcommandhandler.html" class="tsd-signature-type" data-tsd-kind="Class">ChatCommandHandler</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L128">src/Worker.ts:128</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L126">src/Worker.ts:126</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -167,7 +204,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<span class="tsd-signature-symbol">:</span> <a href="../interfaces/hindenburgconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">HindenburgConfig</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L106">src/Worker.ts:106</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L104">src/Worker.ts:104</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -177,7 +214,7 @@
 					<div class="tsd-signature tsd-kind-icon">connections<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L139">src/Worker.ts:139</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L137">src/Worker.ts:137</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -193,7 +230,7 @@
 					<div class="tsd-signature tsd-kind-icon">decoder<span class="tsd-signature-symbol">:</span> <a href="packetdecoder.html" class="tsd-signature-type" data-tsd-kind="Class">PacketDecoder</a><span class="tsd-signature-symbol">&lt;</span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L151">src/Worker.ts:151</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L149">src/Worker.ts:149</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -208,7 +245,7 @@
 					<div class="tsd-signature tsd-kind-icon">last<wbr>Client<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L159">src/Worker.ts:159</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L157">src/Worker.ts:157</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -225,7 +262,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Logger</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L112">src/Worker.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L110">src/Worker.ts:110</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -247,7 +284,7 @@
 					<div class="tsd-signature tsd-kind-icon">plugin<wbr>Loader<span class="tsd-signature-symbol">:</span> <a href="pluginloader.html" class="tsd-signature-type" data-tsd-kind="Class">PluginLoader</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L122">src/Worker.ts:122</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L120">src/Worker.ts:120</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -262,7 +299,7 @@
 					<div class="tsd-signature tsd-kind-icon">rooms<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L146">src/Worker.ts:146</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L144">src/Worker.ts:144</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -278,7 +315,7 @@
 					<div class="tsd-signature tsd-kind-icon">socket<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Socket</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L133">src/Worker.ts:133</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L131">src/Worker.ts:131</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -293,7 +330,7 @@
 					<div class="tsd-signature tsd-kind-icon">valid<wbr>Versions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L107">src/Worker.ts:107</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L105">src/Worker.ts:105</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -303,7 +340,7 @@
 					<div class="tsd-signature tsd-kind-icon">vorpal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Vorpal</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L117">src/Worker.ts:117</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L115">src/Worker.ts:115</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -315,6 +352,32 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="_sendpacket" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _send<wbr>Packet</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">_send<wbr>Packet<span class="tsd-signature-symbol">(</span>remote<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RemoteInfo</span>, buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L540">src/Worker.ts:540</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>remote: <span class="tsd-signature-type">RemoteInfo</span></h5>
+								</li>
+								<li>
+									<h5>buffer: <span class="tsd-signature-type">Buffer</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="checkclientmods" class="tsd-anchor"></a>
 					<h3>check<wbr>Client<wbr>Mods</h3>
@@ -325,7 +388,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L1150">src/Worker.ts:1150</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L1088">src/Worker.ts:1088</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -348,7 +411,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L1362">src/Worker.ts:1362</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L1300">src/Worker.ts:1300</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -447,7 +510,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L1343">src/Worker.ts:1343</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L1281">src/Worker.ts:1281</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -523,7 +586,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L511">src/Worker.ts:511</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L508">src/Worker.ts:508</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -555,7 +618,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L519">src/Worker.ts:519</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L516">src/Worker.ts:516</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -584,7 +647,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L1270">src/Worker.ts:1270</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L1208">src/Worker.ts:1208</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -621,7 +684,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L489">src/Worker.ts:489</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L486">src/Worker.ts:486</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -834,7 +897,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L553">src/Worker.ts:553</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L550">src/Worker.ts:550</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -869,7 +932,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L538">src/Worker.ts:538</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L535">src/Worker.ts:535</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -926,7 +989,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L1241">src/Worker.ts:1241</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L1179">src/Worker.ts:1179</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -979,7 +1042,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L1113">src/Worker.ts:1113</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0cc3fa0/src/Worker.ts#L1052">src/Worker.ts:1052</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1039,42 +1102,6 @@
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Worker<span class="tsd-signature-symbol">(</span>clusterName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, nodeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, config<span class="tsd-signature-symbol">: </span><a href="../interfaces/hindenburgconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">HindenburgConfig</a>, pluginDir<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Overrides EventEmitter&lt;WorkerEvents&gt;.constructor</p>
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a277df5/src/Worker.ts#L159">src/Worker.ts:159</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>clusterName: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>nodeId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>config: <a href="../interfaces/hindenburgconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">HindenburgConfig</a></h5>
-								</li>
-								<li>
-									<h5>pluginDir: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -1104,22 +1131,19 @@
 						<a href="../pages/Writing Plugins/Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
+						<a href="../pages/Writing Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Writing Plugins/Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
+						<a href="../pages/Writing Plugins/Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
+					</li>
+					<li class=" pp-nav pp-page">
 						<a href="../pages/Writing Plugins/Splitting Plugin Listeners.html">Splitting <wbr>Plugin <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
 						<a href="../pages/Writing Plugins/Terminal Commands.html">Terminal <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Player Perspectives.html">Player <wbr>Perspectives</a>
 					</li>
 					<li class=" ">
 						<a href="../modules.html">Exports</a>
@@ -1133,11 +1157,11 @@
 					<li class="current tsd-kind-class">
 						<a href="worker.html" class="tsd-kind-icon">Worker</a>
 						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="worker.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="worker.html#chatcommandhandler" class="tsd-kind-icon">chat<wbr>Command<wbr>Handler</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="worker.html#checkclientmods" class="tsd-kind-icon">check<wbr>Client<wbr>Mods</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="worker.html#clustername" class="tsd-kind-icon">cluster<wbr>Name</a>
@@ -1148,14 +1172,41 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="worker.html#connections" class="tsd-kind-icon">connections</a>
 							</li>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="worker.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#decoder" class="tsd-kind-icon">decoder</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#lastclientid" class="tsd-kind-icon">last<wbr>Client<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#logger" class="tsd-kind-icon">logger</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#nodeid" class="tsd-kind-icon">node<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#pluginloader" class="tsd-kind-icon">plugin<wbr>Loader</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#rooms" class="tsd-kind-icon">rooms</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#socket" class="tsd-kind-icon">socket</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#validversions" class="tsd-kind-icon">valid<wbr>Versions</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="worker.html#vorpal" class="tsd-kind-icon">vorpal</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="worker.html#_sendpacket" class="tsd-kind-icon">_send<wbr>Packet</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="worker.html#checkclientmods" class="tsd-kind-icon">check<wbr>Client<wbr>Mods</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="worker.html#createroom" class="tsd-kind-icon">create<wbr>Room</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#decoder" class="tsd-kind-icon">decoder</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="worker.html#emit" class="tsd-kind-icon">emit</a>
@@ -1178,17 +1229,8 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="worker.html#handlemessage" class="tsd-kind-icon">handle<wbr>Message</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#lastclientid" class="tsd-kind-icon">last<wbr>Client<wbr>Id</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="worker.html#listen" class="tsd-kind-icon">listen</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#logger" class="tsd-kind-icon">logger</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#nodeid" class="tsd-kind-icon">node<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="worker.html#off" class="tsd-kind-icon">off</a>
@@ -1198,9 +1240,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="worker.html#once" class="tsd-kind-icon">once</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#pluginloader" class="tsd-kind-icon">plugin<wbr>Loader</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="worker.html#registerpackethandlers" class="tsd-kind-icon">register<wbr>Packet<wbr>Handlers</a>
@@ -1214,23 +1253,11 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="worker.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#rooms" class="tsd-kind-icon">rooms</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="worker.html#sendpacket" class="tsd-kind-icon">send<wbr>Packet</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#socket" class="tsd-kind-icon">socket</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="worker.html#updateconfig" class="tsd-kind-icon">update<wbr>Config</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#validversions" class="tsd-kind-icon">valid<wbr>Versions</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="worker.html#vorpal" class="tsd-kind-icon">vorpal</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="worker.html#wait" class="tsd-kind-icon">wait</a>
@@ -1254,13 +1281,16 @@
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

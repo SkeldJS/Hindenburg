@@ -74,12 +74,12 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#crewmateopen" class="tsd-kind-icon">Crewmate<wbr>Open</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#crewmateclose" class="tsd-kind-icon">Crewmate<wbr>Close</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#crewmatekick" class="tsd-kind-icon">Crewmate<wbr>Kick</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#crewmateopen" class="tsd-kind-icon">Crewmate<wbr>Open</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#impostorenter" class="tsd-kind-icon">Impostor<wbr>Enter</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#impostorexit" class="tsd-kind-icon">Impostor<wbr>Exit</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#impostormove" class="tsd-kind-icon">Impostor<wbr>Move</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="ventilationstate.html#crewmatekick" class="tsd-kind-icon">Crewmate<wbr>Kick</a></li>
 							</ul>
 						</section>
 					</div>
@@ -88,22 +88,32 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Enumeration members</h2>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-					<a name="crewmateopen" class="tsd-anchor"></a>
-					<h3>Crewmate<wbr>Open</h3>
-					<div class="tsd-signature tsd-kind-icon">Crewmate<wbr>Open<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 0</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/system/Ventilation.d.ts:5</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a name="crewmateclose" class="tsd-anchor"></a>
 					<h3>Crewmate<wbr>Close</h3>
 					<div class="tsd-signature tsd-kind-icon">Crewmate<wbr>Close<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 1</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/system/Ventilation.d.ts:6</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="crewmatekick" class="tsd-anchor"></a>
+					<h3>Crewmate<wbr>Kick</h3>
+					<div class="tsd-signature tsd-kind-icon">Crewmate<wbr>Kick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 5</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/system/Ventilation.d.ts:10</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+					<a name="crewmateopen" class="tsd-anchor"></a>
+					<h3>Crewmate<wbr>Open</h3>
+					<div class="tsd-signature tsd-kind-icon">Crewmate<wbr>Open<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/system/Ventilation.d.ts:5</li>
 						</ul>
 					</aside>
 				</section>
@@ -137,16 +147,6 @@
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-					<a name="crewmatekick" class="tsd-anchor"></a>
-					<h3>Crewmate<wbr>Kick</h3>
-					<div class="tsd-signature tsd-kind-icon">Crewmate<wbr>Kick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 5</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/system/Ventilation.d.ts:10</li>
-						</ul>
-					</aside>
-				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -177,22 +177,19 @@
 						<a href="../pages/Writing Plugins/Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
+						<a href="../pages/Writing Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Writing Plugins/Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
+						<a href="../pages/Writing Plugins/Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
+					</li>
+					<li class=" pp-nav pp-page">
 						<a href="../pages/Writing Plugins/Splitting Plugin Listeners.html">Splitting <wbr>Plugin <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
 						<a href="../pages/Writing Plugins/Terminal Commands.html">Terminal <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../pages/Writing Plugins/Player Perspectives.html">Player <wbr>Perspectives</a>
 					</li>
 					<li class=" ">
 						<a href="../modules.html">Exports</a>
@@ -207,10 +204,13 @@
 						<a href="ventilationstate.html" class="tsd-kind-icon">Ventilation<wbr>State</a>
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-								<a href="ventilationstate.html#crewmateopen" class="tsd-kind-icon">Crewmate<wbr>Open</a>
+								<a href="ventilationstate.html#crewmateclose" class="tsd-kind-icon">Crewmate<wbr>Close</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-								<a href="ventilationstate.html#crewmateclose" class="tsd-kind-icon">Crewmate<wbr>Close</a>
+								<a href="ventilationstate.html#crewmatekick" class="tsd-kind-icon">Crewmate<wbr>Kick</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
+								<a href="ventilationstate.html#crewmateopen" class="tsd-kind-icon">Crewmate<wbr>Open</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 								<a href="ventilationstate.html#impostorenter" class="tsd-kind-icon">Impostor<wbr>Enter</a>
@@ -220,9 +220,6 @@
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 								<a href="ventilationstate.html#impostormove" class="tsd-kind-icon">Impostor<wbr>Move</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-								<a href="ventilationstate.html#crewmatekick" class="tsd-kind-icon">Crewmate<wbr>Kick</a>
 							</li>
 						</ul>
 					</li>
@@ -243,13 +240,16 @@
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

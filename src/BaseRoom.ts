@@ -51,6 +51,7 @@ import { Connection } from "./Connection";
 import { Worker } from "./Worker";
 
 import {
+    ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
     RoomDestroyEvent
 } from "./api";
@@ -92,6 +93,7 @@ const logMaps = {
 };
 
 export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
+    ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
     RoomDestroyEvent
 ]>;

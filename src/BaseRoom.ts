@@ -325,35 +325,46 @@ export class BaseRoom extends Hostable<RoomEvents> {
             if (this.playerPerspectives?.has(connection.clientId))
                 continue;
 
-            const messages = [
-                ...(gamedata.length ?
-                    [
-                        include
-                            ? new GameDataToMessage(
-                                this.code,
-                                connection.clientId,
-                                gamedata
-                            )
-                            : new GameDataMessage(
-                                this.code,
-                                gamedata
-                            )
-                    ]
-                    : []),
-                ...payload
-            ] as BaseRootMessage[];
+            const ev = await this.emit(
+                new ClientBroadcastEvent(
+                    this,
+                    connection,
+                    gamedata,
+                    payloads
+                )
+            );
 
-            if (messages.length) {
-                promises.push(
-                    connection.sendPacket(
-                        reliable
-                            ? new ReliablePacket(
-                                connection.getNextNonce(),
-                                messages
-                            )
-                            : new UnreliablePacket(messages)
-                    )
-                );
+            if (!ev.canceled) {
+                const messages = [
+                    ...(ev.alteredGameData.length
+                        ? [
+                            include
+                                ? new GameDataToMessage(
+                                    this.code,
+                                    connection.clientId,
+                                    ev.alteredGameData
+                                )
+                                : new GameDataMessage(
+                                    this.code,
+                                    ev.alteredGameData
+                                )
+                        ] : []
+                    ),
+                    ...payloads
+                ] as BaseRootMessage[];
+                
+                if (messages.length) {
+                    promises.push(
+                        connection.sendPacket(
+                            reliable
+                                ? new ReliablePacket(
+                                    connection.getNextNonce(),
+                                    messages
+                                )
+                                : new UnreliablePacket(messages)
+                        )
+                    );
+                }
             }
         }
 

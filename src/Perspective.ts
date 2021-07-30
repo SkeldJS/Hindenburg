@@ -680,6 +680,24 @@ export class Perspective extends BaseRoom {
                         );
                     }
                 }
+
+                if (this.hostid !== this.parentRoom.hostid) {
+                    payloads.push(
+                        new JoinGameMessage(
+                            this.code,
+                            SpecialClientId.Temp,
+                            this.parentRoom.hostid
+                        )
+                    );
+                    payloads.push(
+                        new RemovePlayerMessage(
+                            this.code,
+                            SpecialClientId.Temp,
+                            DisconnectReason.None,
+                            this.parentRoom.hostid
+                        )
+                    );
+                }
                 const shipStatus = this.parentRoom.shipstatus;
                 if (shipStatus) {
                     const systemTypes = Object.keys(shipStatus.systems);

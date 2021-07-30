@@ -42,7 +42,7 @@ import {
 import { Hostable, HostableEvents, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
-import { Code2Int, HazelWriter } from "@skeldjs/util";
+import { Code2Int, HazelWriter, sleep } from "@skeldjs/util";
 
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { SendChatOptions, MessageSide } from "./interfaces";
@@ -698,6 +698,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const pcNetId = this.getNextNetId();
             const ppNetId = this.getNextNetId();
             const cntNetId = this.getNextNetId();
+            await this.broadcast([], true, defaultOptions.target, [
+                new JoinGameMessage(
+                    this.code,
+                    SpecialClientId.Temp,
+                    this.hostid  
+                )
+            ]);
             await this.broadcast([
                 new SpawnMessage(
                     SpawnType.Player,
@@ -738,6 +745,15 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 new DespawnMessage(ppNetId),
                 new DespawnMessage(cntNetId)
             ], true, defaultOptions.target);
+            await sleep(25);
+            await this.broadcast([], true, defaultOptions.target, [
+                new RemovePlayerMessage(
+                    this.code,
+                    SpecialClientId.Temp,
+                    DisconnectReason.None,
+                    this.hostid
+                )
+            ]);
         } else {
             // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
             for (const [ , player ] of (defaultOptions.target ? [[ , defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {

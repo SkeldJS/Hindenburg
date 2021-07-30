@@ -666,6 +666,20 @@ export class Perspective extends BaseRoom {
                     )
                 ];
 
+                const payloads: BaseRootMessage[] = [
+                    new AlterGameMessage(
+                        this.parentRoom.code,
+                        AlterGameTag.ChangePrivacy,
+                        this.parentRoom.privacy === "public" ? 1 : 0
+                    )
+                ];
+                for (const [ netId ] of this.netobjects) {
+                    if (!this.parentRoom.netobjects.get(netId)) {
+                        messages.push(
+                            new DespawnMessage(netId)
+                        );
+                    }
+                }
                 const shipStatus = this.parentRoom.shipstatus;
                 if (shipStatus) {
                     const systemTypes = Object.keys(shipStatus.systems);

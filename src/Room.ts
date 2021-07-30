@@ -48,12 +48,12 @@ export class Room extends BaseRoom {
      * Create a {@link Perspective} object for this room, with preset filters to
      * use.
      * 
-     * Note that this function is relatively slow, as it needs to clone the entire
-     * room. As such, it should really not be used in a loop or any events that
-     * occur often.
+     * This function is relatively slow as it needs to clone the entire room.
+     * It shouldn't really be used in loops or any events that get fired a lot.
      * 
      * @param players The player, or players, to create this perspective for.
-     * @param filters Preset filters to use for the perspective.
+     * @param filters Preset filters to use for both incoming and outgoing
+     * filters.
      * @returns The created perspective.
      */
     createPerspective(

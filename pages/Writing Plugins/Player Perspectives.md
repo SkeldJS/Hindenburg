@@ -112,17 +112,18 @@ perspective.incomingFilter.on(DataMessage, message => {
 });
 ```
 
-Note that by default, the incoming filter and the outgoing filter are exactly
-the same, meaning that if you prevent host movement packets from coming in, they're
-not going to be able to get out either.
+Note that by default, the incoming filter and outgoing filter are different.
+Meaning that you must define a listener for both the incoming and outgoing filter
+if you want it to be blocked on both.
 
-You can override this behaviour however by simply re-assigning the outgoing filter:
+If you're certain that they can both be the same, you can always re-assign the
+outgoing filter to the the same as the incoming filter.
 
 ```ts
 const perspective = room.createPerspective(somePlayer);
-perspective.outgoingFilter = new PerspectiveFilter(perspective);
+perspective.outgoingFilter = perspective.incomingFilter
 
-// perspective.outgoingFilter !== perspective.incomingFilter
+// perspective.outgoingFilter === perspective.incomingFilter
 ```
 
 Other than the above features, the API for perspectives is precisely the same as

@@ -91,7 +91,13 @@ export enum PresetFilter {
      * Block all chat messages:
      * * {@link SendChatMessage}
      */
-    ChatMessages
+    ChatMessages,
+    /**
+     * Block all updates for any objects:
+     * * {@link SpawnMessage}
+     * * {@link DespawnMessage}
+     */
+    ObjectUpdates
 }
 
 /**

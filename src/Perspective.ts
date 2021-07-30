@@ -711,6 +711,19 @@ export class Perspective extends BaseRoom {
                         )
                     }
                 }
+
+                for (const [ clientId ] of this.parentRoom.players) {
+                    if (!this.players.get(clientId)) {
+                        payloads.push(
+                            new JoinGameMessage(
+                                this.parentRoom.code,
+                                clientId,
+                                this.parentRoom.hostid
+                            )
+                        );
+                    }
+                }
+
                 const shipStatus = this.parentRoom.shipstatus;
                 if (shipStatus) {
                     const systemTypes = Object.keys(shipStatus.systems);

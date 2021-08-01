@@ -1,7 +1,7 @@
 import Vorpal from "vorpal";
 import WinstonTransport from "winston-transport";
 
-import { MESSAGE } from "triple-beam";
+import { LEVEL, MESSAGE } from "triple-beam";
 
 export class VorpalConsole extends WinstonTransport {
     constructor(
@@ -12,6 +12,10 @@ export class VorpalConsole extends WinstonTransport {
     }
 
     log(info: any, callback: () => void) {
+        if (info[LEVEL] === "debug" && process.env.NODE_ENV !== "development") {
+            return;
+        }
+        
         setImmediate(() => this.emit('logged', info));
 
         this.vorpal.log(info[MESSAGE]);

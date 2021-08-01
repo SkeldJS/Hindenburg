@@ -868,7 +868,7 @@ export class Perspective extends BaseRoom {
                         );
                     }
 
-                    const ctrl = player.transform;
+                    const ctrl = player.control;
                     const ctrlWriter = HazelWriter.alloc(1);
                     ctrlWriter.write(ctrl, false);
 
@@ -879,7 +879,7 @@ export class Perspective extends BaseRoom {
                         )
                     );
 
-                    const phys = player.transform;
+                    const phys = player.physics;
                     const physWriter = HazelWriter.alloc(1);
                     physWriter.write(phys, false);
 

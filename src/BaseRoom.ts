@@ -547,42 +547,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 this.state = GameState.NotStarted;
                 this.waiting.add(client);
                 this.connections.set(client.clientId, client);
-
-                await Promise.all(
-                    [...this.connections]
-                        .map(([ clientId, connection ]) => {
-                            if (this.waiting.has(connection)) {
-                                this.waiting.delete(connection);
-
-                                const playerConnection = this.connections.get(clientId);
-
-                                return playerConnection?.sendPacket(
-                                    new ReliablePacket(
-                                        playerConnection.getNextNonce(),
-                                        [
-                                            new JoinedGameMessage(
-                                            this.code,
-                                            clientId,
-                                            this.hostid,
-                                            [...this.connections.values()]  
-                                                .reduce<number[]>((prev, cur) => {
-                                                    if (cur !== connection) {
-                                                        prev.push(cur.clientId)
-                                                    }
-                                                    return prev;
-                                                }, [])
-                                            )
-                                        ]
-                                    )
-                                ) || Promise.resolve();
-                            } else {
-                                return Promise.resolve();
-                            }
-                        })
-                );
                 
-                this.logger.info("%s joined, joining other clients",
+                this.logger.info("%s joined, joining other clients..",
                     player);
+
+                await this._joinOtherClients();
             } else {
                 this.waiting.add(client);
                 this.connections.set(client.clientId, client);
@@ -647,6 +616,43 @@ export class BaseRoom extends Hostable<RoomEvents> {
             "%s joined the game",
             client
         );
+    }
+
+    private async _joinOtherClients() {
+        await Promise.all(
+            [...this.connections]
+                .map(([ clientId, connection ]) => {
+                    if (this.waiting.has(connection)) {
+                        this.waiting.delete(connection);
+
+                        const playerConnection = this.connections.get(clientId);
+
+                        return playerConnection?.sendPacket(
+                            new ReliablePacket(
+                                playerConnection.getNextNonce(),
+                                [
+                                    new JoinedGameMessage(
+                                    this.code,
+                                    clientId,
+                                    this.hostid,
+                                    [...this.connections.values()]  
+                                        .reduce<number[]>((prev, cur) => {
+                                            if (cur !== connection) {
+                                                prev.push(cur.clientId)
+                                            }
+                                            return prev;
+                                        }, [])
+                                    )
+                                ]
+                            )
+                        ) || Promise.resolve();
+                    } else {
+                        return Promise.resolve();
+                    }
+                })
+        );
+
+        this.waiting.clear();
     }
 
     async handleStart() {

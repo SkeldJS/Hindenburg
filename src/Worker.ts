@@ -4,7 +4,16 @@ import vorpal from "vorpal";
 import chalk from "chalk";
 import minimatch from "minimatch";
 
-import { DisconnectReason, Language, GameState, GameDataMessageTag } from "@skeldjs/constant";
+import {
+    DisconnectReason,
+    Language,
+    GameState,
+    GameDataMessageTag,
+    GameKeyword,
+    TaskBarUpdate,
+    KillDistance,
+    GameMap
+} from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,

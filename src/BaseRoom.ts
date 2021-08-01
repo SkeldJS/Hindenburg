@@ -137,6 +137,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.state = GameState.NotStarted;
 
+        this.decoder.on(EndGameMessage, message => {
+            this.handleEnd(message.reason);
+        });
+
+        this.decoder.on(StartGameMessage, () => {
+            this.handleStart();
+        });
+
         this.on("player.setname", ev => {
             if (ev.oldName) {
                 this.logger.info("%s changed their name from %s to %s",

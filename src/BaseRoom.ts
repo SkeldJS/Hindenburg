@@ -173,6 +173,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.on("player.syncsettings", async ev => {
+            // todo: log settings diff
+            this.logger.info("Updated game settings, use `ls settings %s`",
+                fmtCode(this.code));
+
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
             }
@@ -198,7 +202,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         );
 
-        return fmtCode(this.code)
+        return chalk.yellow(fmtCode(this.code))
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 

@@ -1091,9 +1091,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             connection.room?.room.decoder.emitDecoded(message, direction, player);
-            await connection.room?.broadcast([], true, undefined, [
-                new StartGameMessage(connection.room.code)
-            ]);
         });
 
         this.decoder.on(EndGameMessage, async (message, direction, connection) => {
@@ -1106,10 +1103,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return connection.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room?.room.decoder.emitDecoded(message, direction, player);
-            await connection.room?.broadcast([], true, undefined, [
-                new EndGameMessage(connection.room.code, message.reason, false)
-            ]);
+            connection.room?.decoder.emitDecoded(message, direction, player);
         });
 
         this.decoder.on(KickPlayerMessage, async (message, direction, connection) => {

@@ -96,12 +96,6 @@ export type WorkerEvents = RoomEvents
         WorkerBeforeJoinEvent
     ]>;
 
-interface MemoryUsageStamp {
-    used: number;
-    numRooms: number;
-    numConnections: number;
-}
-
 export class Worker extends EventEmitter<WorkerEvents> {
     config: HindenburgConfig; // todo: maybe create a config class? could handle things like checking if a version is valid
     validVersions: number[];

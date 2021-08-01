@@ -193,10 +193,15 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         });
 
-        this.on("room.gameend", async ev => {
-            this.logger.info("Game ended, clearing connections..");
+        this.on("room.gamestart", () => {
+            this.logger.info("Game started");
+        });
+
+        this.on("room.gameend", ev => {
+            this.logger.info("Game ended: %s", GameOverReason[ev.reason]);
 
             setImmediate(() => {
+                this.logger.info("Clearing connections for clients to re-join");
                 this.connections.clear();
             });
         });

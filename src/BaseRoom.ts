@@ -536,6 +536,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             if (client.clientId === this.hostid) {
                 this.state = GameState.NotStarted;
                 this.waiting.add(client);
+                this.connections.set(client.clientId, client);
 
                 await Promise.all(
                     [...this.connections]
@@ -570,12 +571,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     player);
             } else {
                 this.waiting.add(client);
+                this.connections.set(client.clientId, client);
                 
                 await this.broadcastMessages([], [
                     new JoinGameMessage(
                         this.code,
                         client.clientId,
-                        this.hostid || SpecialClientId.Nil
+                        this.hostid
                     )
                 ]);
 

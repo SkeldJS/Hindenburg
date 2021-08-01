@@ -12,10 +12,10 @@ export class VorpalConsole extends WinstonTransport {
     }
 
     log(info: any, callback: () => void) {
-        if (info[LEVEL] === "debug" && process.env.NODE_ENV !== "development") {
+        if (info[LEVEL] === "debug" && process.argv[0].includes("ts-node")) {
             return;
         }
-        
+
         setImmediate(() => this.emit('logged', info));
 
         this.vorpal.log(info[MESSAGE]);

@@ -644,8 +644,17 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     async handleEnd(reason: GameOverReason) {
-        this.waiting.clear();
+        const waiting = this.waiting;
+        this.waiting = new Set;
         this.state = GameState.Ended;
+        
+        const ev = await this.emit(new RoomGameEndEvent(this, reason));
+
+        if (ev.canceled) {
+            this.waiting = waiting;
+            this.state = GameState.Started;
+            return;
+        }
 
         await this.broadcastMessages([], [
             new EndGameMessage(this.code, reason, false)

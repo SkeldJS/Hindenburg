@@ -53,7 +53,8 @@ import {
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
     RoomDestroyEvent,
-    RoomGameEndEvent
+    RoomGameEndEvent,
+    RoomGameStartEvent
 } from "./api";
 
 import { fmtCode } from "./util/fmtCode";
@@ -96,7 +97,8 @@ export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
     RoomDestroyEvent,
-    RoomGameEndEvent
+    RoomGameEndEvent,
+    RoomGameStartEvent
 ]>;
 
 export class BaseRoom extends Hostable<RoomEvents> {
@@ -640,6 +642,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     async handleStart() {
         this.state = GameState.Started;
+
+        const ev = await this.emit(new RoomGameStartEvent(this));
+
+        if (ev.canceled) {
+            this.state = GameState.NotStarted;
+            return;
+        }
 
         await this.broadcastMessages([], [
             new StartGameMessage(this.code)

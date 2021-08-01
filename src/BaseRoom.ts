@@ -593,7 +593,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         client.clientId,
                         this.hostid
                     )
-                ]);
+                ], undefined, [ client ]);
 
                 await client.sendPacket(
                     new ReliablePacket(

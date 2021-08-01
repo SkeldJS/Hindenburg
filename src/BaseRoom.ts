@@ -314,6 +314,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
         exclude?: Connection[],
         reliable = true
     ) {
+        if (!gamedata.length && !payloads.length)
+            return;
+
         const clientsToBroadcast = include || [...this.connections.values()];
         const clientsToExclude = new Set(exclude);
         const promises: Promise<void>[] = [];

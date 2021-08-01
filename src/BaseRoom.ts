@@ -84,7 +84,7 @@ export enum SpecialClientId {
     Temp = 2 ** 31 - 3
 }
 
-const logMaps = {
+export const logMaps = {
     [GameMap.TheSkeld]: "the skeld",
     [GameMap.MiraHQ]: "mira hq",
     [GameMap.Polus]: "polus",

@@ -137,6 +137,8 @@ export class Room extends BaseRoom {
             this.playerPerspectives.set(players[i].id, perspective);
         }
 
+        this.logger.info("Created perspective: %s ", perspective);
+
         return perspective;
     }
 

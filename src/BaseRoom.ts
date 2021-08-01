@@ -190,6 +190,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 ev.setSettings(this.config.enforceSettings);
             }
         });
+
+        this.on("room.gameend", async ev => {
+            this.logger.info("Game ended, clearing connections..");
+
+            setImmediate(() => {
+                this.connections.clear();
+            });
+        });
     }
 
     async emit<Event extends RoomEvents[keyof RoomEvents]>(

@@ -1315,10 +1315,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
     async sendPacket(connection: Connection, packet: BaseRootPacket) {
         const reliablePacket = packet as ReliableSerializable;
 
-        const writer = HazelWriter.alloc(512);
+        const start = Date.now();
+        const writer = HazelWriter.alloc(1024);
         writer.uint8(packet.tag);
         writer.write(packet, MessageDirection.Clientbound, this.decoder);
         writer.realloc(writer.cursor);
+
+        if (Date.now() - start > 5) {
+            this.logger.warn("Took %sms to write: %s (%s bytes) to %s", packet.tag, writer.buffer.byteLength, connection);
+        }
 
         if (reliablePacket.nonce !== undefined && !(packet instanceof AcknowledgePacket)) {
             connection.sentPackets.unshift(

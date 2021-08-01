@@ -44,7 +44,6 @@ import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
 import { Code2Int, HazelWriter, sleep } from "@skeldjs/util";
 
-import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { SendChatOptions, MessageSide } from "./interfaces";
 
 import { Connection } from "./Connection";
@@ -53,7 +52,8 @@ import { Worker } from "./Worker";
 import {
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
-    RoomDestroyEvent
+    RoomDestroyEvent,
+    RoomGameEndEvent
 } from "./api";
 
 import { fmtCode } from "./util/fmtCode";
@@ -95,7 +95,8 @@ export const logMaps = {
 export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
-    RoomDestroyEvent
+    RoomDestroyEvent,
+    RoomGameEndEvent
 ]>;
 
 export class BaseRoom extends Hostable<RoomEvents> {

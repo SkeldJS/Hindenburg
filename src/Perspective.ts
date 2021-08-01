@@ -672,22 +672,35 @@ export class Perspective extends BaseRoom {
     async destroyPerspective(restoreState = true) {
         Hostable.prototype.destroy.call(this);
 
-        /*
-        How to restore state 101:
-        - Gamedata (names, colours, impostors, dead, etc.)
-        - Global room state, game started, game ended, room privacy
-        - Game state, meetings, vote ban system, ship systems, etc.
-        - Task completes
-
-        Not easy!!!
-        */
-
         for (let i = 0; i < this.playersPov.length; i++) {
             const playersPov = this.playersPov[i];
             this.parentRoom.playerPerspectives.delete(playersPov.id);
+            
+            /**
+             * todo:
+             * - [ ] Restore room state
+             *   - [x] Restore room visibility
+             *   - [x] Restore room host
+             *   - [x] Restore impostors
+             *   - [x] Restore room settings
+             *   - [x] Restore room counter
+             *   - [ ] Restore started/ended/meeting
+             * - [ ] Restore objects
+             *   - [ ] Despawn spawned components
+             *   - [ ] Spawn despawned components and objects
+             *   - [x] Restore GameData
+             *   - [ ] Restore MeetingHud
+             *     - [ ] Restore player votes
+             *   - [x] Restore VoteBanSystem
+             *   - [x] Restore ShipStatus
+             *   - [x] Restore players
+             *     - [x] Restore PlayerControl
+             *     - [x] Restore PlayerPhysics
+             *     - [x] Restore CustomNetworkTransform
+             *     - [x] Restore player info
+             */
 
             if (restoreState) {
-                // todo: (!! before merge !!) add more ways to restore state
                 const playerConn = this.parentRoom.connections.get(playersPov.id);
 
                 if (!playerConn)

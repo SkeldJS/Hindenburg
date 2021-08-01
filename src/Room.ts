@@ -115,7 +115,7 @@ export class Room extends BaseRoom {
      * @param reliable Whether these messages should be sent reliably (i.e. movement packets would be unreliable.
      */
     async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
-        const player = this.players.get(connection.clientId);
+        const player = connection.getPlayer();
 
         if (!player)
             return;
@@ -124,6 +124,9 @@ export class Room extends BaseRoom {
             const activePerspective = connection.room?.activePerspectives[i];
 
             if (!activePerspective)
+                continue;
+
+            if (activePerspective === player.room)
                 continue;
 
             // get this player's player object in the perspective in question

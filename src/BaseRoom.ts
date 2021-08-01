@@ -212,7 +212,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
     ): Promise<Event>;
     async emit<Event extends BasicEvent>(event: Event): Promise<Event>;
     async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
-        await this.worker.emit(event);
+        const ev = await this.worker.emit(event);
+
+        if ((ev as any).canceled || (ev as any).reverted) {
+            return ev;
+        }
 
         return super.emit(event);
     }

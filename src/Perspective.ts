@@ -558,6 +558,12 @@ export class Perspective extends BaseRoom {
 
         return newSystems;
     }
+    
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+        return chalk.yellow(fmtCode(this.code)) + " @ " + (this.playersPov.length === 1
+                ? util.format(this.playersPov[0])
+                : (this.playersPov.length + " players"));
+    }
 
     static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[]) {
         for (let i = 0; i < filters.length; i++) {

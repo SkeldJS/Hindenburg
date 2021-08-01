@@ -531,7 +531,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
             await this.setHost(player);
 
         client.room = this;
-
         if (this.state === GameState.Ended) {
             if (client.clientId === this.hostid) {
                 this.state = GameState.NotStarted;
@@ -550,17 +549,21 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                     new ReliablePacket(
                                         playerConnection.getNextNonce(),
                                         [
-                                                new JoinedGameMessage(
-                                                this.code,
-                                                clientId,
-                                                this.hostid || SpecialClientId.Nil,
-                                                [...this.connections.values()]
-                                                    .filter(cl => cl !== connection)
-                                                    .map(connection => connection.clientId)
+                                            new JoinedGameMessage(
+                                            this.code,
+                                            clientId,
+                                            this.hostid,
+                                            [...this.connections.values()]  
+                                                .reduce<number[]>((prev, cur) => {
+                                                    if (cur !== connection) {
+                                                        prev.push(cur.clientId)
+                                                    }
+                                                    return prev;
+                                                }, [])
                                             )
                                         ]
                                     )
-                                );
+                                ) || Promise.resolve();
                             } else {
                                 return Promise.resolve();
                             }

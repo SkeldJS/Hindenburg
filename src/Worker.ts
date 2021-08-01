@@ -1319,8 +1319,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         writer.write(packet, MessageDirection.Clientbound, this.decoder);
         writer.realloc(writer.cursor);
 
-        if (Date.now() - start > 5) {
-            this.logger.warn("Took %sms to write: %s (%s bytes) to %s", packet.tag, writer.buffer.byteLength, connection);
+        const tookMs = Date.now() - start;
+        if (tookMs > 5) {
+            this.logger.warn("Took %sms to write: %s (%s bytes) to %s", tookMs, packet.tag, writer.buffer.byteLength, connection);
         }
 
         if (reliablePacket.nonce !== undefined && !(packet instanceof AcknowledgePacket)) {

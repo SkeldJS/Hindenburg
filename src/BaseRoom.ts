@@ -512,7 +512,15 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        await this.setHost([...this.players.values()][0]);
+        if (client.clientId === this.hostid) {
+            if (this.connections.size === 0) {
+                await this.setHost([...this.players.values()][0]);
+            } else {
+                const connection = [...this.connections.values()][0];
+                const player = this.players.get(connection.clientId);
+                await this.setHost(player!); // todo: player might be undefined ?
+            }
+        }
 
         await this.broadcastMessages([], [
             new RemovePlayerMessage(

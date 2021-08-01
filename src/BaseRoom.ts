@@ -495,16 +495,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (remote && this.state === GameState.Ended && this.waiting.has(remote)) {
             await this.handleRemoteJoin(remote);
         }
-
-        this.logger.info(
-            "Host changed to %s",
-            player
-        );
     }
 
     async handleRemoteLeave(client: Connection, reason: DisconnectReason = DisconnectReason.None) {
         await this.handleLeave(client.clientId);
 
+        this.waiting.delete(client);
         this.connections.delete(client.clientId);
 
         if (this.players.size === 0) {

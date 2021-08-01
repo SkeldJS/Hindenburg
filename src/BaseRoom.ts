@@ -550,6 +550,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 
                 this.logger.info("%s joined, joining other clients..",
                     player);
+                    
+                await this.broadcastMessages([], [
+                    new JoinGameMessage(
+                        this.code,
+                        client.clientId,
+                        this.hostid
+                    )
+                ], undefined, [ client ]);
 
                 await this._joinOtherClients();
             } else {

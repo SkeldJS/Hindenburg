@@ -1,3 +1,6 @@
+import chalk from "chalk";
+import util from "util";
+
 import {
     AirshipStatus,
     AprilShipStatus,
@@ -70,6 +73,9 @@ import { Worker } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
 import { chunkArr } from "./util/chunkArr";
 import { MasketDecoder } from "./util/MasketDecoder";
+import { VorpalConsole } from "./util/VorpalConsoleTransport";
+import winston from "winston";
+import { fmtCode } from "./util/fmtCode";
 
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
 
@@ -205,6 +211,41 @@ export class Perspective extends BaseRoom {
         public outgoingFilter: PerspectiveFilter
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
+
+        this.logger = winston.createLogger({
+            levels: {
+                error: 0,
+                debug: 1,
+                warn: 2,
+                data: 3,
+                info: 4,
+                verbose: 5,
+                silly: 6,
+                custom: 7
+            },
+            transports: [
+                new VorpalConsole(this.worker.vorpal, {
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.printf(info => {
+                            if (this.playersPov.length === 1) {
+                                return `[${fmtCode(this.code)} @ ${util.format(this.playersPov[0])}] ${info.level}: ${info.message}`;
+                            } else {
+                                return `[${fmtCode(this.code)} @ ${this.playersPov.length} players] ${info.level}: ${info.message}`;
+                            }
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
 
         for (const [ clientId ] of parentRoom.players) {
             const newPlayer = new PlayerData(this, clientId);

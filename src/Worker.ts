@@ -412,6 +412,28 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
+            .command("list pov <room code>", "List all active perspectives in a room.")
+            .alias("ls pov")
+            .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(roomName);
+                    
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    this.logger.info("%s perspective(s) in %s", room.activePerspectives.length, room);
+                    for (let i = 0; i < room.activePerspectives.length; i++) {
+                        const pov = room.activePerspectives[i];
+                        this.logger.info("%s) %s", i + 1, pov);
+                    }
+                } else {
+                    this.logger.error("Couldn't find room: " + args["room code"]);
+                }
+            });
+
+        this.vorpal
             .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
             .option("--room, -c <room code>", "the room to send a message to")
             .action(async args => {

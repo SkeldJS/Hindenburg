@@ -789,7 +789,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(JoinGameMessage, async (message, direction, connection) => {
-            if (connection.room)
+            if (
+                connection.room &&
+                connection.room.state !== GameState.Ended &&
+                connection.room.code !== message.code // extra checks so you can join back the same game
+            )
                 return;
 
             if (!this.checkClientMods(connection))

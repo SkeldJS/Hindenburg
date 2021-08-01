@@ -492,8 +492,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         await super.setHost(player);
 
-        if (remote && this.state === GameState.Ended && this.waiting.has(remote)) {
-            await this.handleRemoteJoin(remote);
+        if (!remote)
+            return;
+
+        if (this.state === GameState.Ended && this.waiting.has(remote)) {
+            this.state = GameState.NotStarted;
+            await this._joinOtherClients();
         }
     }
 

@@ -400,8 +400,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const room = this.rooms.get(codeId);
 
                 if (room) {
-                    this.logger.info("%s player(s) in %s", room.room.players.size, room);
-                    const players = [...room.room.players];
+                    this.logger.info("%s player(s) in %s", room.players.size, room);
+                    const players = [...room.players];
                     for (let i = 0; i < players.length; i++) {
                         const [ , player ] = players[i];
                         this.logger.info("%s) %s", i + 1, player);

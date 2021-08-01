@@ -519,7 +519,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     async handleRemoteJoin(client: Connection) {
-        const player = await this.handleJoin(client.clientId);
+        if (this.connections.get(client.clientId))
+            return;
+
+        const player = await this.handleJoin(client.clientId) || this.players.get(client.clientId);
 
         if (!player)
             return;

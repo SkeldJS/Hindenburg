@@ -179,6 +179,16 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal = new vorpal;
 
         this.logger = winston.createLogger({
+            levels: {
+                error: 0,
+                debug: 1,
+                warn: 2,
+                data: 3,
+                info: 4,
+                verbose: 5,
+                silly: 6,
+                custom: 7
+            },
             transports: [
                 new VorpalConsole(this.vorpal, {
                     format: winston.format.combine(

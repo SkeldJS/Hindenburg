@@ -434,6 +434,45 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
+            .command("list settings <room code>", "List the game settings of a room.")
+            .alias("ls settings")
+            .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(roomName);
+                    
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    this.logger.info("Settings for %s:", room);
+                    this.logger.info("- max players: %s", room.settings.maxPlayers);
+                    this.logger.info("- language: %s", GameKeyword[room.settings.keywords]);
+                    this.logger.info("- map: %s", GameMap[room.settings.map]);
+                    this.logger.info("- player speed: %s", room.settings.playerSpeed);
+                    this.logger.info("- crewmate vision: %s", room.settings.crewmateVision);
+                    this.logger.info("- impostor vision: %s", room.settings.impostorVision);
+                    this.logger.info("- kill cooldown: %s", room.settings.killCooldown);
+                    this.logger.info("- common tasks: %s", room.settings.commonTasks);
+                    this.logger.info("- long tasks: %s", room.settings.longTasks);
+                    this.logger.info("- short tasks: %s", room.settings.shortTasks);
+                    this.logger.info("- # emergencies: %s", room.settings.numEmergencies);
+                    this.logger.info("- # impostors: %s", room.settings.numImpostors);
+                    this.logger.info("- kill distance: %s", KillDistance[room.settings.killDistance]);
+                    this.logger.info("- discussion time: %s", room.settings.discussionTime);
+                    this.logger.info("- voting time: %s", room.settings.votingTime);
+                    this.logger.info("- is defaults: %s", room.settings.isDefaults);
+                    this.logger.info("- emergency cooldown: %s", room.settings.emergencyCooldown);
+                    this.logger.info("- confirm ejects: %s", room.settings.confirmEjects);
+                    this.logger.info("- visual tasks: %s", room.settings.visualTasks);
+                    this.logger.info("- anonymous votes: %s", room.settings.anonymousVotes);
+                    this.logger.info("- task bar updates: %s", TaskBarUpdate[room.settings.taskbarUpdates]);
+                } else {
+                    this.logger.error("Couldn't find room: " + args["room code"]);
+                }
+            });
+
+        this.vorpal
             .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
             .option("--room, -c <room code>", "the room to send a message to")
             .action(async args => {

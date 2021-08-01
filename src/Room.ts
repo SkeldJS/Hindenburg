@@ -1,3 +1,5 @@
+import winston from "winston";
+
 import { PlayerData } from "@skeldjs/core";
 import {
     BaseGameDataMessage,
@@ -11,6 +13,8 @@ import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
 import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
 import { Connection } from ".";
+import { VorpalConsole } from "./util/VorpalConsoleTransport";
+import { fmtCode } from "./util/fmtCode";
 
 export class Room extends BaseRoom {
     /**
@@ -30,6 +34,37 @@ export class Room extends BaseRoom {
         settings: GameSettings
     ) {
         super(worker, config, settings);
+        
+        this.logger = winston.createLogger({
+            levels: {
+                error: 0,
+                debug: 1,
+                warn: 2,
+                data: 3,
+                info: 4,
+                verbose: 5,
+                silly: 6,
+                custom: 7
+            },
+            transports: [
+                new VorpalConsole(this.worker.vorpal, {
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.printf(info => {
+                            return `[${fmtCode(this.code)}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
 
         this.playerPerspectives = new Map;
         this.activePerspectives = [];

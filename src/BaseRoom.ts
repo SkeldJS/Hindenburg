@@ -109,7 +109,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     /**
      * This room's console logger.
      */
-    logger: winston.Logger;
+    logger!: winston.Logger;
 
     /**
      * All IP addresses banned from this room.
@@ -130,27 +130,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.waiting = new Set;
 
         this.decoder.types = worker.decoder.types;
-
-        this.logger = winston.createLogger({
-            transports: [
-                new VorpalConsole(this.worker.vorpal, {
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.colorize(),
-                        winston.format.printf(info => {
-                            return `[${fmtCode(this.code)}] ${info.level}: ${info.message}`;
-                        }),
-                    ),
-                }),
-                new winston.transports.File({
-                    filename: "logs.txt",
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.simple()
-                    )
-                })
-            ]
-        });
 
         this.bans = new Set;
         this.settings = settings;

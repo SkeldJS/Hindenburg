@@ -21,6 +21,7 @@ import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { Worker, WorkerEvents } from "../Worker";
 
 import {
+    GameDataMessage,
     ModdedHelloPacket,
     ReactorRpcMessage
 } from "../packets";
@@ -174,7 +175,8 @@ export class PluginLoader {
             ReactorMessage,
             ReactorHandshakeMessage,
             ReactorModDeclarationMessage,
-            ReactorRpcMessage
+            ReactorRpcMessage,
+            GameDataMessage
         );
 
         const loadedPluginsArr = [...this.loadedPlugins];

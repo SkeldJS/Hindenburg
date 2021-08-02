@@ -8,7 +8,7 @@ import {
     BaseRootMessage
 } from "@skeldjs/protocol";
 
-export class UnknownGameData extends BaseGameDataMessage {
+export class UnknownGameDataMessage extends BaseGameDataMessage {
     static tag = 255 as const;
     
     constructor(
@@ -57,7 +57,7 @@ export class GameDataMessage extends BaseRootMessage {
             const rootMessageClass = decoder.types.get(`gamedata:${tag}`);
 
             if (!rootMessageClass) {
-                children.push(new UnknownGameData(tag, mreader.buffer));
+                children.push(new UnknownGameDataMessage(tag, mreader.buffer));
                 continue;
             }
 

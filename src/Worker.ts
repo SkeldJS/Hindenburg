@@ -22,7 +22,6 @@ import {
     DataMessage,
     DisconnectPacket,
     EndGameMessage,
-    GameDataMessage,
     GameDataToMessage,
     GameListing,
     GameSettings,
@@ -58,7 +57,11 @@ import {
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
+import { recursiveAssign } from "./util/recursiveAssign";
+import { recursiveCompare } from "./util/recursiveCompare";
+import { recursiveClone } from "./util/recursiveClone";
 import { fmtCode } from "./util/fmtCode";
+import { chunkArr } from "./util/chunkArr";
 
 import { HindenburgConfig, RoomsConfig, MessageSide } from "./interfaces";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
@@ -76,14 +79,8 @@ import {
     WorkerBeforeJoinEvent
 } from "./api";
 
-import { recursiveAssign } from "./util/recursiveAssign";
-import { recursiveCompare } from "./util/recursiveCompare";
-import { ReactorRpcMessage } from "./packets";
-import { chunkArr } from "./util/chunkArr";
-
 import i18n from "./i18n";
-import { recursiveClone } from "./util/recursiveClone";
-import { UnknownGameData } from "./packets/GameData";
+import { ReactorRpcMessage, GameDataMessage, UnknownGameDataMessage } from "./packets";
 import { Perspective } from "./Perspective";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
@@ -914,7 +911,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     continue;
 
                 // don't broadcast it if it's unknown
-                if (!this.config.socket.broadcastUnknownGamedata && child instanceof UnknownGameData) {
+                if (!this.config.socket.broadcastUnknownGamedata && child instanceof UnknownGameDataMessage) {
                     continue;
                 }
 

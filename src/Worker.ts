@@ -688,7 +688,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         connection.getNextNonce(),
                         [
                             new ReactorMessage(
-                                new ReactorHandshakeMessage("Hindenburg", "1.0.0", 0)
+                                new ReactorHandshakeMessage("Hindenburg", "1.0.0", this.pluginLoader.loadedPlugins.size)
                             )
                         ]
                     )

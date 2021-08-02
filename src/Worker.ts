@@ -719,7 +719,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(ReactorModDeclarationMessage, (message, direction, connection) => {
+        this.decoder.on(ReactorModDeclarationMessage, async (message, direction, connection) => {
             if (connection.mods.size >= connection.numMods)
                 return;
 
@@ -738,6 +738,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
             } else if (connection.mods.size < 4) {
                 this.logger.info("Got mod from %s: %s",
                     connection, clientMod);
+            }
+
+            if (connection.mods.size >= connection.numMods) {
+                if (connection.awaitingToJoin) {
+                    await this.attemptJoin(connection, connection.awaitingToJoin);
+                }
             }
         });
 
@@ -796,107 +802,17 @@ export class Worker extends EventEmitter<WorkerEvents> {
             )
                 return;
 
+            if (connection.mods.size < connection.numMods) {
+                this.logger.info("Didn't get all mods from %s, waiting before joining %s",
+                    connection, fmtCode(message.code));
+                connection.awaitingToJoin = message.code;
+                return;
+            }
+
             if (!this.checkClientMods(connection))
                 return;
 
-            const foundRoom = this.rooms.get(message.code);
-
-            const ev = await this.emit(
-                new WorkerBeforeJoinEvent(
-                    connection,
-                    message.code,
-                    foundRoom
-                )
-            );
-
-            if (ev.canceled)
-                return;
-
-            if (!ev.alteredRoom) {
-                this.logger.info("%s attempted to join %s but there was no room with that code",
-                    connection, fmtCode(message.code));
-
-                return connection.joinError(DisconnectReason.GameNotFound);
-            }
-
-            if (ev.alteredRoom.bans.has(connection.address)) {
-                this.logger.warn("%s attempted to join %s but they were banned",
-                    connection, foundRoom);
-                return connection.disconnect(DisconnectReason.Banned);
-            }
-
-            if (ev.alteredRoom.connections.size >= ev.alteredRoom.room.settings.maxPlayers) {
-                this.logger.warn("%s attempted to join %s but it was full",
-                    connection, foundRoom);
-                return connection.joinError(DisconnectReason.GameFull);
-            }
-
-            if (ev.alteredRoom.state === GameState.Started) {
-                this.logger.warn("%s attempted to join %s but the game had already started",
-                    connection, foundRoom);
-                return connection.joinError(DisconnectReason.GameStarted);
-            }
-
-            if (this.config.reactor !== false && (
-                this.config.reactor === true ||
-                this.config.reactor.requireHostMods
-            ) && ev.alteredRoom.hostid) {
-                const hostConnection = ev.alteredRoom.connections.get(ev.alteredRoom.hostid);
-                if (hostConnection) {
-                    if (hostConnection.usingReactor && !connection.usingReactor) {
-                        return connection.joinError(i18n.reactor_required_for_room);
-                    }
-
-                    if (!hostConnection.usingReactor && connection.usingReactor) {
-                        return connection.joinError(i18n.reactor_not_enabled_for_room);
-                    }
-
-                    for (const [ hostModId, hostMod ] of hostConnection.mods) {
-                        if (
-                            hostMod.networkSide === ModPluginSide.Clientside &&
-                            (
-                                this.config.reactor === true ||
-                                this.config.reactor.blockClientSideOnly
-                            )
-                        )
-                            continue;
-                        
-                        const clientMod = connection.mods.get(hostModId);
-
-                        if (!clientMod) {
-                            return connection.joinError(i18n.missing_required_mod,
-                                hostMod.modId, hostMod.modVersion);
-                        }
-
-                        if (clientMod.modVersion !== hostMod.modVersion) {
-                            return connection.joinError(i18n.bad_mod_version,
-                                clientMod.modId, clientMod.modVersion, hostMod.modVersion);
-                        }
-                    }
-
-                    for (const [ clientModId, clientMod ] of connection.mods) {
-                        if (
-                            clientMod.networkSide === ModPluginSide.Clientside &&
-                            (
-                                this.config.reactor === true ||
-                                this.config.reactor.blockClientSideOnly
-                            )
-                        )
-                            continue;
-
-                        const hostMod = hostConnection.mods.get(clientModId);
-
-                        if (!hostMod) {
-                            return connection.joinError(i18n.mod_not_recognised,
-                                clientMod.modId);
-                        }
-                    }
-                }
-            }
-            
-            this.logger.info("%s joining room %s",
-                connection, ev.alteredRoom);
-            await ev.alteredRoom.handleRemoteJoin(connection);
+            await this.attemptJoin(connection, message.code);
         });
 
         this.decoder.on(RpcMessage, async (message, direction, connection) => {
@@ -1450,5 +1366,107 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.rooms.set(code, createdRoom);
 
         return createdRoom;
+    }
+
+    async attemptJoin(connection: Connection, code: number) {
+        const foundRoom = this.rooms.get(code);
+
+        const ev = await this.emit(
+            new WorkerBeforeJoinEvent(
+                connection,
+                code,
+                foundRoom
+            )
+        );
+
+        if (ev.canceled)
+            return;
+
+        if (!ev.alteredRoom) {
+            this.logger.info("%s attempted to join %s but there was no room with that code",
+                connection, fmtCode(code));
+
+            return connection.joinError(DisconnectReason.GameNotFound);
+        }
+
+        if (ev.alteredRoom.bans.has(connection.address)) {
+            this.logger.warn("%s attempted to join %s but they were banned",
+                connection, foundRoom);
+            return connection.disconnect(DisconnectReason.Banned);
+        }
+
+        if (ev.alteredRoom.connections.size >= ev.alteredRoom.room.settings.maxPlayers) {
+            this.logger.warn("%s attempted to join %s but it was full",
+                connection, foundRoom);
+            return connection.joinError(DisconnectReason.GameFull);
+        }
+
+        if (ev.alteredRoom.state === GameState.Started) {
+            this.logger.warn("%s attempted to join %s but the game had already started",
+                connection, foundRoom);
+            return connection.joinError(DisconnectReason.GameStarted);
+        }
+
+        if (this.config.reactor !== false && (
+            this.config.reactor === true ||
+            this.config.reactor.requireHostMods
+        ) && ev.alteredRoom.hostid) {
+            const hostConnection = ev.alteredRoom.connections.get(ev.alteredRoom.hostid);
+            if (hostConnection) {
+                if (hostConnection.usingReactor && !connection.usingReactor) {
+                    return connection.joinError(i18n.reactor_required_for_room);
+                }
+
+                if (!hostConnection.usingReactor && connection.usingReactor) {
+                    return connection.joinError(i18n.reactor_not_enabled_for_room);
+                }
+
+                for (const [ hostModId, hostMod ] of hostConnection.mods) {
+                    if (
+                        hostMod.networkSide === ModPluginSide.Clientside &&
+                        (
+                            this.config.reactor === true ||
+                            this.config.reactor.blockClientSideOnly
+                        )
+                    )
+                        continue;
+                    
+                    const clientMod = connection.mods.get(hostModId);
+
+                    if (!clientMod) {
+                        return connection.joinError(i18n.missing_required_mod,
+                            hostMod.modId, hostMod.modVersion);
+                    }
+
+                    if (clientMod.modVersion !== hostMod.modVersion) {
+                        return connection.joinError(i18n.bad_mod_version,
+                            clientMod.modId, clientMod.modVersion, hostMod.modVersion);
+                    }
+                }
+
+                for (const [ clientModId, clientMod ] of connection.mods) {
+                    if (
+                        clientMod.networkSide === ModPluginSide.Clientside &&
+                        (
+                            this.config.reactor === true ||
+                            this.config.reactor.blockClientSideOnly
+                        )
+                    )
+                        continue;
+
+                    const hostMod = hostConnection.mods.get(clientModId);
+
+                    if (!hostMod) {
+                        return connection.joinError(i18n.mod_not_recognised,
+                            clientMod.modId);
+                    }
+                }
+            }
+        }
+        
+        this.logger.info("%s joining room %s",
+            connection, ev.alteredRoom);
+            
+        await ev.alteredRoom.handleRemoteJoin(connection);
     }
 }

@@ -133,6 +133,13 @@ export class Connection {
     mods: Map<string, ClientMod>;
 
     /**
+     * The game that the client is waiting to join. Used internally to allow
+     * Hindenburg to wait for all mods to be received from the client before
+     * allowing them to join a game.
+     */
+    awaitingToJoin: number;
+
+    /**
      * The last nonce that was received by this client.
      * 
      * Used to prevent duplicate packets with the same nonce.
@@ -185,6 +192,7 @@ export class Connection {
         
         this.numMods = 0;
         this.mods = new Map;
+        this.awaitingToJoin = 0;
 
         this.lastNonce = -1;
         this._incrNonce = 0;

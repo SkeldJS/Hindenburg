@@ -743,6 +743,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (connection.mods.size >= connection.numMods) {
                 if (connection.awaitingToJoin) {
                     await this.attemptJoin(connection, connection.awaitingToJoin);
+                    connection.awaitingToJoin = 0;
                 }
             }
         });

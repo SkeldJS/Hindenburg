@@ -555,7 +555,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             }
         }, pingInterval);
-
+        
         this.registerPacketHandlers();
     }
 
@@ -624,6 +624,18 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 resolve(bytes);
             });
         });
+    }
+
+    registerMessages() {
+        this.decoder.register(
+            ModdedHelloPacket,
+            ReactorMessage,
+            ReactorHandshakeMessage,
+            ReactorModDeclarationMessage,
+            ReactorPluginDeclarationMessage,
+            ReactorRpcMessage,
+            GameDataMessage
+        );
     }
 
     registerPacketHandlers() {

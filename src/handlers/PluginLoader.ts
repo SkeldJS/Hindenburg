@@ -7,13 +7,7 @@ import path from "path";
 import vorpal from "vorpal";
 import chalk from "chalk";
 
-import {
-    ReactorHandshakeMessage,
-    ReactorMessage,
-    ReactorModDeclarationMessage
-} from "@skeldjs/reactor";
-
-import { Deserializable, MessageDirection, RpcMessage, Serializable } from "@skeldjs/protocol";
+import { Deserializable, RpcMessage, Serializable } from "@skeldjs/protocol";
 import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
 
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
@@ -21,9 +15,6 @@ import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { Worker, WorkerEvents } from "../Worker";
 
 import {
-    GameDataMessage,
-    ModdedHelloPacket,
-    ReactorPluginDeclarationMessage,
     ReactorRpcMessage
 } from "../packets";
 
@@ -171,15 +162,7 @@ export class PluginLoader {
         const listeners = new Map([...this.worker.decoder.listeners]);
         this.worker.decoder.reset();
         this.worker.decoder.listeners = listeners;
-        this.worker.decoder.register(
-            ModdedHelloPacket,
-            ReactorMessage,
-            ReactorHandshakeMessage,
-            ReactorModDeclarationMessage,
-            ReactorPluginDeclarationMessage,
-            ReactorRpcMessage,
-            GameDataMessage
-        );
+        this.worker.registerMessages();
 
         const loadedPluginsArr = [...this.loadedPlugins];
         for (const [ , loadedPlugin ] of loadedPluginsArr) {

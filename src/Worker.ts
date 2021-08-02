@@ -67,9 +67,8 @@ import { HindenburgConfig, RoomsConfig, MessageSide } from "./interfaces";
 import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
-
-import { PluginLoader, ChatCommandHandler } from "./handlers";
 import { Room } from "./Room";
+import { Perspective } from "./Perspective";
 import { RoomEvents } from "./BaseRoom";
 
 import {
@@ -79,9 +78,15 @@ import {
     WorkerBeforeJoinEvent
 } from "./api";
 
+import { PluginLoader, ChatCommandHandler } from "./handlers";
+import {
+    ReactorRpcMessage,
+    GameDataMessage,
+    UnknownGameDataMessage,
+    ReactorPluginDeclarationMessage
+} from "./packets";
+
 import i18n from "./i18n";
-import { ReactorRpcMessage, GameDataMessage, UnknownGameDataMessage } from "./packets";
-import { Perspective } from "./Perspective";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -687,7 +692,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             connection.getNextNonce(),
                             chunk.map(([ , plugin ]) => 
                                 new ReactorMessage(
-                                    new ReactorModDeclarationMessage(
+                                    new ReactorPluginDeclarationMessage(
                                         i,
                                         new ReactorMod(
                                             plugin.meta.id,

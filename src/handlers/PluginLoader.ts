@@ -23,6 +23,7 @@ import { Worker, WorkerEvents } from "../Worker";
 import {
     GameDataMessage,
     ModdedHelloPacket,
+    ReactorPluginDeclarationMessage,
     ReactorRpcMessage
 } from "../packets";
 
@@ -175,6 +176,7 @@ export class PluginLoader {
             ReactorMessage,
             ReactorHandshakeMessage,
             ReactorModDeclarationMessage,
+            ReactorPluginDeclarationMessage,
             ReactorRpcMessage,
             GameDataMessage
         );

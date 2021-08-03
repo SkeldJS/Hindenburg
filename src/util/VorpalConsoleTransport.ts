@@ -16,7 +16,7 @@ export class VorpalConsole extends WinstonTransport {
             return;
         }
 
-        setImmediate(() => this.emit('logged', info));
+        setImmediate(() => this.emit("logged", info));
 
         this.vorpal.log(info[MESSAGE]);
     

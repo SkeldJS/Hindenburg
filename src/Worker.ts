@@ -334,8 +334,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const pluginId: string = args["plugin id"];
                 const loadedPlugin = 
                     typeof pluginId === "number"
-                    ? [...this.pluginLoader.loadedPlugins][pluginId - 1]?.[1]
-                    : this.pluginLoader.loadedPlugins.get(pluginId);
+                        ? [...this.pluginLoader.loadedPlugins][pluginId - 1]?.[1]
+                        : this.pluginLoader.loadedPlugins.get(pluginId);
 
                 if (loadedPlugin) {
                     this.pluginLoader.unloadPlugin(loadedPlugin);
@@ -348,34 +348,29 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
             .alias("ls")
             .action(async args => {
-                switch (args.something) {
-                case "clients":
+                if (args.something === "client") {
                     this.logger.info("%s client(s)", this.connections.size);
                     const connections = [...this.connections];
                     for (let i = 0; i < connections.length; i++) {
                         const [ , connection ] = connections[i];
                         this.logger.info("%s) %s", i + 1, connection);
                     }
-                    break;
-                case "rooms":
+                } else if (args.something === "rooms") {
                     this.logger.info("%s room(s)", this.rooms.size);
                     const rooms = [...this.rooms];
                     for (let i = 0; i < rooms.length; i++) {
                         const [ , room ] = rooms[i];
                         this.logger.info("%s) %s", i + 1, room);
                     }
-                    break;
-                case "plugins":
+                } else if (args.something === "plugins") {
                     this.logger.info("%s plugins(s) loaded", this.pluginLoader.loadedPlugins.size);
                     const loadedPlugins = [...this.pluginLoader.loadedPlugins];
                     for (let i = 0; i < loadedPlugins.length; i++) {
                         const [ , plugin ] = loadedPlugins[i];
                         this.logger.info("%s) %s", i + 1, plugin.meta.id);
                     }
-                    break;
-                default:
+                } else {
                     this.logger.error("Expected either \"clients\", \"rooms\" or \"plugins\": %s", args.something);
-                    break;
                 }
             });
             
@@ -391,7 +386,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         const mods = [...connection.mods];
                         for (let i = 0; i < mods.length; i++) {
                             const [ , mod ] = mods[i];
-                            this.logger.info("%s) %s", i + 1, mod)
+                            this.logger.info("%s) %s", i + 1, mod);
                         }
                         return;
                     }
@@ -548,7 +543,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     const sent = connection.sentPackets[i];
                     if (!sent.acked) {
                         if (Date.now() - sent.sentAt > 500) {
-                            this._sendPacket(connection.rinfo, sent.buffer)
+                            this._sendPacket(connection.rinfo, sent.buffer);
                             sent.sentAt = Date.now();
                         }
                     }
@@ -660,7 +655,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             connection.hasIdentified = true;
             connection.usingReactor = !message.isNormalHello();
             connection.username = message.username;
-            connection.language = message.language
+            connection.language = message.language;
             connection.clientVersion = message.clientver;
 
             if (connection.usingReactor) {
@@ -797,7 +792,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const room = await this.createRoom(roomCode, message.options);
 
             this.logger.info("%s created room %s",
-                connection, room)
+                connection, room);
 
             await connection.sendPacket(
                 new ReliablePacket(
@@ -1050,7 +1045,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 // todo: proper anti-cheat config
                 return connection.disconnect(DisconnectReason.Hacking);
             }
-/*
+            /*
             const targetConnection = connection.room?.room.players.get(message.clientid);
 
             if (!targetConnection)
@@ -1199,7 +1194,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (modConfig.version) {
                     if (!minimatch(clientMod.modVersion, modConfig.version)) {
                         connection.disconnect(i18n.bad_mod_version,
-                            modId, "v" + clientMod.modVersion, "v" + modConfig.version)
+                            modId, "v" + clientMod.modVersion, "v" + modConfig.version);
                         return false;
                     }
                 }

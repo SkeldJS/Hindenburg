@@ -1,8 +1,7 @@
 import { Hostable, Networkable } from "@skeldjs/core";
-import { Deserializable, MessageDirection, PacketDecoder } from "@skeldjs/protocol";
+import { MessageDirection, PacketDecoder } from "@skeldjs/protocol";
 import { HazelReader } from "@skeldjs/util";
 import { BaseReactorRpcMessage } from "../BaseReactorRpcMessage";
-import { hindenburgRegisterMessageKey } from "./RegisterMessage";
 
 export const hindenburgReactorRpcKey = Symbol("hindenburg:reactor_rpc");
 
@@ -26,6 +25,7 @@ export function ReactorRpcHandler<
     return function(
         target: any,
         propertyKey: string,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         descriptor: TypedPropertyDescriptor<
             (component: ComponentType, rpc: RpcType) => any
         >
@@ -34,5 +34,5 @@ export function ReactorRpcHandler<
             componentCtr,
             reactorRpc
         }, target, propertyKey);
-    }
+    };
 }

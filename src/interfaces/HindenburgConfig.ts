@@ -50,14 +50,14 @@ export interface AnticheatRuleConfig {
      * Configuration for each individual sub-rule.
      */
     rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
-};
+}
 
 export interface PluginConfig {
     /**
      * Whether to load all plugins in the plugin directory.
      */
     loadDirectory: boolean;
-    [key: string]: boolean|object;
+    [key: string]: boolean|Record<string, unknown>;
 }
 
 export interface SocketConfig {

@@ -28,5 +28,5 @@ export function MessageHandler<T extends Deserializable>(messageClass: T, option
                 ...options
             }
         }, target, propertyKey);
-    }
+    };
 }

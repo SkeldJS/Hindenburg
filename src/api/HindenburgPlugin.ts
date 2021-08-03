@@ -26,8 +26,8 @@ export function HindenburgPlugin(meta: Partial<PluginMeta>) {
         return class extends constructor {
             static meta = actualMeta;
             meta = actualMeta;
-        }
-    }
+        };
+    };
 }
 
 export function isHindenburgPlugin(object: any)  {

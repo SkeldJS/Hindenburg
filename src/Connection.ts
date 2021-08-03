@@ -77,7 +77,7 @@ export const locales = {
     [Language.ChineseSimplified]: "zh-CN",
     [Language.ChineseTraditional]: "zh-CN",
     [Language.Irish]: "ga"
-}
+};
 
 export class Connection {
     /**
@@ -215,7 +215,7 @@ export class Connection {
                 room: this.room ? fmtCode(this.room.code) : undefined,
                 language: (logLanguages as any)[this.language]
             }
-        )
+        );
 
         return chalk.blue(this.username || "Unidentified")
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
@@ -435,7 +435,7 @@ export class Connection {
     }
 
     getModByNetId(netId: number) {
-        for (const [ modNetId, clientMod ] of this.mods) {
+        for (const [ , clientMod ] of this.mods) {
             if (clientMod.netId === netId) {
                 return clientMod;
             }

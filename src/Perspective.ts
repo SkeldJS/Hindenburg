@@ -424,7 +424,7 @@ export class Perspective extends BaseRoom {
         for (const [ systemType, system ] of systemsEntries) {
             if (system instanceof AutoDoorsSystem) {
                 const autoDoors = system as AutoDoorsSystem<this>;
-                const newAd = new AutoDoorsSystem(ship)
+                const newAd = new AutoDoorsSystem(ship);
 
                 newAd.dirtyBit = autoDoors.dirtyBit;
                 
@@ -561,8 +561,8 @@ export class Perspective extends BaseRoom {
     
     [Symbol.for("nodejs.util.inspect.custom")]() {
         return chalk.yellow(fmtCode(this.code)) + " @ " + (this.playersPov.length === 1
-                ? util.format(this.playersPov[0])
-                : (this.playersPov.length + " players"));
+            ? util.format(this.playersPov[0])
+            : (this.playersPov.length + " players"));
     }
 
     static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[]) {
@@ -606,7 +606,8 @@ export class Perspective extends BaseRoom {
 
     async broadcast(
         messages: BaseGameDataMessage[],
-        reliable: boolean = true,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reliable = true,
         recipient: PlayerData | undefined = undefined,
         payloads: BaseRootMessage[] = []
     ) {
@@ -780,7 +781,7 @@ export class Perspective extends BaseRoom {
                                 DisconnectReason.None,
                                 this.parentRoom.hostid
                             )
-                        )
+                        );
                     }
                 }
 
@@ -914,7 +915,7 @@ export class Perspective extends BaseRoom {
                                         new CompleteTaskMessage(taskState.taskidx)
                                     )
                                 );
-                            };
+                            }
                         }
                     }
                 }

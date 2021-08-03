@@ -4,7 +4,7 @@
  * @param a The first object to compare.
  * @param b The object to compare {@link a} against.
  */
- export function recursiveCompare(a: any, b: any) {
+export function recursiveCompare(a: any, b: any) {
     if (typeof a !== typeof b)
         return false;
 

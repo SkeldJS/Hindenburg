@@ -3,7 +3,7 @@
  * reference the same place in memory.
  * @param a The base object to clone.
  */
- export function recursiveClone(a: any): any {
+export function recursiveClone(a: any): any {
     if (typeof a !== "object") {
         return a;
     }

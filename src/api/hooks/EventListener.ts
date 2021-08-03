@@ -41,5 +41,5 @@ export function EventListener<EventName extends keyof WorkerEvents>(pluginClassO
             handler: descriptor.value,
             eventName: eventName || pluginClassOrEventName
         });
-    }
+    };
 }

@@ -11,5 +11,5 @@ export function RegisterMessage<T extends Deserializable>(deserializable: T) {
         }
 
         messagesToRegister.add(deserializable);
-    }
+    };
 }

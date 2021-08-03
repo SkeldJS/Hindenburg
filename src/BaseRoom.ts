@@ -77,7 +77,7 @@ import { Perspective, PresetFilter } from "./Perspective";
 
     return chalk.blue(this.info?.name || "<No Name>")
         + (paren ? " " + chalk.grey("(" + paren + ")") : "");
-}
+};
 
 export enum SpecialClientId {
     Nil = 2 ** 31 - 1,
@@ -389,7 +389,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     async broadcast(
         messages: BaseGameDataMessage[],
-        reliable: boolean = true,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        reliable = true,
         recipient: PlayerData | undefined = undefined,
         payloads: BaseRootMessage[] = []
     ) {
@@ -648,16 +649,16 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                 playerConnection.getNextNonce(),
                                 [
                                     new JoinedGameMessage(
-                                    this.code,
-                                    clientId,
-                                    this.hostid,
-                                    [...this.connections.values()]  
-                                        .reduce<number[]>((prev, cur) => {
-                                            if (cur !== connection) {
-                                                prev.push(cur.clientId)
-                                            }
-                                            return prev;
-                                        }, [])
+                                        this.code,
+                                        clientId,
+                                        this.hostid,
+                                        [...this.connections.values()]  
+                                            .reduce<number[]>((prev, cur) => {
+                                                if (cur !== connection) {
+                                                    prev.push(cur.clientId);
+                                                }
+                                                return prev;
+                                            }, [])
                                     )
                                 ]
                             )
@@ -732,7 +733,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * }
      * ```
      */
-     async sendChat(message: string, options: Partial<SendChatOptions> = {}) {
+    async sendChat(message: string, options: Partial<SendChatOptions> = {}) {
         if (!this.gamedata)
             throw new TypeError("No gamedata spawned.");
 
@@ -816,7 +817,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             ]);
         } else {
             // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
-            for (const [ , player ] of (defaultOptions.target ? [[ , defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
+            for (const [ , player ] of (defaultOptions.target ? [[ undefined, defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
                 if (!player.control)
                     continue;
 
@@ -880,11 +881,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[]): Perspective {
-        throw new TypeError("Cannot create a perspective from a base room; create one from the full room instead.");
+        throw new TypeError("Method not implemented.");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
-
+        throw new TypeError("Method not implemented.");
     }
 }

@@ -19,5 +19,5 @@ export function ChatCommand(usage: string, description: string) {
             handler: descriptor.value,
             description
         });
-    }
+    };
 }

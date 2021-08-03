@@ -20,5 +20,5 @@ export function CliCommand(command: VorpalCommandInformation) {
             return;
 
         Reflect.defineMetadata(hindenburgVorpalCommand, command, target, propertyKey);
-    }
+    };
 }

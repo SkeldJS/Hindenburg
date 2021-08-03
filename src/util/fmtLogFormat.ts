@@ -1,5 +1,3 @@
-import { LoggingConfig } from "..";
-
 /**
  * Format a log config formatting array, replacing the values with specified data.
  * 

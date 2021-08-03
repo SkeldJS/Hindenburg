@@ -10,7 +10,7 @@ export enum MessageSide {
  * Options regarding sending a chat message into the room as the server, see
  * {@link Room.sendChat}
  */
- export interface SendChatOptions {
+export interface SendChatOptions {
     /**
      * The side of the chat box for the message to appear on for each player.
      * @example

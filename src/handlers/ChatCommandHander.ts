@@ -9,7 +9,7 @@ import { Worker } from "../Worker";
 
 function betterSplitOnSpaces(input: string) {
     let collector = "";
-    let output = [];
+    const output = [];
     let in_string = false;
     for (let i = 0; i < input.length; i++) {
         const char = input[i];
@@ -35,7 +35,7 @@ export interface ChatCommandParameter {
     name: string;
 }
 
-export class CommandCallError extends Error {};
+export class CommandCallError extends Error {}
 export class ChatCommandContext {
     constructor(
         /**
@@ -69,8 +69,8 @@ export type ChatCommandCallback = (ctx: ChatCommandContext, args: any) => any;
 
 export function parseCommandUsage(usage: string): [ string, ChatCommandParameter[] ] {
     // https://github.com/dthree/vorpal/blob/51f5e2b545631b6a86c9781c274a1b0916a67ee8/lib/vorpal.js#L311
-    const matchedParams = usage.match(/(\[[^\]]*\]|\<[^\>]*\>)/g) || [];
-    const matchedCmdName = usage.match(/^([^\[\<]*)/g)?.[0]?.trim() || "";
+    const matchedParams = usage.match(/(\[[^\]]*\]|<[^>]*>)/g) || [];
+    const matchedCmdName = usage.match(/^([^[<]*)/g)?.[0]?.trim() || "";
 
     if (!matchedCmdName)
         throw new TypeError("Invalid command name.");
@@ -156,7 +156,7 @@ export class RegisteredChatCommand {
 
             if (!consume) {
                 if (param.required) {
-                    throw new CommandCallError("Usage: <color=#12a50a>" + this.createUsage() + "</color>\n\<color=#f7584e>Missing: " + param.name + "</color>\n\n" + this.description);
+                    throw new CommandCallError("Usage: <color=#12a50a>" + this.createUsage() + "</color>\n<color=#f7584e>Missing: " + param.name + "</color>\n\n" + this.description);
                 }
                 return parsed; // No more arguments are left to consume
             }

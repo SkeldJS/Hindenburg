@@ -5,7 +5,7 @@ import {
     BaseGameDataMessage,
     GameSettings,
     MessageDirection
- } from "@skeldjs/protocol";
+} from "@skeldjs/protocol";
  
 import { RoomsConfig } from "./interfaces";
 

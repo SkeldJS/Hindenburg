@@ -562,7 +562,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.socket.bind(port);
 
             this.socket.once("listening", () => {
-                this.logger.info("Listening on *:" + port);
                 resolve();
             });
         });
@@ -1077,7 +1076,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     ) {
                         const gameListing = new GameListing(
                             room.code,
-                            "127.0.0.1", /* todo: get ip somehow */
+                            this.config.socket.ip || "127.0.0.1",
                             this.config.socket.port,
                             roomHost.username,
                             room.players.size,

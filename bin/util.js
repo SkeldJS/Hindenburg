@@ -46,7 +46,8 @@ function createDefaultConfig() {
         checkForUpdates: true,
         socket: {
             port: 22023,
-            broadcastUnknownGamedata: false
+            broadcastUnknownGamedata: false,
+            ip: "auto"
         },
         plugins: {
             loadDirectory: true

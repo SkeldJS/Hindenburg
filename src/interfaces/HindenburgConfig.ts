@@ -69,6 +69,10 @@ export interface SocketConfig {
      * Whether or not to broadcast gamedata not handled by the server.
      */
     broadcastUnknownGamedata: boolean;
+    /**
+     * The IP address of this node, set to `auto` for it to get auto-discovered.
+     */
+    ip: string;
 }
 
 export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"language";

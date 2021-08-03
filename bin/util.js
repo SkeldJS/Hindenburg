@@ -1,5 +1,6 @@
 const child_process = require("child_process");
 const chalk = require("chalk");
+const readline = require("readline");
 
 function runCommandInDir(dir, command) {
     return new Promise((resolve, reject) => {
@@ -19,8 +20,8 @@ const spinnerFrames = [ "|", "/", "-", "\\", "|", "/", "-", "\\" ];
 function createSpinner(text) {
     let frame = 0;
     const interval = setInterval(() => {
-        process.stdout.clearLine(1);
-        process.stdout.cursorTo(0);
+        readline.clearLine(process.stdout, 1);
+        readline.cursorTo(process.stdout, 0);
         process.stdout.write(text + " " + spinnerFrames[frame % spinnerFrames.length]);
         frame++;
     }, 100);
@@ -29,8 +30,8 @@ function createSpinner(text) {
 
 function stopSpinner(spinner, success) {
     clearInterval(spinner.interval);
-    process.stdout.clearLine(1);
-    process.stdout.cursorTo(0);
+    readline.clearLine(process.stdout, 1);
+    readline.cursorTo(process.stdout, 0);
     process.stdout.write(spinner.text + " " + (success ? chalk.green("✓") : chalk.red("❌")) + "\n");
 }
 

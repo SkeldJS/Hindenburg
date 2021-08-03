@@ -5,10 +5,13 @@ import {
     AlterGameTag,
     Color,
     DisconnectReason,
+    GameKeyword,
     GameMap,
     GameOverReason,
     GameState,
-    SpawnType
+    KillDistance,
+    SpawnType,
+    TaskBarUpdate
 } from "@skeldjs/constant";
 
 import {
@@ -184,10 +187,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.on("player.syncsettings", async ev => {
-            // todo: log settings diff
-            this.logger.info("Updated game settings, use `ls settings %s`",
-                fmtCode(this.code));
-
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
             }
@@ -519,7 +518,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
             } else {
                 const connection = [...this.connections.values()][0];
                 const player = this.players.get(connection.clientId);
-                await this.setHost(player!); // todo: player might be undefined ?
+
+                if (player) {
+                    await this.setHost(player);
+                }
             }
         }
 

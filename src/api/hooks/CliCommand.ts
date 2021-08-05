@@ -14,7 +14,7 @@ export function CliCommand(command: VorpalCommandInformation) {
     return function(
         target: any,
         propertyKey: string,
-        descriptor: TypedPropertyDescriptor<(args: vorpal.Args) => Promise<void>> // basically has to be a promise else vorpal won't complete without a callback, which is dumb in 2021.
+        descriptor: TypedPropertyDescriptor<(args: vorpal.Args) => Promise<void>> // basically has to be a promise else vorpal won't complete without a callback
     ) {
         if (!descriptor.value)
             return;

@@ -2,22 +2,46 @@ import { ChatCommandCallback } from "../../handlers/ChatCommandHander";
 
 export const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
-export function ChatCommand(usage: string, description: string) {
+export function ChatCommand(usage: string, description: string) :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
+    ) => any;
+export function ChatCommand(pluginClass: typeof Plugin, usage: string, description: string) :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
+    ) => any;
+export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage: string, _description?: string) {
     return function(
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) {
-        const cachedSet = Reflect.getMetadata(hindenburgChatCommandKey, target);
+        const actualTarget = typeof pluginClassOrUsage === "string"
+            ? target
+            : pluginClassOrUsage.prototype;
+
+        const usage = typeof pluginClassOrUsage === "string"
+            ? descriptionOrUsage
+            : pluginClassOrUsage;
+
+        const description = typeof pluginClassOrUsage === "string"
+            ? _description
+            : descriptionOrUsage;
+
+        const cachedSet = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
         const chatCommands = cachedSet || new Set;
         if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgChatCommandKey, chatCommands, target);
+            Reflect.defineMetadata(hindenburgChatCommandKey, chatCommands, actualTarget);
         }
 
         chatCommands.add({
             usage,
-            handler: descriptor.value,
-            description
+            description,
+            handler: descriptor.value
         });
     };
 }

@@ -100,7 +100,7 @@ function formatBytes(bytes: number) {
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
-export interface PacketMetadata {
+export interface PacketContext {
     sender: Connection,
     reliable: boolean;
 }
@@ -159,7 +159,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * The packet decoder used to decode incoming udp packets.
      */
-    decoder: PacketDecoder<Connection>;
+    decoder: PacketDecoder<PacketContext>;
 
     /**
      * The last client ID that was used.
@@ -641,7 +641,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     registerPacketHandlers() {
         this.decoder.listeners.clear();
 
-        this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, sender) => {
+        this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, { sender }) => {
             sender.receivedPackets.unshift(message.nonce);
             sender.receivedPackets.splice(8);
 
@@ -653,7 +653,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(ModdedHelloPacket, async (message, direction, sender) => {
+        this.decoder.on(ModdedHelloPacket, async (message, direction, { sender }) => {
             if (sender.hasIdentified)
                 return;
 
@@ -733,7 +733,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(ReactorModDeclarationMessage, async (message, direction, sender) => {
+        this.decoder.on(ReactorModDeclarationMessage, async (message, direction, { sender }) => {
             if (sender.mods.size >= sender.numMods)
                 return;
 
@@ -762,14 +762,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(DisconnectPacket, async (message, direciton, sender) => {
+        this.decoder.on(DisconnectPacket, async (message, direciton, { sender }) => {
             if (!sender.sentDisconnect)
                 await sender.disconnect();
 
             this.removeConnection(sender);
         });
 
-        this.decoder.on(AcknowledgePacket, (message, direction, sender) => {
+        this.decoder.on(AcknowledgePacket, (message, direction, { sender }) => {
             for (const sentPacket of sender.sentPackets) {
                 if (sentPacket.nonce === message.nonce) {
                     sentPacket.acked = true;
@@ -779,7 +779,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             } 
         });
 
-        this.decoder.on(HostGameMessage, async (message, direction, sender) => {
+        this.decoder.on(HostGameMessage, async (message, direction, { sender }) => {
             if (sender.room)
                 return;
 
@@ -809,7 +809,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(JoinGameMessage, async (message, direction, sender) => {
+        this.decoder.on(JoinGameMessage, async (message, direction, { sender }) => {
             if (
                 sender.room &&
                 sender.room.state !== GameState.Ended &&
@@ -830,7 +830,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             await this.attemptJoin(sender, message.code);
         });
 
-        this.decoder.on(RpcMessage, async (message, direction, sender) => {
+        this.decoder.on(RpcMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
             if (!player)
                 return;
@@ -894,7 +894,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(GameDataMessage, async (message, direction, sender) => {
+        this.decoder.on(GameDataMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
 
             if (!player)
@@ -980,7 +980,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(GameDataToMessage, async (message, direction, sender) => {
+        this.decoder.on(GameDataToMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
 
             if (!sender.room || !player)
@@ -999,7 +999,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             await player.room.broadcast(message._children, true, recipientPlayer, []);
         });
 
-        this.decoder.on(AlterGameMessage, async (message, direction, sender) => {
+        this.decoder.on(AlterGameMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
             if (!player)
                 return;
@@ -1015,7 +1015,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]);
         });
 
-        this.decoder.on(StartGameMessage, async (message, direction, sender) => {
+        this.decoder.on(StartGameMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
             if (!player)
                 return;
@@ -1028,7 +1028,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             sender.room?.room.decoder.emitDecoded(message, direction, player);
         });
 
-        this.decoder.on(EndGameMessage, async (message, direction, sender) => {
+        this.decoder.on(EndGameMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
             if (!player)
                 return;
@@ -1041,7 +1041,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             sender.room?.decoder.emitDecoded(message, direction, player);
         });
 
-        this.decoder.on(KickPlayerMessage, async (message, direction, sender) => {
+        this.decoder.on(KickPlayerMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
             if (!player)
                 return;
@@ -1060,7 +1060,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 */
         });
 
-        this.decoder.on(GetGameListMessage, async (message, direction, sender) => {
+        this.decoder.on(GetGameListMessage, async (message, direction, { sender }) => {
             const returnList: GameListing[] = [];
             for (const [ gameCode, room ] of this.rooms) {
                 if (gameCode === 0x20 /* local game */) {
@@ -1287,7 +1287,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 try {
                     if (cachedConnection) {
-                        if (parsedReliable.nonce !== undefined && !(parsedPacket instanceof AcknowledgePacket)) {
+                        const isReliable = parsedReliable.nonce !== undefined && !(parsedPacket instanceof AcknowledgePacket);
+                        if (isReliable) {
                             if (parsedReliable.nonce <= cachedConnection.lastNonce) {
                                 this.logger.warn("%s is behind (got %s, last nonce was %s)",
                                     cachedConnection, parsedReliable.nonce, cachedConnection.lastNonce);
@@ -1307,7 +1308,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             cachedConnection.lastNonce = parsedReliable.nonce;
                         }
 
-                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, cachedConnection);
+                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
+                            sender: cachedConnection,
+                            reliable: isReliable
+                        });
                     } else {
                         if (!(parsedReliable instanceof ModdedHelloPacket))
                             return;
@@ -1320,7 +1324,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             connection.lastNonce = parsedReliable.nonce;
                         }
 
-                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, connection);
+                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
+                            sender: connection,
+                            reliable: true
+                        });
                     }
                 } catch (e) {
                     const connection = this.getOrCreateConnection(rinfo);

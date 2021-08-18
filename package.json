@@ -1,6 +1,6 @@
 {
   "name": "@skeldjs/hindenburg",
-  "version": "1.0.0-beta.18",
+  "version": "1.0.0-beta.22",
   "main": "./dist/src/index.js",
   "license": "GPL-3.0-only",
   "scripts": {
@@ -13,10 +13,7 @@
     "publish": "yarn npm publish --access public",
     "start": "node ./dist/bin/worker.js",
     "dev": "ts-node ./bin/worker.js",
-    "docs": "typedoc src/index.ts --out docs",
-    "postinstall": "husky install",
-    "prepublishOnly": "pinst --disable",
-    "postpublish": "pinst --enable"
+    "docs": "typedoc src/index.ts --out docs"
   },
   "devDependencies": {
     "@skeldjs/client": "^2.13.4",
@@ -30,7 +27,6 @@
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "^4.28.5",
     "eslint": "^7.32.0",
-    "husky": "^7.0.1",
     "lint-staged": "^11.1.1",
     "pinst": "^2.1.6",
     "ts-node": "^10.0.0",

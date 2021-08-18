@@ -106,8 +106,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
     connections: Map<number, Connection>;
     waiting: Set<Connection>;
     
-    playerPerspectives!: Map<number, Perspective>;
-    activePerspectives!: Perspective[];
+    playerPerspectives: Map<number, Perspective>;
+    activePerspectives: Perspective[];
+
 
     /**
      * This room's console logger.
@@ -127,6 +128,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
         settings: GameSettings
     ) {
         super({ doFixedUpdate: true });
+
+        this.playerPerspectives = new Map;
+        this.activePerspectives = [];
 
         this.createdAt = Date.now();
         this.connections = new Map;

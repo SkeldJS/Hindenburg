@@ -550,7 +550,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        if (client.clientId === this.hostid) {
+        if (client.clientId === this.actingHostId) {
             if (this.connections.size === 0) {
                 await this.setHost([...this.players.values()][0]);
             } else {
@@ -563,14 +563,36 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         }
 
-        await this.broadcastMessages([], [
-            new RemovePlayerMessage(
-                this.code,
-                client.clientId,
-                reason,
-                this.hostid
-            )
-        ]);
+        if (this.config.serverAsHost) {
+            const promises = [];
+            for (const [ clientId, connection ] of this.connections) {
+                promises.push(connection.sendPacket(
+                    new ReliablePacket(
+                        connection.getNextNonce(),
+                        [
+                            new RemovePlayerMessage(
+                                this.code,
+                                client.clientId,
+                                reason,
+                                clientId === this.actingHostId
+                                    ? clientId
+                                    : SpecialClientId.Server
+                            )
+                        ]
+                    )
+                ));
+            }
+            await Promise.all(promises);
+        } else {
+            await this.broadcastMessages([], [
+                new RemovePlayerMessage(
+                    this.code,
+                    client.clientId,
+                    reason,
+                    this.hostid
+                )
+            ]);
+        }
 
         this.logger.info(
             "%s left or was removed.",
@@ -743,7 +765,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                     new JoinedGameMessage(
                                         this.code,
                                         clientId,
-                                        this.hostid,
+                                        clientId === this.actingHostId
+                                            ? clientId
+                                            : this.hostid,
                                         [...this.connections.values()]  
                                             .reduce<number[]>((prev, cur) => {
                                                 if (cur !== connection) {
@@ -851,13 +875,36 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const pcNetId = this.getNextNetId();
             const ppNetId = this.getNextNetId();
             const cntNetId = this.getNextNetId();
-            await this.broadcast([], true, defaultOptions.target, [
-                new JoinGameMessage(
-                    this.code,
-                    SpecialClientId.Temp,
+            if (this.config.serverAsHost) {
+                const promises = [];
+                for (const [ clientId, connection ] of this.connections) {
+                    promises.push(connection.sendPacket(
+                        new ReliablePacket(
+                            connection.getNextNonce(),
+                            [
+                                new JoinGameMessage(
+                                    this.code,
+                                    SpecialClientId.Temp,
+                                    clientId === this.actingHostId
+                                        ? clientId
+                                        : SpecialClientId.Server
+                                )
+                            ]
+                        )
+                    ));
+                }
+                await Promise.all(promises);
+            } else {
+                await this.broadcastMessages([], [
+                    new JoinGameMessage(
+                        this.code,
+                        SpecialClientId.Temp,
+                        this.hostid
                     this.hostid  
-                )
-            ]);
+                        this.hostid
+                    )
+                ]);
+            }
             await this.broadcast([
                 new SpawnMessage(
                     SpawnType.Player,
@@ -899,14 +946,36 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 new DespawnMessage(cntNetId)
             ], true, defaultOptions.target);
             await sleep(25);
-            await this.broadcast([], true, defaultOptions.target, [
-                new RemovePlayerMessage(
-                    this.code,
-                    SpecialClientId.Temp,
-                    DisconnectReason.None,
-                    this.hostid
-                )
-            ]);
+            if (this.config.serverAsHost) {
+                const promises = [];
+                for (const [ clientId, connection ] of this.connections) {
+                    promises.push(connection.sendPacket(
+                        new ReliablePacket(
+                            connection.getNextNonce(),
+                            [
+                                new RemovePlayerMessage(
+                                    this.code,
+                                    SpecialClientId.Temp,
+                                    DisconnectReason.None,
+                                    clientId === this.actingHostId
+                                        ? clientId
+                                        : SpecialClientId.Server
+                                )
+                            ]
+                        )
+                    ));
+                }
+                await Promise.all(promises);
+            } else {
+                await this.broadcastMessages([], [
+                    new RemovePlayerMessage(
+                        this.code,
+                        SpecialClientId.Temp,
+                        DisconnectReason.None,
+                        this.hostid
+                    )
+                ]);
+            }
         } else {
             // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
             for (const [ , player ] of (defaultOptions.target ? [[ undefined, defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {

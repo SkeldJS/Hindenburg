@@ -491,7 +491,32 @@ export class BaseRoom extends Hostable<RoomEvents> {
     async setHost(player: PlayerData) {
         const remote = this.connections.get(player.id);
 
-        await super.setHost(player);
+        const before = this.hostid;
+        const resolvedId = this.resolvePlayerClientID(player);
+
+        if (!resolvedId)
+            return;
+
+        if (this.config.serverAsHost) {
+            this.hostid = SpecialClientId.Server;
+            this.actingHostId = resolvedId;
+        } else {
+            this.hostid = resolvedId;
+            this.actingHostId = this.hostid;
+        }
+
+        if (this.amhost) {
+            if (!this.lobbybehaviour) {
+                this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
+            }
+            if (!this.gamedata) {
+                this.spawnPrefab(SpawnType.GameData, -2);
+            }
+        }
+
+        if (before !== this.hostid && this.host) {
+            await this.host.emit(new PlayerSetHostEvent(this, this.host));
+        }
 
         if (!remote)
             return;

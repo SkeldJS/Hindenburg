@@ -7,7 +7,7 @@ import path from "path";
 import vorpal from "vorpal";
 import chalk from "chalk";
 
-import { Deserializable, RpcMessage, Serializable } from "@skeldjs/protocol";
+import { Deserializable, RpcMessage } from "@skeldjs/protocol";
 import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
 
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
@@ -28,7 +28,8 @@ import {
     BaseReactorRpcMessage,
     isHindenburgPlugin,
     hindenburgReactorRpcKey,
-    MessageListenerOptions
+    MessageListenerOptions,
+    MessageHandlerCallback
 } from "../api";
 
 import { RegisteredChatCommand } from "./ChatCommandHander";
@@ -59,10 +60,9 @@ export class Plugin {
     messageHandlers: {
         messageClass: Deserializable;
         options: MessageListenerOptions;
-        handler: (ev: Serializable) => any;
+        handler: MessageHandlerCallback<Deserializable>;
     }[];
     reactorRpcHandlers: {
-        componentCtr: typeof Networkable;
         reactorRpc: typeof BaseReactorRpcMessage;
         handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
     }[];
@@ -186,7 +186,7 @@ export class PluginLoader {
                     this.worker.decoder.listeners.delete(`${messageClass.messageType}:${messageClass.messageTag}`);
                 }
 
-                this.worker.decoder.on(messageClass, handler.bind(loadedPlugin));
+                this.worker.decoder.on(messageClass, (message, direction, ctx) => handler(message, ctx));
             }
         }
     }
@@ -202,7 +202,7 @@ export class PluginLoader {
         }
     }
 
-    getReactorRpcHandlers(component: Networkable|typeof Networkable, rpc: BaseReactorRpcMessage|typeof BaseReactorRpcMessage) {
+    getReactorRpcHandlers(rpc: BaseReactorRpcMessage|typeof BaseReactorRpcMessage) {
         const cached = this.reactorRpcHandlers.get(`${rpc.modId}:${rpc.messageTag}`);
         const handlers = cached || new Set;
 
@@ -280,14 +280,13 @@ export class PluginLoader {
 
             const reactorRpcClassnameModIdAndTag = Reflect.getMetadata(hindenburgReactorRpcKey, loadedPlugin, propertyName);
             if (reactorRpcClassnameModIdAndTag) {
-                const { componentCtr, reactorRpc } = reactorRpcClassnameModIdAndTag;
+                const { reactorRpc } = reactorRpcClassnameModIdAndTag;
 
                 const fn = property.bind(loadedPlugin);
-                const rpcHandlers = this.getReactorRpcHandlers(componentCtr, reactorRpc);
+                const rpcHandlers = this.getReactorRpcHandlers(reactorRpc);
                 rpcHandlers.add(fn);
                 loadedPlugin.registeredMessages.push(reactorRpc);
                 loadedPlugin.reactorRpcHandlers.push({
-                    componentCtr,
                     reactorRpc,
                     handler: fn 
                 });
@@ -376,8 +375,8 @@ export class PluginLoader {
         }
 
         for (let i = 0; i < pluginId.reactorRpcHandlers.length; i++) {
-            const { componentCtr, reactorRpc, handler } = pluginId.reactorRpcHandlers[i];
-            const rpcHandlers = this.getReactorRpcHandlers(componentCtr, reactorRpc);
+            const { reactorRpc, handler } = pluginId.reactorRpcHandlers[i];
+            const rpcHandlers = this.getReactorRpcHandlers(reactorRpc);
             rpcHandlers.delete(handler);
         }
 

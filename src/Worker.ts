@@ -100,6 +100,11 @@ function formatBytes(bytes: number) {
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
+export interface PacketMetadata {
+    sender: Connection,
+    reliable: boolean;
+}
+
 export type WorkerEvents = RoomEvents
     & ExtractEventTypes<[
         ClientBanEvent,
@@ -636,11 +641,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
     registerPacketHandlers() {
         this.decoder.listeners.clear();
 
-        this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, connection) => {
-            connection.receivedPackets.unshift(message.nonce);
-            connection.receivedPackets.splice(8);
+        this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, sender) => {
+            sender.receivedPackets.unshift(message.nonce);
+            sender.receivedPackets.splice(8);
 
-            await connection.sendPacket(
+            await sender.sendPacket(
                 new AcknowledgePacket(
                     message.nonce,
                     []
@@ -648,39 +653,39 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(ModdedHelloPacket, async (message, direction, connection) => {
-            if (connection.hasIdentified)
+        this.decoder.on(ModdedHelloPacket, async (message, direction, sender) => {
+            if (sender.hasIdentified)
                 return;
 
-            connection.hasIdentified = true;
-            connection.usingReactor = !message.isNormalHello();
-            connection.username = message.username;
-            connection.language = message.language;
-            connection.clientVersion = message.clientver;
+            sender.hasIdentified = true;
+            sender.usingReactor = !message.isNormalHello();
+            sender.username = message.username;
+            sender.language = message.language;
+            sender.clientVersion = message.clientver;
 
-            if (connection.usingReactor) {
-                connection.numMods = message.modcount!;
+            if (sender.usingReactor) {
+                sender.numMods = message.modcount!;
             }
 
-            if (!this.validVersions.includes(connection.clientVersion.encode())) {
+            if (!this.validVersions.includes(sender.clientVersion.encode())) {
                 this.logger.warn("%s connected with invalid client version: %s",
-                    connection, connection.clientVersion.toString());
-                connection.disconnect(DisconnectReason.IncorrectVersion);
+                    sender, sender.clientVersion.toString());
+                sender.disconnect(DisconnectReason.IncorrectVersion);
                 return;
             }
 
             this.logger.info("%s connected, language: %s",
-                connection, Language[connection.language] || "Unknown");
+                sender, Language[sender.language] || "Unknown");
 
-            if (connection.usingReactor) {
+            if (sender.usingReactor) {
                 if (!this.config.reactor) {
-                    connection.disconnect(i18n.reactor_not_enabled_on_server);
+                    sender.disconnect(i18n.reactor_not_enabled_on_server);
                     return;
                 }
 
-                await connection.sendPacket(
+                await sender.sendPacket(
                     new ReliablePacket(
-                        connection.getNextNonce(),
+                        sender.getNextNonce(),
                         [
                             new ReactorMessage(
                                 new ReactorHandshakeMessage("Hindenburg", "1.0.0", this.pluginLoader.loadedPlugins.size)
@@ -694,9 +699,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 for (let i = 0; i < chunkedPlugins.length; i++) {
                     const chunk = chunkedPlugins[i];
                     
-                    connection.sendPacket(
+                    sender.sendPacket(
                         new ReliablePacket(
-                            connection.getNextNonce(),
+                            sender.getNextNonce(),
                             chunk.map(([ , plugin ]) => 
                                 new ReactorMessage(
                                     new ReactorPluginDeclarationMessage(
@@ -718,18 +723,18 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     (this.config.reactor === true ||
                     !this.config.reactor.allowNormalClients)
                 ) {
-                    connection.disconnect(i18n.reactor_required_on_server);
+                    sender.disconnect(i18n.reactor_required_on_server);
                     return;
                 }
             }
 
             await this.emit(
-                new ClientConnectEvent(connection)
+                new ClientConnectEvent(sender)
             );
         });
 
-        this.decoder.on(ReactorModDeclarationMessage, async (message, direction, connection) => {
-            if (connection.mods.size >= connection.numMods)
+        this.decoder.on(ReactorModDeclarationMessage, async (message, direction, sender) => {
+            if (sender.mods.size >= sender.numMods)
                 return;
 
             const clientMod = new ClientMod(
@@ -739,48 +744,48 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 message.mod.networkSide
             );
 
-            connection.mods.set(clientMod.modId, clientMod);
+            sender.mods.set(clientMod.modId, clientMod);
 
-            if (connection.mods.size === 4) {
+            if (sender.mods.size === 4) {
                 this.logger.info("... Got more mods from %s, use '%s' to see more",
-                    connection, chalk.green("list mods " + connection.clientId));
-            } else if (connection.mods.size < 4) {
+                    sender, chalk.green("list mods " + sender.clientId));
+            } else if (sender.mods.size < 4) {
                 this.logger.info("Got mod from %s: %s",
-                    connection, clientMod);
+                    sender, clientMod);
             }
 
-            if (connection.mods.size >= connection.numMods) {
-                if (connection.awaitingToJoin) {
-                    await this.attemptJoin(connection, connection.awaitingToJoin);
-                    connection.awaitingToJoin = 0;
+            if (sender.mods.size >= sender.numMods) {
+                if (sender.awaitingToJoin) {
+                    await this.attemptJoin(sender, sender.awaitingToJoin);
+                    sender.awaitingToJoin = 0;
                 }
             }
         });
 
-        this.decoder.on(DisconnectPacket, async (message, direciton, connection) => {
-            if (!connection.sentDisconnect)
-                await connection.disconnect();
+        this.decoder.on(DisconnectPacket, async (message, direciton, sender) => {
+            if (!sender.sentDisconnect)
+                await sender.disconnect();
 
-            this.removeConnection(connection);
+            this.removeConnection(sender);
         });
 
-        this.decoder.on(AcknowledgePacket, (message, direction, connection) => {
-            for (const sentPacket of connection.sentPackets) {
+        this.decoder.on(AcknowledgePacket, (message, direction, sender) => {
+            for (const sentPacket of sender.sentPackets) {
                 if (sentPacket.nonce === message.nonce) {
                     sentPacket.acked = true;
-                    connection.roundTripPing = Date.now() - sentPacket.sentAt;
+                    sender.roundTripPing = Date.now() - sentPacket.sentAt;
                     break;
                 }
             } 
         });
 
-        this.decoder.on(HostGameMessage, async (message, direction, connection) => {
-            if (connection.room)
+        this.decoder.on(HostGameMessage, async (message, direction, sender) => {
+            if (sender.room)
                 return;
 
             const ev = await this.emit(
                 new WorkerBeforeCreateEvent(
-                    connection,
+                    sender,
                     message.options
                 )
             );
@@ -792,11 +797,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const room = await this.createRoom(roomCode, message.options);
 
             this.logger.info("%s created room %s",
-                connection, room);
+                sender, room);
 
-            await connection.sendPacket(
+            await sender.sendPacket(
                 new ReliablePacket(
-                    connection.getNextNonce(),
+                    sender.getNextNonce(),
                     [
                         new HostGameMessage(roomCode)
                     ]
@@ -804,29 +809,29 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(JoinGameMessage, async (message, direction, connection) => {
+        this.decoder.on(JoinGameMessage, async (message, direction, sender) => {
             if (
-                connection.room &&
-                connection.room.state !== GameState.Ended &&
-                connection.room.code !== message.code // extra checks so you can join back the same game
+                sender.room &&
+                sender.room.state !== GameState.Ended &&
+                sender.room.code !== message.code // extra checks so you can join back the same game
             )
                 return;
 
-            if (connection.mods.size < connection.numMods) {
+            if (sender.mods.size < sender.numMods) {
                 this.logger.info("Didn't get all mods from %s, waiting before joining %s",
-                    connection, fmtCode(message.code));
-                connection.awaitingToJoin = message.code;
+                    sender, fmtCode(message.code));
+                sender.awaitingToJoin = message.code;
                 return;
             }
 
-            if (!this.checkClientMods(connection))
+            if (!this.checkClientMods(sender))
                 return;
 
-            await this.attemptJoin(connection, message.code);
+            await this.attemptJoin(sender, message.code);
         });
 
-        this.decoder.on(RpcMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
+        this.decoder.on(RpcMessage, async (message, direction, sender) => {
+            const player = sender.getPlayer();
             if (!player)
                 return;
 
@@ -836,24 +841,24 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const componentNetId = message.netid;
                 const modNetId = reactorRpc.modNetId;
 
-                const component = connection.room?.netobjects.get(componentNetId);
-                const senderMod = connection.getModByNetId(modNetId);
+                const component = sender.room?.netobjects.get(componentNetId);
+                const senderMod = sender.getModByNetId(modNetId);
 
                 if (!component) {
                     this.logger.warn("Got reactor Rpc from %s for unknown component with netid %s",
-                        connection, componentNetId);
+                        sender, componentNetId);
                     return;
                 }
 
                 if (!senderMod) {
                     this.logger.warn("Got reactor Rpc from %s for unknown mod with netid %s",
-                        connection, modNetId);
+                        sender, modNetId);
                     return;
                 }
 
                 if (senderMod.networkSide === ModPluginSide.Clientside) {
                     this.logger.warn("Got reactor Rpc from %s for client-side-only reactor mod %s",
-                        connection, senderMod);
+                        sender, senderMod);
 
                     if (this.config.reactor && (this.config.reactor === true || this.config.reactor.blockClientSideOnly)) {
                         return;
@@ -867,8 +872,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 }
 
-                for (const [ , receiveClient ] of connection.room!.connections) {
-                    if (receiveClient === connection)
+                for (const [ , receiveClient ] of sender.room!.connections) {
+                    if (receiveClient === sender)
                         continue;
 
                     const receiverMods = receiveClient.mods.get(senderMod.modId);
@@ -876,7 +881,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     if (!receiverMods)
                         continue;
 
-                    connection.room!.broadcastMessages([
+                    sender.room!.broadcastMessages([
                         new RpcMessage(
                             message.netid,
                             new ReactorRpcMessage(
@@ -889,8 +894,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(GameDataMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
+        this.decoder.on(GameDataMessage, async (message, direction, sender) => {
+            const player = sender.getPlayer();
 
             if (!player)
                 return;
@@ -903,7 +908,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     // unreliably.
                     // todo: better way of doing this
                     const dataMessage = message.children[0] as DataMessage;
-                    const component = connection.room!.netobjects.get(dataMessage.netid);
+                    const component = sender.room!.netobjects.get(dataMessage.netid);
                     if (component instanceof CustomNetworkTransform) {
                         reliable = false;
                     }
@@ -929,9 +934,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 // send message to the player's perspective or their room
                 if (playerPov) {
-                    await playerPov.decoder.emitDecoded(child, direction, connection);
+                    await playerPov.decoder.emitDecoded(child, direction, sender);
                 } else {
-                    await connection.room!.decoder.emitDecoded(child, direction, connection);
+                    await sender.room!.decoder.emitDecoded(child, direction, sender);
                 }
 
                 if (child.canceled)
@@ -957,31 +962,31 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 if (povNotCanceled.length) {
                     // broadcast messages to the room that matched against the outgoing filter
-                    await connection.room?.broadcastMessages(povNotCanceled, [], undefined, [connection], reliable);
-                    await connection.room?.broadcastToPerspectives(connection, povNotCanceled, reliable);
+                    await sender.room?.broadcastMessages(povNotCanceled, [], undefined, [sender], reliable);
+                    await sender.room?.broadcastToPerspectives(sender, povNotCanceled, reliable);
                 }
                 
                 if (notCanceled.length) {
                     // broadcast messages to the player's pov that weren't canceled above
-                    await playerPov.broadcastMessages(notCanceled, [], undefined, [connection], reliable);
+                    await playerPov.broadcastMessages(notCanceled, [], undefined, [sender], reliable);
                 }
             } else {
-                await connection.room?.broadcastToPerspectives(connection, notCanceled, reliable);
+                await sender.room?.broadcastToPerspectives(sender, notCanceled, reliable);
 
                 if (notCanceled.length) {
                     // broadcast all messages normally
-                    await connection.room?.broadcastMessages(notCanceled, [], undefined, [connection], reliable);
+                    await sender.room?.broadcastMessages(notCanceled, [], undefined, [sender], reliable);
                 }
             }
         });
 
-        this.decoder.on(GameDataToMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
+        this.decoder.on(GameDataToMessage, async (message, direction, sender) => {
+            const player = sender.getPlayer();
 
-            if (!connection.room || !player)
+            if (!sender.room || !player)
                 return;
 
-            const recipientConnection = connection.room!.connections.get(message.recipientid);
+            const recipientConnection = sender.room!.connections.get(message.recipientid);
 
             if (!recipientConnection)
                 return;
@@ -994,56 +999,56 @@ export class Worker extends EventEmitter<WorkerEvents> {
             await player.room.broadcast(message._children, true, recipientPlayer, []);
         });
 
-        this.decoder.on(AlterGameMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
+        this.decoder.on(AlterGameMessage, async (message, direction, sender) => {
+            const player = sender.getPlayer();
             if (!player)
                 return;
 
             if (!player.ishost) {
                 // todo: proper anti-cheat config
-                return connection.disconnect(DisconnectReason.Hacking);
+                return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room?.decoder.emitDecoded(message, direction, player);
-            await connection.room?.broadcast([], true, undefined, [
-                new AlterGameMessage(connection.room.code, message.alterTag, message.value)
+            sender.room?.decoder.emitDecoded(message, direction, player);
+            await sender.room?.broadcast([], true, undefined, [
+                new AlterGameMessage(sender.room.code, message.alterTag, message.value)
             ]);
         });
 
-        this.decoder.on(StartGameMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
+        this.decoder.on(StartGameMessage, async (message, direction, sender) => {
+            const player = sender.getPlayer();
             if (!player)
                 return;
 
             if (!player.ishost) {
                 // todo: proper anti-cheat config
-                return connection.disconnect(DisconnectReason.Hacking);
+                return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room?.room.decoder.emitDecoded(message, direction, player);
+            sender.room?.room.decoder.emitDecoded(message, direction, player);
         });
 
-        this.decoder.on(EndGameMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
+        this.decoder.on(EndGameMessage, async (message, direction, sender) => {
+            const player = sender.getPlayer();
             if (!player)
                 return;
 
             if (!player.ishost) {
                 // todo: proper anti-cheat config
-                return connection.disconnect(DisconnectReason.Hacking);
+                return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            connection.room?.decoder.emitDecoded(message, direction, player);
+            sender.room?.decoder.emitDecoded(message, direction, player);
         });
 
-        this.decoder.on(KickPlayerMessage, async (message, direction, connection) => {
-            const player = connection.getPlayer();
+        this.decoder.on(KickPlayerMessage, async (message, direction, sender) => {
+            const player = sender.getPlayer();
             if (!player)
                 return;
 
             if (!player.ishost) {
                 // todo: proper anti-cheat config
-                return connection.disconnect(DisconnectReason.Hacking);
+                return sender.disconnect(DisconnectReason.Hacking);
             }
             /*
             const targetConnection = connection.room?.room.players.get(message.clientid);
@@ -1055,7 +1060,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 */
         });
 
-        this.decoder.on(GetGameListMessage, async (message, direction, connection) => {
+        this.decoder.on(GetGameListMessage, async (message, direction, sender) => {
             const returnList: GameListing[] = [];
             for (const [ gameCode, room ] of this.rooms) {
                 if (gameCode === 0x20 /* local game */) {
@@ -1096,9 +1101,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             if (returnList.length) {
-                await connection.sendPacket(
+                await sender.sendPacket(
                     new ReliablePacket(
-                        connection.getNextNonce(),
+                        sender.getNextNonce(),
                         [
                             new GetGameListMessage(returnList)
                         ]

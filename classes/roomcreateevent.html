@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RoomBeforeDestroyEvent | @skeldjs/hindenburg</title>
+	<title>RoomCreateEvent | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="roombeforedestroyevent.html">RoomBeforeDestroyEvent</a>
+					<a href="roomcreateevent.html">RoomCreateEvent</a>
 				</li>
 			</ul>
-			<h1>Class RoomBeforeDestroyEvent</h1>
+			<h1>Class RoomCreateEvent</h1>
 		</div>
 	</div>
 </header>
@@ -70,20 +70,19 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Emitted just before a room is destroyed.</p>
+						<p>Emitted after a room has successfully been created.</p>
 					</div>
-					<p>See <a href="roomdestroyevent.html">RoomDestroyEvent</a> to guarantee that the room has been destroyed
-					and cannot be brought back.</p>
+					<p>See {@link RoomBeforeCreateEvent} for a hookable create event.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">CancelableEvent</span>
+						<span class="tsd-signature-type">BasicEvent</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">RoomBeforeDestroyEvent</span>
+								<span class="target">RoomCreateEvent</span>
 							</li>
 						</ul>
 					</li>
@@ -96,23 +95,15 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="roombeforedestroyevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="roombeforedestroyevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="roombeforedestroyevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="roombeforedestroyevent.html#reason" class="tsd-kind-icon">reason</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="roombeforedestroyevent.html#room" class="tsd-kind-icon">room</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-inherited tsd-is-external">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="roombeforedestroyevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="roomcreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="roomcreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="roomcreateevent.html#room" class="tsd-kind-icon">room</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="roombeforedestroyevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="roomcreateevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
@@ -123,41 +114,23 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.beforedestroy&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.create&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides CancelableEvent.eventName</p>
+						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a8735f1/src/api/events/room/BeforeDestroy.ts#L12">src/api/events/room/BeforeDestroy.ts:12</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-					<a name="canceled" class="tsd-anchor"></a>
-					<h3>canceled</h3>
-					<div class="tsd-signature tsd-kind-icon">canceled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from CancelableEvent.canceled</p>
-						<ul>
-							<li>Defined in node_modules/@skeldjs/events/dist/lib/CancelableEvent.d.ts:3</li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a8735f1/src/api/events/room/Create.ts#L10">src/api/events/room/Create.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
 					<a name="eventname-1" class="tsd-anchor"></a>
 					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.beforedestroy&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.create&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides CancelableEvent.eventName</p>
+						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a8735f1/src/api/events/room/BeforeDestroy.ts#L13">src/api/events/room/BeforeDestroy.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a8735f1/src/api/events/room/Create.ts#L11">src/api/events/room/Create.ts:11</a></li>
 						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="reason" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> reason</h3>
-					<div class="tsd-signature tsd-kind-icon">reason<span class="tsd-signature-symbol">:</span> <a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></div>
-					<aside class="tsd-sources">
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
@@ -168,41 +141,20 @@
 					</aside>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-external">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-					<a name="cancel" class="tsd-anchor"></a>
-					<h3>cancel</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from CancelableEvent.cancel</p>
-								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/CancelableEvent.d.ts:5</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
 				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<wbr>Before<wbr>Destroy<wbr>Event<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="roombeforedestroyevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomBeforeDestroyEvent</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<wbr>Create<wbr>Event<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="roomcreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomCreateEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides CancelableEvent.constructor</p>
+								<p>Overrides BasicEvent.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a8735f1/src/api/events/room/BeforeDestroy.ts#L13">src/api/events/room/BeforeDestroy.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/a8735f1/src/api/events/room/Create.ts#L11">src/api/events/room/Create.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -210,11 +162,8 @@
 								<li>
 									<h5>room: <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
 								</li>
-								<li>
-									<h5>reason: <a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></h5>
-								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="roombeforedestroyevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomBeforeDestroyEvent</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="roomcreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomCreateEvent</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -275,28 +224,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="roombeforedestroyevent.html" class="tsd-kind-icon">Room<wbr>Before<wbr>Destroy<wbr>Event</a>
+						<a href="roomcreateevent.html" class="tsd-kind-icon">Room<wbr>Create<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-								<a href="roombeforedestroyevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="roombeforedestroyevent.html#cancel" class="tsd-kind-icon">cancel</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="roombeforedestroyevent.html#canceled" class="tsd-kind-icon">canceled</a>
+								<a href="roomcreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="roombeforedestroyevent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="roomcreateevent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-								<a href="roombeforedestroyevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="roomcreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="roombeforedestroyevent.html#reason" class="tsd-kind-icon">reason</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="roombeforedestroyevent.html#room" class="tsd-kind-icon">room</a>
+								<a href="roomcreateevent.html#room" class="tsd-kind-icon">room</a>
 							</li>
 						</ul>
 					</li>

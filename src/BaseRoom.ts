@@ -234,6 +234,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 
+    get host() {
+        return this.players.get(this.actingHostId);
+    }
+
+    get amhost() {
+        return this.config.serverAsHost;
+    }
+
     get name() {
         return fmtCode(this.code);
     }

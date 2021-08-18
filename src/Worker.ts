@@ -971,6 +971,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!sender.room || !player)
                 return;
 
+            if (message.recipientid === SpecialClientId.Server && sender.room.config.serverAsHost) {
+                // todo: emit to perspectives too
+                for (const child of message._children) {
+                    await sender.room.decoder.emitDecoded(child, MessageDirection.Serverbound, player);
+                }
+            }
+
             const recipientConnection = sender.room!.connections.get(message.recipientid);
 
             if (!recipientConnection)

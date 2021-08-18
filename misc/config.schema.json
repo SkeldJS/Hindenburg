@@ -349,6 +349,10 @@
                     "items": [{
                         "type": "string"
                     }]
+                },
+                "serverAsHost": {
+                    "type": "boolean",
+                    "description": "Whether the server should act as the host of the room."
                 }
             }
         }

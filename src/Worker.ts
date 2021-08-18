@@ -8,7 +8,6 @@ import {
     DisconnectReason,
     Language,
     GameState,
-    GameDataMessageTag,
     GameKeyword,
     TaskBarUpdate,
     KillDistance,
@@ -19,7 +18,6 @@ import {
     AcknowledgePacket,
     AlterGameMessage,
     BaseRootPacket,
-    DataMessage,
     DisconnectPacket,
     EndGameMessage,
     GameDataToMessage,
@@ -69,7 +67,7 @@ import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { Room } from "./Room";
 import { Perspective } from "./Perspective";
-import { RoomEvents } from "./BaseRoom";
+import { RoomEvents, SpecialClientId } from "./BaseRoom";
 
 import {
     ClientBanEvent,
@@ -87,7 +85,6 @@ import {
 } from "./packets";
 
 import i18n from "./i18n";
-import { CustomNetworkTransform } from "@skeldjs/core";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {

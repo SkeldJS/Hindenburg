@@ -103,7 +103,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="playerdata.html#components" class="tsd-kind-icon">components</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playerdata.html#character" class="tsd-kind-icon">character</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="playerdata.html#id" class="tsd-kind-icon">id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playerdata.html#inscene" class="tsd-kind-icon">in<wbr>Scene</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playerdata.html#isready" class="tsd-kind-icon">is<wbr>Ready</a></li>
@@ -136,7 +136,6 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="playerdata.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="playerdata.html#emitserial" class="tsd-kind-icon">emit<wbr>Serial</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="playerdata.html#getcomponent" class="tsd-kind-icon">get<wbr>Component</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="playerdata.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="playerdata.html#off" class="tsd-kind-icon">off</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="playerdata.html#on" class="tsd-kind-icon">on</a></li>
@@ -152,21 +151,15 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-					<a name="components" class="tsd-anchor"></a>
-					<h3>components</h3>
-					<div class="tsd-signature tsd-kind-icon">components<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="character" class="tsd-anchor"></a>
+					<h3>character</h3>
+					<div class="tsd-signature tsd-kind-icon">character<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playercontrol.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerControl</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="heritable.html">Heritable</a>.<a href="heritable.html#components">components</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:27</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:37</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The components for this object.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="id" class="tsd-anchor"></a>
@@ -175,7 +168,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="heritable.html">Heritable</a>.<a href="heritable.html#id">id</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:23</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:25</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -236,7 +229,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="heritable.html">Heritable</a>.<a href="heritable.html#room">room</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:19</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:21</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -274,7 +267,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="heritable.html">Heritable</a>.<a href="heritable.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:36</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:37</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -303,13 +296,13 @@
 					<a name="control" class="tsd-anchor"></a>
 					<h3>control</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> control<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playercontrol.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerControl</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> control<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playercontrol.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerControl</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:41</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:42</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -317,7 +310,7 @@
 									<p>The player&#39;s control component.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="playercontrol.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerControl</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playercontrol.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerControl</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -331,7 +324,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:53</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:54</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -353,7 +346,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:65</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:66</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -375,7 +368,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:69</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:70</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,13 +384,13 @@
 					<a name="physics" class="tsd-anchor"></a>
 					<h3>physics</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> physics<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playerphysics.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerPhysics</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> physics<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerphysics.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerPhysics</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:45</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:46</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -405,7 +398,7 @@
 									<p>The player&#39;s physics component.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="playerphysics.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerPhysics</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerphysics.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerPhysics</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -413,13 +406,13 @@
 					<a name="playerid" class="tsd-anchor"></a>
 					<h3>player<wbr>Id</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> playerId<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> playerId<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:57</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:58</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -427,7 +420,7 @@
 									<p>The player ID of the player.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -441,7 +434,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:61</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:62</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -463,7 +456,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:49</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:50</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -490,7 +483,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="heritable.html">Heritable</a>.<a href="heritable.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:29</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:27</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -511,7 +504,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="heritable.html">Heritable</a>.<a href="heritable.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:30</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:28</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -557,44 +550,6 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-					<a name="getcomponent" class="tsd-anchor"></a>
-					<h3>get<wbr>Component</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Component&lt;T&gt;<span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NetworkableConstructor</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NetworkableConstructor</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from <a href="heritable.html">Heritable</a>.<a href="heritable.html#getcomponent">getComponent</a></p>
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Heritable.d.ts:35</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Get a certain component from the object.</p>
-								</div>
-							</div>
-							<h4 class="tsd-type-parameters-title">Type parameters</h4>
-							<ul class="tsd-type-parameters">
-								<li>
-									<h4>T</h4>
-								</li>
-							</ul>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>component: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NetworkableConstructor</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NetworkableConstructor</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The component class to get.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">T</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -645,7 +600,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -679,7 +634,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -755,7 +710,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -823,7 +778,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:73</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/PlayerData.d.ts:74</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -895,7 +850,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.move&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.snapto&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.entervent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.exitvent&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.climbladder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.checkname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.murder&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.reportbody&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.chat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setcolor&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethat&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setimpostors&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setname&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setpet&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setskin&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.setstartcounter&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.startmeeting&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.syncsettings&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.join&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.leave&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.ready&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.scenechange&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.sethost&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;player.spawn&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -982,8 +937,8 @@
 					<li class="current tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="playerdata.html" class="tsd-kind-icon">Player<wbr>Data</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="playerdata.html#components" class="tsd-kind-icon">components</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="playerdata.html#character" class="tsd-kind-icon">character</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
 								<a href="playerdata.html#constructor" class="tsd-kind-icon">constructor</a>
@@ -996,9 +951,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="playerdata.html#emitserial" class="tsd-kind-icon">emit<wbr>Serial</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="playerdata.html#getcomponent" class="tsd-kind-icon">get<wbr>Component</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="playerdata.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a>

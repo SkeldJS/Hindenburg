@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AnticheatConfig | @skeldjs/hindenburg</title>
+	<title>PacketContext | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="anticheatconfig.html">AnticheatConfig</a>
+					<a href="packetcontext.html">PacketContext</a>
 				</li>
 			</ul>
-			<h1>Interface AnticheatConfig</h1>
+			<h1>Interface PacketContext</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">AnticheatConfig</span>
+						<span class="target">PacketContext</span>
 					</li>
 				</ul>
 			</section>
@@ -82,8 +82,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatconfig.html#penalty" class="tsd-kind-icon">penalty</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatconfig.html#rules" class="tsd-kind-icon">rules</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="packetcontext.html#reliable" class="tsd-kind-icon">reliable</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="packetcontext.html#sender" class="tsd-kind-icon">sender</a></li>
 							</ul>
 						</section>
 					</div>
@@ -92,34 +92,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="penalty" class="tsd-anchor"></a>
-					<h3>penalty</h3>
-					<div class="tsd-signature tsd-kind-icon">penalty<span class="tsd-signature-symbol">:</span> <a href="anticheatpenalty.html" class="tsd-signature-type" data-tsd-kind="Interface">AnticheatPenalty</a></div>
+					<a name="reliable" class="tsd-anchor"></a>
+					<h3>reliable</h3>
+					<div class="tsd-signature tsd-kind-icon">reliable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/5b9081a/src/interfaces/HindenburgConfig.ts#L32">src/interfaces/HindenburgConfig.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/5b9081a/src/Worker.ts#L105">src/Worker.ts:105</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Global penalties for players brekaing any rule.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="rules" class="tsd-anchor"></a>
-					<h3>rules</h3>
-					<div class="tsd-signature tsd-kind-icon">rules<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="anticheatruleconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">AnticheatRuleConfig</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="sender" class="tsd-anchor"></a>
+					<h3>sender</h3>
+					<div class="tsd-signature tsd-kind-icon">sender<span class="tsd-signature-symbol">:</span> <a href="../classes/connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/5b9081a/src/interfaces/HindenburgConfig.ts#L36">src/interfaces/HindenburgConfig.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/5b9081a/src/Worker.ts#L104">src/Worker.ts:104</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Configuration for each individual rule.</p>
-						</div>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -178,13 +168,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="anticheatconfig.html" class="tsd-kind-icon">Anticheat<wbr>Config</a>
+						<a href="packetcontext.html" class="tsd-kind-icon">Packet<wbr>Context</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="anticheatconfig.html#penalty" class="tsd-kind-icon">penalty</a>
+								<a href="packetcontext.html#reliable" class="tsd-kind-icon">reliable</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="anticheatconfig.html#rules" class="tsd-kind-icon">rules</a>
+								<a href="packetcontext.html#sender" class="tsd-kind-icon">sender</a>
 							</li>
 						</ul>
 					</li>

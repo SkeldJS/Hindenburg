@@ -5,7 +5,7 @@ import { BaseReactorRpcMessage } from "../api";
 
 export class UnknownReactorRpcMessage extends BaseReactorRpcMessage {
     constructor(
-        public readonly tag: number,
+        public readonly messageTag: number,
         public readonly bytes: Buffer
     ) {
         super();
@@ -17,8 +17,8 @@ export class UnknownReactorRpcMessage extends BaseReactorRpcMessage {
 }
 
 export class ReactorRpcMessage extends BaseRpcMessage {
-    static tag = 255 as const;
-    tag = 255 as const;
+    static messageTag = 255 as const;
+    messageTag = 255 as const;
 
     constructor(
         public readonly modNetId: number,
@@ -61,7 +61,7 @@ export class ReactorRpcMessage extends BaseRpcMessage {
         decoder: PacketDecoder
     ) {
         writer.upacked(this.modNetId);
-        writer.upacked(this.customRpc.tag);
+        writer.upacked(this.customRpc.messageTag);
         writer.begin(0);
         writer.write(this.customRpc, direction, decoder);
         writer.end();

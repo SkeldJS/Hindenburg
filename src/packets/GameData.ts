@@ -9,10 +9,10 @@ import {
 } from "@skeldjs/protocol";
 
 export class UnknownGameDataMessage extends BaseGameDataMessage {
-    static tag = 255 as const;
+    static messageTag = 255 as const;
     
     constructor(
-        public readonly tag: number,
+        public readonly messageTag: number,
         public readonly bytes: Buffer
     ) {
         super();
@@ -24,8 +24,8 @@ export class UnknownGameDataMessage extends BaseGameDataMessage {
 }
 
 export class GameDataMessage extends BaseRootMessage {
-    static tag = RootMessageTag.GameData as const;
-    tag = RootMessageTag.GameData as const;
+    static messageTag = RootMessageTag.GameData as const;
+    messageTag = RootMessageTag.GameData as const;
 
     code: number;
     children: BaseGameDataMessage[];
@@ -81,10 +81,10 @@ export class GameDataMessage extends BaseRootMessage {
 
         for (let i = 0; i < this.children.length; i++) {
             const message = this.children[i];
-            if (!decoder.types.has(`gamedata:${message.tag}`))
+            if (!decoder.types.has(`gamedata:${message.messageTag}`))
                 continue;
 
-            writer.begin(message.tag);
+            writer.begin(message.messageTag);
             writer.write(message, direction, decoder);
             writer.end();
         }

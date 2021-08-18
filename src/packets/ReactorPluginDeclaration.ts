@@ -2,8 +2,8 @@ import { BaseReactorMessage, ReactorMessageTag, ReactorMod, ReactorModDeclaratio
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 
 export class ReactorPluginDeclarationMessage extends BaseReactorMessage {
-    static tag = ReactorMessageTag.PluginDeclaration as const;
-    tag = ReactorMessageTag.PluginDeclaration as const;
+    static messageTag = ReactorMessageTag.PluginDeclaration as const;
+    messageTag = ReactorMessageTag.PluginDeclaration as const;
 
     constructor(
         public readonly netId: number,

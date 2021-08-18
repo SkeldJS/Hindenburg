@@ -87,6 +87,7 @@ import {
 } from "./packets";
 
 import i18n from "./i18n";
+import { CustomNetworkTransform } from "@skeldjs/core";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -610,7 +611,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.logger.info("Remove %s", connection);
     }
 
-    private _sendPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
+    protected _sendPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
         return new Promise((resolve, reject) => {
             this.socket.send(buffer, remote.port, remote.address, (err, bytes) => {
                 if (err) return reject(err);
@@ -830,7 +831,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
 
             const reactorRpc = message.data as unknown as ReactorRpcMessage;
-            if (reactorRpc.tag === 0xff) {
+            if (reactorRpc.messageTag === 0xff) {
                 message.cancel();
                 const componentNetId = message.netid;
                 const modNetId = reactorRpc.modNetId;
@@ -859,7 +860,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 }
 
-                const rpcHandlers = this.pluginLoader.reactorRpcHandlers.get(`${component.classname}:${senderMod.modId}:${reactorRpc.customRpc.tag}`);
+                const rpcHandlers = this.pluginLoader.reactorRpcHandlers.get(`${senderMod.modId}:${reactorRpc.customRpc.messageTag}`);
                 if (rpcHandlers) {
                     for (const handler of rpcHandlers) {
                         handler(component, reactorRpc.customRpc);
@@ -896,14 +897,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             let reliable = true;
             if (message.children.length === 1) {
-                if (message.children[0].tag === GameDataMessageTag.Data) {
+                if (message.children[0].messageTag === GameDataMessageTag.Data) {
                     // if the data message comes from a custom network transform,
                     // then it is a movement packet and must be broadcasted
                     // unreliably.
                     // todo: better way of doing this
                     const dataMessage = message.children[0] as DataMessage;
                     const component = connection.room!.netobjects.get(dataMessage.netid);
-                    if (component?.classname === "CustomNetworkTransform") {
+                    if (component instanceof CustomNetworkTransform) {
                         reliable = false;
                     }
                 }
@@ -1240,13 +1241,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         const start = Date.now();
         const writer = HazelWriter.alloc(1024);
-        writer.uint8(packet.tag);
+        writer.uint8(packet.messageTag);
         writer.write(packet, MessageDirection.Clientbound, this.decoder);
         writer.realloc(writer.cursor);
 
         const tookMs = Date.now() - start;
         if (tookMs > 5) {
-            this.logger.warn("Took %sms to write: %s (%s bytes) to %s", tookMs, packet.tag, writer.buffer.byteLength, connection);
+            this.logger.warn("Took %sms to write: %s (%s bytes) to %s", tookMs, packet.messageTag, writer.buffer.byteLength, connection);
         }
 
         if (reliablePacket.nonce !== undefined && !(packet instanceof AcknowledgePacket)) {
@@ -1285,6 +1286,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             if (parsedReliable.nonce <= cachedConnection.lastNonce) {
                                 this.logger.warn("%s is behind (got %s, last nonce was %s)",
                                     cachedConnection, parsedReliable.nonce, cachedConnection.lastNonce);
+
+                                await this.sendPacket(
+                                    cachedConnection,
+                                    new AcknowledgePacket(
+                                        parsedReliable.nonce,
+                                        []
+                                    )
+                                );
 
                                 if (buffer[5] !== 0xff) { // reactor sucks and sends the mod declaration message with a nonce of 0 because it sucks
                                     return;

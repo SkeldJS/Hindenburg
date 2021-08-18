@@ -148,7 +148,7 @@ export class PluginLoader {
     /**
      * classname : mod id : rpc tag
      */
-    reactorRpcHandlers: Map<`${string}:${string}:${number}`, Set<(component: Networkable, rpc: BaseReactorRpcMessage) => any>>;
+    reactorRpcHandlers: Map<`${string}:${number}`, Set<(component: Networkable, rpc: BaseReactorRpcMessage) => any>>;
 
     constructor(
         public readonly worker: Worker,
@@ -183,7 +183,7 @@ export class PluginLoader {
             for (let i = 0; i < loadedPlugin.messageHandlers.length; i++) {
                 const  { messageClass, handler, options } = loadedPlugin.messageHandlers[i];
                 if (options.override) {
-                    this.worker.decoder.listeners.delete(`${messageClass.type}:${messageClass.tag}`);
+                    this.worker.decoder.listeners.delete(`${messageClass.messageType}:${messageClass.messageTag}`);
                 }
 
                 this.worker.decoder.on(messageClass, handler.bind(loadedPlugin));
@@ -203,11 +203,11 @@ export class PluginLoader {
     }
 
     getReactorRpcHandlers(component: Networkable|typeof Networkable, rpc: BaseReactorRpcMessage|typeof BaseReactorRpcMessage) {
-        const cached = this.reactorRpcHandlers.get(`${component.classname}:${rpc.modId}:${rpc.tag}`);
+        const cached = this.reactorRpcHandlers.get(`${rpc.modId}:${rpc.messageTag}`);
         const handlers = cached || new Set;
 
         if (!cached)
-            this.reactorRpcHandlers.set(`${component.classname}:${rpc.modId}:${rpc.tag}`, handlers);
+            this.reactorRpcHandlers.set(`${rpc.modId}:${rpc.messageTag}`, handlers);
 
         return handlers;
     }

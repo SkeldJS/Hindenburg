@@ -1,8 +1,9 @@
 # Writing Plugins
 Hindenburg allows you to start writing plugins relatively easily, in either
-Typescript or Javascript.
+Typescript or Javascript, although it is very highly recommended that you use
+Typescript, as otherwise you likely will not get sufficient typing.
 
-You can either set up a new plugin using [an automated script](#setting-up),
+You can either set up a new plugin using [the automated script](#setting-up),
 or [manually](#setting-up-manually).
 
 ## Setting Up

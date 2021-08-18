@@ -472,20 +472,20 @@ export class BaseRoom extends Hostable<RoomEvents> {
         ]);
     }
 
-    async updateHost(client: Connection) {
+    async updateHost(hostId: number, recipient?: Connection) {
         await this.broadcastMessages([], [
             new JoinGameMessage(
                 this.code,
                 SpecialClientId.Temp,
-                client.clientId
+                hostId
             ),
             new RemovePlayerMessage(
                 this.code,
                 SpecialClientId.Temp,
                 DisconnectReason.None,
-                client.clientId
+                hostId
             )
-        ]);
+        ], recipient ? [ recipient ] : undefined);
     }
 
     async setHost(player: PlayerData) {

@@ -72,6 +72,7 @@ import { RoomEvents, SpecialClientId } from "./BaseRoom";
 import {
     ClientBanEvent,
     ClientConnectEvent,
+    RoomCreateEvent,
     WorkerBeforeCreateEvent,
     WorkerBeforeJoinEvent
 } from "./api";
@@ -1383,6 +1384,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
         const createdRoom = new Room(this, copyConfiguration, options);
         await createdRoom.room.setCode(code);
         this.rooms.set(code, createdRoom);
+
+        this.emit(
+            new RoomCreateEvent(createdRoom)
+        );
 
         return createdRoom;
     }

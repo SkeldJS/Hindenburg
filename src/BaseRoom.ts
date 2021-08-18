@@ -159,7 +159,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
             this.handleEnd(message.reason);
         });
 
-        this.decoder.on(StartGameMessage, () => {
+        this.decoder.on(StartGameMessage, async () => {
+            const actingHostConn = this.connections.get(this.actingHostId);
+            if (actingHostConn) {
+                await this.updateHost(SpecialClientId.Server, actingHostConn);
+            }
+
             this.handleStart();
         });
 
@@ -172,9 +177,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     ev.player, ev.newName);
             }
             if (this.config.serverAsHost && this.saahWaitingFor === ev.player.id) {
-                const playerConnection = this.connections.get(this.actingHostId);
-                if (playerConnection) {
-                    this.updateHost(this.actingHostId, playerConnection);
+                const actingHostConn = this.connections.get(this.actingHostId);
+                if (actingHostConn) {
+                    await this.updateHost(this.actingHostId, actingHostConn);
                 }
             }
         });

@@ -303,9 +303,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
             )
         );
 
-        const stream = this.stream;
-        this.stream = [];
-        if (!ev.canceled && stream.length) {
+        if (!ev.canceled && this.stream.length) {
+            const stream = this.stream;
+            this.stream = [];
             await this.broadcast(stream);
         }
     }

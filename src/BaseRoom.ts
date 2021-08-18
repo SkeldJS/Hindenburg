@@ -39,7 +39,14 @@ import {
     WaitForHostMessage
 } from "@skeldjs/protocol";
 
-import { Hostable, HostableEvents, PlayerData, RoomFixedUpdateEvent } from "@skeldjs/core";
+import {
+    Hostable,
+    HostableEvents,
+    PlayerData,
+    PlayerSetHostEvent,
+    RoomFixedUpdateEvent
+} from "@skeldjs/core";
+
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 
 import { Code2Int, HazelWriter, sleep } from "@skeldjs/util";
@@ -109,6 +116,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     playerPerspectives: Map<number, Perspective>;
     activePerspectives: Perspective[];
 
+    actingHostId: number; // todo: make this an array or a set of everyone who is an acting host
 
     /**
      * This room's console logger.
@@ -121,6 +129,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     bans: Set<string>;
 
     state: GameState;
+    saahWaitingFor: number;
 
     constructor(
         public readonly worker: Worker,
@@ -132,6 +141,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.playerPerspectives = new Map;
         this.activePerspectives = [];
 
+        this.actingHostId = 0;
+
         this.createdAt = Date.now();
         this.connections = new Map;
         this.waiting = new Set;
@@ -142,6 +153,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.settings = settings;
 
         this.state = GameState.NotStarted;
+        this.saahWaitingFor = 0;
 
         this.decoder.on(EndGameMessage, message => {
             this.handleEnd(message.reason);
@@ -151,13 +163,19 @@ export class BaseRoom extends Hostable<RoomEvents> {
             this.handleStart();
         });
 
-        this.on("player.setname", ev => {
+        this.on("player.setname", async ev => {
             if (ev.oldName) {
                 this.logger.info("%s changed their name from %s to %s",
                     ev.player, ev.oldName, ev.newName);
             } else {
                 this.logger.info("%s set their name to %s",
                     ev.player, ev.newName);
+            }
+            if (this.config.serverAsHost && this.saahWaitingFor === ev.player.id) {
+                const playerConnection = this.connections.get(this.actingHostId);
+                if (playerConnection) {
+                    this.updateHost(this.actingHostId, playerConnection);
+                }
             }
         });
 
@@ -899,8 +917,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     new JoinGameMessage(
                         this.code,
                         SpecialClientId.Temp,
-                        this.hostid
-                    this.hostid  
                         this.hostid
                     )
                 ]);

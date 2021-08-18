@@ -578,11 +578,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
         );
     }
 
-    async handleRemoteJoin(client: Connection) {
-        if (this.connections.get(client.clientId))
+    async handleRemoteJoin(joiningClient: Connection) {
+        if (this.connections.get(joiningClient.clientId))
             return;
 
-        const player = await this.handleJoin(client.clientId) || this.players.get(client.clientId);
+        const player = await this.handleJoin(joiningClient.clientId) || this.players.get(joiningClient.clientId);
 
         if (!player)
             return;
@@ -590,44 +590,94 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (!this.host)
             await this.setHost(player);
 
-        client.room = this;
+        joiningClient.room = this;
         if (this.state === GameState.Ended) {
-            if (client.clientId === this.hostid) {
+            if (joiningClient.clientId === this.hostid) {
                 this.state = GameState.NotStarted;
-                this.waiting.add(client);
-                this.connections.set(client.clientId, client);
+                this.waiting.add(joiningClient);
+                this.connections.set(joiningClient.clientId, joiningClient);
                 
                 this.logger.info("%s joined, joining other clients..",
                     player);
                     
-                await this.broadcastMessages([], [
-                    new JoinGameMessage(
-                        this.code,
-                        client.clientId,
-                        this.hostid
-                    )
-                ], undefined, [ client ]);
+                if (this.config.serverAsHost) {
+                    const promises = [];
+                    for (const [ clientId, connection ] of this.connections) {
+                        if (connection === joiningClient) {
+                            continue;
+                        }
+
+                        promises.push(connection.sendPacket(
+                            new ReliablePacket(
+                                connection.getNextNonce(),
+                                [
+                                    new JoinGameMessage(
+                                        this.code,
+                                        joiningClient.clientId,
+                                        clientId === this.actingHostId
+                                            ? clientId
+                                            : SpecialClientId.Server
+                                    )
+                                ]
+                            )
+                        ));
+                    }
+                    await Promise.all(promises);
+                } else {
+                    await this.broadcastMessages([], [
+                        new JoinGameMessage(
+                            this.code,
+                            joiningClient.clientId,
+                            this.hostid
+                        )
+                    ], undefined, [ joiningClient ]);
+                }
 
                 await this._joinOtherClients();
             } else {
-                this.waiting.add(client);
-                this.connections.set(client.clientId, client);
+                this.waiting.add(joiningClient);
+                this.connections.set(joiningClient.clientId, joiningClient);
                 
-                await this.broadcastMessages([], [
-                    new JoinGameMessage(
-                        this.code,
-                        client.clientId,
-                        this.hostid
-                    )
-                ], undefined, [ client ]);
+                if (this.config.serverAsHost) {
+                    const promises = [];
+                    for (const [ clientId, connection ] of this.connections) {
+                        if (connection === joiningClient) {
+                            continue;
+                        }
 
-                await client.sendPacket(
+                        promises.push(connection.sendPacket(
+                            new ReliablePacket(
+                                connection.getNextNonce(),
+                                [
+                                    new JoinGameMessage(
+                                        this.code,
+                                        joiningClient.clientId,
+                                        clientId === this.actingHostId
+                                            ? clientId
+                                            : SpecialClientId.Server
+                                    )
+                                ]
+                            )
+                        ));
+                    }
+                    await Promise.all(promises);
+                } else {
+                    await this.broadcastMessages([], [
+                        new JoinGameMessage(
+                            this.code,
+                            joiningClient.clientId,
+                            this.hostid
+                        )
+                    ], undefined, [ joiningClient ]);
+                }
+
+                await joiningClient.sendPacket(
                     new ReliablePacket(
-                        client.getNextNonce(),
+                        joiningClient.getNextNonce(),
                         [
                             new WaitForHostMessage(
                                 this.code,
-                                client.clientId
+                                joiningClient.clientId
                             )
                         ]
                     )
@@ -639,14 +689,16 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        await client.sendPacket(
+        this.saahWaitingFor = joiningClient.clientId;
+
+        await joiningClient.sendPacket(
             new ReliablePacket(
-                client.getNextNonce(),
+                joiningClient.getNextNonce(),
                 [
                     new JoinedGameMessage(
                         this.code,
-                        client.clientId,
-                        this.host!.id,
+                        joiningClient.clientId,
+                        this.hostid,
                         [...this.connections]
                             .map(([, client]) => client.clientId)
                     ),
@@ -662,16 +714,16 @@ export class BaseRoom extends Hostable<RoomEvents> {
         await this.broadcastMessages([], [
             new JoinGameMessage(
                 this.code,
-                client.clientId,
-                this.host!.id
+                joiningClient.clientId,
+                this.hostid
             )
         ]);
         
-        this.connections.set(client.clientId, client);
+        this.connections.set(joiningClient.clientId, joiningClient);
 
         this.logger.info(
             "%s joined the game",
-            client
+            joiningClient
         );
     }
 

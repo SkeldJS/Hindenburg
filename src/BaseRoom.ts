@@ -59,6 +59,7 @@ import { Worker } from "./Worker";
 import {
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
+    RoomCreateEvent,
     RoomDestroyEvent,
     RoomGameEndEvent,
     RoomGameStartEvent
@@ -103,6 +104,7 @@ export const logMaps = {
 export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
+    RoomCreateEvent,
     RoomDestroyEvent,
     RoomGameEndEvent,
     RoomGameStartEvent

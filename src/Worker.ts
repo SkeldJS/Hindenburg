@@ -1385,7 +1385,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         await createdRoom.room.setCode(code);
         this.rooms.set(code, createdRoom);
 
-        this.emit(
+        createdRoom.emit(
             new RoomCreateEvent(createdRoom)
         );
 

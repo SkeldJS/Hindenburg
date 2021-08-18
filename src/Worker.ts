@@ -1012,7 +1012,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (!player.ishost) {
+            if (player.id !== player.room.actingHostId) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1025,7 +1025,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (!player.ishost) {
+            if (player.id !== player.room.actingHostId) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }

@@ -894,26 +894,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(GameDataMessage, async (message, direction, { sender }) => {
+        this.decoder.on(GameDataMessage, async (message, direction, { sender, reliable }) => {
             const player = sender.getPlayer();
 
             if (!player)
                 return;
-
-            let reliable = true;
-            if (message.children.length === 1) {
-                if (message.children[0].messageTag === GameDataMessageTag.Data) {
-                    // if the data message comes from a custom network transform,
-                    // then it is a movement packet and must be broadcasted
-                    // unreliably.
-                    // todo: better way of doing this
-                    const dataMessage = message.children[0] as DataMessage;
-                    const component = sender.room!.netobjects.get(dataMessage.netid);
-                    if (component instanceof CustomNetworkTransform) {
-                        reliable = false;
-                    }
-                }
-            }
 
             const notCanceled = [];
             // 'player' will be a player object in the perspective, see Connection.getPlayer

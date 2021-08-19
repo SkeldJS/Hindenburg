@@ -1,5 +1,6 @@
 import { Deserializable, GetSerialized } from "@skeldjs/protocol";
 import { PacketContext } from "../../Worker";
+import { Plugin } from "../../handlers/PluginLoader";
 
 export const hindenburgMessageHandlersKey = Symbol("hindenburg:message");
 
@@ -12,7 +13,7 @@ export type MessageHandlerCallback<T extends Deserializable> = (
     ctx: PacketContext
 ) => any
 
-export function MessageHandler<T extends Deserializable>(messageClass: T, options: Partial<MessageListenerOptions>):
+export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<MessageListenerOptions>):
     (
         target: any,
         propertyKey: string,
@@ -38,21 +39,21 @@ export function MessageHandler<T extends Deserializable>(pluginClassOrMessageCla
             ? messageClassOrOptions
             : pluginClassOrMessageClass;
 
-        const options = _options || messageClassOrOptions;
+        const options = _options || messageClassOrOptions || {};
 
         const cachedSet = Reflect.getMetadata(hindenburgMessageHandlersKey, actualTarget);
         const messageHandlers = cachedSet || new Set;
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgMessageHandlersKey, messageHandlers, actualTarget);
         }
-        
-        Reflect.defineMetadata(hindenburgMessageHandlersKey, {
+
+        messageHandlers.add({
             messageClass,
-            handler: descriptor.value,
             options: {
                 override: false,
                 ...options
-            }
-        }, target, propertyKey);
+            },
+            handler: descriptor.value
+        });
     };
 }

@@ -43,6 +43,7 @@ import {
     Hostable,
     HostableEvents,
     PlayerData,
+    PlayerJoinEvent,
     PlayerSetHostEvent,
     RoomFixedUpdateEvent
 } from "@skeldjs/core";
@@ -624,6 +625,15 @@ export class BaseRoom extends Hostable<RoomEvents> {
             client
         );
     }
+    
+    async handleJoin(clientid: number) {
+        if (this.players.has(clientid))
+            return null;
+
+        const player = new PlayerData(this, clientid);
+        this.players.set(clientid, player);
+        return player;
+    }
 
     async handleRemoteJoin(joiningClient: Connection) {
         if (this.connections.get(joiningClient.clientId))
@@ -767,6 +777,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
         ]);
         
         this.connections.set(joiningClient.clientId, joiningClient);
+
+        await this.emit(
+            new PlayerJoinEvent(
+                this,
+                player
+            )
+        );
 
         this.logger.info(
             "%s joined the game",

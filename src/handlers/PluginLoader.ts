@@ -186,7 +186,7 @@ export class PluginLoader {
                     this.worker.decoder.listeners.delete(`${messageClass.messageType}:${messageClass.messageTag}`);
                 }
 
-                this.worker.decoder.on(messageClass, (message, direction, ctx) => handler(message, ctx));
+                this.worker.decoder.on(messageClass, (message, direction, ctx) => handler.bind(loadedPlugin)(message, ctx));
             }
         }
     }
@@ -337,11 +337,11 @@ export class PluginLoader {
 
         const messageHandlers = Reflect.getMetadata(hindenburgMessageHandlersKey, loadedPlugin);
         if (messageHandlers) {
-            loadedPlugin.messageHandlers = messageHandlers;
+            loadedPlugin.messageHandlers = [...messageHandlers];
             this.resetMessageHandlers();
         }
         
-        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin) as Set<Deserializable>|undefined;
+        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin["constructor"]) as Set<Deserializable>|undefined;
         if (messagesToRegister) {
             for (const messageClass of messagesToRegister) {
                 loadedPlugin.registeredMessages.push(messageClass);

@@ -352,7 +352,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
             .alias("ls")
             .action(async args => {
-                if (args.something === "client") {
+                if (args.something === "clients") {
                     this.logger.info("%s client(s)", this.connections.size);
                     const connections = [...this.connections];
                     for (let i = 0; i < connections.length; i++) {

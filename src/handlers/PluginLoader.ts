@@ -46,6 +46,21 @@ export interface PluginMeta {
     order: PluginOrder;
 }
 
+export enum PluginLoadErrorCode {
+    NotAHindenburgPlugin,
+    PluginDisabled,
+    PluginAlreadyLoaded
+}
+
+export class PluginLoadError extends Error {
+    constructor(
+        public readonly code: number,
+        public readonly message: string
+    ) {
+        super(message);
+    }
+}
+
 export class Plugin {
     static meta: PluginMeta;
     meta!: PluginMeta;
@@ -216,7 +231,7 @@ export class PluginLoader {
         const { default: loadedPluginCtr } = await import(importPath) as { default: typeof Plugin };
 
         if (!isHindenburgPlugin(loadedPluginCtr))
-            throw new Error("Expected default export of a hindenburg plugin.");
+            throw new PluginLoadError(PluginLoadErrorCode.NotAHindenburgPlugin, "Expected default export of a hindenburg plugin.");
 
         return loadedPluginCtr;
     }
@@ -229,13 +244,13 @@ export class PluginLoader {
         }
 
         if (!isHindenburgPlugin(loadedPluginCtr))
-            throw new Error("Imported variable was not a hindenburg plugin.");
+            throw new PluginLoadError(PluginLoadErrorCode.NotAHindenburgPlugin, "Imported variable was not a hindenburg plugin.");
 
-        if (typeof config === "boolean" && !config)
-            throw new Error("Plugin is disabled.");
+        if (typeof setConfig === "boolean" && !setConfig)
+            throw new PluginLoadError(PluginLoadErrorCode.PluginDisabled, "Plugin is disabled.");
 
         if (this.loadedPlugins.get(loadedPluginCtr.meta.id))
-            throw new Error("Plugin already loaded.");
+            throw new PluginLoadError(PluginLoadErrorCode.PluginAlreadyLoaded, "Plugin already loaded.");
 
         const loadedPlugin = new loadedPluginCtr(this.worker, config);
 
@@ -424,7 +439,7 @@ export class PluginLoader {
                 const pluginCtr = await this.importPlugin(importPath);
                 pluginCtrs.push(pluginCtr);
             } catch (e) {
-                this.worker.logger.warn("Failed to load plugin from '%s': %s", importName, e);
+                this.worker.logger.warn("Failed to import plugin from '%s': %s", importName, e);
             }
         }
 
@@ -453,7 +468,18 @@ export class PluginLoader {
 
         for (let i = 0; i < pluginCtrs.length; i++) {
             const pluginCtr = pluginCtrs[i];
-            await this.loadPlugin(pluginCtr);
+            try {
+                await this.loadPlugin(pluginCtr);
+            } catch (e) {
+                if (e instanceof PluginLoadError) {
+                    this.worker.logger.warn("Skipped %s: %s",
+                        pluginCtr.meta.id, e.message);
+
+                    continue;
+                }
+                this.worker.logger.warn("Failed to load plugin %s:",
+                    pluginCtr.meta.id, e);
+            }
         }
     }
 

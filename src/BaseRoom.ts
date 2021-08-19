@@ -163,11 +163,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.decoder.on(StartGameMessage, async () => {
-            const actingHostConn = this.connections.get(this.actingHostId);
-            if (actingHostConn) {
-                await this.updateHost(SpecialClientId.Server, actingHostConn);
-            }
-
             this.handleStart();
         });
 
@@ -269,7 +264,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     get amhost() {
-        return this.config.serverAsHost;
+        return this.hostid === SpecialClientId.Server;
     }
 
     get name() {
@@ -831,18 +826,96 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     async handleStart() {
+        if (this.config.serverAsHost) {
+            const actingHostConn = this.connections.get(this.actingHostId);
+            if (actingHostConn) {
+                await this.updateHost(SpecialClientId.Server, actingHostConn);
+            }
+        }
+
         this.state = GameState.Started;
 
         const ev = await this.emit(new RoomGameStartEvent(this));
 
         if (ev.canceled) {
             this.state = GameState.NotStarted;
+            if (this.config.serverAsHost) {
+                const actingHostConn = this.connections.get(this.actingHostId);
+                if (actingHostConn) {
+                    await this.updateHost(this.actingHostId, actingHostConn);
+                }
+            }
             return;
         }
 
         await this.broadcastMessages([], [
             new StartGameMessage(this.code)
         ]);
+
+        if (this.amhost) {
+            await Promise.all([
+                Promise.race([
+                    Promise.all(
+                        [...this.players.values()].map((player) => {
+                            if (player.isReady) {
+                                return Promise.resolve();
+                            }
+    
+                            return new Promise<void>((resolve) => {
+                                player.once("player.ready", () => {
+                                    resolve();
+                                });
+                            });
+                        })
+                    ),
+                    sleep(3000),
+                ]),
+                this.me?.ready(),
+            ]);
+    
+            const removes = [];
+            for (const [clientid, player] of this.players) {
+                if (!player.isReady) {
+                    await this.handleLeave(player);
+                    removes.push(clientid);
+                }
+            }
+    
+            if (removes.length) {
+                await this.broadcast(
+                    [],
+                    true,
+                    undefined,
+                    removes.map((clientid) => {
+                        return new RemovePlayerMessage(
+                            this.code,
+                            clientid,
+                            DisconnectReason.Error
+                        );
+                    })
+                );
+            }
+    
+            if (this.lobbybehaviour)
+                this.despawnComponent(
+                    this.lobbybehaviour
+                );
+    
+            const ship_prefabs = [
+                SpawnType.ShipStatus,
+                SpawnType.Headquarters,
+                SpawnType.PlanetMap,
+                SpawnType.AprilShipStatus,
+                SpawnType.Airship
+            ];
+    
+            this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
+            await this.shipstatus?.selectImpostors();
+    
+            for (const [, player] of this.players) {
+                this.room.gamedata?.setTasks(player, [1, 2, 3]);
+            }
+        }
     }
 
     async handleEnd(reason: GameOverReason) {

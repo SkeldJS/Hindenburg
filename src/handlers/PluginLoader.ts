@@ -228,6 +228,7 @@ export class PluginLoader {
     }
 
     async importPlugin(importPath: string) {
+        delete require.cache[path.resolve(importPath)];
         const { default: loadedPluginCtr } = await import(importPath) as { default: typeof Plugin };
 
         if (!isHindenburgPlugin(loadedPluginCtr))

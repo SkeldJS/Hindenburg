@@ -963,7 +963,7 @@ export class Perspective extends BaseRoom {
                                     ]
                                     : []
                                 ),
-                                ...chunkedPayloads[i]
+                                ...(chunkedPayloads[i] || [])
                             ]
                         )
                     );

@@ -401,9 +401,9 @@ export class Perspective extends BaseRoom {
             const objOnHere = this.netobjects.get(obj.netid)!;
             this.objectList.push(objOnHere);
 
-            for (const component of objOnHere.components) {
-                component.components = objOnHere.components;
-                objOnHere.components.push(component);
+            for (const component of obj.components) {
+                const componentOnHere = this.netobjects.get(component.netid)!;
+                objOnHere.components.push(componentOnHere);
             }
         }
 

@@ -415,7 +415,7 @@ export class PluginLoader {
                 allImportNames.push(depenencyName);
             }
         } catch (e) {
-            if (e.code === "ENOENT") {
+            if ((e as any).code === "ENOENT") {
                 return;
             }
             throw e;

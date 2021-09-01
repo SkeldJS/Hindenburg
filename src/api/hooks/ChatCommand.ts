@@ -25,12 +25,12 @@ export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage: string,
             : pluginClassOrUsage.prototype;
 
         const usage = typeof pluginClassOrUsage === "string"
-            ? descriptionOrUsage
-            : pluginClassOrUsage;
+            ? pluginClassOrUsage
+            : descriptionOrUsage;
 
         const description = typeof pluginClassOrUsage === "string"
-            ? _description
-            : descriptionOrUsage;
+            ? descriptionOrUsage
+            : _description;
 
         const cachedSet = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
         const chatCommands = cachedSet || new Set;

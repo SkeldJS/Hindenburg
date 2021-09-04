@@ -478,7 +478,7 @@ export class PluginLoader {
 
                     continue;
                 }
-                this.worker.logger.warn("Failed to load plugin %s:",
+                this.worker.logger.warn("Failed to load plugin %s: %s",
                     pluginCtr.meta.id, e);
             }
         }

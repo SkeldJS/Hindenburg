@@ -20,6 +20,11 @@ export function recursiveAssign(target: any, source: any, options: RecursiveAssi
             typeof target[key] === "object" &&
             typeof source[key] === "object"
         ) {
+            if (Array.isArray(target[key]) || Array.isArray(source[key])) {
+                target[key] = source[key];
+                continue;
+            }
+
             recursiveAssign(target[key], source[key], options);
         } else if (typeof source[key] !== "undefined") {
             target[key] = source[key];

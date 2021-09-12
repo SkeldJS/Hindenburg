@@ -8,9 +8,9 @@ export const hindenburgReactorRpcKey = Symbol("hindenburg:reactor_rpc");
 type ReactorRpcConstructor<T extends BaseReactorRpcMessage> = {
     new (...args: any): T;
     Deserialize(reader: HazelReader, direction: MessageDirection, decoder: PacketDecoder): T;
-    type: "reactor";
+    messageType: "reactorRpc";
     modId: string;
-    tag: number;
+    messageTag: number;
 }
 
 export function ReactorRpcHandler<

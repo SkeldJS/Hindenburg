@@ -32,7 +32,7 @@ import {
     MessageHandlerCallback
 } from "../api";
 
-import { RegisteredChatCommand } from "./ChatCommandHander";
+import { RegisteredChatCommand } from "./ChatCommandHandler";
 import { Room } from "../Room";
 import { recursiveAssign } from "../util/recursiveAssign";
 import { recursiveClone } from "../util/recursiveClone";
@@ -66,7 +66,7 @@ export class Plugin {
     meta!: PluginMeta;
 
     logger: winston.Logger;
-    
+
     eventHandlers: {
         eventName: keyof WorkerEvents;
         handler: (ev: WorkerEvents[keyof WorkerEvents]) => any;
@@ -108,7 +108,7 @@ export class Plugin {
                 })
             ]
         });
-        
+
         this.eventHandlers = [];
         this.registeredChatCommands = [];
         this.messageHandlers = [];
@@ -136,14 +136,14 @@ export class Plugin {
             throw new TypeError("Bad reactor rpc: invalid mod id.");
 
         for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
-            const playerConnection = component.room.connections.get(player.id);
+            const playerConnection = component.room.connections.get(player.clientId);
 
             if (playerConnection) {
                 const targetMod = playerConnection.mods.get(rpc.modId);
 
                 if (!targetMod)
                     continue;
-                
+
                 await player.room.broadcast([
                     new RpcMessage(
                         component.netid,
@@ -254,32 +254,33 @@ export class PluginLoader {
             throw new PluginLoadError(PluginLoadErrorCode.PluginAlreadyLoaded, "Plugin already loaded.");
 
         const loadedPlugin = new loadedPluginCtr(this.worker, config);
+        this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
 
         /**
          * Object.getPrototypeOf is done twice as {@link HindenburgPlugin} extends
          * the actual plugin class and the prototype is wrong.
          * @example
          * ```ts
-         * class Animal { 
+         * class Animal {
          *   constructor(name: string) {
          *     this.name = name;
          *   }
-         * 
+         *
          *   feed() {
          *     console.log("Fed", this.name);
          *   }
          * }
-         * 
+         *
          * class Dog extends Animal {
-         * 
+         *
          * }
-         * 
+         *
          * const sprout = new Dog("Sprout");
          * const barney = new Animal("Barney");
-         * 
+         *
          * console.log(Object.getPrototypeOf(sprout)); // {}
          * console.log(Object.getPrototypeOf(barney)); // { feed() {} }
-         * 
+         *
          * const proto = Object.getPrototypeOf(sprout);
          * console.log(Object.getPrototypeOf(proto)); // { feed() {} }
          * ```
@@ -304,8 +305,9 @@ export class PluginLoader {
                 loadedPlugin.registeredMessages.push(reactorRpc);
                 loadedPlugin.reactorRpcHandlers.push({
                     reactorRpc,
-                    handler: fn 
+                    handler: fn
                 });
+                this.resetMessages();
             }
 
             const vorpalCommand = Reflect.getMetadata(hindenburgVorpalCommand, loadedPlugin, propertyName) as undefined|VorpalCommandInformation;
@@ -326,10 +328,8 @@ export class PluginLoader {
             }
         }
 
-        this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
-
         const chatCommands = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin);
-        
+
         if (chatCommands) {
             for (const { usage, description, handler } of chatCommands) {
                 const fn = handler.bind(loadedPlugin);
@@ -356,7 +356,7 @@ export class PluginLoader {
             loadedPlugin.messageHandlers = [...messageHandlers];
             this.resetMessageHandlers();
         }
-        
+
         const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin["constructor"]) as Set<Deserializable>|undefined;
         if (messagesToRegister) {
             for (const messageClass of messagesToRegister) {
@@ -364,13 +364,13 @@ export class PluginLoader {
             }
             this.resetMessages();
         }
-        
+
         await loadedPlugin.onPluginLoad?.();
         this.worker.logger.info("Loaded plugin '%s'", loadedPlugin.meta.id);
 
         return loadedPlugin;
     }
-    
+
     unloadPlugin(pluginId: string|Plugin): void {
         if (typeof pluginId === "string") {
             const plugin = this.loadedPlugins.get(pluginId);
@@ -404,7 +404,7 @@ export class PluginLoader {
         this.resetChatCommands();
         this.worker.logger.info("Unloaded plugin '%s'", pluginId.meta.id);
     }
-    
+
     async loadAll() {
         const allImportNames = [];
         try {
@@ -427,7 +427,7 @@ export class PluginLoader {
                 const file = files[i];
                 if (!file.startsWith("hbplugin-"))
                     continue;
-                
+
                 allImportNames.push("./" + file);
             }
         }
@@ -452,7 +452,7 @@ export class PluginLoader {
             const aInteger = a.meta.order === "first" ? -1 :
                 a.meta.order === "last" ? 1 :
                     a.meta.order === "none" ? 0 : a.meta.order;
-                    
+
             const bInteger = b.meta.order === "first" ? -1 :
                 b.meta.order === "last" ? 1 :
                     b.meta.order === "none" ? 0 : b.meta.order;

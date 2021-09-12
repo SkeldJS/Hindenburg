@@ -65,7 +65,7 @@ export class ChatCommandContext {
     }
 }
 
-export type ChatCommandCallback = (ctx: ChatCommandContext, args: any) => any;
+export type ChatCommandCallback = (ctx: ChatCommandContext, args?: any) => any;
 
 export function parseCommandUsage(usage: string): [ string, ChatCommandParameter[] ] {
     // https://github.com/dthree/vorpal/blob/51f5e2b545631b6a86c9781c274a1b0916a67ee8/lib/vorpal.js#L311
@@ -205,7 +205,7 @@ export class ChatCommandHandler {
                 await ctx.reply("There are no commands on page %s.", displayPage);
                 return;
             }
-            
+
             const allCommands = [...this.commands.values()];
             let outMessage = "";
 
@@ -274,7 +274,7 @@ export class ChatCommandHandler {
      * ```ts
      * const message = "setname weakeyes";
      * const ctx = new ChatCommandContext(room, room.players.host, message);
-     * 
+     *
      * await worker.chatCommandHandler.parseMessage(ctx, message);
      * ```
      */

@@ -91,7 +91,7 @@ const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
     if (bytes === 0)
         return "0 bytes";
-        
+
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return (bytes / Math.pow(1024, i)).toFixed(2) + " " + byteSizes[i];
 }
@@ -119,7 +119,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * Winston logger for this server.
      */
     logger: winston.Logger;
-    
+
     /**
      * Vorpal instance responsible for handling interactive CLI.
      */
@@ -149,7 +149,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
     /**
      * All rooms created on this server, mapped by their game code as an integer.
-     * 
+     *
      * See {@link Worker.createRoom}
      */
     rooms: Map<number, Room>;
@@ -161,7 +161,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
     /**
      * The last client ID that was used.
-     * 
+     *
      * Used for {@link Worker.getNextClientId} to get an incrementing client
      * ID.
      */
@@ -190,7 +190,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.config = config;
         this.validVersions = this.config.versions.map(version => VersionInfo.from(version).encode());
-        
+
         this.vorpal = new vorpal;
 
         this.logger = winston.createLogger({
@@ -325,7 +325,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     const pluginCtr = await this.pluginLoader.importPlugin(importPath);
                     if (this.pluginLoader.loadedPlugins.has(pluginCtr.meta.id))
                         this.pluginLoader.unloadPlugin(pluginCtr.meta.id);
-    
+
                     await this.pluginLoader.loadPlugin(pluginCtr);
                 } else {
                     this.logger.error("Couldn't find installed plugin: " + args.import);
@@ -336,14 +336,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("unload <plugin id>", "Unload a plugin.")
             .action(async args => {
                 const pluginId: string = args["plugin id"];
-                const loadedPlugin = 
+                const loadedPlugin =
                     typeof pluginId === "number"
                         ? [...this.pluginLoader.loadedPlugins][pluginId - 1]?.[1]
                         : this.pluginLoader.loadedPlugins.get(pluginId);
 
                 if (loadedPlugin) {
                     this.pluginLoader.unloadPlugin(loadedPlugin);
-                } else {    
+                } else {
                     this.logger.error("Plugin not loaded: %s", pluginId);
                 }
             });
@@ -377,7 +377,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     this.logger.error("Expected either \"clients\", \"rooms\" or \"plugins\": %s", args.something);
                 }
             });
-            
+
         this.vorpal
             .command("list mods <client id>", "List all of a client's mods.")
             .alias("ls mods")
@@ -397,7 +397,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
                 this.logger.error("Couldn't find client with id: " + args["client id"]);
             });
-            
+
         this.vorpal
             .command("list players <room code>", "List all players in a room.")
             .alias("ls players")
@@ -406,7 +406,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const codeId = roomName === "LOCAL"
                     ? 0x20
                     : Code2Int(roomName);
-                    
+
                 const room = this.rooms.get(codeId);
 
                 if (room) {
@@ -429,7 +429,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const codeId = roomName === "LOCAL"
                     ? 0x20
                     : Code2Int(roomName);
-                    
+
                 const room = this.rooms.get(codeId);
 
                 if (room) {
@@ -451,7 +451,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const codeId = roomName === "LOCAL"
                     ? 0x20
                     : Code2Int(roomName);
-                    
+
                 const room = this.rooms.get(codeId);
 
                 if (room) {
@@ -520,7 +520,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 this.logger.info("Using: %s",
                     chalk.green(formatBytes(usage.heapUsed)));
-                    
+
                 this.logger.info("Allocated: %s",
                     chalk.green(formatBytes(usage.heapTotal)));
             });
@@ -554,7 +554,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             }
         }, pingInterval);
-        
+
         this.registerPacketHandlers();
     }
 
@@ -604,14 +604,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
     /**
      * Remove a connection from this server.
-     * 
+     *
      * Note that this does not notify the client of the connection that they have
      * been disconnected, see {@link Connection.disconnect}.
      * @param connection The connection to remove.
      */
     removeConnection(connection: Connection) {
-        this.connections.delete(connection.rinfo.address + ":" + connection.rinfo.port);
-        this.logger.info("Remove %s", connection);
+        if (this.connections.delete(connection.rinfo.address + ":" + connection.rinfo.port)) {
+            this.logger.info("Remove %s", connection);
+        }
     }
 
     protected _sendPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
@@ -691,16 +692,16 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         ]
                     )
                 );
-                
+
                 const entries = [...this.pluginLoader.loadedPlugins];
                 const chunkedPlugins = chunkArr(entries, 4);
                 for (let i = 0; i < chunkedPlugins.length; i++) {
                     const chunk = chunkedPlugins[i];
-                    
+
                     sender.sendPacket(
                         new ReliablePacket(
                             sender.getNextNonce(),
-                            chunk.map(([ , plugin ]) => 
+                            chunk.map(([ , plugin ]) =>
                                 new ReactorMessage(
                                     new ReactorPluginDeclarationMessage(
                                         i,
@@ -774,7 +775,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     sender.roundTripPing = Date.now() - sentPacket.sentAt;
                     break;
                 }
-            } 
+            }
         });
 
         this.decoder.on(HostGameMessage, async (message, direction, { sender }) => {
@@ -843,19 +844,19 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const senderMod = sender.getModByNetId(modNetId);
 
                 if (!component) {
-                    this.logger.warn("Got reactor Rpc from %s for unknown component with netid %s",
+                    this.logger.warn("Got reactor rpc from %s for unknown component with netid %s",
                         sender, componentNetId);
                     return;
                 }
 
                 if (!senderMod) {
-                    this.logger.warn("Got reactor Rpc from %s for unknown mod with netid %s",
+                    this.logger.warn("Got reactor rpc from %s for unknown mod with netid %s",
                         sender, modNetId);
                     return;
                 }
 
                 if (senderMod.networkSide === ModPluginSide.Clientside) {
-                    this.logger.warn("Got reactor Rpc from %s for client-side-only reactor mod %s",
+                    this.logger.warn("Got reactor rpc from %s for client-side-only reactor mod %s",
                         sender, senderMod);
 
                     if (this.config.reactor && (this.config.reactor === true || this.config.reactor.blockClientSideOnly)) {
@@ -939,7 +940,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                     if (child.canceled)
                         continue;
-                    
+
                     povNotCanceled.push(child);
                 }
 
@@ -948,7 +949,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     await sender.room?.broadcastMessages(povNotCanceled, [], undefined, [sender], reliable);
                     await sender.room?.broadcastToPerspectives(sender, povNotCanceled, reliable);
                 }
-                
+
                 if (notCanceled.length) {
                     // broadcast messages to the player's pov that weren't canceled above
                     await playerPov.broadcastMessages(notCanceled, [], undefined, [sender], reliable);
@@ -980,9 +981,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             if (!recipientConnection)
                 return;
-            
+
             const recipientPlayer = recipientConnection.getPlayer();
-            
+
             if (!recipientPlayer)
                 return;
 
@@ -994,7 +995,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (!player.ishost) {
+            if (!player.isHost) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1010,7 +1011,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (player.id !== player.room.actingHostId) {
+            if (player.clientId !== player.room.actingHostId) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1023,7 +1024,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (player.id !== player.room.actingHostId) {
+            if (player.clientId !== player.room.actingHostId) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1036,7 +1037,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (!player.ishost) {
+            if (!player.isHost) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1081,9 +1082,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             room.settings.numImpostors,
                             room.settings.maxPlayers
                         );
-    
+
                         returnList.push(gameListing);
-                        
+
                         if (returnList.length >= 10)
                             break;
                     }
@@ -1185,7 +1186,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     connection.disconnect(i18n.mod_banned_on_server, modId);
                     return false;
                 }
-    
+
                 if (modConfig.version) {
                     if (!minimatch(clientMod.modVersion, modConfig.version)) {
                         connection.disconnect(i18n.bad_mod_version,
@@ -1213,7 +1214,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
     /**
      * Serialize and reliable or unreliably send a packet to a client.
-     * 
+     *
      * For reliable packets, packets sent will be reliably recorded and marked
      * for re-sending if the client does not send an acknowledgement for the
      * packet.
@@ -1344,13 +1345,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * ```ts
      * // Generate a 4 letter code.
      * const roomCode = generateRoomCode(4);
-     * 
+     *
      * console.log(roomCode); // => 1246449490
      * ```
      * ```ts
      * // Generate a 6 letter code.
      * const roomCode = generateRoomCode(6);
-     * 
+     *
      * console.log(roomCode); // => -2007212745
      * ```
      */
@@ -1358,7 +1359,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         if (len !== 4 && len !== 6) {
             throw new RangeError("Expected to generate a 4 or 6 digit room code.");
         }
-        
+
         let roomCode = len === 4 ? V1Gen() : V2Gen();
         while (this.rooms.get(roomCode))
             roomCode = len === 4 ? V1Gen() : V2Gen();
@@ -1454,7 +1455,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         )
                     )
                         continue;
-                    
+
                     const clientMod = connection.mods.get(hostModId);
 
                     if (!clientMod) {
@@ -1487,10 +1488,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             }
         }
-        
+
         this.logger.info("%s joining room %s",
             connection, ev.alteredRoom);
-            
+
         await ev.alteredRoom.handleRemoteJoin(connection);
     }
 }

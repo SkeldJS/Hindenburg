@@ -40,7 +40,6 @@ import {
 } from "@skeldjs/protocol";
 
 import {
-    Hostable,
     HostableEvents,
     PlayerData,
     PlayerJoinEvent,
@@ -71,16 +70,17 @@ import { fmtLogFormat } from "./util/fmtLogFormat";
 import { RoomsConfig } from "./interfaces";
 import { CommandCallError, ChatCommandContext } from "./handlers";
 import { Perspective, PresetFilter } from "./Perspective";
+import { SkeldjsStateManager } from "@skeldjs/state";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<BaseRoom>) {
-    const connection = this.room.connections.get(this.id);
+    const connection = this.room.connections.get(this.clientId);
 
     const paren = fmtLogFormat(
         this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
         {
-            id: this.id,
+            id: this.clientId,
             ping: connection?.roundTripPing,
-            ishost: this.ishost ? "host" : undefined
+            ishost: this.isHost ? "host" : undefined
         }
     );
 
@@ -111,11 +111,11 @@ export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
     RoomGameStartEvent
 ]>;
 
-export class BaseRoom extends Hostable<RoomEvents> {
+export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     createdAt: number;
     connections: Map<number, Connection>;
     waiting: Set<Connection>;
-    
+
     playerPerspectives: Map<number, Perspective>;
     activePerspectives: Perspective[];
 
@@ -174,7 +174,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 this.logger.info("%s set their name to %s",
                     ev.player, ev.newName);
             }
-            if (this.config.serverAsHost && this.saahWaitingFor === ev.player.id) {
+            if (this.config.serverAsHost && this.saahWaitingFor === ev.player.clientId) {
                 const actingHostConn = this.connections.get(this.actingHostId);
                 if (actingHostConn) {
                     await this.updateHost(this.actingHostId, actingHostConn);
@@ -185,10 +185,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.on("player.chat", async ev => {
             this.logger.info("%s sent message: %s",
                 ev.player, chalk.red(ev.chatMessage));
-                
+
             if (ev.chatMessage.startsWith("/") && this.config.chatCommands) {
                 const room = this.worker.rooms.get(ev.room.code);
-                
+
                 if (!room)
                     return;
 
@@ -286,7 +286,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         await this.broadcastMessages([], [
             new RemoveGameMessage(reason)
-        ]); 
+        ]);
 
         this.state = GameState.Destroyed;
         this.worker.rooms.delete(this.code);
@@ -330,11 +330,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
             await this.broadcast(stream);
         }
     }
-    
+
     /**
      * Broadcast [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * and root messages to all or some connections.
-     * 
+     *
      * Sends GameDataTo if a filter is applied with the include parameter.
      * @param gamedata The [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * to send.
@@ -370,7 +370,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             if (clientsToExclude.has(connection))
                 continue;
-                
+
             if (this.playerPerspectives?.has(connection.clientId))
                 continue;
 
@@ -401,7 +401,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     ),
                     ...payloads
                 ] as BaseRootMessage[];
-                
+
                 if (messages.length) {
                     promises.push(
                         connection.sendPacket(
@@ -428,9 +428,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
         payloads: BaseRootMessage[] = []
     ) {
         const recipientConnection = recipient
-            ? this.connections.get(recipient.id)
+            ? this.connections.get(recipient.clientId)
             : undefined;
-            
+
         for (let i = 0; i < this.activePerspectives.length; i++) {
             const activePerspective = this.activePerspectives[i];
 
@@ -446,14 +446,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     (child as any)._canceled = false;
                     continue;
                 }
-                    
+
                 await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
                 if (child.canceled) {
                     (child as any)._canceled = false;
                     continue;
                 }
-                
+
                 messagesNotCanceled.push(child);
             }
 
@@ -467,14 +467,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     (child as any)._canceled = false;
                     continue;
                 }
-                    
+
                 await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
                 if (child.canceled) {
                     (child as any)._canceled = false;
                     continue;
                 }
-                
+
                 payloadsNotCanceled.push(child);
             }
 
@@ -482,7 +482,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 await activePerspective.broadcastMessages(messagesNotCanceled, payloadsNotCanceled, recipientConnection ? [ recipientConnection ] : undefined, undefined, true);
             }
         }
-            
+
         return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
     }
 
@@ -494,7 +494,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (this.code) {
             this.logger.info(
                 "Game code changed to [%s]",
-                fmtCode(code) 
+                fmtCode(code)
             );
         }
 
@@ -522,7 +522,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     async setHost(player: PlayerData) {
-        const remote = this.connections.get(player.id);
+        const remote = this.connections.get(player.clientId);
 
         const before = this.hostid;
         const resolvedId = this.resolvePlayerClientID(player);
@@ -539,9 +539,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
 
         if (this.amhost) {
-            if (!this.lobbybehaviour) {
+            if (!this.lobbybehaviour && !this.started) {
                 this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
             }
+
             if (!this.gamedata) {
                 this.spawnPrefab(SpawnType.GameData, -2);
             }
@@ -620,7 +621,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             client
         );
     }
-    
+
     async handleJoin(clientid: number) {
         if (this.players.has(clientid))
             return null;
@@ -648,10 +649,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 this.state = GameState.NotStarted;
                 this.waiting.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
-                
+
                 this.logger.info("%s joined, joining other clients..",
                     player);
-                    
+
                 if (this.config.serverAsHost) {
                     const promises = [];
                     for (const [ clientId, connection ] of this.connections) {
@@ -689,7 +690,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             } else {
                 this.waiting.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
-                
+
                 if (this.config.serverAsHost) {
                     const promises = [];
                     for (const [ clientId, connection ] of this.connections) {
@@ -770,7 +771,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 this.hostid
             )
         ]);
-        
+
         this.connections.set(joiningClient.clientId, joiningClient);
 
         await this.emit(
@@ -805,7 +806,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                         clientId === this.actingHostId
                                             ? clientId
                                             : this.hostid,
-                                        [...this.connections.values()]  
+                                        [...this.connections.values()]
                                             .reduce<number[]>((prev, cur) => {
                                                 if (cur !== connection) {
                                                     prev.push(cur.clientId);
@@ -853,26 +854,23 @@ export class BaseRoom extends Hostable<RoomEvents> {
         ]);
 
         if (this.amhost) {
-            await Promise.all([
-                Promise.race([
-                    Promise.all(
-                        [...this.players.values()].map((player) => {
-                            if (player.isReady) {
-                                return Promise.resolve();
-                            }
-    
-                            return new Promise<void>((resolve) => {
-                                player.once("player.ready", () => {
-                                    resolve();
-                                });
+            await Promise.race([
+                Promise.all(
+                    [...this.players.values()].map((player) => {
+                        if (player.isReady) {
+                            return Promise.resolve();
+                        }
+
+                        return new Promise<void>((resolve) => {
+                            player.once("player.ready", () => {
+                                resolve();
                             });
-                        })
-                    ),
-                    sleep(3000),
-                ]),
-                this.me?.ready(),
+                        });
+                    })
+                ),
+                sleep(3000),
             ]);
-    
+
             const removes = [];
             for (const [clientid, player] of this.players) {
                 if (!player.isReady) {
@@ -880,7 +878,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     removes.push(clientid);
                 }
             }
-    
+
             if (removes.length) {
                 await this.broadcast(
                     [],
@@ -895,12 +893,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     })
                 );
             }
-    
+
             if (this.lobbybehaviour)
                 this.despawnComponent(
                     this.lobbybehaviour
                 );
-    
+
             const ship_prefabs = [
                 SpawnType.ShipStatus,
                 SpawnType.Headquarters,
@@ -908,21 +906,25 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 SpawnType.AprilShipStatus,
                 SpawnType.Airship
             ];
-    
+
             this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
             await this.shipstatus?.selectImpostors();
-    
+
             for (const [, player] of this.players) {
                 this.room.gamedata?.setTasks(player, [1, 2, 3]);
             }
         }
     }
 
+    async startGame() {
+        await this.handleStart();
+    }
+
     async handleEnd(reason: GameOverReason) {
         const waiting = this.waiting;
         this.waiting = new Set;
         this.state = GameState.Ended;
-        
+
         const ev = await this.emit(new RoomGameEndEvent(this, reason));
 
         if (ev.canceled) {
@@ -938,12 +940,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     /**
      * Send a message into the chat as the server.
-     * 
+     *
      * @summary
      * If on the left side, the room spawns a new player owned by the room with
      * a player ID of 127 and updates their name and colour and despawns them
      * immediately after sending the message.
-     * 
+     *
      * If on the right side, for each player the room sets their name and colour
      * and immediately sets them back after sending the message.
      * @param message The message to send.
@@ -954,7 +956,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * .@EventListener("player.sentchat")
      * onPlayerChat(ev: PlayerChatEvent<Room>) {
      *   const badWords = [ "sprout", "barney" ];
-     * 
+     *
      *   for (const word of badWords) {
      *     if (ev.chatMessage.includes(word)) {
      *       ev.message.cancel(); // Don't broadcast the message to other players

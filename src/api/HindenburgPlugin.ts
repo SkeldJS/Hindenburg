@@ -12,6 +12,10 @@ export function HindenburgPlugin(meta: Partial<PluginMeta>) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }
 
+    if (typeof meta.id !== "string") {
+        throw new TypeError("Expected 'id' to be a string in reverse domain name notation (com.example.myplugin).");
+    }
+
     const actualMeta: PluginMeta = {
         id: "",
         version: "1.0.0",

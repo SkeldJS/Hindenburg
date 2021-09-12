@@ -7,8 +7,8 @@ import {
     AutoDoorsSystem,
     AutoOpenDoor,
     CustomNetworkTransform,
-    DeconSystem, 
-    Door, 
+    DeconSystem,
+    Door,
     DoorsSystem,
     ElectricalDoorsSystem,
     GameData,
@@ -131,22 +131,22 @@ export class PerspectiveFilter extends MasketDecoder {
  * completely separate, affecting only specified players. Think of it like a
  * sandbox which acts as a mirror, and as a space which allows plugins and
  * players to do anything without affecting the original room.
- * 
+ *
  * As a mirror, it is initially a perfect clone of the original room. It has filters,
  * which allow you to control which incoming packets get sent to the perspective,
  * and which outgoing packets get sent to the room. See {@link Room.createPerspective}
  * and {@link PresetFilter} for preset filters to use.
- * 
+ *
  * Overtime, the perspective will get more and more out of sync with the original
  * room. When destroyed, all players will be brought back up-to-date with the
  * current state of the room.
- * 
+ *
  * This class shouldn't be instantiated directly, instead, see {@link Room.createPerspective}.
- * 
+ *
  * @example
  * ```ts
  * // Make every other player appear black and without a name for somePlayer.
- * 
+ *
  * const perspective = room.createPerspective(somePlayer, [
  *   PerspectiveFilter.GameDataUpdates
  * ]); // Create a perspective for somePlayer, filtering out gamedata updates (names, colours, hats, etc.)
@@ -182,7 +182,7 @@ export class Perspective extends BaseRoom {
         /**
          * Filter for packets making their way into the perspective. See {@link Perspective.outgoingFilter}
          * for handling outgoing packets.
-         * 
+         *
          * @example
          * ```ts
          * perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
@@ -194,15 +194,15 @@ export class Perspective extends BaseRoom {
         /**
          * Filter for packets making their way out of the perspective into the room.
          * See {@link Perspective.incomingFilter} to handle incoming packets.
-         * 
+         *
          * By default, this is different from the incoming filter. You can manually
          * re-assign it to {@link incomingFilter} to have the same filters for
          * both incoming and outgoing packets.
-         * 
+         *
          * @example
          * ```ts
          * perspective.outgoingFilter = perspective.incomingFilter;
-         * 
+         *
          * perspective.outgoingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
          *   message.cancel();
          * });
@@ -254,7 +254,7 @@ export class Perspective extends BaseRoom {
 
         for (let i = 0; i < playersPov.length; i++) {
             const playerPov = playersPov[i];
-            const playerConnection = parentRoom.connections.get(playerPov.id);
+            const playerConnection = parentRoom.connections.get(playerPov.clientId);
 
             if (!playerConnection)
                 continue;
@@ -322,12 +322,12 @@ export class Perspective extends BaseRoom {
                 newMh.dirtyBit = meetingHud.dirtyBit;
                 newMh.tie = meetingHud.tie;
                 newMh.exiled = meetingHud.exiled
-                    ? this.players.get(meetingHud.exiled?.id)
+                    ? this.players.get(meetingHud.exiled?.clientId)
                     : undefined;
 
-                for (const [ playerId, voteArea ] of meetingHud.states) {
+                for (const [ playerId, voteArea ] of meetingHud.voteStates) {
                     const newVoteArea = new PlayerVoteArea(this, playerId, voteArea.votedForId, voteArea.didReport);
-                    newMh.states.set(playerId, newVoteArea);
+                    newMh.voteStates.set(playerId, newVoteArea);
                 }
 
                 this.meetinghud = newMh;
@@ -378,12 +378,12 @@ export class Perspective extends BaseRoom {
             } else if (component instanceof VoteBanSystem) {
                 const voteBanSystem = component as VoteBanSystem<this>;
                 const newVbs = new VoteBanSystem(this, component.spawnType, netId, component.flags, component.ownerid);
-                
+
                 for (const [ votedId, voters ] of voteBanSystem.voted) {
                     const newVoters = [];
                     for (const voter of voters) {
                         if (voter) {
-                            const newVoter = this.players.get(voter.id);
+                            const newVoter = this.players.get(voter.clientId);
                             newVoters.push(newVoter);
                         } else {
                             newVoters.push(undefined);
@@ -425,7 +425,7 @@ export class Perspective extends BaseRoom {
                 const newAd = new AutoDoorsSystem(ship);
 
                 newAd.dirtyBit = autoDoors.dirtyBit;
-                
+
                 for (let i = 0; i < autoDoors.doors.length; i++) {
                     const door = autoDoors.doors[i];
                     const newDoor = new AutoOpenDoor(newAd, door.id, door.isOpen);
@@ -447,7 +447,7 @@ export class Perspective extends BaseRoom {
                 const newDoors = new DoorsSystem(ship);
 
                 newDoors.cooldowns = new Map(doors.cooldowns.entries());
-                
+
                 for (let i = 0; i < doors.doors.length; i++) {
                     const door = doors.doors[i];
                     const newDoor = new Door(newDoors, door.id, door.isOpen);
@@ -499,7 +499,7 @@ export class Perspective extends BaseRoom {
 
                 for (let i = 0; i < medScan.queue.length; i++) {
                     const queuePlayer = medScan.queue[i];
-                    const newPlayer = this.players.get(queuePlayer.id);
+                    const newPlayer = this.players.get(queuePlayer.clientId);
                     newMs.queue.push(newPlayer!);
                 }
 
@@ -512,7 +512,7 @@ export class Perspective extends BaseRoom {
                 newMp.side = movingPlatform.side;
 
                 if (movingPlatform.target) {
-                    const newTarget = this.players.get(movingPlatform.target.id);
+                    const newTarget = this.players.get(movingPlatform.target.clientId);
                     newMp.target = newTarget;
                 }
 
@@ -537,7 +537,7 @@ export class Perspective extends BaseRoom {
                 const newSc = new SecurityCameraSystem(ship);
 
                 for (const player of securityCamera.players) {
-                    const newPlayer = this.players.get(player.id);
+                    const newPlayer = this.players.get(player.clientId);
                     newSc.players.add(newPlayer!);
                 }
 
@@ -556,7 +556,7 @@ export class Perspective extends BaseRoom {
 
         return newSystems;
     }
-    
+
     [Symbol.for("nodejs.util.inspect.custom")]() {
         return chalk.yellow(fmtCode(this.code)) + " @ " + (this.playersPov.length === 1
             ? util.format(this.playersPov[0])
@@ -610,9 +610,9 @@ export class Perspective extends BaseRoom {
         payloads: BaseRootMessage[] = []
     ) {
         const recipientConnection = recipient
-            ? this.connections.get(recipient.id)
+            ? this.connections.get(recipient.clientId)
             : undefined;
-        
+
         const povNotCanceled = [];
         for (let i = 0; i < messages.length; i++) {
             const child = messages[i];
@@ -622,14 +622,14 @@ export class Perspective extends BaseRoom {
 
             if (child.canceled)
                 continue;
-                
+
             if (!recipient) {
                 await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-    
+
                 if (child.canceled)
                     continue;
             }
-            
+
             povNotCanceled.push(child);
         }
 
@@ -637,18 +637,18 @@ export class Perspective extends BaseRoom {
             let notCanceled = !recipient || recipient.room === this
                 ? povNotCanceled
                 : [];
-    
+
             if (recipient && recipient.room !== this) {
                 if (recipient.room instanceof Perspective) { // match messages against the recipient player's perspective's incoming filter
                     for (let i = 0; i < povNotCanceled.length; i++) {
                         const child = povNotCanceled[i];
-                        
+
                         (child as any)._canceled = false; // child._canceled is private
                         await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
-    
+
                         if (child.canceled)
                             continue;
-                        
+
                         notCanceled.push(child);
                     }
                 } else {
@@ -658,14 +658,14 @@ export class Perspective extends BaseRoom {
 
             await this.parentRoom.broadcastMessages(notCanceled, payloads, recipientConnection ? [recipientConnection] : undefined);
         }
-            
+
         return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
     }
 
     /**
      * Destroy this perspective, optionally restoring state for any players that
      * have been affected by it.
-     * 
+     *
      * @param restoreState Whether to restore state for players in this perspective.
      */
     async destroyPerspective(restoreState = true) {
@@ -673,8 +673,8 @@ export class Perspective extends BaseRoom {
 
         for (let i = 0; i < this.playersPov.length; i++) {
             const playersPov = this.playersPov[i];
-            this.parentRoom.playerPerspectives.delete(playersPov.id);
-            
+            this.parentRoom.playerPerspectives.delete(playersPov.clientId);
+
             /**
              * todo:
              * - [ ] Restore room state
@@ -700,7 +700,7 @@ export class Perspective extends BaseRoom {
              */
 
             if (restoreState) {
-                const playerConn = this.parentRoom.connections.get(playersPov.id);
+                const playerConn = this.parentRoom.connections.get(playersPov.clientId);
 
                 if (!playerConn)
                     continue;
@@ -740,7 +740,7 @@ export class Perspective extends BaseRoom {
                 //    - the host's netids to the connection's netids on every
                 //    - message involving netids
                 //        - probably slow AF
-                // 2. you can't spawn a single component, you can only spawn 
+                // 2. you can't spawn a single component, you can only spawn
                 // prefabs
                 //    - solution: despawn every other component in that prefab,
                 //    - and respawn the prefab

@@ -1,4 +1,4 @@
-import { ChatCommandCallback } from "../../handlers/ChatCommandHander";
+import { ChatCommandCallback } from "../../handlers/ChatCommandHandler";
 
 export const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 

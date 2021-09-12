@@ -6,7 +6,7 @@ import {
     GameSettings,
     MessageDirection
 } from "@skeldjs/protocol";
- 
+
 import { RoomsConfig } from "./interfaces";
 
 import { Worker } from "./Worker";
@@ -34,7 +34,7 @@ export class Room extends BaseRoom {
         settings: GameSettings
     ) {
         super(worker, config, settings);
-        
+
         this.logger = winston.createLogger({
             levels: {
                 error: 0,
@@ -73,10 +73,10 @@ export class Room extends BaseRoom {
     /**
      * Create a {@link Perspective} object for this room, with preset filters to
      * use.
-     * 
+     *
      * This function is relatively slow as it needs to clone the entire room.
      * It shouldn't really be used in loops or any events that get fired a lot.
-     * 
+     *
      * @param players The player, or players, to create this perspective for.
      * @param filters Preset filters to use for both incoming and outgoing
      * filters.
@@ -89,10 +89,10 @@ export class Room extends BaseRoom {
     /**
      * Create a {@link Perspective} object for this room, with preset filters to
      * use.
-     * 
+     *
      * This function is relatively slow as it needs to clone the entire room.
      * It shouldn't really be used in loops or any events that get fired a lot.
-     * 
+     *
      * @param players The player, or players, to create this perspective for.
      * @param incomingFilters Preset filters to use for incoming packets making
      * their way into the perspective..
@@ -119,7 +119,7 @@ export class Room extends BaseRoom {
                 throw new TypeError("Tried to create a perspective from a player not in this room.");
             }
 
-            if (this.playerPerspectives.has(players[i].id)) {
+            if (this.playerPerspectives.has(players[i].clientId)) {
                 throw new TypeError("Player already has active perspective.");
             }
         }
@@ -134,7 +134,7 @@ export class Room extends BaseRoom {
 
         this.activePerspectives.push(perspective);
         for (let i = 0; i < players.length; i++) {
-            this.playerPerspectives.set(players[i].id, perspective);
+            this.playerPerspectives.set(players[i].clientId, perspective);
         }
 
         this.logger.info("Created perspective: %s ", perspective);
@@ -167,7 +167,7 @@ export class Room extends BaseRoom {
                 continue;
 
             // get this player's player object in the perspective in question
-            const povPlayer = activePerspective.players.get(player.id);
+            const povPlayer = activePerspective.players.get(player.clientId);
 
             if (!povPlayer)
                 continue;
@@ -183,13 +183,13 @@ export class Room extends BaseRoom {
 
                 if (child.canceled)
                     continue;
-                    
+
                 // send message to the perspective
                 await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, connection);
 
                 if (child.canceled)
                     continue;
-                
+
                 povNotCanceled.push(child);
             }
 

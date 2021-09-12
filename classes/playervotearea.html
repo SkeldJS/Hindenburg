@@ -92,6 +92,10 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static tsd-is-external"><a href="playervotearea.html#deserialize" class="tsd-kind-icon">Deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#serialize" class="tsd-kind-icon">Serialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#clearvote" class="tsd-kind-icon">clear<wbr>Vote</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#setdead" class="tsd-kind-icon">set<wbr>Dead</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#setskipped" class="tsd-kind-icon">set<wbr>Skipped</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#setsuspect" class="tsd-kind-icon">set<wbr>Suspect</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -136,7 +140,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:34</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:35</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -171,13 +175,87 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:35</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:36</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>writer: <a href="hazelwriter.html" class="tsd-signature-type" data-tsd-kind="Class">HazelWriter</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="clearvote" class="tsd-anchor"></a>
+					<h3>clear<wbr>Vote</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">clear<wbr>Vote<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:37</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="setdead" class="tsd-anchor"></a>
+					<h3>set<wbr>Dead</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Dead<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/votestatespecialid.html" class="tsd-signature-type" data-tsd-kind="Enumeration">VoteStateSpecialId</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:39</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="../enums/votestatespecialid.html" class="tsd-signature-type" data-tsd-kind="Enumeration">VoteStateSpecialId</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="setskipped" class="tsd-anchor"></a>
+					<h3>set<wbr>Skipped</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Skipped<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:38</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="setsuspect" class="tsd-anchor"></a>
+					<h3>set<wbr>Suspect</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Suspect<span class="tsd-signature-symbol">(</span>playerId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:40</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>playerId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -197,7 +275,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:8</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:9</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -238,7 +316,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:21</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:22</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -260,7 +338,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:25</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:26</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -282,7 +360,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:29</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:30</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -304,7 +382,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:17</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:18</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -326,7 +404,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:13</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:14</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -348,7 +426,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:33</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:34</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -369,7 +447,7 @@
 					<div class="tsd-signature tsd-kind-icon">did<wbr>Report<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:7</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:8</li>
 						</ul>
 					</aside>
 				</section>
@@ -379,7 +457,7 @@
 					<div class="tsd-signature tsd-kind-icon">dirty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:8</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:9</li>
 						</ul>
 					</aside>
 				</section>
@@ -389,7 +467,7 @@
 					<div class="tsd-signature tsd-kind-icon">player<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:5</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:6</li>
 						</ul>
 					</aside>
 				</section>
@@ -399,7 +477,7 @@
 					<div class="tsd-signature tsd-kind-icon">room<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RoomType</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:4</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:5</li>
 						</ul>
 					</aside>
 				</section>
@@ -409,7 +487,7 @@
 					<div class="tsd-signature tsd-kind-icon">voted<wbr>For<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:6</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:7</li>
 						</ul>
 					</aside>
 				</section>
@@ -478,6 +556,9 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#serialize" class="tsd-kind-icon">Serialize</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="playervotearea.html#clearvote" class="tsd-kind-icon">clear<wbr>Vote</a>
+							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
 								<a href="playervotearea.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
@@ -507,6 +588,15 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#room" class="tsd-kind-icon">room</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="playervotearea.html#setdead" class="tsd-kind-icon">set<wbr>Dead</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="playervotearea.html#setskipped" class="tsd-kind-icon">set<wbr>Skipped</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="playervotearea.html#setsuspect" class="tsd-kind-icon">set<wbr>Suspect</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#votedfor" class="tsd-kind-icon">voted<wbr>For</a>

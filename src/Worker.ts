@@ -11,7 +11,8 @@ import {
     GameKeyword,
     TaskBarUpdate,
     KillDistance,
-    GameMap
+    GameMap,
+    SendOption
 } from "@skeldjs/constant";
 
 import {
@@ -1304,7 +1305,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             reliable: isReliable
                         });
                     } else {
-                        if (!(parsedReliable instanceof ModdedHelloPacket))
+                        if (parsedReliable.messageTag !== SendOption.Hello)
                             return;
 
                         const connection = cachedConnection || new Connection(this, rinfo, this.getNextClientId());

@@ -19,12 +19,16 @@ function runCommandInDir(dir, command) {
 const spinnerFrames = [ "|", "/", "-", "\\", "|", "/", "-", "\\" ];
 function createSpinner(text) {
     let frame = 0;
+    const perSecond = 10;
     const interval = setInterval(() => {
         readline.clearLine(process.stdout, 1);
         readline.cursorTo(process.stdout, 0);
         process.stdout.write(text + " " + spinnerFrames[frame % spinnerFrames.length]);
+        if (frame > perSecond * 5) {
+            process.stdout.write(" (" + (frame / (perSecond)).toFixed(1) + "s)");
+        }
         frame++;
-    }, 100);
+    }, 1000 / perSecond);
     return { text, interval };
 }
 

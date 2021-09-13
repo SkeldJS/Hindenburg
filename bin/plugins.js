@@ -65,13 +65,39 @@ async function getYesOrNo(question) {
     return output;
 }
 
-(async () => {
-    const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
-    const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
+const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
+const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 
+async function getPackageInfo(packageName) {
+    const pluginInfoSpinner = createSpinner("Getting plugin information..");
+    try {
+        const packageInfoData = await runCommandInDir(pluginsDirectory, "yarn npm info " + packageName + " --json");
+        stopSpinner(pluginInfoSpinner, true);
+        return JSON.parse(packageInfoData);
+    } catch (e) {
+        stopSpinner(pluginInfoSpinner, false);
+        try {
+            const errorJson = JSON.parse(e);
+            if (errorJson.data.includes("EAI_AGAIN")) {
+                console.error("Failed to get plugin package information, couldn't connect to the registry, check your internet connection");
+                return;
+            }
+            if (errorJson.name === 35) {
+                console.error("Plugin does not exist on the NPM registry, or it's private");
+                return;
+            }
+            throw e;
+        } catch (e) {
+            console.error("Failed to get plugin package information, either it doesn't exist, it's private, or you aren't connected to the internet");
+            return;
+        }
+    }
+}
+
+(async () => {
     try {
         const stat = await fs.stat(pluginsDirectory);
-        
+
         if (!stat.isDirectory()) {
             console.error("Plugins directory found but was not a directory, please delete the file and run 'yarn setup'");
             return;
@@ -85,11 +111,10 @@ async function getYesOrNo(question) {
 
     const action = process.argv[2];
     if (action === "create") {
-        const isTypescript = await getYesOrNo("Use typescript?");
         let pluginName = process.argv[3];
 
         if (!pluginName) {
-            console.error("Expected plugin name");
+            console.error("Expected plugin name as an argument, usage: `yarn plugins create <plugiun name>`.");
             return;
         }
 
@@ -105,13 +130,30 @@ async function getYesOrNo(question) {
             return;
         } catch (e) {}
 
-        console.log("Creating plugins/" + pluginName + "..");
+        const isTypescript = await getYesOrNo("Use typescript?");
+
+        let buildSucceeded = true;
+        if (isTypescript) {
+            const hindenburgBuildSpinner = createSpinner("Building Hindenburg..");
+            try {
+                await runCommandInDir(process.cwd(), "yarn build");
+                stopSpinner(hindenburgBuildSpinner, true);
+            } catch (e) {
+                stopSpinner(hindenburgBuildSpinner, false);
+                console.error("Failed to build Hindenburg, skipping this step, but you will need to build both Hindenburg and your plugin later.");
+                buildSucceeded = false;
+            }
+        }
+
+        const creatingDirectorySpinner = createSpinner("Creating plugins/" + pluginName + "..");
         try {
             await fs.mkdir(pluginDirectory);
         } catch (e) {
+            stopSpinner(creatingDirectorySpinner, false);
             console.error("Failed to create directory for plugin: " + e.code);
             return;
         }
+        stopSpinner(creatingDirectorySpinner, true);
 
         const yarnSpinner = createSpinner("Initialising yarn..");
         try {
@@ -235,8 +277,8 @@ async function getYesOrNo(question) {
             return;
         }
         stopSpinner(entryPointSpinner, true);
-        
-        if (isTypescript) {
+
+        if (isTypescript && buildSucceeded) {
             const buildingSpinner = createSpinner("Building plugin..");
             try {
                 await runCommandInDir(pluginDirectory, "yarn build");
@@ -270,30 +312,7 @@ async function getYesOrNo(question) {
             return;
         } catch (e) {}
 
-        const pluginInfoSpinner = createSpinner("Getting plugin information..");
-        let packageInfoJson;
-        try {
-            const packageInfoData = await runCommandInDir(pluginsDirectory, "yarn npm info " + pluginName + " --json");
-            packageInfoJson = JSON.parse(packageInfoData);
-        } catch (e) {
-            stopSpinner(pluginInfoSpinner, false);
-            try {
-                const errorJson = JSON.parse(e);
-                if (errorJson.data.includes("EAI_AGAIN")) {
-                    console.error("Failed to get plugin package information, couldn't connect to the registry, check your internet connection");
-                    return;
-                }
-                if (errorJson.name === 35) {
-                    console.error("Plugin does not exist on the NPM registry, or it's private");
-                    return;
-                }
-                throw e;
-            } catch (e) {
-                console.error("Failed to get plugin package information, either it doesn't exist, it's private, or couldn't connect to the internet");
-                return;
-            }
-        }
-        stopSpinner(pluginInfoSpinner, true);
+        const packageInfoJson = await getPackageInfo(pluginName);
 
         let installingText = "Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version);
         if (packageInfoJson.maintainers[0]) {
@@ -331,7 +350,7 @@ async function getYesOrNo(question) {
 
         const configSpinner = createSpinner("Creating config entry for plugin..");
         const defaultConfig = importedPlugin.meta.defaultConfig;
-        
+
         try {
             const configData = await fs.readFile(configFile, "utf8");
             const configJson = JSON.parse(configData);
@@ -381,14 +400,16 @@ async function getYesOrNo(question) {
             console.error("Plugin with name '" + pluginName + "' not installed or inaccessible");
             return;
         }
-        stopSpinner(resolvingPlugin, true);
 
         try {
             await fs.stat(pluginDirectory);
+            stopSpinner(resolvingPlugin, false);
             console.error("Plugin is a local folder, not installed with NPM.")
             console.log("To avoid accidentally and permanently deleting important data, this must be uninstalled manually by deleting the folder and all references to it in your config.json");
             return;
         } catch (e) {}
+
+        stopSpinner(resolvingPlugin, true);
 
         const uninstallingSpinner = createSpinner("Uninstalling plugin..");
         try {
@@ -457,7 +478,7 @@ async function getYesOrNo(question) {
             for (const file of files) {
                 if (!file.startsWith("hbplugin-"))
                     continue;
-                
+
                 allInstalledPlugins.push({
                     name: path.basename(path.basename(file, ".ts"), ".js"),
                     type: "local"
@@ -478,7 +499,31 @@ async function getYesOrNo(question) {
                 i + 1, chalk.green(installedPlugin.name), installedPlugin.type);
         }
     } else if (action === "info") {
+        let pluginName = process.argv[3];
 
+        if (!pluginName) {
+            console.error("Expected plugin name");
+            return;
+        }
+
+        if (!pluginName.startsWith("hbplugin-")) {
+            pluginName = "hbplugin-" + pluginName;
+        }
+
+        const packageInfoJson = await getPackageInfo(pluginName);
+
+        if (!packageInfoJson)
+            return;
+
+        console.log(chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version));
+        if (packageInfoJson.maintainers[0]) {
+            let authorText = "- by " + chalk.green(packageInfoJson.maintainers[0].name);
+            if (packageInfoJson.maintainers[0].email) {
+                authorText += chalk.grey(" (" + packageInfoJson.maintainers[0].email + ")");
+            }
+            console.log(authorText);
+        }
+        console.log("- last updated " + chalk.green(packageInfoJson.time[packageInfoJson.version]));
     } else {
         console.log("Usage: yarn plugins <action>");
         console.log("       yarn plugins init [ts] <plugin name> " + chalk.gray("# initialise a new plugin"));

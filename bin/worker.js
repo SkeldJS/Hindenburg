@@ -108,7 +108,7 @@ async function getInternalIp() {
             const latestVersion = await getLatestVersion();
             const compare = compareVersions(latestVersion, process.env.npm_package_version);
             stopSpinner(versionSpinner, true);
-    
+
             if (compare === 1) {
                 if (worker.config.autoUpdate) {
                     console.log(chalk.yellow("New version of Hindenburg available: " + latestVersion));
@@ -122,9 +122,9 @@ async function getInternalIp() {
                         try {
                             await runCommandInDir(process.cwd(), "yarn");
                             stopSpinner(installSpinner, true);
-                        
+
                             const yarnBuildSpinner = createSpinner("Building..");
-                            
+
                             try {
                                 await runCommandInDir(process.cwd(), "yarn build");
                                 stopSpinner(yarnBuildSpinner, true);
@@ -161,7 +161,9 @@ async function getInternalIp() {
 
     worker.logger.info("Listening on:");
 
-    worker.logger.info(chalk.grey`External: ${chalk.white(worker.config.socket.ip)}:${port}`);
+    if (!worker.config.logging.hideSensitiveInfo) {
+        worker.logger.info(chalk.grey`External: ${chalk.white(worker.config.socket.ip)}:${port}`);
+    }
     worker.logger.info(chalk.grey`Internal: ${chalk.white(internalIp)}:${port}`);
     worker.logger.info(chalk.grey`   Local: ${chalk.white("127.0.0.1")}:${port}`);
 
@@ -173,7 +175,7 @@ async function getInternalIp() {
         persistent: false,
         encoding: "utf8"
     });
-    
+
     configWatch.on("change", async eventType => {
         worker.logger.info("Config file updated, reloading..");
         try {

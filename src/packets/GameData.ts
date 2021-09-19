@@ -10,7 +10,7 @@ import {
 
 export class UnknownGameDataMessage extends BaseGameDataMessage {
     static messageTag = 255 as const;
-    
+
     constructor(
         public readonly messageTag: number,
         public readonly bytes: Buffer

@@ -168,6 +168,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      */
     lastClientId: number;
 
+    pingInterval: NodeJS.Timeout;
 
     constructor(
         /**
@@ -529,31 +530,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
         // todo: handle report player
 
         const pingInterval = 2000;
-        setInterval(() => {
-            for (const [ , connection ] of this.connections) {
-                if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
-                    this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
-                        connection);
-
-                    connection.disconnect();
-                    continue;
-                }
-
-                connection.sendPacket(
-                    new PingPacket(
-                        connection.getNextNonce()
-                    )
-                );
-                for (let i = 0; i < connection.sentPackets.length; i++) {
-                    const sent = connection.sentPackets[i];
-                    if (!sent.acked) {
-                        if (Date.now() - sent.sentAt > 500) {
-                            this._sendPacket(connection.rinfo, sent.buffer);
-                            sent.sentAt = Date.now();
-                        }
-                    }
-                }
-            }
+        this.pingInterval = setInterval(() => {
+            this.doPings();
         }, pingInterval);
 
         this.registerPacketHandlers();
@@ -1112,6 +1090,33 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 );
             }
         });
+    }
+
+    doPings() {
+        for (const [ , connection ] of this.connections) {
+            if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
+                this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
+                    connection);
+
+                connection.disconnect();
+                continue;
+            }
+
+            connection.sendPacket(
+                new PingPacket(
+                    connection.getNextNonce()
+                )
+            );
+            for (let i = 0; i < connection.sentPackets.length; i++) {
+                const sent = connection.sentPackets[i];
+                if (!sent.acked) {
+                    if (Date.now() - sent.sentAt > 1500) {
+                        this._sendPacket(connection.rinfo, sent.buffer);
+                        sent.sentAt = Date.now();
+                    }
+                }
+            }
+        }
     }
 
     updateConfig(newConfig: Partial<HindenburgConfig>) {

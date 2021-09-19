@@ -12,7 +12,7 @@ import { RoomsConfig } from "./interfaces";
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
 import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
-import { Connection } from ".";
+import { Connection } from "./Connection";
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { fmtCode } from "./util/fmtCode";
 

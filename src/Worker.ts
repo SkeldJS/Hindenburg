@@ -872,6 +872,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 }
 
+                if (typeof this.config.reactor !== "boolean") {
+                    const modConfig = this.config.reactor.mods[senderMod.modId];
+                    if (typeof modConfig === "object") {
+                        if (modConfig.doNetworking === false) { // doNetworking can be undefined and is defaulted to true
+                            return false;
+                        }
+                    }
+                }
+
                 for (const [ , receiveClient ] of sender.room!.connections) {
                     if (receiveClient === sender)
                         continue;

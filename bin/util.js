@@ -52,6 +52,7 @@ function createDefaultConfig() {
         socket: {
             port: 22023,
             broadcastUnknownGamedata: false,
+            messageOrdering: false,
             ip: "auto"
         },
         plugins: {

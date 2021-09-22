@@ -26,7 +26,7 @@ export class ClientMod {
         public readonly modVersion: string,
         public readonly networkSide: ModPluginSide
     ) {}
-    
+
     [Symbol.for("nodejs.util.inspect.custom")]() {
         return chalk.green(this.modId) + chalk.grey("@" + this.modVersion);
     }
@@ -82,7 +82,7 @@ export const locales = {
 export class Connection {
     /**
      * Whether the client has successfully identified with the server.
-     * 
+     *
      * Requires the client sending a {@link ModdedHelloPacket} (optional extension
      * of [0x08 Hello](https://github.com/codyphobe/among-us-protocol/blob/master/01_packet_structure/05_packet_types.md#0x08-hello))
      */
@@ -90,7 +90,7 @@ export class Connection {
 
     /**
      * Whether a disconnect packet has been sent to this client.
-     * 
+     *
      * Used to avoid an infinite loop of sending disconnect confirmations
      * back and forth.
      */
@@ -141,10 +141,10 @@ export class Connection {
 
     /**
      * The last nonce that was received by this client.
-     * 
+     *
      * Used to prevent duplicate packets with the same nonce.
      */
-    lastNonce: number;
+    nextExpectedNonce: number;
     private _incrNonce: number;
 
     /**
@@ -152,7 +152,7 @@ export class Connection {
      * re-send packets that have not been acknowledged.
      */
     sentPackets: SentPacket[];
-    
+
     /**
      * An array of the 8 latest packet nonces that were received from this client.
      * Used to re-send acknowledgements that the client did not receive.
@@ -164,6 +164,12 @@ export class Connection {
      * the time it takes for each reliable packet to be acknowledged.
      */
     roundTripPing: number;
+
+    /**
+     * A map of messages that were sent out-of-order to allow the server to execute
+     * them when needed.
+     */
+    unorderedMessageMap: Map<number, BaseRootPacket>;
 
     /**
      * The room that this client is in.
@@ -189,18 +195,19 @@ export class Connection {
         this.usingReactor = false;
         this.username = "";
         this.language = Language.English;
-        
+
         this.numMods = 0;
         this.mods = new Map;
         this.awaitingToJoin = 0;
 
-        this.lastNonce = -1;
+        this.nextExpectedNonce = 0;
         this._incrNonce = 0;
 
         this.sentPackets = [];
         this.receivedPackets = [];
 
         this.roundTripPing = 0;
+        this.unorderedMessageMap = new Map;
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -266,7 +273,7 @@ export class Connection {
 
     /**
      * Serialize and reliable or unreliably send a packet to this client.
-     * 
+     *
      * For reliable packets, packets sent will be reliably recorded and marked
      * for re-sending if the client does not send an acknowledgement for the
      * packet.
@@ -306,7 +313,7 @@ export class Connection {
 
     /**
      * Gracefully disconnect the client for this connection.
-     * 
+     *
      * Note that this does not remove this connection from the server, see {@link Worker.removeConnection}.
      * @param reason The reason for why the client is being disconnected. Set to
      * a string to use a custom message.
@@ -317,7 +324,7 @@ export class Connection {
      * // Disconnect a player for hacking.
      * await player.connection.disconnect(DisconnectReason.Hacking);
      * ```
-     * 
+     *
      * ```ts
      * // Disconnect a player for a custom reason.
      * await player.connection.disconnect("You have been very naughty.");
@@ -328,7 +335,7 @@ export class Connection {
             const formatted = this.fgetLocale(reason, ...message);
             if (!formatted)
                 return this.disconnect(DisconnectReason.None);
-                
+
             return this.disconnect(DisconnectReason.Custom, formatted);
         }
 
@@ -344,7 +351,7 @@ export class Connection {
                 true
             )
         );
-        
+
         this.worker.logger.info("%s disconnected: %s (%s)",
             this, reason ? DisconnectReason[reason] : "None", (messageJoined || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
 
@@ -367,7 +374,7 @@ export class Connection {
     /**
      * Emit an error that occurred while the client attempted to create or join
      * a room.
-     * 
+     *
      * Note that this does not disconnect the client, see {@link Connection.disconnect}.
      * @param reason The error that the client encountered while creating or
      * joining their room. Set to a string to use a custom message.
@@ -377,10 +384,10 @@ export class Connection {
      * ```ts
      * // A room that the client tried to join is full.
      * await client.joinError(DisconnectReason.GameFull);
-     * 
+     *
      * // A room that the client tried to join is already full.
      * await client.joinError(DisconectReason.GameStarted);
-     * 
+     *
      * // A custom reason for why the client could not join.
      * await client.joinError("Alas, thou art barred from entering said establishment.")
      * ```
@@ -415,7 +422,7 @@ export class Connection {
     /**
      * Force this client to leave their current game. Primarily for {@link Room.destroy}
      * although exposed as a function for any other possible uses.
-     * 
+     *
      * Sends a [RemoveGame](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/03_removegame.md)
      * packet and does not immediately disconnect, although the client should do
      * this shortly after receiving the message.

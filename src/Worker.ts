@@ -619,7 +619,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
     registerPacketHandlers() {
         this.decoder.listeners.clear();
 
-        this.decoder.on([ ReliablePacket, ModdedHelloPacket, PingPacket ], async (message, direction, { sender }) => {
+        this.decoder.on(ModdedHelloPacket, async (message, direction, { sender }) => {
+            if (sender.hasIdentified)
+                return;
+
             sender.receivedPackets.unshift(message.nonce);
             sender.receivedPackets.splice(8);
 
@@ -629,11 +632,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     []
                 )
             );
-        });
-
-        this.decoder.on(ModdedHelloPacket, async (message, direction, { sender }) => {
-            if (sender.hasIdentified)
-                return;
 
             sender.hasIdentified = true;
             sender.usingReactor = !message.isNormalHello();
@@ -1286,64 +1284,95 @@ export class Worker extends EventEmitter<WorkerEvents> {
         try {
             const parsedPacket = this.decoder.parse(buffer, MessageDirection.Serverbound);
 
-            if (parsedPacket) {
-                const parsedReliable = parsedPacket as ReliableSerializable;
-
-                const cachedConnection = this.connections.get(rinfo.address + ":" + rinfo.port);
-
-                try {
-                    if (cachedConnection) {
-                        const isReliable = parsedReliable.nonce !== undefined && !(parsedPacket instanceof AcknowledgePacket);
-                        if (isReliable) {
-                            if (parsedReliable.nonce <= cachedConnection.lastNonce) {
-                                this.logger.warn("%s is behind (got %s, last nonce was %s)",
-                                    cachedConnection, parsedReliable.nonce, cachedConnection.lastNonce);
-
-                                await this.sendPacket(
-                                    cachedConnection,
-                                    new AcknowledgePacket(
-                                        parsedReliable.nonce,
-                                        []
-                                    )
-                                );
-
-                                if (buffer[5] !== 0xff) { // reactor sucks and sends the mod declaration message with a nonce of 0 because it sucks
-                                    return;
-                                }
-                            }
-                            cachedConnection.lastNonce = parsedReliable.nonce;
-                        }
-
-                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
-                            sender: cachedConnection,
-                            reliable: isReliable
-                        });
-                    } else {
-                        if (parsedReliable.messageTag !== SendOption.Hello)
-                            return;
-
-                        const connection = cachedConnection || new Connection(this, rinfo, this.getNextClientId());
-                        if (!cachedConnection)
-                            this.connections.set(rinfo.address + ":" + rinfo.port, connection);
-
-                        if (parsedReliable.nonce !== undefined) {
-                            connection.lastNonce = parsedReliable.nonce;
-                        }
-
-                        await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
-                            sender: connection,
-                            reliable: true
-                        });
-                    }
-                } catch (e) {
-                    const connection = this.getOrCreateConnection(rinfo);
-                    this.logger.error("Error occurred while processing packet from %s:",
-                        connection);
-                    console.log(e);
-                }
-            } else {
+            if (!parsedPacket) {
                 const connection = this.getOrCreateConnection(rinfo);
-                this.logger.error("%s sent an unknown root packet (%s)", connection, buffer[0]);
+                this.logger.warn("%s sent an unknown root packet (%s)", connection, buffer[0]);
+                return;
+            }
+
+            const parsedReliable = parsedPacket as ReliableSerializable;
+
+            const cachedConnection = this.connections.get(rinfo.address + ":" + rinfo.port);
+
+            try {
+                if (cachedConnection) {
+                    const isReliable = parsedReliable.nonce !== undefined && parsedPacket.messageTag !== SendOption.Acknowledge;
+                    if (isReliable) {
+                        cachedConnection.receivedPackets.unshift(parsedReliable.nonce);
+                        cachedConnection.receivedPackets.splice(8);
+
+                        await cachedConnection.sendPacket(
+                            new AcknowledgePacket(
+                                parsedReliable.nonce,
+                                []
+                            )
+                        );
+
+                        if (buffer[5] === 0xff) { // reactor sucks and sends the mod declaration message with a nonce of 0 because it sucks
+                            return;
+                        }
+
+                        if (parsedReliable.nonce < cachedConnection.nextExpectedNonce - 1) {
+                            this.logger.warn("%s is behind (got %s, last nonce was %s)",
+                                cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce - 1);
+                            return;
+                        }
+
+                        if (parsedReliable.nonce !== cachedConnection.nextExpectedNonce && this.config.socket.messageOrdering) {
+                            this.logger.warn("%s holding packet with nonce %s, expected %s",
+                                cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce);
+
+                            if (!cachedConnection.unorderedMessageMap.has(parsedReliable.nonce)) {
+                                cachedConnection.unorderedMessageMap.set(parsedReliable.nonce, parsedReliable);
+                            }
+
+                            return;
+                        }
+
+                        cachedConnection.nextExpectedNonce++;
+                    }
+
+                    await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
+                        sender: cachedConnection,
+                        reliable: isReliable
+                    });
+
+                    if (isReliable && this.config.socket.messageOrdering) {
+                        // eslint-disable-next-line no-constant-condition
+                        while (true) {
+                            const nextMessage = cachedConnection.unorderedMessageMap.get(cachedConnection.nextExpectedNonce);
+                            if (!nextMessage)
+                                break;
+
+                            await this.decoder.emitDecoded(nextMessage, MessageDirection.Serverbound, {
+                                sender: cachedConnection,
+                                reliable: isReliable
+                            });
+
+                            cachedConnection.unorderedMessageMap.delete(cachedConnection.nextExpectedNonce);
+                            cachedConnection.nextExpectedNonce++;
+                        }
+                    }
+                } else {
+                    if (parsedReliable.messageTag !== SendOption.Hello)
+                        return;
+
+                    const connection = cachedConnection || new Connection(this, rinfo, this.getNextClientId());
+                    if (!cachedConnection)
+                        this.connections.set(rinfo.address + ":" + rinfo.port, connection);
+
+                    connection.nextExpectedNonce = parsedReliable.nonce + 1;
+
+                    await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
+                        sender: connection,
+                        reliable: true
+                    });
+                }
+            } catch (e) {
+                const connection = this.getOrCreateConnection(rinfo);
+                this.logger.error("Error occurred while processing packet from %s:",
+                    connection);
+                console.log(e);
             }
         } catch (e) {
             const connection = this.getOrCreateConnection(rinfo);

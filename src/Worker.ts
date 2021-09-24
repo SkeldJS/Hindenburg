@@ -1002,7 +1002,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            sender.room?.room.decoder.emitDecoded(message, direction, player);
+            sender.room?.decoder.emitDecoded(message, direction, player);
         });
 
         this.decoder.on(EndGameMessage, async (message, direction, { sender }) => {
@@ -1044,7 +1044,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     continue;
                 }
 
-                const roomHost = room.connections.get(room.hostid);
+                const roomHost = room.connections.get(room.hostId);
 
                 if (roomHost) {
                     const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
@@ -1423,7 +1423,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         };
 
         const createdRoom = new Room(this, copyConfiguration, options);
-        await createdRoom.room.setCode(code);
+        await createdRoom.setCode(code);
         this.rooms.set(code, createdRoom);
 
         createdRoom.emit(
@@ -1460,7 +1460,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             return connection.disconnect(DisconnectReason.Banned);
         }
 
-        if (ev.alteredRoom.connections.size >= ev.alteredRoom.room.settings.maxPlayers) {
+        if (ev.alteredRoom.connections.size >= ev.alteredRoom.settings.maxPlayers) {
             this.logger.warn("%s attempted to join %s but it was full",
                 connection, foundRoom);
             return connection.joinError(DisconnectReason.GameFull);
@@ -1475,8 +1475,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
         if (this.config.reactor !== false && (
             this.config.reactor === true ||
             this.config.reactor.requireHostMods
-        ) && ev.alteredRoom.hostid) {
-            const hostConnection = ev.alteredRoom.connections.get(ev.alteredRoom.hostid);
+        ) && ev.alteredRoom.hostId) {
+            const hostConnection = ev.alteredRoom.connections.get(ev.alteredRoom.hostId);
             if (hostConnection) {
                 if (hostConnection.usingReactor && !connection.usingReactor) {
                     return connection.joinError(i18n.reactor_required_for_room);

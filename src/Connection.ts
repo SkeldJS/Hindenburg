@@ -252,7 +252,7 @@ export class Connection {
             return playerPerspective.players.get(this.clientId);
         }
 
-        return this.room?.room.players.get(this.clientId);
+        return this.room?.players.get(this.clientId);
     }
 
     /**

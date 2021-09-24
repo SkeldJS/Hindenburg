@@ -155,7 +155,7 @@ export class Plugin {
 
                 await player.room.broadcast([
                     new RpcMessage(
-                        component.netid,
+                        component.netId,
                         new ReactorRpcMessage(
                             targetMod.netId,
                             rpc

@@ -1,15 +1,15 @@
 /**
  * Format a log config formatting array, replacing the values with specified data.
- * 
+ *
  * @see {@link LoggingConfig}
  * @param format The formatting array to format.
  * @param data The data to replace the formatting parts with.
  * @returns A formatted string.
- * 
+ *
  * @example
  * ```
  * const formatArray: ("favouriteColor"|"age")[] = ["age"];
- * 
+ *
  * console.log(
  *     fmtLogFormat(
  *         formatArray,

@@ -264,7 +264,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     get amhost() {
-        return this.hostid === SpecialClientId.Server;
+        return this.hostId === SpecialClientId.Server;
     }
 
     get name() {
@@ -309,7 +309,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     const writer = HazelWriter.alloc(0);
                     if (component.Serialize(writer, false)) {
                         this.stream.push(
-                            new DataMessage(component.netid, writer.buffer)
+                            new DataMessage(component.netId, writer.buffer)
                         );
                     }
                     component.dirtyBit = 0;
@@ -524,31 +524,31 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     async setHost(player: PlayerData) {
         const remote = this.connections.get(player.clientId);
 
-        const before = this.hostid;
+        const before = this.hostId;
         const resolvedId = this.resolvePlayerClientID(player);
 
         if (!resolvedId)
             return;
 
         if (this.config.serverAsHost) {
-            this.hostid = SpecialClientId.Server;
+            this.hostId = SpecialClientId.Server;
             this.actingHostId = resolvedId;
         } else {
-            this.hostid = resolvedId;
-            this.actingHostId = this.hostid;
+            this.hostId = resolvedId;
+            this.actingHostId = this.hostId;
         }
 
         if (this.amhost) {
-            if (!this.lobbybehaviour && !this.started) {
+            if (!this.lobbyBehaviour && this.state === GameState.NotStarted) {
                 this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
             }
 
-            if (!this.gamedata) {
+            if (!this.gameData) {
                 this.spawnPrefab(SpawnType.GameData, -2);
             }
         }
 
-        if (before !== this.hostid && this.host) {
+        if (before !== this.hostId && this.host) {
             await this.host.emit(new PlayerSetHostEvent(this, this.host));
         }
 
@@ -611,7 +611,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     this.code,
                     client.clientId,
                     reason,
-                    this.hostid
+                    this.hostId
                 )
             ]);
         }
@@ -645,7 +645,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         joiningClient.room = this;
         if (this.state === GameState.Ended) {
-            if (joiningClient.clientId === this.hostid) {
+            if (joiningClient.clientId === this.hostId) {
                 this.state = GameState.NotStarted;
                 this.waiting.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
@@ -681,7 +681,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         new JoinGameMessage(
                             this.code,
                             joiningClient.clientId,
-                            this.hostid
+                            this.hostId
                         )
                     ], undefined, [ joiningClient ]);
                 }
@@ -719,7 +719,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         new JoinGameMessage(
                             this.code,
                             joiningClient.clientId,
-                            this.hostid
+                            this.hostId
                         )
                     ], undefined, [ joiningClient ]);
                 }
@@ -751,7 +751,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     new JoinedGameMessage(
                         this.code,
                         joiningClient.clientId,
-                        this.hostid,
+                        this.hostId,
                         [...this.connections]
                             .map(([, client]) => client.clientId)
                     ),
@@ -768,7 +768,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             new JoinGameMessage(
                 this.code,
                 joiningClient.clientId,
-                this.hostid
+                this.hostId
             )
         ]);
 
@@ -805,7 +805,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                         clientId,
                                         clientId === this.actingHostId
                                             ? clientId
-                                            : this.hostid,
+                                            : this.hostId,
                                         [...this.connections.values()]
                                             .reduce<number[]>((prev, cur) => {
                                                 if (cur !== connection) {
@@ -894,9 +894,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 );
             }
 
-            if (this.lobbybehaviour)
+            if (this.lobbyBehaviour)
                 this.despawnComponent(
-                    this.lobbybehaviour
+                    this.lobbyBehaviour
                 );
 
             const ship_prefabs = [
@@ -908,10 +908,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             ];
 
             this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
-            await this.shipstatus?.selectImpostors();
+            await this.shipStatus?.selectImpostors();
 
             for (const [, player] of this.players) {
-                this.room.gamedata?.setTasks(player, [1, 2, 3]);
+                this.gameData?.setTasks(player, [1, 2, 3]);
             }
         }
     }
@@ -967,7 +967,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * ```
      */
     async sendChat(message: string, options: Partial<SendChatOptions> = {}) {
-        if (!this.gamedata)
+        if (!this.gameData)
             throw new TypeError("No gamedata spawned.");
 
         const defaultOptions: SendChatOptions = {
@@ -1016,7 +1016,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     new JoinGameMessage(
                         this.code,
                         SpecialClientId.Temp,
-                        this.hostid
+                        this.hostId
                     )
                 ]);
             }
@@ -1041,7 +1041,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     ]
                 ),
                 new DataMessage(
-                    this.gamedata.netid,
+                    this.gameData.netId,
                     writer.buffer
                 ),
                 new RpcMessage(
@@ -1087,7 +1087,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         this.code,
                         SpecialClientId.Temp,
                         DisconnectReason.None,
-                        this.hostid
+                        this.hostId
                     )
                 ]);
             }
@@ -1125,31 +1125,31 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 const oldColor = player.info.color;
                 await this.broadcast([
                     new RpcMessage(
-                        player.control.netid,
+                        player.control.netId,
                         new SetNameMessage(defaultOptions.name)
                     ),
                     new RpcMessage(
-                        player.control.netid,
+                        player.control.netId,
                         new SetColorMessage(defaultOptions.color)
                     ),
                     new DataMessage(
-                        this.gamedata.netid,
+                        this.gameData.netId,
                         writer.buffer
                     ),
                     new RpcMessage(
-                        player.control.netid,
+                        player.control.netId,
                         new SendChatMessage(message)
                     ),
                     new RpcMessage(
-                        player.control.netid,
+                        player.control.netId,
                         new SetNameMessage(oldName)
                     ),
                     new RpcMessage(
-                        player.control.netid,
+                        player.control.netId,
                         new SetColorMessage(oldColor)
                     ),
                     new DataMessage(
-                        this.gamedata.netid,
+                        this.gameData.netId,
                         writer2.buffer
                     )
                 ], true, defaultOptions.target);

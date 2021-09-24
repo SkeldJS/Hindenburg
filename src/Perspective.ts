@@ -148,7 +148,7 @@ export class PerspectiveFilter extends MasketDecoder {
  * // Make every other player appear black and without a name for somePlayer.
  *
  * const perspective = room.createPerspective(somePlayer, [
- *   PerspectiveFilter.GameDataUpdates
+ *   PerspectiveFilter.gameDataUpdates
  * ]); // Create a perspective for somePlayer, filtering out gamedata updates (names, colours, hats, etc.)
  *
  * for (const [ , player ] of perspective.players) {
@@ -265,23 +265,23 @@ export class Perspective extends BaseRoom {
         for (const [ netId, component ] of parentRoom.netobjects) {
             if (component instanceof AirshipStatus) {
                 const airshipStatus = component as AirshipStatus<this>;
-                const newAs = new AirshipStatus(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newAs = new AirshipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 newAs.systems = this.cloneSystems(airshipStatus) as typeof airshipStatus.systems;
 
-                this.shipstatus = newAs;
+                this.shipStatus = newAs;
                 this.netobjects.set(netId, newAs);
             } else if (component instanceof AprilShipStatus) {
                 const aprilShipStatus = component as AprilShipStatus<this>;
-                const newAss = new AprilShipStatus(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newAss = new AprilShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 newAss.systems = this.cloneSystems(aprilShipStatus) as typeof aprilShipStatus.systems;
 
-                this.shipstatus = newAss;
+                this.shipStatus = newAss;
                 this.netobjects.set(netId, newAss);
             } else if (component instanceof CustomNetworkTransform) {
                 const cnt = component as CustomNetworkTransform<this>;
-                const newCnt = new CustomNetworkTransform(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newCnt = new CustomNetworkTransform(this, component.spawnType, netId, component.flags, component.ownerId);
                 newCnt.oldSeqId = cnt.oldSeqId;
                 newCnt.seqId = cnt.seqId;
                 newCnt.position = new Vector2(cnt.position);
@@ -290,7 +290,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newCnt);
             } else if (component instanceof GameData) {
                 const gameData = component as GameData<this>;
-                const newGd = new GameData(this, component.spawnType, netId, component.flags, component.ownerid, {
+                const newGd = new GameData(this, component.spawnType, netId, component.flags, component.ownerId, {
                     players: new Map
                 });
                 for (const [ playerId, playerInfo ] of gameData.players) {
@@ -309,15 +309,15 @@ export class Perspective extends BaseRoom {
                     newGd.players.set(playerId, newPlayerInfo);
                 }
 
-                this.gamedata = newGd;
+                this.gameData = newGd;
                 this.netobjects.set(netId, newGd);
             } else if (component instanceof LobbyBehaviour) {
-                const newLb = new LobbyBehaviour(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newLb = new LobbyBehaviour(this, component.spawnType, netId, component.flags, component.ownerId);
                 this.netobjects.set(netId, newLb);
-                this.lobbybehaviour = newLb;
+                this.lobbyBehaviour = newLb;
             } else if (component instanceof MeetingHud) {
                 const meetingHud = component as MeetingHud<this>;
-                const newMh = new MeetingHud(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newMh = new MeetingHud(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 newMh.dirtyBit = meetingHud.dirtyBit;
                 newMh.tie = meetingHud.tie;
@@ -326,28 +326,28 @@ export class Perspective extends BaseRoom {
                     : undefined;
 
                 for (const [ playerId, voteArea ] of meetingHud.voteStates) {
-                    const newVoteArea = new PlayerVoteArea(this, playerId, voteArea.votedForId, voteArea.didReport);
+                    const newVoteArea = new PlayerVoteArea(meetingHud, playerId, voteArea.votedForId, voteArea.didReport);
                     newMh.voteStates.set(playerId, newVoteArea);
                 }
 
-                this.meetinghud = newMh;
+                this.meetingHud = newMh;
                 this.netobjects.set(netId, newMh);
             } else if (component instanceof MiraShipStatus) {
                 const hqShipStatus = component as MiraShipStatus<this>;
-                const newHqss = new MiraShipStatus(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newHqss = new MiraShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 newHqss.systems = this.cloneSystems(hqShipStatus) as typeof hqShipStatus.systems;
 
-                this.shipstatus = newHqss;
+                this.shipStatus = newHqss;
                 this.netobjects.set(netId, newHqss);
             } else if (component instanceof PlayerControl) {
                 const playerControl = component as PlayerControl<this>;
-                const newPc = new PlayerControl(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newPc = new PlayerControl(this, component.spawnType, netId, component.flags, component.ownerId);
                 newPc.isNew = playerControl.isNew;
                 newPc.playerId = playerControl.playerId;
 
-                if (newPc.ownerid > 0) {
-                    const clientOwner = this.players.get(newPc.ownerid);
+                if (newPc.ownerId > 0) {
+                    const clientOwner = this.players.get(newPc.ownerId);
                     if (clientOwner) {
                         clientOwner.character = newPc;
                     }
@@ -355,29 +355,29 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newPc);
             } else if (component instanceof PlayerPhysics) {
                 const playerPhysics = component as PlayerPhysics<this>;
-                const newPp = new PlayerPhysics(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newPp = new PlayerPhysics(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 newPp.ventid = playerPhysics.ventid;
                 this.netobjects.set(netId, newPp);
             } else if (component instanceof PolusShipStatus) {
                 const polusShipStatus = component as PolusShipStatus<this>;
-                const newPss = new PolusShipStatus(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newPss = new PolusShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 newPss.systems = this.cloneSystems(polusShipStatus) as typeof polusShipStatus.systems;
 
-                this.shipstatus = newPss;
+                this.shipStatus = newPss;
                 this.netobjects.set(netId, newPss);
             } else if (component instanceof SkeldShipStatus) {
                 const shipStatus = component as SkeldShipStatus<this>;
-                const newSss = new SkeldShipStatus(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newSss = new SkeldShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 newSss.systems = this.cloneSystems(shipStatus) as typeof shipStatus.systems;
 
-                this.shipstatus = newSss;
+                this.shipStatus = newSss;
                 this.netobjects.set(netId, newSss);
             } else if (component instanceof VoteBanSystem) {
                 const voteBanSystem = component as VoteBanSystem<this>;
-                const newVbs = new VoteBanSystem(this, component.spawnType, netId, component.flags, component.ownerid);
+                const newVbs = new VoteBanSystem(this, component.spawnType, netId, component.flags, component.ownerId);
 
                 for (const [ votedId, voters ] of voteBanSystem.voted) {
                     const newVoters = [];
@@ -392,17 +392,17 @@ export class Perspective extends BaseRoom {
                     newVbs.voted.set(votedId, newVoters as [PlayerData<this>|undefined, PlayerData<this>|undefined, PlayerData<this>|undefined]);
                 }
 
-                this.votebansystem = newVbs;
+                this.voteBanSystem = newVbs;
                 this.netobjects.set(netId, newVbs);
             }
         }
 
         for (const obj of parentRoom.objectList) {
-            const objOnHere = this.netobjects.get(obj.netid)!;
+            const objOnHere = this.netobjects.get(obj.netId)!;
             this.objectList.push(objOnHere);
 
             for (const component of obj.components) {
-                const componentOnHere = this.netobjects.get(component.netid)!;
+                const componentOnHere = this.netobjects.get(component.netId)!;
                 objOnHere.components.push(componentOnHere);
             }
         }
@@ -410,7 +410,7 @@ export class Perspective extends BaseRoom {
         this.registeredPrefabs = new Map(parentRoom.registeredPrefabs.entries());
 
         this.code = parentRoom.code;
-        this.hostid = parentRoom.hostid;
+        this.hostId = parentRoom.hostId;
         this.settings = new GameSettings(parentRoom.settings);
         this.counter = parentRoom.counter;
         this.privacy = parentRoom.privacy;
@@ -705,22 +705,22 @@ export class Perspective extends BaseRoom {
                 if (!playerConn)
                     continue;
 
-                const gameData = this.parentRoom.gamedata!;
+                const gameData = this.parentRoom.gameData!;
                 const gameDataWriter = HazelWriter.alloc(0);
                 gameData.dirtyBit = 0b111111111111111;
                 gameDataWriter.write(gameData, false);
 
-                const voteBanSystem = this.parentRoom.votebansystem!;
+                const voteBanSystem = this.parentRoom.voteBanSystem!;
                 const voteBanSystemWriter = HazelWriter.alloc(0);
                 voteBanSystemWriter.write(voteBanSystem, false);
 
                 const messages: BaseGameDataMessage[] = [
                     new DataMessage(
-                        gameData.netid,
+                        gameData.netId,
                         gameDataWriter.buffer
                     ),
                     new DataMessage(
-                        voteBanSystem.netid,
+                        voteBanSystem.netId,
                         voteBanSystemWriter.buffer
                     )
                 ];
@@ -752,12 +752,12 @@ export class Perspective extends BaseRoom {
                     }
                 }
 
-                if (this.hostid !== this.parentRoom.hostid) {
+                if (this.hostId !== this.parentRoom.hostId) {
                     payloads.push(
                         new JoinGameMessage(
                             this.code,
                             SpecialClientId.Temp,
-                            this.parentRoom.hostid
+                            this.parentRoom.hostId
                         )
                     );
                     payloads.push(
@@ -765,7 +765,7 @@ export class Perspective extends BaseRoom {
                             this.code,
                             SpecialClientId.Temp,
                             DisconnectReason.None,
-                            this.parentRoom.hostid
+                            this.parentRoom.hostId
                         )
                     );
                 }
@@ -777,7 +777,7 @@ export class Perspective extends BaseRoom {
                                 this.parentRoom.code,
                                 clientId,
                                 DisconnectReason.None,
-                                this.parentRoom.hostid
+                                this.parentRoom.hostId
                             )
                         );
                     }
@@ -789,13 +789,13 @@ export class Perspective extends BaseRoom {
                             new JoinGameMessage(
                                 this.parentRoom.code,
                                 clientId,
-                                this.parentRoom.hostid
+                                this.parentRoom.hostId
                             )
                         );
                     }
                 }
 
-                const shipStatus = this.parentRoom.shipstatus;
+                const shipStatus = this.parentRoom.shipStatus;
                 if (shipStatus) {
                     const systemTypes = Object.keys(shipStatus.systems);
                     for (let i = 0; i < systemTypes.length; i++) {
@@ -809,7 +809,7 @@ export class Perspective extends BaseRoom {
 
                     messages.push(
                         new DataMessage(
-                            shipStatus.netid,
+                            shipStatus.netId,
                             shipStatusWriter.buffer
                         )
                     );
@@ -823,35 +823,35 @@ export class Perspective extends BaseRoom {
                     const playerControl = player.control!;
                     messages.push(
                         new RpcMessage(
-                            playerControl.netid,
+                            playerControl.netId,
                             new SetNameMessage(player.info.name)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
-                            playerControl.netid,
+                            playerControl.netId,
                             new SetColorMessage(player.info.color)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
-                            playerControl.netid,
+                            playerControl.netId,
                             new SetHatMessage(player.info.hat)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
-                            playerControl.netid,
+                            playerControl.netId,
                             new SetPetMessage(player.info.pet)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
-                            playerControl.netid,
+                            playerControl.netId,
                             new SetSkinMessage(player.info.skin)
                         )
                     );
@@ -861,7 +861,7 @@ export class Perspective extends BaseRoom {
                     if (playerPhysics.ventid) {
                         messages.push(
                             new RpcMessage(
-                                playerPhysics.netid,
+                                playerPhysics.netId,
                                 new EnterVentMessage(playerPhysics.ventid)
                             )
                         );
@@ -873,7 +873,7 @@ export class Perspective extends BaseRoom {
 
                     messages.push(
                         new DataMessage(
-                            ctrl.netid,
+                            ctrl.netId,
                             ctrlWriter.buffer
                         )
                     );
@@ -884,7 +884,7 @@ export class Perspective extends BaseRoom {
 
                     messages.push(
                         new DataMessage(
-                            phys.netid,
+                            phys.netId,
                             physWriter.buffer
                         )
                     );
@@ -895,7 +895,7 @@ export class Perspective extends BaseRoom {
 
                     messages.push(
                         new DataMessage(
-                            cnt.netid,
+                            cnt.netId,
                             cntWriter.buffer
                         )
                     );
@@ -909,7 +909,7 @@ export class Perspective extends BaseRoom {
                             if (taskState.completed) {
                                 messages.push(
                                     new RpcMessage(
-                                        playerControl.netid,
+                                        playerControl.netId,
                                         new CompleteTaskMessage(taskState.taskidx)
                                     )
                                 );
@@ -922,14 +922,14 @@ export class Perspective extends BaseRoom {
                 if (hostPlayer) {
                     messages.push(
                         new RpcMessage(
-                            hostPlayer.control!.netid,
+                            hostPlayer.control!.netId,
                             new SetInfectedMessage(impostorIds)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
-                            hostPlayer.control!.netid,
+                            hostPlayer.control!.netId,
                             new SyncSettingsMessage(this.parentRoom.settings)
                         )
                     );
@@ -937,7 +937,7 @@ export class Perspective extends BaseRoom {
                     (hostPlayer.control as any).lastStartCounter++;
                     messages.push(
                         new RpcMessage(
-                            hostPlayer.control!.netid,
+                            hostPlayer.control!.netId,
                             new SetStartCounterMessage(
                                 (hostPlayer.control as any).lastStartCounter,
                                 this.parentRoom.counter

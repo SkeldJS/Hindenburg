@@ -123,6 +123,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#spawn" class="tsd-kind-icon">spawn</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="votebansystem.html#wait" class="tsd-kind-icon">wait</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="votebansystem.html#waitf" class="tsd-kind-icon">waitf</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -131,8 +132,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#components" class="tsd-kind-icon">components</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#dirtybit" class="tsd-kind-icon">dirty<wbr>Bit</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#flags" class="tsd-kind-icon">flags</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#netid" class="tsd-kind-icon">netid</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#ownerid" class="tsd-kind-icon">ownerid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#netid" class="tsd-kind-icon">net<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#ownerid" class="tsd-kind-icon">owner<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#room" class="tsd-kind-icon">room</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="votebansystem.html#spawntype" class="tsd-kind-icon">spawn<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="votebansystem.html#voted" class="tsd-kind-icon">voted</a></li>
@@ -486,7 +487,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#getlisteners">getListeners</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:28</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:30</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -516,7 +517,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#off">off</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:27</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:29</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -701,7 +702,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#removealllisteners">removeAllListeners</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:30</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:32</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -719,7 +720,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#removelisteners">removeListeners</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:29</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -801,6 +802,94 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+					<a name="waitf" class="tsd-anchor"></a>
+					<h3>waitf</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">waitf&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#votebansystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">VoteBanSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#votebansystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">VoteBanSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">waitf<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#waitf">waitf</a></p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:27</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">EventName</span></h5>
+								</li>
+								<li>
+									<h5>filter: <span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#votebansystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">VoteBanSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#votebansystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">VoteBanSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>ev: <a href="../modules.html#votebansystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">VoteBanSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#votebansystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">VoteBanSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#waitf">waitf</a></p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:28</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>filter: <span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>ev: <span class="tsd-signature-type">BasicEvent</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
@@ -849,10 +938,10 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="netid" class="tsd-anchor"></a>
-					<h3>netid</h3>
-					<div class="tsd-signature tsd-kind-icon">netid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<h3>net<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">net<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#netid">netid</a></p>
+						<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#netid">netId</a></p>
 						<ul>
 							<li>Defined in node_modules/@skeldjs/core/dist/lib/Networkable.d.ts:34</li>
 						</ul>
@@ -865,10 +954,10 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="ownerid" class="tsd-anchor"></a>
-					<h3>ownerid</h3>
-					<div class="tsd-signature tsd-kind-icon">ownerid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<h3>owner<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">owner<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#ownerid">ownerid</a></p>
+						<p>Inherited from <a href="networkable.html">Networkable</a>.<a href="networkable.html#ownerid">ownerId</a></p>
 						<ul>
 							<li>Defined in node_modules/@skeldjs/core/dist/lib/Networkable.d.ts:38</li>
 						</ul>
@@ -1108,7 +1197,7 @@
 								<a href="votebansystem.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="votebansystem.html#netid" class="tsd-kind-icon">netid</a>
+								<a href="votebansystem.html#netid" class="tsd-kind-icon">net<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="votebansystem.html#off" class="tsd-kind-icon">off</a>
@@ -1123,7 +1212,7 @@
 								<a href="votebansystem.html#owner" class="tsd-kind-icon">owner</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="votebansystem.html#ownerid" class="tsd-kind-icon">ownerid</a>
+								<a href="votebansystem.html#ownerid" class="tsd-kind-icon">owner<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="votebansystem.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>
@@ -1145,6 +1234,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="votebansystem.html#wait" class="tsd-kind-icon">wait</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="votebansystem.html#waitf" class="tsd-kind-icon">waitf</a>
 							</li>
 						</ul>
 					</li>

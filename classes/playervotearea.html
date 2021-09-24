@@ -93,9 +93,19 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static tsd-is-external"><a href="playervotearea.html#deserialize" class="tsd-kind-icon">Deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#serialize" class="tsd-kind-icon">Serialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#clearvote" class="tsd-kind-icon">clear<wbr>Vote</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#setdead" class="tsd-kind-icon">set<wbr>Dead</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#setskipped" class="tsd-kind-icon">set<wbr>Skipped</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#setsuspect" class="tsd-kind-icon">set<wbr>Suspect</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#canvote" class="tsd-kind-icon">can<wbr>Vote</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#didskip" class="tsd-kind-icon">did<wbr>Skip</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#dirty" class="tsd-kind-icon">dirty</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#hasvoted" class="tsd-kind-icon">has<wbr>Voted</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#player" class="tsd-kind-icon">player</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#votedfor" class="tsd-kind-icon">voted<wbr>For</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -105,23 +115,11 @@
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Accessors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#didmissvote" class="tsd-kind-icon">did<wbr>Miss<wbr>Vote</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#didskip" class="tsd-kind-icon">did<wbr>Skip</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#hasvoted" class="tsd-kind-icon">has<wbr>Voted</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#isdead" class="tsd-kind-icon">is<wbr>Dead</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#player" class="tsd-kind-icon">player</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#votedfor" class="tsd-kind-icon">voted<wbr>For</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#didreport" class="tsd-kind-icon">did<wbr>Report</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#dirty" class="tsd-kind-icon">dirty</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#meetinghud" class="tsd-kind-icon">meetinghud</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#playerid" class="tsd-kind-icon">player<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#room" class="tsd-kind-icon">room</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playervotearea.html#votedforid" class="tsd-kind-icon">voted<wbr>For<wbr>Id</a></li>
 							</ul>
 						</section>
@@ -134,13 +132,13 @@
 					<a name="deserialize" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> Deserialize</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">Deserialize&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>reader<span class="tsd-signature-symbol">: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a>, room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, playerId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playervotearea.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerVoteArea</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">Deserialize&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>reader<span class="tsd-signature-symbol">: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a>, meetinghud<span class="tsd-signature-symbol">: </span><a href="meetinghud.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingHud</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, playerId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playervotearea.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerVoteArea</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:35</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:29</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -155,7 +153,7 @@
 									<h5>reader: <a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a></h5>
 								</li>
 								<li>
-									<h5>room: <span class="tsd-signature-type">RoomType</span></h5>
+									<h5>meetinghud: <a href="meetinghud.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingHud</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>playerId: <span class="tsd-signature-type">number</span></h5>
@@ -175,7 +173,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:36</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:30</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -198,27 +196,10 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:37</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="setdead" class="tsd-anchor"></a>
-					<h3>set<wbr>Dead</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Dead<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../enums/votestatespecialid.html" class="tsd-signature-type" data-tsd-kind="Enumeration">VoteStateSpecialId</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:39</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="../enums/votestatespecialid.html" class="tsd-signature-type" data-tsd-kind="Enumeration">VoteStateSpecialId</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -232,7 +213,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:38</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:32</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -249,7 +230,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:40</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:33</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -264,66 +245,20 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Player<wbr>Vote<wbr>Area&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, playerId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, votedForId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, didReport<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playervotearea.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerVoteArea</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:9</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-type-parameters-title">Type parameters</h4>
-							<ul class="tsd-type-parameters">
-								<li>
-									<h4>RoomType<span class="tsd-signature-symbol">: </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
-								</li>
-							</ul>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>room: <span class="tsd-signature-type">RoomType</span></h5>
-								</li>
-								<li>
-									<h5>playerId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>votedForId: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>didReport: <span class="tsd-signature-type">boolean</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="playervotearea.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerVoteArea</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Accessors</h2>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<a name="didmissvote" class="tsd-anchor"></a>
-					<h3>did<wbr>Miss<wbr>Vote</h3>
+					<a name="canvote" class="tsd-anchor"></a>
+					<h3>can<wbr>Vote</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> didMissVote<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> canVote<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:22</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:28</li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Whether this player didn&#39;t vote by the end of the meeting.</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -338,7 +273,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:26</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:19</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -347,6 +282,38 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
+					<a name="dirty" class="tsd-anchor"></a>
+					<h3>dirty</h3>
+					<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> dirty<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> dirty<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:10</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:11</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -360,34 +327,12 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:30</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:23</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Whether this player has either voted for a player or voted to skip.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<a name="isdead" class="tsd-anchor"></a>
-					<h3>is<wbr>Dead</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> isDead<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:18</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Whether the player that this state represents is dead.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -404,7 +349,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:14</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:15</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -426,7 +371,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:34</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:27</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -435,6 +380,47 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Player<wbr>Vote<wbr>Area&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>meetinghud<span class="tsd-signature-symbol">: </span><a href="meetinghud.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingHud</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, playerId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, votedForId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, didReport<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playervotearea.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerVoteArea</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:8</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>RoomType<span class="tsd-signature-symbol">: </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>meetinghud: <a href="meetinghud.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingHud</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>playerId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>votedForId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>didReport: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="playervotearea.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerVoteArea</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -452,12 +438,12 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="dirty" class="tsd-anchor"></a>
-					<h3>dirty</h3>
-					<div class="tsd-signature tsd-kind-icon">dirty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="meetinghud" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> meetinghud</h3>
+					<div class="tsd-signature tsd-kind-icon">meetinghud<span class="tsd-signature-symbol">:</span> <a href="meetinghud.html" class="tsd-signature-type" data-tsd-kind="Class">MeetingHud</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:9</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:5</li>
 						</ul>
 					</aside>
 				</section>
@@ -468,16 +454,6 @@
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:6</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="room" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> room</h3>
-					<div class="tsd-signature tsd-kind-icon">room<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RoomType</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/PlayerVoteArea.d.ts:5</li>
 						</ul>
 					</aside>
 				</section>
@@ -556,14 +532,14 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#serialize" class="tsd-kind-icon">Serialize</a>
 							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+								<a href="playervotearea.html#canvote" class="tsd-kind-icon">can<wbr>Vote</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#clearvote" class="tsd-kind-icon">clear<wbr>Vote</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
 								<a href="playervotearea.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-								<a href="playervotearea.html#didmissvote" class="tsd-kind-icon">did<wbr>Miss<wbr>Vote</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#didreport" class="tsd-kind-icon">did<wbr>Report</a>
@@ -571,26 +547,20 @@
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#didskip" class="tsd-kind-icon">did<wbr>Skip</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#dirty" class="tsd-kind-icon">dirty</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#hasvoted" class="tsd-kind-icon">has<wbr>Voted</a>
 							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-								<a href="playervotearea.html#isdead" class="tsd-kind-icon">is<wbr>Dead</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="playervotearea.html#meetinghud" class="tsd-kind-icon">meetinghud</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#player" class="tsd-kind-icon">player</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#playerid" class="tsd-kind-icon">player<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="playervotearea.html#room" class="tsd-kind-icon">room</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="playervotearea.html#setdead" class="tsd-kind-icon">set<wbr>Dead</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="playervotearea.html#setskipped" class="tsd-kind-icon">set<wbr>Skipped</a>

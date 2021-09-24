@@ -1046,34 +1046,32 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 const roomHost = room.connections.get(room.hostId);
 
-                if (roomHost) {
-                    const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
+                const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
 
-                    if (
-                        room.settings.keywords === message.options.keywords &&
-                        (message.options.map & (1 << room.settings.map)) !== 0 &&
-                        (
-                            room.settings.numImpostors === message.options.numImpostors ||
-                            message.options.numImpostors === 0
-                        )
-                    ) {
-                        const gameListing = new GameListing(
-                            room.code,
-                            this.config.socket.ip || "127.0.0.1",
-                            this.config.socket.port,
-                            roomHost.username,
-                            room.players.size,
-                            roomAge,
-                            room.settings.map,
-                            room.settings.numImpostors,
-                            room.settings.maxPlayers
-                        );
+                if (
+                    room.settings.keywords === message.options.keywords &&
+                    (message.options.map & (1 << room.settings.map)) !== 0 &&
+                    (
+                        room.settings.numImpostors === message.options.numImpostors ||
+                        message.options.numImpostors === 0
+                    )
+                ) {
+                    const gameListing = new GameListing(
+                        room.code,
+                        this.config.socket.ip || "127.0.0.1",
+                        this.config.socket.port,
+                        roomHost?.username || room.roomName,
+                        room.players.size,
+                        roomAge,
+                        room.settings.map,
+                        room.settings.numImpostors,
+                        room.settings.maxPlayers
+                    );
 
-                        returnList.push(gameListing);
+                    returnList.push(gameListing);
 
-                        if (returnList.length >= 10)
-                            break;
-                    }
+                    if (returnList.length >= 10)
+                        break;
                 }
             }
 

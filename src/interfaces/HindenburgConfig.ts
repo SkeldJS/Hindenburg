@@ -232,12 +232,25 @@ export interface ReactorConfig {
     requireHostMods: boolean;
 }
 
+export interface ChatCommandConfig {
+    /**
+     * The prefix (or command identifier) for commands.
+     * @default '/'
+     */
+    prefix: string;
+    /**
+     * Whether or not rooms can use the built-in help command.
+     * @default true
+     */
+    helpCommand: boolean;
+}
+
 export interface RoomsConfig {
     /**
      * Whether to allow players to use chat commands.
      * @default true
      */
-    chatCommands: boolean;
+    chatCommands: boolean|ChatCommandConfig;
     /**
      * The type of game code to generate for rooms, "v1" for a 4-letter code and
      * "v2" for a 6-letter code.

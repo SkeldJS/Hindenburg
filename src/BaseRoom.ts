@@ -186,15 +186,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             this.logger.info("%s sent message: %s",
                 ev.player, chalk.red(ev.chatMessage));
 
-            if (ev.chatMessage.startsWith("/") && this.config.chatCommands) {
-                const room = this.worker.rooms.get(ev.room.code);
+            const prefix = typeof this.config.chatCommands === "object"
+                ? this.config.chatCommands.prefix || "/"
+                : "/";
 
-                if (!room)
-                    return;
-
+            if (this.config.chatCommands && ev.chatMessage.startsWith(prefix)) {
                 ev.message?.cancel(); // Prevent message from being broadcasted
-                const restMessage = ev.chatMessage.substr(1);
-                const context = new ChatCommandContext(room, ev.player, ev.chatMessage);
+                const restMessage = ev.chatMessage.substr(prefix.length);
+                const context = new ChatCommandContext(this as any, ev.player, ev.chatMessage);
                 try {
                     await this.worker.chatCommandHandler.parseMessage(context, restMessage);
                 } catch (e) {

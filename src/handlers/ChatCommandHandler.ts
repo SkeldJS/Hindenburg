@@ -180,6 +180,14 @@ export class ChatCommandHandler {
 
     registerHelpCommand() {
         this.registerCommand("help [command/page]", "Get a list of commands and how to use them, or get help for a specific command.", async (ctx, args) => {
+            if (typeof ctx.room.config.chatCommands === "object" && ctx.room.config.chatCommands.helpCommand === false /* can be undefined */) {
+                return;
+            }
+
+            const prefix = typeof ctx.room.config.chatCommands === "object"
+                ? ctx.room.config.chatCommands.prefix || "/"
+                : "/";
+
             const maxDisplay = 4;
 
             const pageArg = parseInt(args["command/page"]);
@@ -221,7 +229,7 @@ export class ChatCommandHandler {
             }
 
             if (num === maxDisplay && displayPage < maxPages) {
-                outMessage += "\n\nUse /help " + (displayPage + 1) + " for more commands.";
+                outMessage += "\n\nUse " + prefix + "help " + (displayPage + 1) + " for more commands.";
             }
 
             await ctx.reply(
@@ -267,7 +275,7 @@ export class ChatCommandHandler {
     }
 
     /**
-     * Parse a message calling a command. Does not trim off a leading '/'.
+     * Parse a message calling a command. Does not trim off a leading command prefix.
      * @param ctx Context for the message.
      * @param message The message to parse.
      * @example
@@ -291,7 +299,6 @@ export class ChatCommandHandler {
             throw new CommandCallError("No command with name: " + commandName);
 
         const parsed = command.verify(args);
-
         await command.callback(ctx, parsed);
     }
 }

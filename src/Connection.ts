@@ -184,7 +184,7 @@ export class Connection {
         /**
          * Remote information about this client.
          */
-        public readonly rinfo: dgram.RemoteInfo,
+        public readonly remoteInfo: dgram.RemoteInfo,
         /**
          * The server-unique client ID for this client, see {@link Worker.getNextClientId}.
          */
@@ -217,7 +217,7 @@ export class Connection {
                 id: this.clientId,
                 ip: this.worker.config.logging.hideSensitiveInfo
                     ? undefined
-                    : this.rinfo.address,
+                    : this.remoteInfo.address,
                 ping: this.roundTripPing + "ms",
                 room: this.room ? fmtCode(this.room.code) : undefined,
                 language: (logLanguages as any)[this.language]
@@ -236,7 +236,7 @@ export class Connection {
      * ```
      */
     get address() {
-        return this.rinfo.address + ":" + this.rinfo.port;
+        return this.remoteInfo.address + ":" + this.remoteInfo.port;
     }
 
     /**

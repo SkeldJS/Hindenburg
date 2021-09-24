@@ -271,7 +271,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             : connection.clientId === args.options.clientid
                         ) ||
                         connection.username === args.options.username ||
-                        connection.rinfo.address === args.options.address ||
+                        connection.remoteInfo.address === args.options.address ||
                         connection.room?.code === codeId
                     ) {
                         if (args.options.ban) {
@@ -589,7 +589,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * @param connection The connection to remove.
      */
     removeConnection(connection: Connection) {
-        if (this.connections.delete(connection.rinfo.address + ":" + connection.rinfo.port)) {
+        if (this.connections.delete(connection.remoteInfo.address + ":" + connection.remoteInfo.port)) {
             this.logger.info("Remove %s", connection);
         }
     }
@@ -1109,7 +1109,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const sent = connection.sentPackets[i];
                 if (!sent.acked) {
                     if (Date.now() - sent.sentAt > 1500) {
-                        this._sendPacket(connection.rinfo, sent.buffer);
+                        this._sendPacket(connection.remoteInfo, sent.buffer);
                         sent.sentAt = Date.now();
                     }
                 }
@@ -1269,9 +1269,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 )
             );
             connection.sentPackets.splice(8);
-            await this._sendPacket(connection.rinfo, writer.buffer);
+            await this._sendPacket(connection.remoteInfo, writer.buffer);
         } else {
-            await this._sendPacket(connection.rinfo, writer.buffer);
+            await this._sendPacket(connection.remoteInfo, writer.buffer);
         }
     }
 

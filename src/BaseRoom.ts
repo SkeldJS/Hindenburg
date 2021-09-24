@@ -262,11 +262,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         return this.players.get(this.actingHostId);
     }
 
-    get amhost() {
+    get hostIsMe() {
         return this.hostId === SpecialClientId.Server;
     }
 
-    get name() {
+    get roomName() {
         return fmtCode(this.code);
     }
 
@@ -537,7 +537,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             this.actingHostId = this.hostId;
         }
 
-        if (this.amhost) {
+        if (this.hostIsMe) {
             if (!this.lobbyBehaviour && this.state === GameState.NotStarted) {
                 this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
             }
@@ -852,7 +852,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             new StartGameMessage(this.code)
         ]);
 
-        if (this.amhost) {
+        if (this.hostIsMe) {
             await Promise.race([
                 Promise.all(
                     [...this.players.values()].map((player) => {

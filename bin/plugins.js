@@ -12,9 +12,7 @@ function createHelloWorldPlugin(pluginName, typescript) {
     return `import {
     HindenburgPlugin,
     Plugin,
-    EventListener,
-    PlayerSetNameEvent,
-    Room
+    EventListener${typescript ? ",\n    PlayerSetNameEvent,\n    Room" : ""}
 } from "@skeldjs/hindenburg";
 
 @HindenburgPlugin({

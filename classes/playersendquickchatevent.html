@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PlayerSendChatEvent | @skeldjs/hindenburg</title>
+	<title>PlayerSendQuickChatEvent | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="playersendchatevent.html">PlayerSendChatEvent</a>
+					<a href="playersendquickchatevent.html">PlayerSendQuickChatEvent</a>
 				</li>
 			</ul>
-			<h1>Class PlayerSendChatEvent&lt;RoomType&gt;</h1>
+			<h1>Class PlayerSendQuickChatEvent&lt;RoomType&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -70,8 +70,8 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Emitted when a player sends a free chat message. See <a href="playersendquickchatevent.html">PlayerSendQuickChatEvent</a>
-						to listen for quick chat messages.</p>
+						<p>Emitted when a player sends a quick chat message. See <a href="playersendchatevent.html">PlayerSendChatEvent</a>
+						to litsen for normal chat messages.</p>
 					</div>
 					<p>Due to technical impossibilities, this event cannot be canceled or reverted.</p>
 				</div>
@@ -91,7 +91,7 @@
 						<span class="tsd-signature-type">BasicEvent</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">PlayerSendChatEvent</span>
+								<span class="target">PlayerSendQuickChatEvent</span>
 							</li>
 						</ul>
 					</li>
@@ -112,18 +112,18 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="playersendchatevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendchatevent.html#chatmessage" class="tsd-kind-icon">chat<wbr>Message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="playersendchatevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendchatevent.html#message" class="tsd-kind-icon">message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendchatevent.html#player" class="tsd-kind-icon">player</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendchatevent.html#room" class="tsd-kind-icon">room</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="playersendquickchatevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendquickchatevent.html#chatmessage" class="tsd-kind-icon">chat<wbr>Message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="playersendquickchatevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendquickchatevent.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendquickchatevent.html#player" class="tsd-kind-icon">player</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="playersendquickchatevent.html#room" class="tsd-kind-icon">room</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external"><a href="playersendchatevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external"><a href="playersendquickchatevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
@@ -134,21 +134,21 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;player.chat&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;player.quickchat&quot;</span></div>
 					<aside class="tsd-sources">
 						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendChat.d.ts:22</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendQuickChat.d.ts:22</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="chatmessage" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> chat<wbr>Message</h3>
-					<div class="tsd-signature tsd-kind-icon">chat<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<div class="tsd-signature tsd-kind-icon">chat<wbr>Message<span class="tsd-signature-symbol">:</span> <a href="../modules.html#quickchatmessagedata" class="tsd-signature-type" data-tsd-kind="Type alias">QuickChatMessageData</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendChat.d.ts:21</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendQuickChat.d.ts:21</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -160,22 +160,22 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 					<a name="eventname-1" class="tsd-anchor"></a>
 					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;player.chat&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;player.quickchat&quot;</span></div>
 					<aside class="tsd-sources">
 						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendChat.d.ts:23</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendQuickChat.d.ts:23</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="message" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> message</h3>
-					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="sendchatmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SendChatMessage</a></div>
+					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="sendquickchatmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SendQuickChatMessage</a></div>
 					<aside class="tsd-sources">
 						<p>Implementation of ProtocolEvent.message</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendChat.d.ts:17</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendQuickChat.d.ts:17</li>
 						</ul>
 					</aside>
 				</section>
@@ -186,7 +186,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of PlayerEvent.player</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendChat.d.ts:16</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendQuickChat.d.ts:16</li>
 						</ul>
 					</aside>
 				</section>
@@ -197,7 +197,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of RoomEvent.room</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendChat.d.ts:15</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendQuickChat.d.ts:15</li>
 						</ul>
 					</aside>
 				</section>
@@ -208,14 +208,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Player<wbr>Send<wbr>Chat<wbr>Event&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, player<span class="tsd-signature-symbol">: </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="sendchatmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SendChatMessage</a>, chatMessage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playersendchatevent.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSendChatEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Player<wbr>Send<wbr>Quick<wbr>Chat<wbr>Event&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, player<span class="tsd-signature-symbol">: </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="sendquickchatmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SendQuickChatMessage</a>, chatMessage<span class="tsd-signature-symbol">: </span><a href="../modules.html#quickchatmessagedata" class="tsd-signature-type" data-tsd-kind="Type alias">QuickChatMessageData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playersendquickchatevent.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSendQuickChatEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides BasicEvent.constructor</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendChat.d.ts:23</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/SendQuickChat.d.ts:23</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -233,13 +233,13 @@
 									<h5>player: <a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
-									<h5>message: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="sendchatmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SendChatMessage</a></h5>
+									<h5>message: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="sendquickchatmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SendQuickChatMessage</a></h5>
 								</li>
 								<li>
-									<h5>chatMessage: <span class="tsd-signature-type">string</span></h5>
+									<h5>chatMessage: <a href="../modules.html#quickchatmessagedata" class="tsd-signature-type" data-tsd-kind="Type alias">QuickChatMessageData</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="playersendchatevent.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSendChatEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="playersendquickchatevent.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerSendQuickChatEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -300,28 +300,28 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-has-type-parameter tsd-is-external">
-						<a href="playersendchatevent.html" class="tsd-kind-icon">Player<wbr>Send<wbr>Chat<wbr>Event</a>
+						<a href="playersendquickchatevent.html" class="tsd-kind-icon">Player<wbr>Send<wbr>Quick<wbr>Chat<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external">
-								<a href="playersendchatevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="playersendquickchatevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="playersendchatevent.html#chatmessage" class="tsd-kind-icon">chat<wbr>Message</a>
+								<a href="playersendquickchatevent.html#chatmessage" class="tsd-kind-icon">chat<wbr>Message</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-								<a href="playersendchatevent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="playersendquickchatevent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="playersendchatevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="playersendquickchatevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="playersendchatevent.html#message" class="tsd-kind-icon">message</a>
+								<a href="playersendquickchatevent.html#message" class="tsd-kind-icon">message</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="playersendchatevent.html#player" class="tsd-kind-icon">player</a>
+								<a href="playersendquickchatevent.html#player" class="tsd-kind-icon">player</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="playersendchatevent.html#room" class="tsd-kind-icon">room</a>
+								<a href="playersendquickchatevent.html#room" class="tsd-kind-icon">room</a>
 							</li>
 						</ul>
 					</li>

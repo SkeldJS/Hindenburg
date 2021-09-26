@@ -523,7 +523,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     async setHost(player: PlayerData) {
         const remote = this.connections.get(player.clientId);
 
-        const before = this.hostId;
+        const before = this.actingHostId;
         const resolvedId = this.resolvePlayerClientID(player);
 
         if (!resolvedId)
@@ -547,7 +547,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             }
         }
 
-        if (before !== this.hostId && this.host) {
+        if (before !== this.actingHostId && this.host) {
             await this.host.emit(new PlayerSetHostEvent(this, this.host));
         }
 

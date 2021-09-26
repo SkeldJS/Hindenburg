@@ -1,6 +1,6 @@
 {
   "name": "@skeldjs/hindenburg",
-  "version": "1.0.0-beta.24",
+  "version": "1.0.0-beta.25",
   "main": "./dist/src/index.js",
   "license": "GPL-3.0-only",
   "scripts": {
@@ -16,7 +16,7 @@
     "docs": "typedoc src/index.ts --out docs"
   },
   "devDependencies": {
-    "@skeldjs/client": "^2.14.3",
+    "@skeldjs/client": "^2.14.4",
     "@types/chalk": "^2.2.0",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^15.12.2",
@@ -35,14 +35,14 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "@skeldjs/constant": "^2.14.3",
-    "@skeldjs/core": "^2.14.3",
-    "@skeldjs/data": "^2.14.3",
-    "@skeldjs/events": "^2.14.3",
-    "@skeldjs/protocol": "^2.14.3",
-    "@skeldjs/reactor": "^2.14.3",
-    "@skeldjs/state": "^2.14.3",
-    "@skeldjs/util": "^2.14.3",
+    "@skeldjs/constant": "^2.14.4",
+    "@skeldjs/core": "^2.14.4",
+    "@skeldjs/data": "^2.14.4",
+    "@skeldjs/events": "^2.14.4",
+    "@skeldjs/protocol": "^2.14.4",
+    "@skeldjs/reactor": "^2.14.4",
+    "@skeldjs/state": "^2.14.4",
+    "@skeldjs/util": "^2.14.4",
     "chalk": "^4.1.1",
     "chokidar": "^3.5.2",
     "compare-versions": "^3.6.0",

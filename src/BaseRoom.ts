@@ -643,7 +643,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             await this.setHost(player);
 
         joiningClient.room = this;
-        if (this.state === GameState.Ended) {
+        if (this.state === GameState.Ended && !this.config.serverAsHost) {
             if (joiningClient.clientId === this.hostId) {
                 this.state = GameState.NotStarted;
                 this.waiting.add(joiningClient);

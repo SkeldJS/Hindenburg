@@ -932,6 +932,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             return;
         }
 
+        for (const [ , component ] of this.netobjects) {
+            component.despawn();
+        }
+
         await this.broadcastMessages([], [
             new EndGameMessage(this.code, reason, false)
         ]);

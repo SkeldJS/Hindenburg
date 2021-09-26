@@ -16,7 +16,7 @@
     "docs": "typedoc src/index.ts --out docs"
   },
   "devDependencies": {
-    "@skeldjs/client": "^2.14.1",
+    "@skeldjs/client": "^2.14.3",
     "@types/chalk": "^2.2.0",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^15.12.2",
@@ -35,14 +35,14 @@
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "@skeldjs/constant": "^2.14.1",
-    "@skeldjs/core": "^2.14.1",
-    "@skeldjs/data": "^2.14.1",
-    "@skeldjs/events": "^2.14.1",
-    "@skeldjs/protocol": "^2.14.1",
-    "@skeldjs/reactor": "^2.14.1",
-    "@skeldjs/state": "^2.14.1",
-    "@skeldjs/util": "^2.14.1",
+    "@skeldjs/constant": "^2.14.3",
+    "@skeldjs/core": "^2.14.3",
+    "@skeldjs/data": "^2.14.3",
+    "@skeldjs/events": "^2.14.3",
+    "@skeldjs/protocol": "^2.14.3",
+    "@skeldjs/reactor": "^2.14.3",
+    "@skeldjs/state": "^2.14.3",
+    "@skeldjs/util": "^2.14.3",
     "chalk": "^4.1.1",
     "chokidar": "^3.5.2",
     "compare-versions": "^3.6.0",

@@ -48,8 +48,8 @@ import {
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
-
 import { Code2Int, HazelWriter, sleep } from "@skeldjs/util";
+import { SkeldjsStateManager } from "@skeldjs/state";
 
 import { SendChatOptions, MessageSide } from "./interfaces";
 
@@ -70,7 +70,6 @@ import { fmtLogFormat } from "./util/fmtLogFormat";
 import { RoomsConfig } from "./interfaces";
 import { CommandCallError, ChatCommandContext } from "./handlers";
 import { Perspective, PresetFilter } from "./Perspective";
-import { SkeldjsStateManager } from "@skeldjs/state";
 
 (PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<BaseRoom>) {
     const connection = this.room.connections.get(this.clientId);
@@ -560,67 +559,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
-    async handleRemoteLeave(client: Connection, reason: DisconnectReason = DisconnectReason.None) {
-        await this.handleLeave(client.clientId);
-
-        this.waiting.delete(client);
-        this.connections.delete(client.clientId);
-
-        if (this.players.size === 0) {
-            await this.destroy();
-            return;
-        }
-
-        if (client.clientId === this.actingHostId) {
-            if (this.connections.size === 0) {
-                await this.setHost([...this.players.values()][0]);
-            } else {
-                const connection = [...this.connections.values()][0];
-                const player = this.players.get(connection.clientId);
-
-                if (player) {
-                    await this.setHost(player);
-                }
-            }
-        }
-
-        if (this.config.serverAsHost) {
-            const promises = [];
-            for (const [ clientId, connection ] of this.connections) {
-                promises.push(connection.sendPacket(
-                    new ReliablePacket(
-                        connection.getNextNonce(),
-                        [
-                            new RemovePlayerMessage(
-                                this.code,
-                                client.clientId,
-                                reason,
-                                clientId === this.actingHostId
-                                    ? clientId
-                                    : SpecialClientId.Server
-                            )
-                        ]
-                    )
-                ));
-            }
-            await Promise.all(promises);
-        } else {
-            await this.broadcastMessages([], [
-                new RemovePlayerMessage(
-                    this.code,
-                    client.clientId,
-                    reason,
-                    this.hostId
-                )
-            ]);
-        }
-
-        this.logger.info(
-            "%s left or was removed.",
-            client
-        );
-    }
-
     async handleJoin(clientid: number) {
         if (this.players.has(clientid))
             return null;
@@ -783,6 +721,65 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.logger.info(
             "%s joined the game",
             joiningClient
+        );
+    }
+
+    async handleRemoteLeave(client: Connection, reason: DisconnectReason = DisconnectReason.None) {
+        await this.handleLeave(client.clientId);
+
+        this.waiting.delete(client);
+        this.connections.delete(client.clientId);
+
+        if (this.players.size === 0) {
+            await this.destroy();
+            return;
+        }
+
+        if (client.clientId === this.actingHostId) {
+            if (this.connections.size === 0) {
+                await this.setHost([...this.players.values()][0]);
+            } else {
+                const connection = [...this.connections.values()][0];
+                const player = this.players.get(connection.clientId);
+
+                if (player) {
+                    await this.setHost(player);
+                }
+            }
+        }
+
+        if (this.config.serverAsHost) {
+            const promises = [];
+            for (const [ , connection ] of this.connections) {
+                promises.push(connection.sendPacket(
+                    new ReliablePacket(
+                        connection.getNextNonce(),
+                        [
+                            new RemovePlayerMessage(
+                                this.code,
+                                client.clientId,
+                                reason,
+                                SpecialClientId.Server
+                            )
+                        ]
+                    )
+                ));
+            }
+            await Promise.all(promises);
+        } else {
+            await this.broadcastMessages([], [
+                new RemovePlayerMessage(
+                    this.code,
+                    client.clientId,
+                    reason,
+                    this.hostId
+                )
+            ]);
+        }
+
+        this.logger.info(
+            "%s left or was removed.",
+            client
         );
     }
 

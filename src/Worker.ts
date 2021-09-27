@@ -1044,7 +1044,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     continue;
                 }
 
-                const roomHost = room.connections.get(room.hostId);
+                const roomHost = room.host ? room.connections.get(room.host.clientId) : undefined;
 
                 const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
 

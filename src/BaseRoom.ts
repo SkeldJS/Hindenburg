@@ -180,6 +180,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         await this.updateHost(actingHostId, actingHostConn);
                     }
                 }
+                this.saahWaitingFor = undefined;
             }
         });
 

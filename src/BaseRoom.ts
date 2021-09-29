@@ -118,7 +118,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     playerPerspectives: Map<number, Perspective>;
     activePerspectives: Perspective[];
 
-    actingHostId: number; // todo: make this an array or a set of everyone who is an acting host
+    actingHostIds: Set<number>;
 
     /**
      * This room's console logger.
@@ -131,7 +131,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     bans: Set<string>;
 
     state: GameState;
-    saahWaitingFor: number;
+    saahWaitingFor: PlayerData|undefined;
 
     constructor(
         public readonly worker: Worker,
@@ -143,7 +143,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.playerPerspectives = new Map;
         this.activePerspectives = [];
 
-        this.actingHostId = 0;
+        this.actingHostIds = new Set;
 
         this.createdAt = Date.now();
         this.connections = new Map;
@@ -155,7 +155,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.settings = settings;
 
         this.state = GameState.NotStarted;
-        this.saahWaitingFor = 0;
+        this.saahWaitingFor = undefined;
 
         this.decoder.on(EndGameMessage, message => {
             this.handleEnd(message.reason);
@@ -173,10 +173,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 this.logger.info("%s set their name to %s",
                     ev.player, ev.newName);
             }
-            if (this.config.serverAsHost && this.saahWaitingFor === ev.player.clientId) {
-                const actingHostConn = this.connections.get(this.actingHostId);
-                if (actingHostConn) {
-                    await this.updateHost(this.actingHostId, actingHostConn);
+            if (this.config.serverAsHost && this.saahWaitingFor === ev.player) {
+                for (const actingHostId of this.actingHostIds) {
+                    const actingHostConn = this.connections.get(actingHostId);
+                    if (actingHostConn) {
+                        await this.updateHost(actingHostId, actingHostConn);
+                    }
                 }
             }
         });
@@ -257,8 +259,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 
-    get host() {
-        return this.players.get(this.actingHostId);
+    get host(): PlayerData<this>|undefined {
+        return this.players.get(this.actingHostIds[Symbol.iterator]().next().value);
     }
 
     get hostIsMe() {
@@ -519,21 +521,22 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         ], recipient ? [ recipient ] : undefined);
     }
 
-    async setHost(player: PlayerData) {
+    async setHost(player: PlayerData<this>) {
         const remote = this.connections.get(player.clientId);
 
-        const before = this.actingHostId;
         const resolvedId = this.resolvePlayerClientID(player);
 
         if (!resolvedId)
             return;
 
+        const dirty = !this.actingHostIds.has(player.clientId);
+
         if (this.config.serverAsHost) {
             this.hostId = SpecialClientId.Server;
-            this.actingHostId = resolvedId;
+            this.actingHostIds.add(player.clientId);
         } else {
             this.hostId = resolvedId;
-            this.actingHostId = this.hostId;
+            this.actingHostIds.add(player.clientId);
         }
 
         if (this.hostIsMe) {
@@ -546,8 +549,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             }
         }
 
-        if (before !== this.actingHostId && this.host) {
-            await this.host.emit(new PlayerSetHostEvent(this, this.host));
+        if (dirty && this.host) {
+            await this.host.emit(new PlayerSetHostEvent(this, player));
         }
 
         if (!remote)
@@ -559,12 +562,38 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
-    async handleJoin(clientid: number) {
-        if (this.players.has(clientid))
+    async addActingHost(player: PlayerData<this>|Connection) {
+        if (!this.config.serverAsHost)
+            throw new Error("Cannot add extra actor hosts to a non-server-as-a-host room!");
+
+        this.actingHostIds.add(player.clientId);
+
+        const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
+
+        if (connection && this.saahWaitingFor !== undefined) {
+            await this.updateHost(player.clientId, connection);
+        }
+    }
+
+    async removeActingHost(player: PlayerData<this>|Connection) {
+        if (!this.config.serverAsHost)
+            throw new Error("Cannot remove actor host from a non-server-as-a-host room!");
+
+        this.actingHostIds.delete(player.clientId);
+
+        const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
+
+        if (connection) {
+            await this.updateHost(SpecialClientId.Server, connection);
+        }
+    }
+
+    async handleJoin(clientId: number): Promise<PlayerData<this>|null> {
+        if (this.players.has(clientId))
             return null;
 
-        const player = new PlayerData(this, clientid);
-        this.players.set(clientid, player);
+        const player = new PlayerData(this, clientId);
+        this.players.set(clientId, player);
         return player;
     }
 
@@ -572,13 +601,13 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (this.connections.get(joiningClient.clientId))
             return;
 
-        const player = await this.handleJoin(joiningClient.clientId) || this.players.get(joiningClient.clientId);
+        const joiningPlayer = await this.handleJoin(joiningClient.clientId) || this.players.get(joiningClient.clientId);
 
-        if (!player)
+        if (!joiningPlayer)
             return;
 
         if (!this.host)
-            await this.setHost(player);
+            await this.setHost(joiningPlayer);
 
         joiningClient.room = this;
         if (this.state === GameState.Ended && !this.config.serverAsHost) {
@@ -588,7 +617,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 this.connections.set(joiningClient.clientId, joiningClient);
 
                 this.logger.info("%s joined, joining other clients..",
-                    player);
+                    joiningPlayer);
 
                 if (this.config.serverAsHost) {
                     const promises = [];
@@ -604,7 +633,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                     new JoinGameMessage(
                                         this.code,
                                         joiningClient.clientId,
-                                        clientId === this.actingHostId
+                                        this.actingHostIds.has(clientId)
                                             ? clientId
                                             : SpecialClientId.Server
                                     )
@@ -642,7 +671,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                     new JoinGameMessage(
                                         this.code,
                                         joiningClient.clientId,
-                                        clientId === this.actingHostId
+                                        this.actingHostIds.has(clientId)
                                             ? clientId
                                             : SpecialClientId.Server
                                     )
@@ -674,12 +703,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 );
 
                 this.logger.info("%s joined, waiting for host",
-                    player);
+                    joiningPlayer);
             }
             return;
         }
 
-        this.saahWaitingFor = joiningClient.clientId;
+        this.saahWaitingFor = joiningPlayer;
 
         await joiningClient.sendPacket(
             new ReliablePacket(
@@ -714,7 +743,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         await this.emit(
             new PlayerJoinEvent(
                 this,
-                player
+                joiningPlayer
             )
         );
 
@@ -735,7 +764,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             return;
         }
 
-        if (client.clientId === this.actingHostId) {
+        if (this.actingHostIds.has(client.clientId)) {
             if (this.connections.size === 0) {
                 await this.setHost([...this.players.values()][0]);
             } else {
@@ -790,16 +819,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     if (this.waiting.has(connection)) {
                         this.waiting.delete(connection);
 
-                        const playerConnection = this.connections.get(clientId);
-
-                        return playerConnection?.sendPacket(
+                        return connection?.sendPacket(
                             new ReliablePacket(
-                                playerConnection.getNextNonce(),
+                                connection.getNextNonce(),
                                 [
                                     new JoinedGameMessage(
                                         this.code,
                                         clientId,
-                                        clientId === this.actingHostId
+                                        this.actingHostIds.has(clientId)
                                             ? clientId
                                             : this.hostId,
                                         [...this.connections.values()]
@@ -824,9 +851,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
     async handleStart() {
         if (this.config.serverAsHost) {
-            const actingHostConn = this.connections.get(this.actingHostId);
-            if (actingHostConn) {
-                await this.updateHost(SpecialClientId.Server, actingHostConn);
+            for (const actingHostId of this.actingHostIds) {
+                const actingHostConn = this.connections.get(actingHostId);
+                if (actingHostConn) {
+                    await this.updateHost(SpecialClientId.Server, actingHostConn);
+                }
             }
         }
 
@@ -837,9 +866,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (ev.canceled) {
             this.state = GameState.NotStarted;
             if (this.config.serverAsHost) {
-                const actingHostConn = this.connections.get(this.actingHostId);
-                if (actingHostConn) {
-                    await this.updateHost(this.actingHostId, actingHostConn);
+                for (const actingHostId of this.actingHostIds) {
+                    const actingHostConn = this.connections.get(actingHostId);
+                    if (actingHostConn) {
+                        await this.updateHost(actingHostId, actingHostConn);
+                    }
                 }
             }
             return;
@@ -1002,7 +1033,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                 new JoinGameMessage(
                                     this.code,
                                     SpecialClientId.Temp,
-                                    clientId === this.actingHostId
+                                    this.actingHostIds.has(clientId)
                                         ? clientId
                                         : SpecialClientId.Server
                                 )
@@ -1072,7 +1103,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                     this.code,
                                     SpecialClientId.Temp,
                                     DisconnectReason.None,
-                                    clientId === this.actingHostId
+                                    this.actingHostIds.has(clientId)
                                         ? clientId
                                         : SpecialClientId.Server
                                 )

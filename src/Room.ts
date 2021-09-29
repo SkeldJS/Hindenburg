@@ -30,7 +30,7 @@ export class Room extends BaseRoom {
 
     constructor(
         public readonly worker: Worker,
-        public readonly config: RoomsConfig, // todo: handle plugins & enforce settings configs
+        public readonly config: RoomsConfig,
         settings: GameSettings
     ) {
         super(worker, config, settings);

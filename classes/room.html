@@ -88,7 +88,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="room.html#fixedupdateinterval" class="tsd-kind-icon">Fixed<wbr>Update<wbr>Interval</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="room.html#actinghostid" class="tsd-kind-icon">acting<wbr>Host<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="room.html#actinghostids" class="tsd-kind-icon">acting<wbr>Host<wbr>Ids</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="room.html#activeperspectives" class="tsd-kind-icon">active<wbr>Perspectives</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="room.html#bans" class="tsd-kind-icon">bans</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#clientid" class="tsd-kind-icon">client<wbr>Id</a></li>
@@ -126,6 +126,7 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="room.html#fixedupdate" class="tsd-kind-icon">Fixed<wbr>Update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="room.html#addactinghost" class="tsd-kind-icon">add<wbr>Acting<wbr>Host</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="room.html#broadcast" class="tsd-kind-icon">broadcast</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="room.html#broadcastmessages" class="tsd-kind-icon">broadcast<wbr>Messages</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="room.html#broadcasttoperspectives" class="tsd-kind-icon">broadcast<wbr>ToPerspectives</a></li>
@@ -153,6 +154,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="room.html#once" class="tsd-kind-icon">once</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#registerendgameintent" class="tsd-kind-icon">register<wbr>End<wbr>Game<wbr>Intent</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#registerprefab" class="tsd-kind-icon">register<wbr>Prefab</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="room.html#removeactinghost" class="tsd-kind-icon">remove<wbr>Acting<wbr>Host</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="room.html#resolveplayer" class="tsd-kind-icon">resolve<wbr>Player</a></li>
@@ -210,13 +212,13 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-					<a name="actinghostid" class="tsd-anchor"></a>
-					<h3>acting<wbr>Host<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">acting<wbr>Host<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="actinghostids" class="tsd-anchor"></a>
+					<h3>acting<wbr>Host<wbr>Ids</h3>
+					<div class="tsd-signature tsd-kind-icon">acting<wbr>Host<wbr>Ids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from BaseRoom.actingHostId</p>
+						<p>Inherited from BaseRoom.actingHostIds</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L121">src/BaseRoom.ts:121</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L121">src/BaseRoom.ts:121</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -227,7 +229,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides BaseRoom.activePerspectives</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/Room.ts#L29">src/Room.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/Room.ts#L29">src/Room.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -243,7 +245,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from BaseRoom.bans</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L131">src/BaseRoom.ts:131</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L131">src/BaseRoom.ts:131</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -294,7 +296,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from BaseRoom.connections</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L115">src/BaseRoom.ts:115</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L115">src/BaseRoom.ts:115</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -321,7 +323,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from BaseRoom.createdAt</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L114">src/BaseRoom.ts:114</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L114">src/BaseRoom.ts:114</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -427,7 +429,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from BaseRoom.logger</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L126">src/BaseRoom.ts:126</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L126">src/BaseRoom.ts:126</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -507,7 +509,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides BaseRoom.playerPerspectives</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/Room.ts#L24">src/Room.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/Room.ts#L24">src/Room.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -563,11 +565,11 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="saahwaitingfor" class="tsd-anchor"></a>
 					<h3>saah<wbr>Waiting<wbr>For</h3>
-					<div class="tsd-signature tsd-kind-icon">saah<wbr>Waiting<wbr>For<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<div class="tsd-signature tsd-kind-icon">saah<wbr>Waiting<wbr>For<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from BaseRoom.saahWaitingFor</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L134">src/BaseRoom.ts:134</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L134">src/BaseRoom.ts:134</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -633,7 +635,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from BaseRoom.state</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L133">src/BaseRoom.ts:133</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L133">src/BaseRoom.ts:133</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -681,7 +683,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from BaseRoom.waiting</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L116">src/BaseRoom.ts:116</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L116">src/BaseRoom.ts:116</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -707,9 +709,33 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.FixedUpdate</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L297">src/BaseRoom.ts:297</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L299">src/BaseRoom.ts:299</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="addactinghost" class="tsd-anchor"></a>
+					<h3>add<wbr>Acting<wbr>Host</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Acting<wbr>Host<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from BaseRoom.addActingHost</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L565">src/BaseRoom.ts:565</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>player: <a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -725,7 +751,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.broadcast</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L421">src/BaseRoom.ts:421</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L423">src/BaseRoom.ts:423</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -758,7 +784,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.broadcastMessages</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L352">src/BaseRoom.ts:352</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L354">src/BaseRoom.ts:354</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -825,7 +851,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BaseRoom.broadcastToPerspectives</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/Room.ts#L154">src/Room.ts:154</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/Room.ts#L154">src/Room.ts:154</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -891,7 +917,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BaseRoom.createPerspective</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/Room.ts#L85">src/Room.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/Room.ts#L85">src/Room.ts:85</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -925,7 +951,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BaseRoom.createPerspective</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/Room.ts#L103">src/Room.ts:103</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/Room.ts#L103">src/Room.ts:103</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1013,7 +1039,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.destroy</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L276">src/BaseRoom.ts:276</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L278">src/BaseRoom.ts:278</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1038,7 +1064,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.emit</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L233">src/BaseRoom.ts:233</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L235">src/BaseRoom.ts:235</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1059,7 +1085,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.emit</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L236">src/BaseRoom.ts:236</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L238">src/BaseRoom.ts:238</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1301,7 +1327,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.handleEnd</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L919">src/BaseRoom.ts:919</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L950">src/BaseRoom.ts:950</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1318,20 +1344,20 @@
 					<a name="handlejoin" class="tsd-anchor"></a>
 					<h3>handle<wbr>Join</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">handle<wbr>Join<span class="tsd-signature-symbol">(</span>clientid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Join<span class="tsd-signature-symbol">(</span>clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.handleJoin</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L562">src/BaseRoom.ts:562</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L591">src/BaseRoom.ts:591</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>clientid: <span class="tsd-signature-type">number</span></h5>
+									<h5>clientId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1413,7 +1439,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.handleRemoteJoin</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L571">src/BaseRoom.ts:571</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L600">src/BaseRoom.ts:600</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1437,7 +1463,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.handleRemoteLeave</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L727">src/BaseRoom.ts:727</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L756">src/BaseRoom.ts:756</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1464,7 +1490,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.handleStart</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L825">src/BaseRoom.ts:825</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L852">src/BaseRoom.ts:852</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1748,6 +1774,30 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="removeactinghost" class="tsd-anchor"></a>
+					<h3>remove<wbr>Acting<wbr>Host</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Acting<wbr>Host<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from BaseRoom.removeActingHost</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L578">src/BaseRoom.ts:578</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>player: <a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="removealllisteners" class="tsd-anchor"></a>
 					<h3>remove<wbr>All<wbr>Listeners</h3>
@@ -1907,7 +1957,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.sendChat</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L969">src/BaseRoom.ts:969</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L1000">src/BaseRoom.ts:1000</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1969,7 +2019,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.setCode</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L487">src/BaseRoom.ts:487</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L489">src/BaseRoom.ts:489</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1986,20 +2036,20 @@
 					<a name="sethost" class="tsd-anchor"></a>
 					<h3>set<wbr>Host</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Host<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Host<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.setHost</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L522">src/BaseRoom.ts:522</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L524">src/BaseRoom.ts:524</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>player: <a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>player: <a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2213,7 +2263,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.startGame</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L915">src/BaseRoom.ts:915</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L946">src/BaseRoom.ts:946</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2231,7 +2281,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from BaseRoom.updateHost</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L506">src/BaseRoom.ts:506</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L508">src/BaseRoom.ts:508</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2395,7 +2445,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BaseRoom.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/Room.ts#L29">src/Room.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/Room.ts#L29">src/Room.ts:29</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2427,7 +2477,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L272">src/BaseRoom.ts:272</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L274">src/BaseRoom.ts:274</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -2444,7 +2494,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L260">src/BaseRoom.ts:260</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L262">src/BaseRoom.ts:262</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2461,7 +2511,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L264">src/BaseRoom.ts:264</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L266">src/BaseRoom.ts:266</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -2500,7 +2550,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c074fc8/src/BaseRoom.ts#L268">src/BaseRoom.ts:268</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/ef88f38/src/BaseRoom.ts#L270">src/BaseRoom.ts:270</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -2573,10 +2623,13 @@
 								<a href="room.html#fixedupdate" class="tsd-kind-icon">Fixed<wbr>Update</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-								<a href="room.html#actinghostid" class="tsd-kind-icon">acting<wbr>Host<wbr>Id</a>
+								<a href="room.html#actinghostids" class="tsd-kind-icon">acting<wbr>Host<wbr>Ids</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
 								<a href="room.html#activeperspectives" class="tsd-kind-icon">active<wbr>Perspectives</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="room.html#addactinghost" class="tsd-kind-icon">add<wbr>Acting<wbr>Host</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="room.html#bans" class="tsd-kind-icon">bans</a>
@@ -2736,6 +2789,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="room.html#registeredprefabs" class="tsd-kind-icon">registered<wbr>Prefabs</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="room.html#removeactinghost" class="tsd-kind-icon">remove<wbr>Acting<wbr>Host</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="room.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>

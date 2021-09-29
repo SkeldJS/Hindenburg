@@ -562,6 +562,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
+    /**
+     * Add another acting host to a Server-As-A-Host room.
+     * @param player The player to make host.
+     */
     async addActingHost(player: PlayerData<this>|Connection) {
         if (!this.config.serverAsHost)
             throw new Error("Cannot add extra actor hosts to a non-server-as-a-host room!");
@@ -570,11 +574,15 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
 
-        if (connection && this.saahWaitingFor !== undefined) {
+        if (connection && this.saahWaitingFor === undefined) {
             await this.updateHost(player.clientId, connection);
         }
     }
 
+    /**
+     * Remove an acting host from a Server-As-A-Host room.
+     * @param player The player to remove as host.
+     */
     async removeActingHost(player: PlayerData<this>|Connection) {
         if (!this.config.serverAsHost)
             throw new Error("Cannot remove actor host from a non-server-as-a-host room!");

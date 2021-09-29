@@ -36,6 +36,9 @@ import { RegisteredChatCommand } from "./ChatCommandHandler";
 import { Room } from "../Room";
 import { recursiveAssign } from "../util/recursiveAssign";
 import { recursiveClone } from "../util/recursiveClone";
+import { findRootOfPackage } from "../util/findRootOfPackage";
+
+export const hindenburgPluginDirectory = Symbol("hindenburg:pluginDirectory");
 
 type PluginOrder = "last"|"first"|"none"|number;
 
@@ -66,6 +69,8 @@ export class Plugin {
     meta!: PluginMeta;
 
     logger: winston.Logger;
+
+    baseDirectory: string;
 
     eventHandlers: {
         eventName: keyof WorkerEvents;
@@ -115,6 +120,8 @@ export class Plugin {
         this.reactorRpcHandlers = [];
         this.registeredMessages = [];
         this.registeredVorpalCommands = [];
+
+        this.baseDirectory = "";
     }
 
     onPluginLoad?(): any;
@@ -447,6 +454,7 @@ export class PluginLoader {
             try {
                 const importPath = resolveFrom(this.pluginDir, importName);
                 const pluginCtr = await this.importPlugin(importPath);
+                Reflect.defineMetadata(hindenburgPluginDirectory, await findRootOfPackage(importPath), pluginCtr);
                 pluginCtrs.push(pluginCtr);
             } catch (e) {
                 this.worker.logger.warn("Failed to import plugin from '%s': %s", importName, e);

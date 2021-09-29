@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Plugin, PluginMeta } from "../handlers/PluginLoader";
+import { hindenburgPluginDirectory, Plugin, PluginMeta } from "../handlers/PluginLoader";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin
@@ -27,10 +27,18 @@ export function HindenburgPlugin(meta: Partial<PluginMeta>) {
     return function<T extends DeclaredPlugin>(constructor: T) {
         Reflect.defineMetadata(hindenburgPluginKey, true, constructor);
 
-        return class extends constructor {
+        const hookedClass = class extends constructor {
             static meta = actualMeta;
             meta = actualMeta;
+
+            constructor(...args: any) {
+                super(...args);
+
+                this.baseDirectory = Reflect.getMetadata(hindenburgPluginDirectory, hookedClass);
+            }
         };
+
+        return hookedClass;
     };
 }
 

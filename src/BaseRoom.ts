@@ -42,6 +42,7 @@ import {
 import {
     HostableEvents,
     PlayerData,
+    PlayerDataResolvable,
     PlayerJoinEvent,
     PlayerSetHostEvent,
     RoomFixedUpdateEvent
@@ -62,7 +63,8 @@ import {
     RoomCreateEvent,
     RoomDestroyEvent,
     RoomGameEndEvent,
-    RoomGameStartEvent
+    RoomGameStartEvent,
+    RoomSelectHostEvent
 } from "./api";
 
 import { fmtCode } from "./util/fmtCode";
@@ -71,21 +73,33 @@ import { RoomsConfig } from "./interfaces";
 import { CommandCallError, ChatCommandContext } from "./handlers";
 import { Perspective, PresetFilter } from "./Perspective";
 
-(PlayerData.prototype as any)[Symbol.for("nodejs.util.inspect.custom")] = function (this: PlayerData<BaseRoom>) {
-    const connection = this.room.connections.get(this.clientId);
+Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
+    value(this: PlayerData<BaseRoom>) {
+        const connection = this.room.connections.get(this.clientId);
 
-    const paren = fmtLogFormat(
-        this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
-        {
-            id: this.clientId,
-            ping: connection?.roundTripPing,
-            ishost: this.isHost ? "host" : undefined
+        const paren = fmtLogFormat(
+            this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
+            {
+                id: this.clientId,
+                ping: connection?.roundTripPing,
+                ishost: this.isHost ? "host" : undefined
+            }
+        );
+
+        return chalk.blue(this.info?.name || "<No Name>")
+            + (paren ? " " + chalk.grey("(" + paren + ")") : "");
+    }
+});
+
+Object.defineProperty(PlayerData.prototype, "isHost", {
+    get(this: PlayerData<BaseRoom>) {
+        if (this.room.config.serverAsHost) {
+            return this.room.actingHostIds.has(this.clientId);
+        } else {
+            return this.room.hostId === this.clientId;
         }
-    );
-
-    return chalk.blue(this.info?.name || "<No Name>")
-        + (paren ? " " + chalk.grey("(" + paren + ")") : "");
-};
+    }
+});
 
 export enum SpecialClientId {
     Nil = 2 ** 31 - 1,
@@ -113,11 +127,12 @@ export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
 export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     createdAt: number;
     connections: Map<number, Connection>;
-    waiting: Set<Connection>;
+    waitingForHost: Set<Connection>;
 
     playerPerspectives: Map<number, Perspective>;
     activePerspectives: Perspective[];
 
+    actingHostsEnabled: boolean;
     actingHostIds: Set<number>;
 
     /**
@@ -143,11 +158,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.playerPerspectives = new Map;
         this.activePerspectives = [];
 
+        this.actingHostsEnabled = true;
         this.actingHostIds = new Set;
 
         this.createdAt = Date.now();
         this.connections = new Map;
-        this.waiting = new Set;
+        this.waitingForHost = new Set;
 
         this.decoder.types = worker.decoder.types;
 
@@ -156,6 +172,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         this.state = GameState.NotStarted;
         this.saahWaitingFor = undefined;
+
+        this.hostId = this.config.serverAsHost
+            ? SpecialClientId.Server
+            : 0;
 
         this.decoder.on(EndGameMessage, message => {
             this.handleEnd(message.reason);
@@ -261,7 +281,22 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     get host(): PlayerData<this>|undefined {
-        return this.players.get(this.actingHostIds[Symbol.iterator]().next().value);
+        if (this.config.serverAsHost) {
+            return this.players.get(this.actingHostIds[Symbol.iterator]().next().value);
+        }
+
+        return this.players.get(this.hostId);
+    }
+
+    get actingHosts() {
+        const hosts = [];
+        for (const actingHostId of this.actingHostIds) {
+            const player = this.players.get(actingHostId);
+            if (player) {
+                hosts.push(player);
+            }
+        }
+        return hosts;
     }
 
     get hostIsMe() {
@@ -300,6 +335,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     async FixedUpdate() {
         const delta = Date.now() - (this as any).last_fixed_update;
         (this as any).last_fixed_update = Date.now();
+        if (this.hostIsMe) {
+            if (this.state === GameState.Started) {
+                await this.checkForGameEnd();
+            }
+        }
+
         for (const [, component] of this.netobjects) {
             if (
                 component
@@ -522,44 +563,65 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         ], recipient ? [ recipient ] : undefined);
     }
 
-    async setHost(player: PlayerData<this>) {
-        const remote = this.connections.get(player.clientId);
+    async setHost(playerResolvable: PlayerDataResolvable) {
+        if (this.config.serverAsHost)
+            throw new Error("Cannot set setHost while in SaaH mode, use addActingHost and removeActingHost");
 
-        const resolvedId = this.resolvePlayerClientID(player);
+        const resolvedId = this.resolvePlayerClientID(playerResolvable);
 
         if (!resolvedId)
             return;
 
-        const dirty = !this.actingHostIds.has(player.clientId);
-
-        if (this.config.serverAsHost) {
-            this.hostId = SpecialClientId.Server;
-            this.actingHostIds.add(player.clientId);
-        } else {
-            this.hostId = resolvedId;
-            this.actingHostIds.add(player.clientId);
-        }
-
-        if (this.hostIsMe) {
-            if (!this.lobbyBehaviour && this.state === GameState.NotStarted) {
-                this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
-            }
-
-            if (!this.gameData) {
-                this.spawnPrefab(SpawnType.GameData, -2);
-            }
-        }
-
-        if (dirty && this.host) {
-            await this.host.emit(new PlayerSetHostEvent(this, player));
-        }
+        const remote = this.connections.get(resolvedId);
 
         if (!remote)
+            throw new Error("Cannot set host without a connection");
+
+        if (this.actingHostIds.has(resolvedId))
             return;
 
-        if (this.state === GameState.Ended && this.waiting.has(remote)) {
+        this.hostId = resolvedId;
+
+        const player = this.players.get(resolvedId);
+        if (player) {
+            await player.emit(new PlayerSetHostEvent(this, player));
+        }
+
+        if (this.state === GameState.Ended && this.waitingForHost.has(remote)) {
             this.state = GameState.NotStarted;
             await this._joinOtherClients();
+        }
+    }
+
+    async setSaaHEnabled(saahEnabled: boolean) {
+        this.config.serverAsHost = saahEnabled;
+        if (saahEnabled) {
+            this.hostId = SpecialClientId.Server;
+        } else {
+            const connection = this.actingHostIds.size > 0
+                ? this.connections.get([...this.actingHostIds][0])
+                : [...this.connections.values()][0];
+
+            if (!connection)
+                return;
+
+            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, connection));
+
+            if (!ev.canceled) {
+                const player = ev.alteredSelected.getPlayer();
+
+                this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
+                if (player) {
+                    await player.emit(new PlayerSetHostEvent(this, player));
+                }
+
+                if (this.state === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
+                    this.state = GameState.NotStarted;
+                    await this._joinOtherClients();
+                }
+            }
+            await this.updateHost(connection.clientId);
+            this.actingHostIds.clear();
         }
     }
 
@@ -597,6 +659,23 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
+    async disableActingHosts() {
+        if (!this.config.serverAsHost)
+            throw new Error("Cannot disable actor hosts in a non-server-as-a-host room!");
+
+        for (const actingHostId of this.actingHostIds) {
+            const connection = this.connections.get(actingHostId);
+            if (connection) {
+                await this.updateHost(SpecialClientId.Server, connection);
+            }
+        }
+    }
+
+    async enableActingHosts() {
+        if (!this.config.serverAsHost)
+            throw new Error("Cannot disable actor hosts in a non-server-as-a-host room!");
+    }
+
     async handleJoin(clientId: number): Promise<PlayerData<this>|null> {
         if (this.players.has(clientId))
             return null;
@@ -610,19 +689,42 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (this.connections.get(joiningClient.clientId))
             return;
 
+
+        if (this.hostIsMe) {
+            if (!this.lobbyBehaviour && this.state === GameState.NotStarted) {
+                this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
+            }
+
+            if (!this.gameData) {
+                this.spawnPrefab(SpawnType.GameData, -2);
+            }
+        }
+
         const joiningPlayer = await this.handleJoin(joiningClient.clientId) || this.players.get(joiningClient.clientId);
 
         if (!joiningPlayer)
             return;
 
-        if (!this.host)
-            await this.setHost(joiningPlayer);
+        if (this.config.serverAsHost) {
+            if (this.actingHostIds.size === 0) {
+                const ev = await this.emit(new RoomSelectHostEvent(this, true, true, joiningClient));
+
+                if (!ev.canceled) {
+                    await this.addActingHost(joiningPlayer);
+                }
+            }
+        } else {
+            if (!this.host) {
+                this.hostId = joiningPlayer.clientId; // set host manually as the connection has not been created yet
+                await joiningPlayer.emit(new PlayerSetHostEvent(this, joiningPlayer));
+            }
+        }
 
         joiningClient.room = this;
         if (this.state === GameState.Ended && !this.config.serverAsHost) {
             if (joiningClient.clientId === this.hostId) {
                 this.state = GameState.NotStarted;
-                this.waiting.add(joiningClient);
+                this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
                 this.logger.info("%s joined, joining other clients..",
@@ -663,7 +765,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
                 await this._joinOtherClients();
             } else {
-                this.waiting.add(joiningClient);
+                this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
                 if (this.config.serverAsHost) {
@@ -762,26 +864,45 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         );
     }
 
-    async handleRemoteLeave(client: Connection, reason: DisconnectReason = DisconnectReason.None) {
-        await this.handleLeave(client.clientId);
+    async handleRemoteLeave(connection: Connection, reason: DisconnectReason = DisconnectReason.None) {
+        await this.handleLeave(connection.clientId);
 
-        this.waiting.delete(client);
-        this.connections.delete(client.clientId);
+        this.waitingForHost.delete(connection);
+        this.connections.delete(connection.clientId);
 
         if (this.players.size === 0) {
             await this.destroy();
             return;
         }
 
-        if (this.actingHostIds.has(client.clientId)) {
-            if (this.connections.size === 0) {
-                await this.setHost([...this.players.values()][0]);
-            } else {
-                const connection = [...this.connections.values()][0];
-                const player = this.players.get(connection.clientId);
+        if (this.config.serverAsHost) {
+            if (this.actingHostIds.has(connection.clientId)) {
+                this.actingHostIds.delete(connection.clientId);
 
+                if (this.actingHostIds.size === 0) {
+                    const newHostConn = [...this.connections.values()][0];
+                    const ev = await this.emit(new RoomSelectHostEvent(this, true, false, newHostConn));
+
+                    if (!ev.canceled) {
+                        await this.addActingHost(ev.alteredSelected);
+                    }
+                }
+            }
+        } else {
+            const newHostConn = [...this.connections.values()][0];
+            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, newHostConn));
+
+            if (!ev.canceled) {
+                const player = ev.alteredSelected.getPlayer();
+
+                this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
                 if (player) {
-                    await this.setHost(player);
+                    await player.emit(new PlayerSetHostEvent(this, player));
+                }
+
+                if (this.state === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
+                    this.state = GameState.NotStarted;
+                    await this._joinOtherClients();
                 }
             }
         }
@@ -795,7 +916,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         [
                             new RemovePlayerMessage(
                                 this.code,
-                                client.clientId,
+                                connection.clientId,
                                 reason,
                                 SpecialClientId.Server
                             )
@@ -808,7 +929,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             await this.broadcastMessages([], [
                 new RemovePlayerMessage(
                     this.code,
-                    client.clientId,
+                    connection.clientId,
                     reason,
                     this.hostId
                 )
@@ -817,7 +938,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         this.logger.info(
             "%s left or was removed.",
-            client
+            connection
         );
     }
 
@@ -825,8 +946,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         await Promise.all(
             [...this.connections]
                 .map(([ clientId, connection ]) => {
-                    if (this.waiting.has(connection)) {
-                        this.waiting.delete(connection);
+                    if (this.waitingForHost.has(connection)) {
+                        this.waitingForHost.delete(connection);
 
                         return connection?.sendPacket(
                             new ReliablePacket(
@@ -855,7 +976,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 })
         );
 
-        this.waiting.clear();
+        this.waitingForHost.clear();
     }
 
     async handleStart() {
@@ -924,7 +1045,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         return new RemovePlayerMessage(
                             this.code,
                             clientid,
-                            DisconnectReason.Error
+                            DisconnectReason.Error,
+                            this.hostId
                         );
                     })
                 );
@@ -957,14 +1079,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async handleEnd(reason: GameOverReason) {
-        const waiting = this.waiting;
-        this.waiting = new Set;
+        const waiting = this.waitingForHost;
+        this.waitingForHost = new Set;
         this.state = GameState.Ended;
 
         const ev = await this.emit(new RoomGameEndEvent(this, reason));
 
         if (ev.canceled) {
-            this.waiting = waiting;
+            this.waitingForHost = waiting;
             this.state = GameState.Started;
             return;
         }

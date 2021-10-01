@@ -1020,21 +1020,24 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.decoder.on(KickPlayerMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
-            if (!player)
+            if (!player || !sender.room)
                 return;
 
             if (!player.isHost) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }
-            /*
-            const targetConnection = connection.room?.room.players.get(message.clientid);
+
+            const targetConnection = sender.room.connections.get(message.clientid);
 
             if (!targetConnection)
                 return;
 
-            await targetConnection.kick(message.banned);
-*/
+            if (message.banned) {
+                sender.room.bannedAddresses.add(targetConnection.remoteInfo.address);
+            }
+
+            await targetConnection.disconnect(message.banned ? DisconnectReason.Banned : DisconnectReason.Kicked);
         });
 
         this.decoder.on(GetGameListMessage, async (message, direction, { sender }) => {
@@ -1452,7 +1455,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             return connection.joinError(DisconnectReason.GameNotFound);
         }
 
-        if (ev.alteredRoom.bans.has(connection.address)) {
+        if (ev.alteredRoom.bannedAddresses.has(connection.remoteInfo.address)) {
             this.logger.warn("%s attempted to join %s but they were banned",
                 connection, foundRoom);
             return connection.disconnect(DisconnectReason.Banned);

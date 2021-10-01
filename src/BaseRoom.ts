@@ -128,7 +128,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     /**
      * All IP addresses banned from this room.
      */
-    bans: Set<string>;
+    bannedAddresses: Set<string>;
 
     state: GameState;
     saahWaitingFor: PlayerData|undefined;
@@ -151,7 +151,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         this.decoder.types = worker.decoder.types;
 
-        this.bans = new Set;
+        this.bannedAddresses = new Set;
         this.settings = settings;
 
         this.state = GameState.NotStarted;

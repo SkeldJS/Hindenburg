@@ -142,6 +142,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="customnetworktransform.html#netid" class="tsd-kind-icon">net<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="customnetworktransform.html#oldseqid" class="tsd-kind-icon">old<wbr>Seq<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="customnetworktransform.html#ownerid" class="tsd-kind-icon">owner<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="customnetworktransform.html#player" class="tsd-kind-icon">player</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="customnetworktransform.html#position" class="tsd-kind-icon">position</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="customnetworktransform.html#room" class="tsd-kind-icon">room</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="customnetworktransform.html#seqid" class="tsd-kind-icon">seq<wbr>Id</a></li>
@@ -159,7 +160,6 @@
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="customnetworktransform.html#owner" class="tsd-kind-icon">owner</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-external"><a href="customnetworktransform.html#player" class="tsd-kind-icon">player</a></li>
 							</ul>
 						</section>
 					</div>
@@ -1076,6 +1076,21 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="player" class="tsd-anchor"></a>
+					<h3>player</h3>
+					<div class="tsd-signature tsd-kind-icon">player<span class="tsd-signature-symbol">:</span> <a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/component/CustomNetworkTransform.d.ts:44</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The player that this component belongs to.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="position" class="tsd-anchor"></a>
 					<h3>position</h3>
 					<div class="tsd-signature tsd-kind-icon">position<span class="tsd-signature-symbol">:</span> <a href="vector2.html" class="tsd-signature-type" data-tsd-kind="Class">Vector2</a></div>
@@ -1169,7 +1184,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="networkable.html">Networkable</a>.<a href="networkable.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/component/CustomNetworkTransform.d.ts:40</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/component/CustomNetworkTransform.d.ts:44</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1223,28 +1238,6 @@
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-					<a name="player" class="tsd-anchor"></a>
-					<h3>player</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> player<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/component/CustomNetworkTransform.d.ts:45</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>That player that this component belongs to.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1379,7 +1372,7 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="customnetworktransform.html#ownerid" class="tsd-kind-icon">owner<wbr>Id</a>
 							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="customnetworktransform.html#player" class="tsd-kind-icon">player</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">

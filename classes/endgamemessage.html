@@ -90,6 +90,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="endgamemessage.html#deserialize" class="tsd-kind-icon">Deserialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="endgamemessage.html#serialize" class="tsd-kind-icon">Serialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="endgamemessage.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="endgamemessage.html#clone" class="tsd-kind-icon">clone</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -101,7 +102,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="endgamemessage.html#messagetag-1" class="tsd-kind-icon">message<wbr>Tag</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="endgamemessage.html#messagetype-1" class="tsd-kind-icon">message<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="endgamemessage.html#reason" class="tsd-kind-icon">reason</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="endgamemessage.html#show_ad" class="tsd-kind-icon">show_<wbr>ad</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="endgamemessage.html#showad" class="tsd-kind-icon">show<wbr>Ad</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -180,10 +181,28 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="baserootmessage.html">BaseRootMessage</a>.<a href="baserootmessage.html#cancel">cancel</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/BaseMessage.d.ts:13</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/BaseMessage.d.ts:14</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+					<a name="clone" class="tsd-anchor"></a>
+					<h3>clone</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">clone<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="endgamemessage.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameMessage</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="baserootmessage.html">BaseRootMessage</a>.<a href="baserootmessage.html#clone">clone</a></p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/EndGame.d.ts:13</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="endgamemessage.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameMessage</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -255,9 +274,9 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="show_ad" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> show_<wbr>ad</h3>
-					<div class="tsd-signature tsd-kind-icon">show_<wbr>ad<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="showad" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> show<wbr>Ad</h3>
+					<div class="tsd-signature tsd-kind-icon">show<wbr>Ad<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/EndGame.d.ts:9</li>
@@ -291,7 +310,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>End<wbr>Game<wbr>Message<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/gameoverreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameOverReason</a>, show_ad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="endgamemessage.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameMessage</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>End<wbr>Game<wbr>Message<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/gameoverreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameOverReason</a>, showAd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="endgamemessage.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameMessage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -310,7 +329,7 @@
 									<h5>reason: <a href="../enums/gameoverreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameOverReason</a></h5>
 								</li>
 								<li>
-									<h5>show_ad: <span class="tsd-signature-type">boolean</span></h5>
+									<h5>showAd: <span class="tsd-signature-type">boolean</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="endgamemessage.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameMessage</a></h4>
@@ -394,6 +413,9 @@
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="endgamemessage.html#canceled" class="tsd-kind-icon">canceled</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+								<a href="endgamemessage.html#clone" class="tsd-kind-icon">clone</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="endgamemessage.html#code" class="tsd-kind-icon">code</a>
 							</li>
@@ -410,7 +432,7 @@
 								<a href="endgamemessage.html#reason" class="tsd-kind-icon">reason</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="endgamemessage.html#show_ad" class="tsd-kind-icon">show_<wbr>ad</a>
+								<a href="endgamemessage.html#showad" class="tsd-kind-icon">show<wbr>Ad</a>
 							</li>
 						</ul>
 					</li>

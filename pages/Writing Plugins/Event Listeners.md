@@ -14,7 +14,9 @@ and also allows you to use the same API for them.
 * {@link ClientBanEvent | `client.ban`}
 * {@link ClientConnectEvent | `client.connect`}
 * {@link RoomBeforeDestroyEvent | `room.beforedestroy`}
+* {@link RoomCreateEvent | `room.create`}
 * {@link RoomDestroyEvent | `room.destroy`}
+* {@link RoomSelectHostEvent | `room.selecthost`}
 
 ## Declaring Events
 Instead of attaching events directly to the worker via the constructor or the

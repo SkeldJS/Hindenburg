@@ -121,7 +121,8 @@ export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
     RoomCreateEvent,
     RoomDestroyEvent,
     RoomGameEndEvent,
-    RoomGameStartEvent
+    RoomGameStartEvent,
+    RoomSelectHostEvent
 ]>;
 
 export class BaseRoom extends SkeldjsStateManager<RoomEvents> {

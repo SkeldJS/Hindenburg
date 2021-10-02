@@ -681,6 +681,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (this.players.has(clientId))
             return null;
 
+        if (this.hostIsMe) {
+            await this.spawnNecessaryObjects();
+        }
+
         const player = new PlayerData(this, clientId);
         this.players.set(clientId, player);
         return player;

@@ -100,9 +100,7 @@ async function getInternalIp() {
     recursiveAssign(workerConfig, resolvedConfig || {});
     await fixConfig(workerConfig);
 
-    const worker = new Worker("TEST", 0, workerConfig, path.resolve(process.cwd(), "plugins"));
-
-    if (worker.config.checkForUpdates) {
+    if (workerConfig.checkForUpdates) {
         const versionSpinner = createSpinner("Checking for updates..");
         try {
             const latestVersion = await getLatestVersion();
@@ -110,7 +108,7 @@ async function getInternalIp() {
             stopSpinner(versionSpinner, true);
 
             if (compare === 1) {
-                if (worker.config.autoUpdate) {
+                if (workerConfig.autoUpdate) {
                     console.log(chalk.yellow("New version of Hindenburg available: " + latestVersion));
 
                     const gitPullSpinner = createSpinner("Pulling from remote repository..");
@@ -129,7 +127,9 @@ async function getInternalIp() {
                                 await runCommandInDir(process.cwd(), "yarn build");
                                 stopSpinner(yarnBuildSpinner, true);
 
-                                console.log(chalk.yellow("Successfully updated, please restart Hindenburg to apply the latest changes"));
+                                delete require.cache[require.resolve("../src")];
+
+                                Worker = require("../src").Worker;
                             } catch (e) {
                                 stopSpinner(gitPullSpinner, false);
                                 console.error("Failed to build latest changes, use 'yarn build' to update manually.");
@@ -151,6 +151,8 @@ async function getInternalIp() {
             console.error("Failed to check for updates, nevermind");
         }
     }
+
+    const worker = new Worker("TEST", 0, workerConfig, path.resolve(process.cwd(), "plugins"));
 
     if (!resolvedConfig) {
         worker.logger.warn("Cannot open config file; using default config");

@@ -865,11 +865,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         );
     }
 
-    async handleRemoteLeave(connection: Connection, reason: DisconnectReason = DisconnectReason.None) {
-        await this.handleLeave(connection.clientId);
+    async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.None) {
+        await this.handleLeave(leavingConnection.clientId);
 
-        this.waitingForHost.delete(connection);
-        this.connections.delete(connection.clientId);
+        this.waitingForHost.delete(leavingConnection);
+        this.connections.delete(leavingConnection.clientId);
 
         if (this.players.size === 0) {
             await this.destroy();
@@ -877,8 +877,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
 
         if (this.config.serverAsHost) {
-            if (this.actingHostIds.has(connection.clientId)) {
-                this.actingHostIds.delete(connection.clientId);
+            if (this.actingHostIds.has(leavingConnection.clientId)) {
+                this.actingHostIds.delete(leavingConnection.clientId);
 
                 if (this.actingHostIds.size === 0) {
                     const newHostConn = [...this.connections.values()][0];
@@ -917,7 +917,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         [
                             new RemovePlayerMessage(
                                 this.code,
-                                connection.clientId,
+                                leavingConnection.clientId,
                                 reason,
                                 SpecialClientId.Server
                             )
@@ -930,7 +930,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             await this.broadcastMessages([], [
                 new RemovePlayerMessage(
                     this.code,
-                    connection.clientId,
+                    leavingConnection.clientId,
                     reason,
                     this.hostId
                 )
@@ -939,7 +939,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         this.logger.info(
             "%s left or was removed.",
-            connection
+            leavingConnection
         );
     }
 

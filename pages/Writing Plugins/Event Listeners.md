@@ -10,10 +10,10 @@ and also allows you to use the same API for them.
 
 ## Hindenburg Events
 * {@link WorkerBeforeJoinEvent | `worker.beforejoin`}
-* {@link WorkerBeforeCreateEvent | `worker.beforecreate`}
 * {@link ClientBanEvent | `client.ban`}
 * {@link ClientConnectEvent | `client.connect`}
 * {@link RoomBeforeDestroyEvent | `room.beforedestroy`}
+* {@link RoomBeforeCreateEvent | `room.beforecreate`}
 * {@link RoomCreateEvent | `room.create`}
 * {@link RoomDestroyEvent | `room.destroy`}
 * {@link RoomSelectHostEvent | `room.selecthost`}

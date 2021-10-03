@@ -74,7 +74,7 @@ import {
     ClientBanEvent,
     ClientConnectEvent,
     RoomCreateEvent,
-    WorkerBeforeCreateEvent,
+    RoomBeforeCreateEvent,
     WorkerBeforeJoinEvent
 } from "./api";
 
@@ -108,7 +108,7 @@ export type WorkerEvents = RoomEvents
     & ExtractEventTypes<[
         ClientBanEvent,
         ClientConnectEvent,
-        WorkerBeforeCreateEvent,
+        RoomBeforeCreateEvent,
         WorkerBeforeJoinEvent
     ]>;
 
@@ -759,18 +759,20 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (sender.room)
                 return;
 
+            const roomCode = this.generateRoomCode(this.config.rooms.gameCodes === "v1" ? 4 : 6);
+
             const ev = await this.emit(
-                new WorkerBeforeCreateEvent(
+                new RoomBeforeCreateEvent(
                     sender,
-                    message.options
+                    message.options,
+                    roomCode
                 )
             );
 
             if (ev.canceled)
                 return;
 
-            const roomCode = ev.alteredGameCode || this.generateRoomCode(this.config.rooms.gameCodes === "v1" ? 4 : 6);
-            const room = await this.createRoom(roomCode, message.options);
+            const room = await this.createRoom(ev.alteredRoomCode, message.options);
 
             this.logger.info("%s created room %s",
                 sender, room);
@@ -779,7 +781,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 new ReliablePacket(
                     sender.getNextNonce(),
                     [
-                        new HostGameMessage(roomCode)
+                        new HostGameMessage(ev.alteredRoomCode)
                     ]
                 )
             );

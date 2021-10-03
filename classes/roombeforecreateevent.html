@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>WorkerBeforeCreateEvent | @skeldjs/hindenburg</title>
+	<title>RoomBeforeCreateEvent | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="workerbeforecreateevent.html">WorkerBeforeCreateEvent</a>
+					<a href="roombeforecreateevent.html">RoomBeforeCreateEvent</a>
 				</li>
 			</ul>
-			<h1>Class WorkerBeforeCreateEvent</h1>
+			<h1>Class RoomBeforeCreateEvent</h1>
 		</div>
 	</div>
 </header>
@@ -72,15 +72,15 @@
 					<div class="lead">
 						<p>Emitted before a player successfully or unsuccessfully creates a room.</p>
 					</div>
-					<p>This event allows you to prevent players from creating games, or allow
-					custom game codes.</p>
+					<p>This event allows you to prevent players from creating rooms, or allow
+					custom room codes.</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
-						<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;worker.beforecreate&quot;</span><span style="color: #000000">)</span>
+						<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;room.beforecreate&quot;</span><span style="color: #000000">)</span>
 <span style="color: #795E26">onWorkerBeforeCreate</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #001080">WorkerBeforeCreateEvent</span><span style="color: #000000">) {</span>
 <span style="color: #000000">  </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #001080">mods</span><span style="color: #000000">.</span><span style="color: #001080">size</span><span style="color: #000000"> &gt; </span><span style="color: #098658">0</span><span style="color: #000000">) {</span>
 <span style="color: #000000">    </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #795E26">cancel</span><span style="color: #000000">();</span>
-<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">joinError</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;You cannot create a game with Reactor enabled!!!&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">client</span><span style="color: #000000">.</span><span style="color: #795E26">joinError</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;You cannot create a room with Reactor enabled!!!&quot;</span><span style="color: #000000">);</span>
 <span style="color: #000000">  }</span>
 <span style="color: #000000">}</span>
 </code></pre>
@@ -95,7 +95,7 @@
 						<span class="tsd-signature-type">CancelableEvent</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">WorkerBeforeCreateEvent</span>
+								<span class="target">RoomBeforeCreateEvent</span>
 							</li>
 						</ul>
 					</li>
@@ -108,30 +108,31 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="workerbeforecreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="workerbeforecreateevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="workerbeforecreateevent.html#client" class="tsd-kind-icon">client</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="workerbeforecreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="workerbeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="roombeforecreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="roombeforecreateevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="roombeforecreateevent.html#client" class="tsd-kind-icon">client</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="roombeforecreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="roombeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="roombeforecreateevent.html#roomcode" class="tsd-kind-icon">room<wbr>Code</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="workerbeforecreateevent.html#alteredgamecode" class="tsd-kind-icon">altered<wbr>Game<wbr>Code</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="roombeforecreateevent.html#alteredroomcode" class="tsd-kind-icon">altered<wbr>Room<wbr>Code</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="workerbeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="workerbeforecreateevent.html#setcode" class="tsd-kind-icon">set<wbr>Code</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="roombeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="roombeforecreateevent.html#setcode" class="tsd-kind-icon">set<wbr>Code</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="workerbeforecreateevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="roombeforecreateevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
@@ -142,11 +143,11 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;worker.beforecreate&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.beforecreate&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<p>Overrides CancelableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L24">src/api/events/worker/BeforeCreate.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b8f5f56/src/api/events/room/BeforeCreate.ts#L24">src/api/events/room/BeforeCreate.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -171,11 +172,11 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
 					<a name="eventname-1" class="tsd-anchor"></a>
 					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;worker.beforecreate&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.beforecreate&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<p>Overrides CancelableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L25">src/api/events/worker/BeforeCreate.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b8f5f56/src/api/events/room/BeforeCreate.ts#L25">src/api/events/room/BeforeCreate.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -186,28 +187,35 @@
 					<aside class="tsd-sources">
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="roomcode" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> room<wbr>Code</h3>
+					<div class="tsd-signature tsd-kind-icon">room<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="alteredgamecode" class="tsd-anchor"></a>
-					<h3>altered<wbr>Game<wbr>Code</h3>
+					<a name="alteredroomcode" class="tsd-anchor"></a>
+					<h3>altered<wbr>Room<wbr>Code</h3>
 					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> alteredGameCode<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></li>
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> alteredRoomCode<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L32">src/api/events/worker/BeforeCreate.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b8f5f56/src/api/events/room/BeforeCreate.ts#L51">src/api/events/room/BeforeCreate.ts:51</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>The new game code if it was altered</p>
+									<p>The new room code if it was altered.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -236,26 +244,26 @@
 					<a name="setcode" class="tsd-anchor"></a>
 					<h3>set<wbr>Code</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Code<span class="tsd-signature-symbol">(</span>gameCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Code<span class="tsd-signature-symbol">(</span>roomCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L40">src/api/events/worker/BeforeCreate.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b8f5f56/src/api/events/room/BeforeCreate.ts#L59">src/api/events/room/BeforeCreate.ts:59</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Change the game code for the room</p>
+									<p>Change the room code for the room.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>gameCode: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+									<h5>roomCode: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The new game code</p>
+										<p>The new room code</p>
 									</div>
 								</li>
 							</ul>
@@ -270,14 +278,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Worker<wbr>Before<wbr>Create<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a>, gameOptions<span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="workerbeforecreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerBeforeCreateEvent</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<wbr>Before<wbr>Create<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a>, gameOptions<span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a>, roomCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="roombeforecreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomBeforeCreateEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides CancelableEvent.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L46">src/api/events/worker/BeforeCreate.ts:46</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/b8f5f56/src/api/events/room/BeforeCreate.ts#L27">src/api/events/room/BeforeCreate.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -288,8 +296,11 @@
 								<li>
 									<h5>gameOptions: <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></h5>
 								</li>
+								<li>
+									<h5>roomCode: <span class="tsd-signature-type">number</span></h5>
+								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="workerbeforecreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerBeforeCreateEvent</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="roombeforecreateevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomBeforeCreateEvent</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -350,34 +361,37 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="workerbeforecreateevent.html" class="tsd-kind-icon">Worker<wbr>Before<wbr>Create<wbr>Event</a>
+						<a href="roombeforecreateevent.html" class="tsd-kind-icon">Room<wbr>Before<wbr>Create<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-								<a href="workerbeforecreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="roombeforecreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="workerbeforecreateevent.html#alteredgamecode" class="tsd-kind-icon">altered<wbr>Game<wbr>Code</a>
+								<a href="roombeforecreateevent.html#alteredroomcode" class="tsd-kind-icon">altered<wbr>Room<wbr>Code</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="workerbeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a>
+								<a href="roombeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="workerbeforecreateevent.html#canceled" class="tsd-kind-icon">canceled</a>
+								<a href="roombeforecreateevent.html#canceled" class="tsd-kind-icon">canceled</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="workerbeforecreateevent.html#client" class="tsd-kind-icon">client</a>
+								<a href="roombeforecreateevent.html#client" class="tsd-kind-icon">client</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="workerbeforecreateevent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="roombeforecreateevent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-								<a href="workerbeforecreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="roombeforecreateevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="workerbeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a>
+								<a href="roombeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="roombeforecreateevent.html#roomcode" class="tsd-kind-icon">room<wbr>Code</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="workerbeforecreateevent.html#setcode" class="tsd-kind-icon">set<wbr>Code</a>
+								<a href="roombeforecreateevent.html#setcode" class="tsd-kind-icon">set<wbr>Code</a>
 							</li>
 						</ul>
 					</li>

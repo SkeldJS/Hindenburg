@@ -769,7 +769,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (ev.canceled)
                 return;
 
-            const roomCode = this.generateRoomCode(this.config.rooms.gameCodes === "v1" ? 4 : 6);
+            const roomCode = ev.alteredGameCode || this.generateRoomCode(this.config.rooms.gameCodes === "v1" ? 4 : 6);
             const room = await this.createRoom(roomCode, message.options);
 
             this.logger.info("%s created room %s",

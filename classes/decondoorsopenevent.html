@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>HqHudConsolesResetEvent | @skeldjs/hindenburg</title>
+	<title>DeconDoorsOpenEvent | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="hqhudconsolesresetevent.html">HqHudConsolesResetEvent</a>
+					<a href="decondoorsopenevent.html">DeconDoorsOpenEvent</a>
 				</li>
 			</ul>
-			<h1>Class HqHudConsolesResetEvent&lt;RoomType&gt;</h1>
+			<h1>Class DeconDoorsOpenEvent&lt;RoomType&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -70,8 +70,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Emitted when the communication consoles on Mira HQ are reset, i.e. the 10s
-						timer reaching 0.</p>
+						<p>Emitted when the doors in a decontamination zone open.</p>
 					</div>
 				</div>
 			</section>
@@ -87,10 +86,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">RevertableEvent</span>
+						<span class="tsd-signature-type">BasicEvent</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">HqHudConsolesResetEvent</span>
+								<span class="target">DeconDoorsOpenEvent</span>
 							</li>
 						</ul>
 					</li>
@@ -100,7 +99,7 @@
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
 					<li><span class="tsd-signature-type">RoomEvent</span></li>
-					<li><span class="tsd-signature-type">HqHudEvent</span></li>
+					<li><span class="tsd-signature-type">DeconEvent</span></li>
 					<li><span class="tsd-signature-type">ProtocolEvent</span></li>
 				</ul>
 			</section>
@@ -111,25 +110,17 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="hqhudconsolesresetevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudconsolesresetevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#hqhudsystem" class="tsd-kind-icon">hqhudsystem</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#message" class="tsd-kind-icon">message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#player" class="tsd-kind-icon">player</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudconsolesresetevent.html#reverted" class="tsd-kind-icon">reverted</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#room" class="tsd-kind-icon">room</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="decondoorsopenevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="decondoorsopenevent.html#deconsystem" class="tsd-kind-icon">deconsystem</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="decondoorsopenevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="decondoorsopenevent.html#message" class="tsd-kind-icon">message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="decondoorsopenevent.html#room" class="tsd-kind-icon">room</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external"><a href="hqhudconsolesresetevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-inherited tsd-is-external">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudconsolesresetevent.html#revert" class="tsd-kind-icon">revert</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external"><a href="decondoorsopenevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
@@ -140,33 +131,33 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;hqhud.consoles.reset&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;decon.doors.open&quot;</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides RevertableEvent.eventName</p>
+						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:21</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/decon/DoorsOpen.d.ts:15</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="deconsystem" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> deconsystem</h3>
+					<div class="tsd-signature tsd-kind-icon">deconsystem<span class="tsd-signature-symbol">:</span> <a href="deconsystem.html" class="tsd-signature-type" data-tsd-kind="Class">DeconSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of DeconEvent.deconsystem</p>
+						<ul>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/decon/DoorsOpen.d.ts:13</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 					<a name="eventname-1" class="tsd-anchor"></a>
 					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;hqhud.consoles.reset&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;decon.doors.open&quot;</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides RevertableEvent.eventName</p>
+						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:22</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="hqhudsystem" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> hqhudsystem</h3>
-					<div class="tsd-signature tsd-kind-icon">hqhudsystem<span class="tsd-signature-symbol">:</span> <a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<p>Implementation of HqHudEvent.hqhudsystem</p>
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:15</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/decon/DoorsOpen.d.ts:16</li>
 						</ul>
 					</aside>
 				</section>
@@ -177,33 +168,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of ProtocolEvent.message</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:16</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="player" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> player</h3>
-					<div class="tsd-signature tsd-kind-icon">player<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:20</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The player that reset the consoles. Only available if the client is the host.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-					<a name="reverted" class="tsd-anchor"></a>
-					<h3>reverted</h3>
-					<div class="tsd-signature tsd-kind-icon">reverted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from RevertableEvent.reverted</p>
-						<ul>
-							<li>Defined in node_modules/@skeldjs/events/dist/lib/RevertableEvent.d.ts:3</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/decon/DoorsOpen.d.ts:14</li>
 						</ul>
 					</aside>
 				</section>
@@ -214,7 +179,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of RoomEvent.room</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:14</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/decon/DoorsOpen.d.ts:12</li>
 						</ul>
 					</aside>
 				</section>
@@ -225,14 +190,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>HqHud<wbr>Consoles<wbr>Reset<wbr>Event&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, hqhudsystem<span class="tsd-signature-symbol">: </span><a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a>, player<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hqhudconsolesresetevent.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudConsolesResetEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Decon<wbr>Doors<wbr>Open<wbr>Event&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, deconsystem<span class="tsd-signature-symbol">: </span><a href="deconsystem.html" class="tsd-signature-type" data-tsd-kind="Class">DeconSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="decondoorsopenevent.html" class="tsd-signature-type" data-tsd-kind="Class">DeconDoorsOpenEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides RevertableEvent.constructor</p>
+								<p>Overrides BasicEvent.constructor</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:22</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/decon/DoorsOpen.d.ts:16</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -247,37 +212,13 @@
 									<h5>room: <span class="tsd-signature-type">RoomType</span></h5>
 								</li>
 								<li>
-									<h5>hqhudsystem: <a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>deconsystem: <a href="deconsystem.html" class="tsd-signature-type" data-tsd-kind="Class">DeconSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>message: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a></h5>
 								</li>
-								<li>
-									<h5>player: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="hqhudconsolesresetevent.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudConsolesResetEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-external">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-					<a name="revert" class="tsd-anchor"></a>
-					<h3>revert</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">revert<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from RevertableEvent.revert</p>
-								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/RevertableEvent.d.ts:5</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="decondoorsopenevent.html" class="tsd-signature-type" data-tsd-kind="Class">DeconDoorsOpenEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -338,34 +279,25 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-has-type-parameter tsd-is-external">
-						<a href="hqhudconsolesresetevent.html" class="tsd-kind-icon">Hq<wbr>Hud<wbr>Consoles<wbr>Reset<wbr>Event</a>
+						<a href="decondoorsopenevent.html" class="tsd-kind-icon">Decon<wbr>Doors<wbr>Open<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="decondoorsopenevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="decondoorsopenevent.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="decondoorsopenevent.html#deconsystem" class="tsd-kind-icon">deconsystem</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="decondoorsopenevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#hqhudsystem" class="tsd-kind-icon">hqhudsystem</a>
+								<a href="decondoorsopenevent.html#message" class="tsd-kind-icon">message</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#message" class="tsd-kind-icon">message</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#player" class="tsd-kind-icon">player</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#revert" class="tsd-kind-icon">revert</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#reverted" class="tsd-kind-icon">reverted</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#room" class="tsd-kind-icon">room</a>
+								<a href="decondoorsopenevent.html#room" class="tsd-kind-icon">room</a>
 							</li>
 						</ul>
 					</li>

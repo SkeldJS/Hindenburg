@@ -115,10 +115,17 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="workerbeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-inherited tsd-is-external">
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="workerbeforecreateevent.html#alteredgamecode" class="tsd-kind-icon">altered<wbr>Game<wbr>Code</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="workerbeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="workerbeforecreateevent.html#setcode" class="tsd-kind-icon">set<wbr>Code</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -139,7 +146,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides CancelableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0c07add/src/api/events/worker/BeforeCreate.ts#L23">src/api/events/worker/BeforeCreate.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L24">src/api/events/worker/BeforeCreate.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -168,7 +175,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides CancelableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0c07add/src/api/events/worker/BeforeCreate.ts#L24">src/api/events/worker/BeforeCreate.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L25">src/api/events/worker/BeforeCreate.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -180,7 +187,32 @@
 					</aside>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-external">
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="alteredgamecode" class="tsd-anchor"></a>
+					<h3>altered<wbr>Game<wbr>Code</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> alteredGameCode<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L32">src/api/events/worker/BeforeCreate.ts:32</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The new game code if it was altered</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="cancel" class="tsd-anchor"></a>
@@ -200,6 +232,37 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setcode" class="tsd-anchor"></a>
+					<h3>set<wbr>Code</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Code<span class="tsd-signature-symbol">(</span>gameCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L40">src/api/events/worker/BeforeCreate.ts:40</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Change the game code for the room</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>gameCode: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The new game code</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
@@ -214,7 +277,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides CancelableEvent.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/0c07add/src/api/events/worker/BeforeCreate.ts#L24">src/api/events/worker/BeforeCreate.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/79b489e/src/api/events/worker/BeforeCreate.ts#L46">src/api/events/worker/BeforeCreate.ts:46</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -292,6 +355,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
 								<a href="workerbeforecreateevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="workerbeforecreateevent.html#alteredgamecode" class="tsd-kind-icon">altered<wbr>Game<wbr>Code</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="workerbeforecreateevent.html#cancel" class="tsd-kind-icon">cancel</a>
 							</li>
@@ -309,6 +375,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="workerbeforecreateevent.html#gameoptions" class="tsd-kind-icon">game<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="workerbeforecreateevent.html#setcode" class="tsd-kind-icon">set<wbr>Code</a>
 							</li>
 						</ul>
 					</li>

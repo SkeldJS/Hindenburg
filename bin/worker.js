@@ -100,7 +100,7 @@ async function getInternalIp() {
     recursiveAssign(workerConfig, resolvedConfig || {});
     await fixConfig(workerConfig);
 
-    if (workerConfig.checkForUpdates) {
+    if (workerConfig.autoUpdate) {
         const versionSpinner = createSpinner("Checking for updates..");
         try {
             const latestVersion = await getLatestVersion();
@@ -152,7 +152,7 @@ async function getInternalIp() {
         }
     }
 
-    const worker = new Worker("TEST", 0, workerConfig, path.resolve(process.cwd(), "plugins"));
+    const worker = new Worker("TEST", 0, workerConfig);
 
     if (!resolvedConfig) {
         worker.logger.warn("Cannot open config file; using default config");
@@ -170,7 +170,10 @@ async function getInternalIp() {
     worker.logger.info(chalk.grey`   Local: ${chalk.white("127.0.0.1")}:${port}`);
 
     if (worker.config.plugins.loadDirectory) {
-        await worker.pluginLoader.loadAll();
+        const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
+
+        await worker.pluginLoader.importFromDirectory(pluginsDirectory);
+        await worker.pluginLoader.loadAllWorkerPlugins();
     }
 
     const configWatch = chokidar.watch(configFile, {

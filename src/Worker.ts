@@ -78,7 +78,8 @@ import {
     WorkerBeforeJoinEvent
 } from "./api";
 
-import { PluginLoader, ChatCommandHandler } from "./handlers";
+import { PluginLoader, WorkerPlugin } from "./handlers";
+
 import {
     ReactorRpcMessage,
     GameDataMessage,
@@ -131,11 +132,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      */
     pluginLoader: PluginLoader;
 
-    /**
-     * Chat command handler responsible for... handling registered chat commands
-     * and parsing chat message commands.
-     */
-    chatCommandHandler: ChatCommandHandler;
+    loadedPlugins: Map<string, WorkerPlugin>;
 
     /**
      * The UDP socket that all clients connect to.
@@ -182,11 +179,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         /**
          * The global configuration for Hindenburg.
          */
-        config: HindenburgConfig,
-        /**
-         * Directory to load plugins from.
-         */
-        pluginDir: string
+        config: HindenburgConfig
     ) {
         super();
 
@@ -228,8 +221,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]
         });
 
-        this.pluginLoader = new PluginLoader(this, pluginDir);
-        this.chatCommandHandler = new ChatCommandHandler(this);
+        this.pluginLoader = new PluginLoader(this);
+        this.loadedPlugins = new Map;
 
         this.socket = dgram.createSocket("udp4");
         this.socket.on("message", this.handleMessage.bind(this));
@@ -239,9 +232,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.rooms = new Map;
 
         this.decoder = new PacketDecoder;
-        this.pluginLoader.resetMessages();
-        this.pluginLoader.resetMessageHandlers();
-        this.pluginLoader.resetChatCommands();
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
         this.vorpal
@@ -319,38 +309,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("load <import>", "Load a plugin by its import relative to the base plugin directory.")
-            .action(async args => {
-                const importPath = this.pluginLoader.resolveImportPath(args.import);
-
-                if (importPath) {
-                    const pluginCtr = await this.pluginLoader.importPlugin(importPath);
-                    if (this.pluginLoader.loadedPlugins.has(pluginCtr.meta.id))
-                        this.pluginLoader.unloadPlugin(pluginCtr.meta.id);
-
-                    await this.pluginLoader.loadPlugin(pluginCtr);
-                } else {
-                    this.logger.error("Couldn't find installed plugin: " + args.import);
-                }
-            });
-
-        this.vorpal
-            .command("unload <plugin id>", "Unload a plugin.")
-            .action(async args => {
-                const pluginId: string = args["plugin id"];
-                const loadedPlugin =
-                    typeof pluginId === "number"
-                        ? [...this.pluginLoader.loadedPlugins][pluginId - 1]?.[1]
-                        : this.pluginLoader.loadedPlugins.get(pluginId);
-
-                if (loadedPlugin) {
-                    this.pluginLoader.unloadPlugin(loadedPlugin);
-                } else {
-                    this.logger.error("Plugin not loaded: %s", pluginId);
-                }
-            });
-
-        this.vorpal
             .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
             .alias("ls")
             .action(async args => {
@@ -369,8 +327,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         this.logger.info("%s) %s", i + 1, room);
                     }
                 } else if (args.something === "plugins") {
-                    this.logger.info("%s plugins(s) loaded", this.pluginLoader.loadedPlugins.size);
-                    const loadedPlugins = [...this.pluginLoader.loadedPlugins];
+                    this.logger.info("%s plugins(s) loaded", this.loadedPlugins.size);
+                    const loadedPlugins = [...this.loadedPlugins];
                     for (let i = 0; i < loadedPlugins.length; i++) {
                         const [ , plugin ] = loadedPlugins[i];
                         this.logger.info("%s) %s", i + 1, plugin.meta.id);
@@ -534,6 +492,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.doPings();
         }, pingInterval);
 
+        this.registerMessages();
         this.registerPacketHandlers();
     }
 
@@ -664,13 +623,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         sender.getNextNonce(),
                         [
                             new ReactorMessage(
-                                new ReactorHandshakeMessage("Hindenburg", "1.0.0", this.pluginLoader.loadedPlugins.size)
+                                new ReactorHandshakeMessage("Hindenburg", "1.0.0", this.loadedPlugins.size)
                             )
                         ]
                     )
                 );
 
-                const entries = [...this.pluginLoader.loadedPlugins];
+                const entries = [...this.loadedPlugins];
                 const chunkedPlugins = chunkArr(entries, 4);
                 for (let i = 0; i < chunkedPlugins.length; i++) {
                     const chunk = chunkedPlugins[i];
@@ -813,7 +772,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            const reactorRpc = message.data as unknown as ReactorRpcMessage;
+            /*const reactorRpc = message.data as unknown as ReactorRpcMessage;
             if (reactorRpc.messageTag === 0xff) {
                 message.cancel();
                 const componentNetId = message.netid;
@@ -878,7 +837,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         )
                     ], undefined, [ receiveClient ]);
                 }
-            }
+            }*/
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, { sender, reliable }) => {
@@ -1131,13 +1090,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const pluginKeys = Object.keys(newConfig.plugins);
             for (let i = 0; i < pluginKeys.length; i++) {
                 const key = pluginKeys[i];
-                const loadedPlugin = this.pluginLoader.loadedPlugins.get(key);
+                const loadedPlugin = this.loadedPlugins.get(key);
 
                 if (!newConfig.plugins[key]) {
                     this.pluginLoader.unloadPlugin(key);
                 } else {
                     if (!loadedPlugin) {
-                        this.pluginLoader.resolveImportPath(key);
                         continue;
                     }
 
@@ -1147,7 +1105,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         if (setConfig && setConfig !== true) {
                             recursiveAssign(pluginConfig, setConfig);
                         }
-                        loadedPlugin.setConfig(pluginConfig);
+                        // todo: setConfig plugin event
                     }
                 }
             }
@@ -1427,6 +1385,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         const createdRoom = new Room(this, copyConfiguration, options);
         await createdRoom.setCode(code);
+        await this.pluginLoader.loadAllRoomPlugins(createdRoom);
         this.rooms.set(code, createdRoom);
 
         createdRoom.emit(

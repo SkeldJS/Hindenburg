@@ -88,6 +88,7 @@ function createDefaultConfig() {
         },
         rooms: {
             chatCommands: true,
+            plugins: {},
             gameCodes: "v2"
         }
     };

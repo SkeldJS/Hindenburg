@@ -252,6 +252,10 @@ export interface RoomsConfig {
      */
     chatCommands: boolean|ChatCommandConfig;
     /**
+     * Options regarding room plugins.
+     */
+    plugins: PluginConfig;
+    /**
      * The type of game code to generate for rooms, "v1" for a 4-letter code and
      * "v2" for a 6-letter code.
      * @default "v2"

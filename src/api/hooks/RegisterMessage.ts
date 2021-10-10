@@ -1,15 +1,20 @@
 import { Deserializable } from "@skeldjs/protocol";
+import { Plugin } from "../../handlers";
 
-export const hindenburgRegisterMessageKey = Symbol("hindenburg:registermessage");
+const hindenburgRegisterMessageKey = Symbol("hindenburg:registermessage");
 
 export function RegisterMessage<T extends Deserializable>(deserializable: T) {
     return function (target: any) {
-        const cachedSet: Set<Deserializable>|undefined = Reflect.getMetadata(hindenburgRegisterMessageKey, target);
-        const messagesToRegister = cachedSet || new Set;
+        const cachedSet: Deserializable[]|undefined = Reflect.getMetadata(hindenburgRegisterMessageKey, target);
+        const messagesToRegister = cachedSet || [];
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgRegisterMessageKey, messagesToRegister, target);
         }
 
-        messagesToRegister.add(deserializable);
+        messagesToRegister.push(deserializable);
     };
+}
+
+export function getPluginRegisteredMessages(pluginCtr: typeof Plugin|Plugin): Deserializable[] {
+    return Reflect.getMetadata(hindenburgRegisterMessageKey, pluginCtr) || [];
 }

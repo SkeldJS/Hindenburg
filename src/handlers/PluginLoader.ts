@@ -1,108 +1,134 @@
 import "reflect-metadata";
 
-import fs from "fs/promises";
-import resolveFrom from "resolve-from";
-import winston from "winston";
+import { Deserializable } from "@skeldjs/protocol";
+
 import path from "path";
+import fs from "fs/promises";
+
+import winston from "winston";
 import vorpal from "vorpal";
-import chalk from "chalk";
+import resolvePkg from "resolve-pkg";
 
-import { Deserializable, RpcMessage } from "@skeldjs/protocol";
-import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
-
-import { VorpalConsole } from "../util/VorpalConsoleTransport";
-
-import { Worker, WorkerEvents } from "../Worker";
+import { Worker } from "../Worker";
+import { Room } from "../Room";
 
 import {
-    ReactorRpcMessage
-} from "../packets";
-
-import {
-    hindenburgEventListenersKey,
-    hindenburgChatCommandKey,
-    hindenburgMessageHandlersKey,
-    hindenburgRegisterMessageKey,
-    hindenburgVorpalCommand,
-    VorpalCommandInformation,
-    BaseReactorRpcMessage,
+    getPluginChatCommands,
+    getPluginCliCommands,
+    getPluginEventListeners,
+    getPluginMessageHandlers,
+    getPluginReactorRpcHandlers,
+    getPluginRegisteredMessages,
     isHindenburgPlugin,
-    hindenburgReactorRpcKey,
-    MessageListenerOptions,
-    MessageHandlerCallback
+    BaseReactorRpcMessage,
+    MessageHandlerOptions
 } from "../api";
 
-import { RegisteredChatCommand } from "./ChatCommandHandler";
-import { Room } from "../Room";
-import { recursiveAssign } from "../util/recursiveAssign";
+import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { recursiveClone } from "../util/recursiveClone";
-import { findRootOfPackage } from "../util/findRootOfPackage";
+import { recursiveAssign } from "../util/recursiveAssign";
+import { RoomEvents } from "../BaseRoom";
+import { WorkerEvents } from "..";
 
-export const hindenburgPluginDirectory = Symbol("hindenburg:pluginDirectory");
+export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
-type PluginOrder = "last"|"first"|"none"|number;
-
-export interface PluginMeta {
+export interface PluginMetadata {
     id: string;
     version: string;
+    order: "first"|"none"|"last"|number;
     defaultConfig: any;
-    order: PluginOrder;
-}
-
-export enum PluginLoadErrorCode {
-    NotAHindenburgPlugin,
-    PluginDisabled,
-    PluginAlreadyLoaded
-}
-
-export class PluginLoadError extends Error {
-    constructor(
-        public readonly code: number,
-        public readonly message: string
-    ) {
-        super(message);
-    }
 }
 
 export class Plugin {
-    static meta: PluginMeta;
-    meta!: PluginMeta;
+    static meta: PluginMetadata;
+    meta!: PluginMetadata;
 
-    logger: winston.Logger;
+    baseDirectory!: string;
 
-    baseDirectory: string;
-
-    eventHandlers: {
-        eventName: keyof WorkerEvents;
-        handler: (ev: WorkerEvents[keyof WorkerEvents]) => any;
+    loadedChatCommands: string[];
+    loadedCliCommands: vorpal.Command[];
+    loadedEventListeners: {
+        eventName: string;
+        handler: (...args: any) => any;
     }[];
-    registeredChatCommands: RegisteredChatCommand[];
-    messageHandlers: {
-        messageClass: Deserializable;
-        options: MessageListenerOptions;
-        handler: MessageHandlerCallback<Deserializable>;
+    loadedMessageHandlers: {
+        messageCtr: Deserializable;
+        options: MessageHandlerOptions;
+        handler: (...args: any) => any;
     }[];
-    reactorRpcHandlers: {
+    loadedReactorRpcHandlers: {
         reactorRpc: typeof BaseReactorRpcMessage;
-        handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
+        handler: (...args: any) => any;
     }[];
-    registeredMessages: Deserializable[];
-    registeredVorpalCommands: vorpal.Command[];
+    loadedRegisteredMessages: Deserializable[];
 
+    constructor(public readonly config: any) {
+        this.loadedChatCommands = [];
+        this.loadedCliCommands = [];
+        this.loadedEventListeners = [];
+        this.loadedMessageHandlers = [];
+        this.loadedReactorRpcHandlers = [];
+        this.loadedReactorRpcHandlers = [];
+        this.loadedRegisteredMessages = [];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    async onPluginLoad() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onPluginUnload() {}
+}
+
+export class RoomPlugin extends Plugin {
+    constructor(
+        public readonly room: Room,
+        public readonly config: any
+    ) {
+        super(config);
+    }
+}
+
+export class WorkerPlugin extends Plugin {
     constructor(
         public readonly worker: Worker,
-        public config: any
+        public readonly config: any
     ) {
+        super(config);
+    }
+}
+
+export class PluginLoader {
+    workerPlugins: Map<string, typeof WorkerPlugin>;
+    roomPlugins: Map<string, typeof RoomPlugin>;
+    logger: winston.Logger;
+
+    constructor(
+        public readonly worker: Worker
+    ) {
+        this.workerPlugins = new Map;
+        this.roomPlugins = new Map;
+
         this.logger = winston.createLogger({
+            levels: {
+                error: 0,
+                debug: 1,
+                warn: 2,
+                data: 3,
+                info: 4,
+                verbose: 5,
+                silly: 6,
+                custom: 7
+            },
             transports: [
                 new VorpalConsole(this.worker.vorpal, {
                     format: winston.format.combine(
                         winston.format.splat(),
                         winston.format.colorize(),
+                        winston.format.label({ label: "plugin loader service" }),
                         winston.format.printf(info => {
-                            return `[${chalk.green(this.meta.id)}] ${info.level}: ${info.message}`;
+                            return `[${info.label}] ${info.level}: ${info.message}`;
                         }),
                     ),
+
                 }),
                 new winston.transports.File({
                     filename: "logs.txt",
@@ -113,404 +139,312 @@ export class Plugin {
                 })
             ]
         });
-
-        this.eventHandlers = [];
-        this.registeredChatCommands = [];
-        this.messageHandlers = [];
-        this.reactorRpcHandlers = [];
-        this.registeredMessages = [];
-        this.registeredVorpalCommands = [];
-
-        this.baseDirectory = "";
     }
 
-    onPluginLoad?(): any;
-    onPluginUnload?(): any;
-
-    onConfigUpdate?(): any;
-
-    setConfig(config: any) {
-        this.config = config;
-        this.onConfigUpdate?.();
+    isHindenburgPlugin(someObject: any) {
+        return isHindenburgPlugin(someObject);
     }
 
-    getConfig() {
-        return this.config;
+    isWorkerPlugin(pluginCtr: typeof Plugin) {
+        return Object.getPrototypeOf(Object.getPrototypeOf(pluginCtr)) === WorkerPlugin;
     }
 
-    async sendReactorRpc(component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
-        if (!rpc.modId)
-            throw new TypeError("Bad reactor rpc: expected modId property.");
 
-        if (typeof this.config.reactor !== "boolean") {
-            const modConfig = this.config.reactor.mods[rpc.modId];
-            if (typeof modConfig === "object") {
-                if (modConfig.doNetworking === false) { // doNetworking can be undefined and is defaulted to true
-                    return;
+    isRoomPlugin(pluginCtr: typeof Plugin) {
+        return Object.getPrototypeOf(Object.getPrototypeOf(pluginCtr)) === RoomPlugin;
+    }
+
+    async importFromDirectory(pluginDirectory: string) {
+        if (!path.isAbsolute(pluginDirectory)) {
+            throw new Error("Expected an absolute path to a plugin directory");
+        }
+
+        const pluginPaths: string[] = [];
+
+        try {
+            const packageJson = await fs.readFile(path.resolve(pluginDirectory, "package.json"), "utf8");
+            const json = JSON.parse(packageJson) as { dependencies: Record<string, string> };
+
+            for (const dependencyName in json.dependencies) {
+                if (dependencyName.startsWith("hbplugin-")) {
+                    const resolvedPkg = resolvePkg(dependencyName, { cwd: pluginDirectory });
+                    if (resolvedPkg) {
+                        pluginPaths.push(resolvedPkg);
+                    }
                 }
             }
+        } catch (e) {
+            if ((e as any).code !== undefined) {
+                if ((e as any).code === "ENOENT") {
+                    this.logger.warn("No package.json in plugin directory");
+                    return;
+                }
+
+                this.logger.warn("Could not open package.json: %s", (e as any).code);
+            }
+            throw e;
         }
 
-        for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
-            const playerConnection = component.room.connections.get(player.clientId);
+        const filesInDir = await fs.readdir(pluginDirectory);
+        for (const file of filesInDir) {
+            if (file.startsWith("hbplugin-")) {
+                pluginPaths.push(path.resolve(pluginDirectory, file));
+            }
+        }
 
-            if (playerConnection) {
-                const targetMod = playerConnection.mods.get(rpc.modId);
+        for (const pluginPath of pluginPaths) {
+            try {
+                const pluginCtr = await this.importPlugin(pluginPath);
 
-                if (!targetMod)
+                if (!pluginCtr) {
+                    this.logger.warn("Did not load plugin at '%s', as it was not a hindenburg plugin",
+                        pluginPath);
                     continue;
+                }
 
-                await player.room.broadcast([
-                    new RpcMessage(
-                        component.netId,
-                        new ReactorRpcMessage(
-                            targetMod.netId,
-                            rpc
-                        )
-                    )
-                ], true, player);
+                Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, pluginCtr);
+            } catch (e) {
+                this.logger.warn("Could not import plugin '%s': %s", path.basename(pluginPath), e);
+                throw e;
             }
         }
     }
-}
 
-export class PluginLoader {
-    loadedPlugins: Map<string, Plugin>;
-    /**
-     * classname : mod id : rpc tag
-     */
-    reactorRpcHandlers: Map<`${string}:${number}`, Set<(component: Networkable, rpc: BaseReactorRpcMessage) => any>>;
+    isEnabled(pluginId: string, room?: Room) {
+        if (this.worker.config.plugins[pluginId] === false) {
+            return false;
+        }
 
-    constructor(
-        public readonly worker: Worker,
-        public readonly pluginDir: string
-    ) {
-        this.loadedPlugins = new Map;
-        this.reactorRpcHandlers = new Map;
+        if (room && !room.config.plugins[pluginId] === false) {
+            return false;
+        }
+
+        return true;
     }
 
-    async resetMessages() {
+    async loadAllWorkerPlugins() { // todo: plugin load ordering
+        for (const [ , importedPlugin ] of this.workerPlugins) {
+            if (this.isEnabled(importedPlugin.meta.id)) {
+                await this.loadPlugin(importedPlugin.meta.id);
+            } else {
+                this.logger.warn("Skipping plugin '%s' because it is disabled", importedPlugin.meta.id);
+            }
+        }
+    }
+
+    async loadAllRoomPlugins(room: Room) {
+        for (const [ , importedPlugin ] of this.roomPlugins) {
+            if (this.isEnabled(importedPlugin.meta.id, room)) {
+                await this.loadPlugin(importedPlugin.meta.id, room);
+            } else {
+                this.logger.warn("Skipping plugin '%s' for '%s' because it is disabled", importedPlugin.meta.id, room);
+            }
+        }
+    }
+
+    async importPlugin(pluginPath: string): Promise<typeof Plugin|false> {
+        if (!path.isAbsolute(pluginPath)) {
+            throw new Error("Expected an absolute path to a plugin but got a relative one.");
+        }
+
+        delete require.cache[require.resolve(pluginPath)];
+        const { default: pluginCtr } = await import(pluginPath) as { default: typeof Plugin };
+
+        if (!this.isHindenburgPlugin(pluginCtr))
+            return false;
+
+        const isWorkerPlugin = this.isWorkerPlugin(pluginCtr);
+        const isRoomPlugin = this.isRoomPlugin(pluginCtr);
+
+        if (!isWorkerPlugin && !isRoomPlugin)
+            return false;
+
+        if (isWorkerPlugin) {
+            this.workerPlugins.set(pluginCtr.meta.id, pluginCtr as unknown as typeof WorkerPlugin);
+        } else if (isRoomPlugin) {
+            this.roomPlugins.set(pluginCtr.meta.id, pluginCtr as unknown as typeof RoomPlugin);
+        }
+
+
+        return pluginCtr;
+    }
+
+    private applyChatCommands(room: Room) {
+        room.chatCommandHandler.registeredCommands.clear();
+        room.chatCommandHandler.registerHelpCommand();
+        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+            const pluginChatCommands = getPluginChatCommands(loadedPlugin);
+            for (const chatCommand of pluginChatCommands) {
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler);
+            }
+        }
+
+        for (const [ , loadedPlugin ] of room.loadedPlugins) {
+            const pluginChatCommands = getPluginChatCommands(loadedPlugin);
+            for (const chatCommand of pluginChatCommands) {
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler);
+            }
+        }
+    }
+
+    private applyRegisteredMessages() {
         const listeners = new Map([...this.worker.decoder.listeners]);
         this.worker.decoder.reset();
         this.worker.decoder.listeners = listeners;
         this.worker.registerMessages();
 
-        const loadedPluginsArr = [...this.loadedPlugins];
+        const loadedPluginsArr = [...this.worker.loadedPlugins];
         for (const [ , loadedPlugin ] of loadedPluginsArr) {
-            for (let i = 0; i <  loadedPlugin.registeredMessages.length; i++) {
-                const messageClass = loadedPlugin.registeredMessages[i];
+            for (let i = 0; i <  loadedPlugin.loadedRegisteredMessages.length; i++) {
+                const messageClass = loadedPlugin.loadedRegisteredMessages[i];
                 this.worker.decoder.register(messageClass);
             }
         }
     }
 
-    async resetMessageHandlers() {
+    private applyMessageHandlers() {
         this.worker.decoder.listeners.clear();
         this.worker.registerPacketHandlers();
 
-        const loadedPluginsArr = [...this.loadedPlugins];
+        const loadedPluginsArr = [...this.worker.loadedPlugins];
         for (let i = 0; i < loadedPluginsArr.length; i++) {
             const [, loadedPlugin ] = loadedPluginsArr[i];
-            for (let i = 0; i < loadedPlugin.messageHandlers.length; i++) {
-                const  { messageClass, handler, options } = loadedPlugin.messageHandlers[i];
+            for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
+                const  { messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
                 if (options.override) {
-                    this.worker.decoder.listeners.delete(`${messageClass.messageType}:${messageClass.messageTag}`);
+                    this.worker.decoder.listeners.delete(`${messageCtr.messageType}:${messageCtr.messageTag}`);
                 }
 
-                this.worker.decoder.on(messageClass, (message, direction, ctx) => handler.bind(loadedPlugin)(message, ctx));
+                this.worker.decoder.on(messageCtr, (message, direction, ctx) => handler(message, ctx));
             }
         }
     }
 
-    async resetChatCommands() {
-        this.worker.chatCommandHandler.commands.clear();
-        this.worker.chatCommandHandler.registerHelpCommand();
+    async loadPlugin(pluginCtr: string|typeof Plugin, room?: Room): Promise<void> {
+        if (typeof pluginCtr === "string") {
+            const _pluginCtr = room
+                ? this.roomPlugins.get(pluginCtr)
+                : this.workerPlugins.get(pluginCtr);
 
-        for (const [ , loadedPlugin ] of this.loadedPlugins) {
-            for (const registeredCommand of loadedPlugin.registeredChatCommands) {
-                this.worker.chatCommandHandler.commands.set(registeredCommand.name, registeredCommand);
+            if (!_pluginCtr) {
+                throw new Error("Plugin with ID '" + pluginCtr + "' not loaded.");
             }
-        }
-    }
-
-    getReactorRpcHandlers(rpc: BaseReactorRpcMessage|typeof BaseReactorRpcMessage) {
-        const cached = this.reactorRpcHandlers.get(`${rpc.modId}:${rpc.messageTag}`);
-        const handlers = cached || new Set;
-
-        if (!cached)
-            this.reactorRpcHandlers.set(`${rpc.modId}:${rpc.messageTag}`, handlers);
-
-        return handlers;
-    }
-
-    async importPlugin(importPath: string) {
-        delete require.cache[path.resolve(importPath)];
-        const { default: loadedPluginCtr } = await import(importPath) as { default: typeof Plugin };
-
-        if (!isHindenburgPlugin(loadedPluginCtr))
-            throw new PluginLoadError(PluginLoadErrorCode.NotAHindenburgPlugin, "Expected default export of a hindenburg plugin.");
-
-        return loadedPluginCtr;
-    }
-
-    async loadPlugin(loadedPluginCtr: typeof Plugin) {
-        const setConfig = this.worker.config.plugins[loadedPluginCtr.meta.id];
-        const config = recursiveClone(loadedPluginCtr.meta.defaultConfig);
-        if (setConfig && setConfig !== true) {
-            recursiveAssign(config, setConfig);
+            return this.loadPlugin(_pluginCtr as unknown as typeof Plugin, room);
         }
 
-        if (!isHindenburgPlugin(loadedPluginCtr))
-            throw new PluginLoadError(PluginLoadErrorCode.NotAHindenburgPlugin, "Imported variable was not a hindenburg plugin.");
+        const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig);
+        recursiveAssign(defaultConfig, this.worker.config.plugins[pluginCtr.meta.id] || {});
 
-        if (typeof setConfig === "boolean" && !setConfig)
-            throw new PluginLoadError(PluginLoadErrorCode.PluginDisabled, "Plugin is disabled.");
+        const isWorkerPlugin = this.isWorkerPlugin(pluginCtr);
+        const isRoomPlugin = this.isRoomPlugin(pluginCtr);
 
-        if (this.loadedPlugins.get(loadedPluginCtr.meta.id))
-            throw new PluginLoadError(PluginLoadErrorCode.PluginAlreadyLoaded, "Plugin already loaded.");
+        if (isWorkerPlugin && room) {
+            throw new Error("Attempted to load a worker plugin on a room or other non-worker object");
+        } else if (isRoomPlugin && !room) {
+            throw new Error("Attempted to load a room plugin on a worker or other non-room object.");
+        }
 
-        const loadedPlugin = new loadedPluginCtr(this.worker, config);
-        this.loadedPlugins.set(loadedPlugin.meta.id, loadedPlugin);
+        const initPlugin = isWorkerPlugin
+            ? new (pluginCtr as unknown as typeof WorkerPlugin)(this.worker, defaultConfig)
+            : new (pluginCtr as unknown as typeof RoomPlugin)(room!, defaultConfig);
 
-        /**
-         * Object.getPrototypeOf is done twice as {@link HindenburgPlugin} extends
-         * the actual plugin class and the prototype is wrong.
-         * @example
-         * ```ts
-         * class Animal {
-         *   constructor(name: string) {
-         *     this.name = name;
-         *   }
-         *
-         *   feed() {
-         *     console.log("Fed", this.name);
-         *   }
-         * }
-         *
-         * class Dog extends Animal {
-         *
-         * }
-         *
-         * const sprout = new Dog("Sprout");
-         * const barney = new Animal("Barney");
-         *
-         * console.log(Object.getPrototypeOf(sprout)); // {}
-         * console.log(Object.getPrototypeOf(barney)); // { feed() {} }
-         *
-         * const proto = Object.getPrototypeOf(sprout);
-         * console.log(Object.getPrototypeOf(proto)); // { feed() {} }
-         * ```
-         */
-        const pluginPrototype = Object.getPrototypeOf(Object.getPrototypeOf(loadedPlugin));
-        const propertyNames = Object.getOwnPropertyNames(pluginPrototype);
+        if (isRoomPlugin && room) {
+            room.loadedPlugins.set(pluginCtr.meta.id, initPlugin as RoomPlugin);
+            this.applyChatCommands(room);
 
-        for (let i = 0; i < propertyNames.length; i++) {
-            const propertyName = propertyNames[i];
-            const property = pluginPrototype[propertyName] as (...args: any[]) => any;
+            this.logger.info("Loaded plugin '%s' for %s", pluginCtr.meta.id, room);
+        }
 
-            if (typeof property !== "function")
-                continue;
+        if (isWorkerPlugin) {
+            const cliCommands = getPluginCliCommands(initPlugin);
+            const messageHandlers = getPluginMessageHandlers(initPlugin);
+            const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
+            const registeredMessages = getPluginRegisteredMessages(initPlugin);
 
-            const reactorRpcClassnameModIdAndTag = Reflect.getMetadata(hindenburgReactorRpcKey, loadedPlugin, propertyName);
-            if (reactorRpcClassnameModIdAndTag) {
-                const { reactorRpc } = reactorRpcClassnameModIdAndTag;
+            for (const commandInfo of cliCommands) {
+                const command = this.worker.vorpal.command(commandInfo.command.usage, commandInfo.command.description);
 
-                const fn = property.bind(loadedPlugin);
-                const rpcHandlers = this.getReactorRpcHandlers(reactorRpc);
-                rpcHandlers.add(fn);
-                loadedPlugin.registeredMessages.push(reactorRpc);
-                loadedPlugin.reactorRpcHandlers.push({
-                    reactorRpc,
-                    handler: fn
-                });
-                this.resetMessages();
-            }
-
-            const vorpalCommand = Reflect.getMetadata(hindenburgVorpalCommand, loadedPlugin, propertyName) as undefined|VorpalCommandInformation;
-            if (vorpalCommand) {
-                const command = this.worker.vorpal.command(vorpalCommand.usage, vorpalCommand.description);
-
-                if (vorpalCommand.options) {
-                    for (let i = 0; i < vorpalCommand.options.length; i++) {
-                        const option = vorpalCommand.options[i];
+                if (commandInfo.command.options) {
+                    for (let i = 0; i < commandInfo.command.options.length; i++) {
+                        const option = commandInfo.command.options[i];
                         command.option(option.usage, option.description || "");
                     }
                 }
 
-                const fn = property.bind(loadedPlugin);
+                const fn = commandInfo.handler.bind(initPlugin);
                 command.action(fn);
 
-                loadedPlugin.registeredVorpalCommands.push(command);
+                initPlugin.loadedCliCommands.push(command);
             }
-        }
 
-        const chatCommands = Reflect.getMetadata(hindenburgChatCommandKey, loadedPlugin);
-
-        if (chatCommands) {
-            for (const { usage, description, handler } of chatCommands) {
-                const fn = handler.bind(loadedPlugin);
-                const registeredCommand = RegisteredChatCommand.parse(usage, description, fn);
-                loadedPlugin.registeredChatCommands.push(registeredCommand);
-            }
-            this.resetChatCommands();
-        }
-
-        const eventListeners = Reflect.getMetadata(hindenburgEventListenersKey, loadedPlugin);
-        if (eventListeners) {
-            for (const { eventName, handler } of eventListeners) {
-                const fn = handler.bind(loadedPlugin);
-                this.worker.on(eventName, fn);
-                loadedPlugin.eventHandlers.push({
-                    eventName,
-                    handler: fn
+            for (const messageHandlerInfo of messageHandlers) {
+                initPlugin.loadedMessageHandlers.push({
+                    messageCtr: messageHandlerInfo.messageClass,
+                    options: messageHandlerInfo.options,
+                    handler: messageHandlerInfo.handler.bind(initPlugin)
                 });
             }
-        }
 
-        const messageHandlers = Reflect.getMetadata(hindenburgMessageHandlersKey, loadedPlugin);
-        if (messageHandlers) {
-            loadedPlugin.messageHandlers = [...messageHandlers];
-            this.resetMessageHandlers();
-        }
-
-        const messagesToRegister = Reflect.getMetadata(hindenburgRegisterMessageKey, loadedPlugin["constructor"]) as Set<Deserializable>|undefined;
-        if (messagesToRegister) {
-            for (const messageClass of messagesToRegister) {
-                loadedPlugin.registeredMessages.push(messageClass);
+            for (const reactorRpcHandler of reactorRpcHandlers) {
+                void reactorRpcHandler;
+                // todo: reactor rpcs
             }
-            this.resetMessages();
+
+            initPlugin.loadedRegisteredMessages = [...registeredMessages];
+
+            this.applyMessageHandlers();
+            this.applyRegisteredMessages();
+
+            this.worker.loadedPlugins.set(pluginCtr.meta.id, initPlugin as WorkerPlugin);
+            this.logger.info("Loaded plugin '%s' globally", pluginCtr.meta.id);
         }
 
-        await loadedPlugin.onPluginLoad?.();
-        this.worker.logger.info("Loaded plugin '%s'", loadedPlugin.meta.id);
+        const eventListeners = getPluginEventListeners(initPlugin);
 
-        return loadedPlugin;
+        for (const eventListenerInfo of eventListeners) {
+            const fn = eventListenerInfo.handler.bind(initPlugin);
+            if (room) {
+                room.on(eventListenerInfo.eventName, fn);
+            } else {
+                this.worker.on(eventListenerInfo.eventName, fn);
+            }
+            initPlugin.loadedEventListeners.push({
+                eventName: eventListenerInfo.eventName,
+                handler: fn
+            });
+        }
+
+        await initPlugin.onPluginLoad();
     }
 
-    unloadPlugin(pluginId: string|Plugin): void {
-        if (typeof pluginId === "string") {
-            const plugin = this.loadedPlugins.get(pluginId);
-            if (!plugin)
-                throw new Error("Plugin '" + pluginId + "' not loaded.");
+    async unloadPlugin(pluginCtr: string|Plugin|typeof Plugin, room?: Room) {
+        const pluginId = typeof pluginCtr === "string"
+            ? pluginCtr
+            : pluginCtr.meta.id;
 
-            return this.unloadPlugin(plugin);
+        const loadedPlugin = room
+            ? room.loadedPlugins.get(pluginId)
+            : this.worker.loadedPlugins.get(pluginId);
+
+        if (!loadedPlugin)
+            throw new Error("Tried to unload a plugin that wasn't loaded");
+
+        loadedPlugin.onPluginUnload();
+
+        if (room) {
+            room.loadedPlugins.delete(pluginId);
+            this.applyChatCommands(room);
+        } else {
+            this.worker.loadedPlugins.delete(pluginId);
+            this.applyMessageHandlers();
+            this.applyRegisteredMessages();
         }
 
-        for (let i = 0; i < pluginId.eventHandlers.length; i++) {
-            const { eventName, handler } = pluginId.eventHandlers[i];
-            this.worker.off(eventName, handler);
-        }
-
-        for (let i = 0; i < pluginId.registeredVorpalCommands.length; i++) {
-            const vorpalCommand = pluginId.registeredVorpalCommands[i];
-            vorpalCommand.remove();
-        }
-
-        for (let i = 0; i < pluginId.reactorRpcHandlers.length; i++) {
-            const { reactorRpc, handler } = pluginId.reactorRpcHandlers[i];
-            const rpcHandlers = this.getReactorRpcHandlers(reactorRpc);
-            rpcHandlers.delete(handler);
-        }
-
-        pluginId.onPluginUnload?.();
-        this.loadedPlugins.delete(pluginId.meta.id);
-
-        this.resetMessages();
-        this.resetMessageHandlers();
-        this.resetChatCommands();
-        this.worker.logger.info("Unloaded plugin '%s'", pluginId.meta.id);
-    }
-
-    async loadAll() {
-        const allImportNames = [];
-        try {
-            const packageJson = await fs.readFile(path.join(this.pluginDir, "package.json"), "utf8");
-            const json = JSON.parse(packageJson) as { dependencies: Record<string, string> };
-
-            for (const depenencyName in json.dependencies) {
-                allImportNames.push(depenencyName);
-            }
-        } catch (e) {
-            if ((e as any).code === "ENOENT") {
-                return;
-            }
-            throw e;
-        }
-
-        if (this.worker.config.plugins.loadDirectory) {
-            const files = await fs.readdir(this.pluginDir);
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (!file.startsWith("hbplugin-"))
-                    continue;
-
-                allImportNames.push("./" + file);
-            }
-        }
-
-        const pluginCtrs: typeof Plugin[] = [];
-        for (let i = 0; i < allImportNames.length; i++) {
-            const importName = allImportNames[i];
-            try {
-                const importPath = resolveFrom(this.pluginDir, importName);
-                const pluginCtr = await this.importPlugin(importPath);
-                Reflect.defineMetadata(hindenburgPluginDirectory, await findRootOfPackage(importPath), pluginCtr);
-                pluginCtrs.push(pluginCtr);
-            } catch (e) {
-                this.worker.logger.warn("Failed to import plugin from '%s': %s", importName, e);
-            }
-        }
-
-        pluginCtrs.sort((a, b) => {
-            // first = -1
-            // last = 1
-            // none = 0
-            // sort from lowest to highest
-            const aInteger = a.meta.order === "first" ? -1 :
-                a.meta.order === "last" ? 1 :
-                    a.meta.order === "none" ? 0 : a.meta.order;
-
-            const bInteger = b.meta.order === "first" ? -1 :
-                b.meta.order === "last" ? 1 :
-                    b.meta.order === "none" ? 0 : b.meta.order;
-
-            if (bInteger < aInteger) {
-                return 1;
-            }
-            if (aInteger < bInteger) {
-                return -1;
-            }
-
-            return 0;
-        });
-
-        for (let i = 0; i < pluginCtrs.length; i++) {
-            const pluginCtr = pluginCtrs[i];
-            try {
-                await this.loadPlugin(pluginCtr);
-            } catch (e) {
-                if (e instanceof PluginLoadError) {
-                    this.worker.logger.warn("Skipped %s: %s",
-                        pluginCtr.meta.id, e.message);
-
-                    continue;
-                }
-                this.worker.logger.warn("Failed to load plugin %s: %s",
-                    pluginCtr.meta.id, e);
-            }
-        }
-    }
-
-    resolveImportPath(importName: string) {
-        try {
-            const importPath = resolveFrom(this.pluginDir, importName);
-            return importPath;
-        } catch (e) {
-            try {
-                const importPath = resolveFrom(this.pluginDir, "./" + importName);
-                return importPath;
-            } catch (e) {
-                return undefined;
+        for (const loadedEventListener of loadedPlugin.loadedEventListeners) {
+            if (room) {
+                room.off(loadedEventListener.eventName as keyof RoomEvents, loadedEventListener.handler);
+            } else {
+                this.worker.off(loadedEventListener.eventName as keyof WorkerEvents, loadedEventListener.handler);
             }
         }
     }

@@ -15,9 +15,7 @@ import {
     AlterGameMessage,
     BaseGameDataMessage,
     BaseRootMessage,
-    ComponentSpawnData,
     DataMessage,
-    DespawnMessage,
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
@@ -33,7 +31,6 @@ import {
     SendChatMessage,
     SetColorMessage,
     SetNameMessage,
-    SpawnMessage,
     StartGameMessage,
     UnreliablePacket,
     WaitForHostMessage
@@ -52,10 +49,10 @@ import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 import { Code2Int, HazelWriter, sleep } from "@skeldjs/util";
 import { SkeldjsStateManager } from "@skeldjs/state";
 
-import { SendChatOptions, MessageSide } from "./interfaces";
 
 import { Connection } from "./Connection";
 import { Worker } from "./Worker";
+import { Perspective, PresetFilter } from "./Perspective";
 
 import {
     ClientBroadcastEvent,
@@ -67,11 +64,21 @@ import {
     RoomSelectHostEvent
 } from "./api";
 
+import {
+    SendChatOptions,
+    MessageSide,
+    RoomsConfig
+} from "./interfaces";
+
+import {
+    CommandCallError,
+    ChatCommandContext,
+    RoomPlugin,
+    ChatCommandHandler
+} from "./handlers";
+
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
-import { RoomsConfig } from "./interfaces";
-import { CommandCallError, ChatCommandContext } from "./handlers";
-import { Perspective, PresetFilter } from "./Perspective";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: PlayerData<BaseRoom>) {

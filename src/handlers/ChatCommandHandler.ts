@@ -59,7 +59,7 @@ export class ChatCommandContext {
     async reply(message: string, ...fmt: any) {
         await this.room.sendChat(util.format(message, ...fmt), {
             side: MessageSide.Left,
-            target: this.player
+            targets: [ this.player ]
         });
     }
 }

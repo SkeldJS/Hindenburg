@@ -1128,6 +1128,43 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         return undefined;
     }
 
+    private async _sendChatFor(player: PlayerData, message: string, options: SendChatOptions) {
+        const sendPlayer = options.side === MessageSide.Left
+            ? this.getOtherPlayer(player) || player
+            : player;
+
+        if (!sendPlayer.control)
+            return;
+
+        if (!sendPlayer.info)
+            return;
+
+        const oldName = sendPlayer.info.name;
+        const oldColor = sendPlayer.info.color;
+        await this.broadcast([
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetNameMessage(options.name)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetColorMessage(options.color)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SendChatMessage(message)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetNameMessage(oldName)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetColorMessage(oldColor)
+            )
+        ], true, player);
+    }
+
     /**
      * Send a message into the chat as the server.
      *
@@ -1162,49 +1199,25 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         const defaultOptions: SendChatOptions = {
             side: MessageSide.Left,
-            target: undefined,
+            targets: undefined,
             name: "<color=yellow>[Server]</color>",
             color: Color.Yellow,
             ...options
         };
 
         // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
-        for (const [ , player ] of (defaultOptions.target ? [[ undefined, defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
-            const sendPlayer = defaultOptions.side === MessageSide.Left
-                ? this.getOtherPlayer(player) || player
-                : player;
-
-            if (!sendPlayer.control)
-                continue;
-
-            if (!sendPlayer.info)
-                continue;
-
-            const oldName = sendPlayer.info.name;
-            const oldColor = sendPlayer.info.color;
-            await this.broadcast([
-                new RpcMessage(
-                    sendPlayer.control.netId,
-                    new SetNameMessage(defaultOptions.name)
-                ),
-                new RpcMessage(
-                    sendPlayer.control.netId,
-                    new SetColorMessage(defaultOptions.color)
-                ),
-                new RpcMessage(
-                    sendPlayer.control.netId,
-                    new SendChatMessage(message)
-                ),
-                new RpcMessage(
-                    sendPlayer.control.netId,
-                    new SetNameMessage(oldName)
-                ),
-                new RpcMessage(
-                    sendPlayer.control.netId,
-                    new SetColorMessage(oldColor)
-                )
-            ], true, player);
+        const promises = [];
+        if (defaultOptions.targets) {
+            for (const player of defaultOptions.targets) {
+                promises.push(this._sendChatFor(player, message, defaultOptions));
+            }
+            await Promise.all(promises);
+        } else {
+            for (const [ , player ] of this.players) {
+                promises.push(this._sendChatFor(player, message, defaultOptions));
+            }
         }
+        await Promise.all(promises);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

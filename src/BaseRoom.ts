@@ -1168,79 +1168,42 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             ...options
         };
 
-        if (defaultOptions.side === MessageSide.Left) {
-            for (const [ , player ] of (defaultOptions.target ? [[ undefined, defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
-                const otherPlayer = this.getOtherPlayer(player);
+        // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
+        for (const [ , player ] of (defaultOptions.target ? [[ undefined, defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
+            const sendPlayer = defaultOptions.side === MessageSide.Left
+                ? this.getOtherPlayer(player) || player
+                : player;
 
-                if (!otherPlayer) {
-                    return this.sendChat(message, { ...defaultOptions, side: MessageSide.Right });
-                }
+            if (!sendPlayer.control)
+                continue;
 
-                const pcNetId = otherPlayer.control!.netId;
-                const oldName = otherPlayer.info!.name;
-                const oldColor = otherPlayer.info!.color;
+            if (!sendPlayer.info)
+                continue;
 
-                if (pcNetId === undefined) {
-                    return;
-                }
-
-                await this.broadcast([
-                    new RpcMessage(
-                        pcNetId,
-                        new SetNameMessage(defaultOptions.name)
-                    ),
-                    new RpcMessage(
-                        pcNetId,
-                        new SetColorMessage(defaultOptions.color)
-                    ),
-                    new RpcMessage(
-                        pcNetId,
-                        new SendChatMessage(message)
-                    ),
-                    new RpcMessage(
-                        pcNetId,
-                        new SetNameMessage(oldName)
-                    ),
-                    new RpcMessage(
-                        pcNetId,
-                        new SetColorMessage(oldColor)
-                    ),
-                ], true, defaultOptions.target);
-            }
-        } else {
-            // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
-            for (const [ , player ] of (defaultOptions.target ? [[ undefined, defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
-                if (!player.control)
-                    continue;
-
-                if (!player.info)
-                    continue;
-
-                const oldName = player.info.name;
-                const oldColor = player.info.color;
-                await this.broadcast([
-                    new RpcMessage(
-                        player.control.netId,
-                        new SetNameMessage(defaultOptions.name)
-                    ),
-                    new RpcMessage(
-                        player.control.netId,
-                        new SetColorMessage(defaultOptions.color)
-                    ),
-                    new RpcMessage(
-                        player.control.netId,
-                        new SendChatMessage(message)
-                    ),
-                    new RpcMessage(
-                        player.control.netId,
-                        new SetNameMessage(oldName)
-                    ),
-                    new RpcMessage(
-                        player.control.netId,
-                        new SetColorMessage(oldColor)
-                    )
-                ], true, defaultOptions.target);
-            }
+            const oldName = sendPlayer.info.name;
+            const oldColor = sendPlayer.info.color;
+            await this.broadcast([
+                new RpcMessage(
+                    sendPlayer.control.netId,
+                    new SetNameMessage(defaultOptions.name)
+                ),
+                new RpcMessage(
+                    sendPlayer.control.netId,
+                    new SetColorMessage(defaultOptions.color)
+                ),
+                new RpcMessage(
+                    sendPlayer.control.netId,
+                    new SendChatMessage(message)
+                ),
+                new RpcMessage(
+                    sendPlayer.control.netId,
+                    new SetNameMessage(oldName)
+                ),
+                new RpcMessage(
+                    sendPlayer.control.netId,
+                    new SetColorMessage(oldColor)
+                )
+            ], true, player);
         }
     }
 

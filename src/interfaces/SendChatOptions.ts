@@ -18,7 +18,7 @@ export interface SendChatOptions {
      * room.sendChat("Slide to the left", {
      *   side: MessageSide.Left
      * });
-     * 
+     *
      * room.sendChat("Slide to the right", {
      *   side: MessageSide.Right
      * });
@@ -34,14 +34,14 @@ export interface SendChatOptions {
      * onPotentialCheater(ev: AnticheatPotentialEvent) {
      *   if (!ev.player.info)
      *     return;
-     * 
+     *
      *   ev.room.sendChat("<color=red>Potential cheater detected: " + ev.player.info.name + "</color>", {
-     *     target: ev.room.players.host
+     *     targets: [ ev.room.players.host ]
      *   });
      * }
      * ```
      */
-    target: PlayerData|undefined;
+    targets: PlayerData[]|undefined;
     /**
      * The name of the player to appear as.
      * @example

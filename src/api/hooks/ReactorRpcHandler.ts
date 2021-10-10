@@ -1,16 +1,23 @@
 import { Networkable } from "@skeldjs/core";
 import { MessageDirection, PacketDecoder } from "@skeldjs/protocol";
 import { HazelReader } from "@skeldjs/util";
+
+import { Plugin } from "../../handlers";
 import { BaseReactorRpcMessage } from "../BaseReactorRpcMessage";
 
-export const hindenburgReactorRpcKey = Symbol("hindenburg:reactor_rpc");
+const hindenburgReactorRpcKey = Symbol("hindenburg:reactorrpc");
 
-type ReactorRpcConstructor<T extends BaseReactorRpcMessage> = {
+export type ReactorRpcConstructor<T extends BaseReactorRpcMessage> = {
     new (...args: any): T;
     Deserialize(reader: HazelReader, direction: MessageDirection, decoder: PacketDecoder): T;
     messageType: "reactorRpc";
     modId: string;
     messageTag: number;
+}
+
+export interface PluginRegisteredRpcHandlerInfo {
+    handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any;
+    reactorRpc: ReactorRpcConstructor<BaseReactorRpcMessage>;
 }
 
 export function ReactorRpcHandler<
@@ -25,8 +32,22 @@ export function ReactorRpcHandler<
             (component: ComponentType, rpc: RpcType) => any
         >
     ) {
-        Reflect.defineMetadata(hindenburgReactorRpcKey, {
+        if (!descriptor.value)
+            return;
+
+        const cachedSet: PluginRegisteredRpcHandlerInfo[]|undefined = Reflect.getMetadata(hindenburgReactorRpcKey, target);
+        const reactorRpcHandlersToRegister = cachedSet || [];
+        if (!cachedSet) {
+            Reflect.defineMetadata(hindenburgReactorRpcKey, reactorRpcHandlersToRegister, target);
+        }
+
+        reactorRpcHandlersToRegister.push({
+            handler: descriptor.value as (component: Networkable, rpc: BaseReactorRpcMessage) => any,
             reactorRpc
-        }, target, propertyKey);
+        });
     };
+}
+
+export function getPluginReactorRpcHandlers(pluginCtr: typeof Plugin|Plugin): PluginRegisteredRpcHandlerInfo[] {
+    return Reflect.getMetadata(hindenburgReactorRpcKey, pluginCtr) || [];
 }

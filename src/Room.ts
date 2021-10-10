@@ -1,4 +1,5 @@
 import winston from "winston";
+import util from "util";
 
 import { PlayerData } from "@skeldjs/core";
 import {
@@ -14,7 +15,6 @@ import { BaseRoom } from "./BaseRoom";
 import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
 import { Connection } from "./Connection";
 import { VorpalConsole } from "./util/VorpalConsoleTransport";
-import { fmtCode } from "./util/fmtCode";
 
 export class Room extends BaseRoom {
     /**
@@ -52,7 +52,7 @@ export class Room extends BaseRoom {
                         winston.format.splat(),
                         winston.format.colorize(),
                         winston.format.printf(info => {
-                            return `[${fmtCode(this.code)}] ${info.level}: ${info.message}`;
+                            return `[${util.format(this)}}] ${info.level}: ${info.message}`;
                         }),
                     ),
                 }),

@@ -1,7 +1,13 @@
+import { BasicEvent } from "@skeldjs/events";
 import { Plugin } from "../../handlers";
 import { WorkerEvents } from "../../Worker";
 
-export const hindenburgEventListenersKey = Symbol("hindenburg:events");
+const hindenburgEventListenersKey = Symbol("hindenburg:events");
+
+export interface PluginRegisteredEventListenerInfo {
+    handler: (ev: BasicEvent) => any;
+    eventName: string;
+}
 
 export function EventListener<EventName extends keyof WorkerEvents>(eventName: EventName) :
     (
@@ -35,27 +41,34 @@ export function EventListener(pluginClass: typeof Plugin, eventName: string) :
             (ev: any) => any
         >
     ) => any;
-export function EventListener<EventName extends keyof WorkerEvents>(pluginClassOrEventName: any, eventName?: any) {
+export function EventListener(pluginClassOrEventName: any, eventName?: any) {
     return function (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<
-            (ev: WorkerEvents[EventName]) => any
+            (ev: BasicEvent) => any
         >
     ) {
+        if (!descriptor.value)
+            return;
+
         const actualTarget = typeof pluginClassOrEventName === "string"
             ? target
             : pluginClassOrEventName.prototype;
 
-        const cachedSet = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
-        const eventListeners = cachedSet || new Set;
+        const cachedSet: PluginRegisteredEventListenerInfo[]|undefined = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
+        const eventListeners = cachedSet || [];
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgEventListenersKey, eventListeners, actualTarget);
         }
 
-        eventListeners.add({
+        eventListeners.push({
             handler: descriptor.value,
             eventName: eventName || pluginClassOrEventName
         });
     };
+}
+
+export function getPluginEventListeners(pluginCtr: typeof Plugin|Plugin): PluginRegisteredEventListenerInfo[] {
+    return Reflect.getMetadata(hindenburgEventListenersKey, pluginCtr) || [];
 }

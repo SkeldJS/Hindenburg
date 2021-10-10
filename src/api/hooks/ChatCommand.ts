@@ -1,6 +1,12 @@
-import { ChatCommandCallback } from "../../handlers/ChatCommandHandler";
+import { Plugin, ChatCommandCallback } from "../../handlers";
 
-export const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
+const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
+
+export interface PluginRegisteredChatCommandInfo {
+    usage: string;
+    description: string;
+    handler: ChatCommandCallback;
+}
 
 export function ChatCommand(usage: string, description: string) :
     (
@@ -20,6 +26,9 @@ export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage: string,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) {
+        if (!descriptor.value)
+            return;
+
         const actualTarget = typeof pluginClassOrUsage === "string"
             ? target
             : pluginClassOrUsage.prototype;
@@ -32,16 +41,20 @@ export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage: string,
             ? descriptionOrUsage
             : _description;
 
-        const cachedSet = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
-        const chatCommands = cachedSet || new Set;
+        const cachedSet: PluginRegisteredChatCommandInfo[]|undefined = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
+        const chatCommands = cachedSet || [];
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgChatCommandKey, chatCommands, actualTarget);
         }
 
-        chatCommands.add({
+        chatCommands.push({
             usage,
-            description,
+            description: description || "",
             handler: descriptor.value
         });
     };
+}
+
+export function getPluginChatCommands(pluginCtr: typeof Plugin|Plugin): PluginRegisteredChatCommandInfo[] {
+    return Reflect.getMetadata(hindenburgChatCommandKey, pluginCtr) || [];
 }

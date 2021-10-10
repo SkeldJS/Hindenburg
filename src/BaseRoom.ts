@@ -1111,6 +1111,16 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         ]);
     }
 
+    private getOtherPlayer(base: PlayerData) {
+        for (const [ , player ] of this.players) {
+            if (player.info && player.control && base !== player) {
+                return player;
+            }
+        }
+
+        return undefined;
+    }
+
     /**
      * Send a message into the chat as the server.
      *
@@ -1139,7 +1149,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * }
      * ```
      */
-    async sendChat(message: string, options: Partial<SendChatOptions> = {}) {
+    async sendChat(message: string, options: Partial<SendChatOptions> = {}): Promise<void> {
         if (!this.gameData)
             throw new TypeError("No gamedata spawned.");
 
@@ -1152,117 +1162,43 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         };
 
         if (defaultOptions.side === MessageSide.Left) {
-            const writer = HazelWriter.alloc(4 + defaultOptions.name.length + 6);
-            const mwriter = writer.begin(127); // Write game data for player Id 127 (max player id)
-            mwriter.string(defaultOptions.name);
-            mwriter.packed(defaultOptions.color);
-            mwriter.upacked(0);
-            mwriter.upacked(0);
-            mwriter.upacked(0);
-            mwriter.byte(0);
-            mwriter.uint8(0);
-            writer.end();
-            const pcNetId = this.getNextNetId();
-            const ppNetId = this.getNextNetId();
-            const cntNetId = this.getNextNetId();
-            if (this.config.serverAsHost) {
-                const promises = [];
-                for (const [ clientId, connection ] of this.connections) {
-                    promises.push(connection.sendPacket(
-                        new ReliablePacket(
-                            connection.getNextNonce(),
-                            [
-                                new JoinGameMessage(
-                                    this.code,
-                                    SpecialClientId.Temp,
-                                    this.actingHostIds.has(clientId)
-                                        ? clientId
-                                        : SpecialClientId.Server
-                                )
-                            ]
-                        )
-                    ));
+            for (const [ , player ] of (defaultOptions.target ? [[ undefined, defaultOptions.target ]] as [[void, PlayerData]] : this.players)) {
+                const otherPlayer = this.getOtherPlayer(player);
+
+                if (!otherPlayer) {
+                    return this.sendChat(message, { ...defaultOptions, side: MessageSide.Right });
                 }
-                await Promise.all(promises);
-            } else {
-                await this.broadcastMessages([], [
-                    new JoinGameMessage(
-                        this.code,
-                        SpecialClientId.Temp,
-                        this.hostId
-                    )
-                ]);
-            }
-            await this.broadcast([
-                new SpawnMessage(
-                    SpawnType.Player,
-                    -2,
-                    0,
-                    [ // Must spawn all components as client doesn't accept spawn if it isn't a full player spawn
-                        new ComponentSpawnData( // Player Control
-                            pcNetId,
-                            Buffer.from("007f", "hex") // isNew=false playerId=127
-                        ),
-                        new ComponentSpawnData( // Player Physics
-                            ppNetId,
-                            Buffer.from("", "hex")
-                        ),
-                        new ComponentSpawnData( // Custom Network Transform
-                            cntNetId,
-                            Buffer.from("00010000000000000000") // sequenceId=1 position=0,0 velocity=0,0
-                        )
-                    ]
-                ),
-                new DataMessage(
-                    this.gameData.netId,
-                    writer.buffer
-                ),
-                new RpcMessage(
-                    pcNetId,
-                    new SetNameMessage(defaultOptions.name)
-                ),
-                new RpcMessage(
-                    pcNetId,
-                    new SetColorMessage(defaultOptions.color)
-                ),
-                new RpcMessage(
-                    pcNetId,
-                    new SendChatMessage(message)
-                ),
-                new DespawnMessage(pcNetId),
-                new DespawnMessage(ppNetId),
-                new DespawnMessage(cntNetId)
-            ], true, defaultOptions.target);
-            await sleep(25);
-            if (this.config.serverAsHost) {
-                const promises = [];
-                for (const [ clientId, connection ] of this.connections) {
-                    promises.push(connection.sendPacket(
-                        new ReliablePacket(
-                            connection.getNextNonce(),
-                            [
-                                new RemovePlayerMessage(
-                                    this.code,
-                                    SpecialClientId.Temp,
-                                    DisconnectReason.None,
-                                    this.actingHostIds.has(clientId)
-                                        ? clientId
-                                        : SpecialClientId.Server
-                                )
-                            ]
-                        )
-                    ));
+
+                const pcNetId = otherPlayer.control!.netId;
+                const oldName = otherPlayer.info!.name;
+                const oldColor = otherPlayer.info!.color;
+
+                if (pcNetId === undefined) {
+                    return;
                 }
-                await Promise.all(promises);
-            } else {
-                await this.broadcastMessages([], [
-                    new RemovePlayerMessage(
-                        this.code,
-                        SpecialClientId.Temp,
-                        DisconnectReason.None,
-                        this.hostId
-                    )
-                ]);
+
+                await this.broadcast([
+                    new RpcMessage(
+                        pcNetId,
+                        new SetNameMessage(defaultOptions.name)
+                    ),
+                    new RpcMessage(
+                        pcNetId,
+                        new SetColorMessage(defaultOptions.color)
+                    ),
+                    new RpcMessage(
+                        pcNetId,
+                        new SendChatMessage(message)
+                    ),
+                    new RpcMessage(
+                        pcNetId,
+                        new SetNameMessage(oldName)
+                    ),
+                    new RpcMessage(
+                        pcNetId,
+                        new SetColorMessage(oldColor)
+                    ),
+                ], true, defaultOptions.target);
             }
         } else {
             // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
@@ -1273,27 +1209,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 if (!player.info)
                     continue;
 
-                const writer = HazelWriter.alloc(18);
-                const mwriter = writer.begin(player.playerId!); // Write temporary game data for player
-                mwriter.string(defaultOptions.name);
-                mwriter.packed(defaultOptions.color);
-                mwriter.upacked(0);
-                mwriter.upacked(0);
-                mwriter.upacked(0);
-                mwriter.byte(0);
-                mwriter.uint8(0);
-                writer.end();
-
-                const writer2 = HazelWriter.alloc(18);
-                const mwriter2 = writer2.begin(player.playerId!); // Write old game data for player
-                mwriter2.string(player.info.name);
-                mwriter2.packed(player.info.color);
-                mwriter2.upacked(0);
-                mwriter2.upacked(0);
-                mwriter2.upacked(0);
-                mwriter2.byte(0);
-                mwriter2.uint8(0);
-                writer2.end();
                 const oldName = player.info.name;
                 const oldColor = player.info.color;
                 await this.broadcast([
@@ -1304,10 +1219,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     new RpcMessage(
                         player.control.netId,
                         new SetColorMessage(defaultOptions.color)
-                    ),
-                    new DataMessage(
-                        this.gameData.netId,
-                        writer.buffer
                     ),
                     new RpcMessage(
                         player.control.netId,
@@ -1320,10 +1231,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     new RpcMessage(
                         player.control.netId,
                         new SetColorMessage(oldColor)
-                    ),
-                    new DataMessage(
-                        this.gameData.netId,
-                        writer2.buffer
                     )
                 ], true, defaultOptions.target);
             }

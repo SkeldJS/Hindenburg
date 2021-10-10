@@ -2,9 +2,9 @@ import { Deserializable, GetSerialized } from "@skeldjs/protocol";
 import { PacketContext } from "../../Worker";
 import { Plugin } from "../../handlers/PluginLoader";
 
-export const hindenburgMessageHandlersKey = Symbol("hindenburg:message");
+const hindenburgMessageHandlersKey = Symbol("hindenburg:message");
 
-export interface MessageListenerOptions {
+export interface MessageHandlerOptions {
     override: boolean;
 }
 
@@ -13,24 +13,34 @@ export type MessageHandlerCallback<T extends Deserializable> = (
     ctx: PacketContext
 ) => any
 
-export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<MessageListenerOptions>):
+
+export interface PluginRegisteredMessageHandlerInfo {
+    messageClass: Deserializable;
+    options: MessageHandlerOptions;
+    handler: MessageHandlerCallback<Deserializable>;
+}
+
+export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<MessageHandlerOptions>):
     (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<MessageHandlerCallback<T>>
     ) => any;
-export function MessageHandler<T extends Deserializable>(pluginClass: typeof Plugin, messageClass: T, options: Partial<MessageListenerOptions>):
+export function MessageHandler<T extends Deserializable>(pluginClass: typeof Plugin, messageClass: T, options: Partial<MessageHandlerOptions>):
     (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<MessageHandlerCallback<T>>
     ) => any;
-export function MessageHandler<T extends Deserializable>(pluginClassOrMessageClass: typeof Plugin|T, messageClassOrOptions: T|Partial<MessageListenerOptions>, _options?: Partial<MessageListenerOptions>) {
+export function MessageHandler<T extends Deserializable>(pluginClassOrMessageClass: typeof Plugin|T, messageClassOrOptions: T|Partial<MessageHandlerOptions>, _options?: Partial<MessageHandlerOptions>) {
     return function (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<MessageHandlerCallback<T>>
     ) {
+        if (!descriptor.value)
+            return;
+
         const actualTarget = _options
             ? pluginClassOrMessageClass.prototype
             : target;
@@ -41,14 +51,14 @@ export function MessageHandler<T extends Deserializable>(pluginClassOrMessageCla
 
         const options = _options || messageClassOrOptions || {};
 
-        const cachedSet = Reflect.getMetadata(hindenburgMessageHandlersKey, actualTarget);
-        const messageHandlers = cachedSet || new Set;
+        const cachedSet: PluginRegisteredMessageHandlerInfo[]|undefined = Reflect.getMetadata(hindenburgMessageHandlersKey, actualTarget);
+        const messageHandlers = cachedSet || [];
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgMessageHandlersKey, messageHandlers, actualTarget);
         }
 
-        messageHandlers.add({
-            messageClass,
+        messageHandlers.push({
+            messageClass: messageClass as T,
             options: {
                 override: false,
                 ...options
@@ -56,4 +66,8 @@ export function MessageHandler<T extends Deserializable>(pluginClassOrMessageCla
             handler: descriptor.value
         });
     };
+}
+
+export function getPluginMessageHandlers(pluginCtr: typeof Plugin|Plugin): PluginRegisteredMessageHandlerInfo[] {
+    return Reflect.getMetadata(hindenburgMessageHandlersKey, pluginCtr) || [];
 }

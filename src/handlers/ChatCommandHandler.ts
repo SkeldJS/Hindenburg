@@ -5,7 +5,6 @@ import { PlayerData } from "@skeldjs/core";
 import { MessageSide } from "../interfaces";
 
 import { Room } from "../Room";
-import { Worker } from "../Worker";
 
 function betterSplitOnSpaces(input: string) {
     let collector = "";
@@ -169,12 +168,12 @@ export class RegisteredChatCommand {
 }
 
 export class ChatCommandHandler {
-    commands: Map<string, RegisteredChatCommand>;
+    registeredCommands: Map<string, RegisteredChatCommand>;
 
     constructor(
-        public readonly worker: Worker
+        public readonly room: Room
     ) {
-        this.commands = new Map;
+        this.registeredCommands = new Map;
         this.registerHelpCommand();
     }
 
@@ -194,7 +193,7 @@ export class ChatCommandHandler {
             const commandName = args["command/page"];
 
             if (commandName && isNaN(pageArg)) {
-                const command = this.commands.get(commandName);
+                const command = this.registeredCommands.get(commandName);
 
                 if (!command) {
                     await ctx.reply("No command with name: %s", commandName);
@@ -205,16 +204,16 @@ export class ChatCommandHandler {
                 return;
             }
 
-            const maxPages = Math.ceil(this.commands.size / maxDisplay);
+            const maxPages = Math.ceil(this.registeredCommands.size / maxDisplay);
             const displayPage = isNaN(pageArg) ? 1 : pageArg;
             const actualPage = displayPage - 1;
 
-            if (actualPage * maxDisplay >= this.commands.size || actualPage < 0) {
+            if (actualPage * maxDisplay >= this.registeredCommands.size || actualPage < 0) {
                 await ctx.reply("There are no commands on page %s.", displayPage);
                 return;
             }
 
-            const allCommands = [...this.commands.values()];
+            const allCommands = [...this.registeredCommands.values()];
             let outMessage = "";
 
             let num = 0;
@@ -255,7 +254,7 @@ export class ChatCommandHandler {
      */
     registerCommand(usage: string, description: string, callback: ChatCommandCallback) {
         const parsedCommand = RegisteredChatCommand.parse(usage, description, callback);
-        this.commands.set(parsedCommand.name, parsedCommand);
+        this.registeredCommands.set(parsedCommand.name, parsedCommand);
         return parsedCommand;
     }
 
@@ -267,11 +266,10 @@ export class ChatCommandHandler {
      * ```
      */
     removeCommand(commandName: string) {
-        if (!this.commands.has(commandName))
+        if (!this.registeredCommands.has(commandName))
             throw new TypeError("No command: " + commandName);
 
-        this.commands.delete(commandName);
-        this.worker.logger.info("Command unregistered: '%s'", commandName);
+        this.registeredCommands.delete(commandName);
     }
 
     /**
@@ -293,7 +291,7 @@ export class ChatCommandHandler {
         if (!commandName)
             throw new CommandCallError("Bad command call.");
 
-        const command = this.commands.get(commandName);
+        const command = this.registeredCommands.get(commandName);
 
         if (!command)
             throw new CommandCallError("No command with name: " + commandName);

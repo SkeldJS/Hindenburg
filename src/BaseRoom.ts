@@ -149,6 +149,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     state: GameState;
     saahWaitingFor: PlayerData|undefined;
 
+    loadedPlugins: Map<string, RoomPlugin>;
+    chatCommandHandler: ChatCommandHandler;
+
     constructor(
         public readonly worker: Worker,
         public readonly config: RoomsConfig,
@@ -173,6 +176,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         this.state = GameState.NotStarted;
         this.saahWaitingFor = undefined;
+
+        this.loadedPlugins = new Map;
+        this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.hostId = this.config.serverAsHost
             ? SpecialClientId.Server
@@ -218,7 +224,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 const restMessage = ev.chatMessage.substr(prefix.length);
                 const context = new ChatCommandContext(this as any, ev.player, ev.chatMessage);
                 try {
-                    await this.worker.chatCommandHandler.parseMessage(context, restMessage);
+                    await this.chatCommandHandler.parseMessage(context, restMessage);
                 } catch (e) {
                     if (e instanceof CommandCallError) {
                         await context.reply(e.message);

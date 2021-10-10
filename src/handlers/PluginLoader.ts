@@ -1,15 +1,17 @@
 import "reflect-metadata";
 
 import { Deserializable } from "@skeldjs/protocol";
+import { Networkable } from "@skeldjs/core";
 
 import path from "path";
+import util from "util";
 import fs from "fs/promises";
 
 import winston from "winston";
 import vorpal from "vorpal";
 import resolvePkg from "resolve-pkg";
 
-import { Worker } from "../Worker";
+import { Worker, WorkerEvents } from "../Worker";
 import { Room } from "../Room";
 
 import {
@@ -28,7 +30,6 @@ import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { recursiveClone } from "../util/recursiveClone";
 import { recursiveAssign } from "../util/recursiveAssign";
 import { RoomEvents } from "../BaseRoom";
-import { WorkerEvents } from "..";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
@@ -42,6 +43,8 @@ export interface PluginMetadata {
 export class Plugin {
     static meta: PluginMetadata;
     meta!: PluginMetadata;
+
+    logger!: winston.Logger;
 
     baseDirectory!: string;
 
@@ -57,8 +60,8 @@ export class Plugin {
         handler: (...args: any) => any;
     }[];
     loadedReactorRpcHandlers: {
-        reactorRpc: typeof BaseReactorRpcMessage;
-        handler: (...args: any) => any;
+        reactorRpc: typeof BaseReactorRpcMessage,
+        handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
     }[];
     loadedRegisteredMessages: Deserializable[];
 
@@ -67,7 +70,6 @@ export class Plugin {
         this.loadedCliCommands = [];
         this.loadedEventListeners = [];
         this.loadedMessageHandlers = [];
-        this.loadedReactorRpcHandlers = [];
         this.loadedReactorRpcHandlers = [];
         this.loadedRegisteredMessages = [];
     }
@@ -84,6 +86,38 @@ export class RoomPlugin extends Plugin {
         public readonly config: any
     ) {
         super(config);
+
+        this.logger = winston.createLogger({
+            levels: {
+                error: 0,
+                debug: 1,
+                warn: 2,
+                data: 3,
+                info: 4,
+                verbose: 5,
+                silly: 6,
+                custom: 7
+            },
+            transports: [
+                new VorpalConsole(this.room.worker.vorpal, {
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.colorize(),
+                        winston.format.printf(info => {
+                            return `[${util.format(this.room)} ${this.meta.id}] ${info.level}: ${info.message}`;
+                        }),
+                    ),
+
+                }),
+                new winston.transports.File({
+                    filename: "logs.txt",
+                    format: winston.format.combine(
+                        winston.format.splat(),
+                        winston.format.simple()
+                    )
+                })
+            ]
+        });
     }
 }
 
@@ -93,19 +127,6 @@ export class WorkerPlugin extends Plugin {
         public readonly config: any
     ) {
         super(config);
-    }
-}
-
-export class PluginLoader {
-    workerPlugins: Map<string, typeof WorkerPlugin>;
-    roomPlugins: Map<string, typeof RoomPlugin>;
-    logger: winston.Logger;
-
-    constructor(
-        public readonly worker: Worker
-    ) {
-        this.workerPlugins = new Map;
-        this.roomPlugins = new Map;
 
         this.logger = winston.createLogger({
             levels: {
@@ -123,9 +144,8 @@ export class PluginLoader {
                     format: winston.format.combine(
                         winston.format.splat(),
                         winston.format.colorize(),
-                        winston.format.label({ label: "plugin loader service" }),
                         winston.format.printf(info => {
-                            return `[${info.label}] ${info.level}: ${info.message}`;
+                            return `[${this.meta.id}] ${info.level}: ${info.message}`;
                         }),
                     ),
 
@@ -139,6 +159,18 @@ export class PluginLoader {
                 })
             ]
         });
+    }
+}
+
+export class PluginLoader {
+    workerPlugins: Map<string, typeof WorkerPlugin>;
+    roomPlugins: Map<string, typeof RoomPlugin>;
+
+    constructor(
+        public readonly worker: Worker
+    ) {
+        this.workerPlugins = new Map;
+        this.roomPlugins = new Map;
     }
 
     isHindenburgPlugin(someObject: any) {
@@ -176,11 +208,11 @@ export class PluginLoader {
         } catch (e) {
             if ((e as any).code !== undefined) {
                 if ((e as any).code === "ENOENT") {
-                    this.logger.warn("No package.json in plugin directory");
+                    this.worker.logger.warn("No package.json in plugin directory");
                     return;
                 }
 
-                this.logger.warn("Could not open package.json: %s", (e as any).code);
+                this.worker.logger.warn("Could not open package.json: %s", (e as any).code);
             }
             throw e;
         }
@@ -197,14 +229,14 @@ export class PluginLoader {
                 const pluginCtr = await this.importPlugin(pluginPath);
 
                 if (!pluginCtr) {
-                    this.logger.warn("Did not load plugin at '%s', as it was not a hindenburg plugin",
+                    this.worker.logger.warn("Did not load plugin at '%s', as it was not a hindenburg plugin",
                         pluginPath);
                     continue;
                 }
 
                 Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, pluginCtr);
             } catch (e) {
-                this.logger.warn("Could not import plugin '%s': %s", path.basename(pluginPath), e);
+                this.worker.logger.warn("Could not import plugin '%s': %s", path.basename(pluginPath), e);
                 throw e;
             }
         }
@@ -227,7 +259,7 @@ export class PluginLoader {
             if (this.isEnabled(importedPlugin.meta.id)) {
                 await this.loadPlugin(importedPlugin.meta.id);
             } else {
-                this.logger.warn("Skipping plugin '%s' because it is disabled", importedPlugin.meta.id);
+                this.worker.logger.warn("Skipping plugin '%s' because it is disabled", importedPlugin.meta.id);
             }
         }
     }
@@ -237,7 +269,7 @@ export class PluginLoader {
             if (this.isEnabled(importedPlugin.meta.id, room)) {
                 await this.loadPlugin(importedPlugin.meta.id, room);
             } else {
-                this.logger.warn("Skipping plugin '%s' for '%s' because it is disabled", importedPlugin.meta.id, room);
+                this.worker.logger.warn("Skipping plugin '%s' for '%s' because it is disabled", importedPlugin.meta.id, room);
             }
         }
     }
@@ -283,6 +315,31 @@ export class PluginLoader {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin);
             for (const chatCommand of pluginChatCommands) {
                 room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler);
+            }
+        }
+    }
+
+    private getReactorRpcHandlers(room: Room, reactorRpc: typeof BaseReactorRpcMessage) {
+        const cachedHandlers = room.reactorRpcHandlers.get(reactorRpc);
+        const handlers = cachedHandlers || [];
+        if (!cachedHandlers) {
+            room.reactorRpcs.set(`${reactorRpc.modId}:${reactorRpc.messageTag}`, reactorRpc);
+            room.reactorRpcHandlers.set(reactorRpc, handlers);
+        }
+        return handlers;
+    }
+
+    private applyReactorRpcHandlers(room: Room) {
+        room.reactorRpcHandlers.clear();
+        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+            for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
+                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler);
+            }
+        }
+
+        for (const [ , loadedPlugin ] of room.loadedPlugins) {
+            for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
+                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler);
             }
         }
     }
@@ -348,17 +405,24 @@ export class PluginLoader {
             ? new (pluginCtr as unknown as typeof WorkerPlugin)(this.worker, defaultConfig)
             : new (pluginCtr as unknown as typeof RoomPlugin)(room!, defaultConfig);
 
+        const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
+
+        for (const reactorRpcHandler of reactorRpcHandlers) {
+            void reactorRpcHandler;
+            // todo: reactor rpcs
+        }
+
         if (isRoomPlugin && room) {
             room.loadedPlugins.set(pluginCtr.meta.id, initPlugin as RoomPlugin);
             this.applyChatCommands(room);
+            this.applyReactorRpcHandlers(room);
 
-            this.logger.info("Loaded plugin '%s' for %s", pluginCtr.meta.id, room);
+            room.logger.info("Loaded plugin '%s'", pluginCtr.meta.id);
         }
 
         if (isWorkerPlugin) {
             const cliCommands = getPluginCliCommands(initPlugin);
             const messageHandlers = getPluginMessageHandlers(initPlugin);
-            const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
             const registeredMessages = getPluginRegisteredMessages(initPlugin);
 
             for (const commandInfo of cliCommands) {
@@ -385,18 +449,13 @@ export class PluginLoader {
                 });
             }
 
-            for (const reactorRpcHandler of reactorRpcHandlers) {
-                void reactorRpcHandler;
-                // todo: reactor rpcs
-            }
-
             initPlugin.loadedRegisteredMessages = [...registeredMessages];
 
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
 
             this.worker.loadedPlugins.set(pluginCtr.meta.id, initPlugin as WorkerPlugin);
-            this.logger.info("Loaded plugin '%s' globally", pluginCtr.meta.id);
+            this.worker.logger.info("Loaded plugin '%s' globally", pluginCtr.meta.id);
         }
 
         const eventListeners = getPluginEventListeners(initPlugin);

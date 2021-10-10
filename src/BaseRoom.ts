@@ -38,6 +38,7 @@ import {
 
 import {
     HostableEvents,
+    Networkable,
     PlayerData,
     PlayerDataResolvable,
     PlayerJoinEvent,
@@ -55,6 +56,7 @@ import { Worker } from "./Worker";
 import { Perspective, PresetFilter } from "./Perspective";
 
 import {
+    BaseReactorRpcMessage,
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
     RoomCreateEvent,
@@ -157,6 +159,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     saahWaitingFor: PlayerData|undefined;
 
     loadedPlugins: Map<string, RoomPlugin>;
+    reactorRpcHandlers: Map<typeof BaseReactorRpcMessage, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
+    reactorRpcs: Map<`${string}:${number}`, typeof BaseReactorRpcMessage>;
     chatCommandHandler: ChatCommandHandler;
 
     constructor(
@@ -185,6 +189,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.saahWaitingFor = undefined;
 
         this.loadedPlugins = new Map;
+        this.reactorRpcHandlers = new Map;
+        this.reactorRpcs = new Map;
         this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.hostId = this.config.serverAsHost
@@ -236,7 +242,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     if (e instanceof CommandCallError) {
                         await context.reply(e.message);
                     } else {
-                        this.worker.logger.error("Error while executing command %s: %s",
+                        this.logger.error("Error while executing command %s: %s",
                             ev.chatMessage, e);
                     }
                 }

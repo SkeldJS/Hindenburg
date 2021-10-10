@@ -75,7 +75,8 @@ import {
     ClientConnectEvent,
     RoomCreateEvent,
     RoomBeforeCreateEvent,
-    WorkerBeforeJoinEvent
+    WorkerBeforeJoinEvent,
+    BaseReactorRpcMessage
 } from "./api";
 
 import { PluginLoader, WorkerPlugin } from "./handlers";
@@ -88,6 +89,7 @@ import {
 } from "./packets";
 
 import i18n from "./i18n";
+import { Networkable } from "@skeldjs/core";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -133,6 +135,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     pluginLoader: PluginLoader;
 
     loadedPlugins: Map<string, WorkerPlugin>;
+    reactorRpcHandlers: Map<`${string}:${number}`, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
 
     /**
      * The UDP socket that all clients connect to.
@@ -209,7 +212,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         winston.format.colorize(),
                         winston.format.label({ label: this.config.clusterName + this.config.nodeId }),
                         winston.format.printf(info => {
-                            return `[${info.label}] ${info.level}: ${info.message}`;
+                            return `${info.level}: ${info.message}`;
                         }),
                     ),
 
@@ -226,6 +229,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.pluginLoader = new PluginLoader(this);
         this.loadedPlugins = new Map;
+        this.reactorRpcHandlers = new Map;
 
         this.socket = dgram.createSocket("udp4");
         this.socket.on("message", this.handleMessage.bind(this));
@@ -775,11 +779,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            /*const reactorRpc = message.data as unknown as ReactorRpcMessage;
-            if (reactorRpc.messageTag === 0xff) {
+            const reactorRpcMessage = message.data as unknown as ReactorRpcMessage;
+            if (reactorRpcMessage.messageTag === 0xff) {
                 message.cancel();
                 const componentNetId = message.netid;
-                const modNetId = reactorRpc.modNetId;
+                const modNetId = reactorRpcMessage.modNetId;
 
                 const component = sender.room?.netobjects.get(componentNetId);
                 const senderMod = sender.getModByNetId(modNetId);
@@ -797,18 +801,28 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 if (senderMod.networkSide === ModPluginSide.Clientside) {
-                    this.logger.warn("Got reactor rpc from %s for client-side-only reactor mod %s",
-                        sender, senderMod);
-
                     if (this.config.reactor && (this.config.reactor === true || this.config.reactor.blockClientSideOnly)) {
+                        this.logger.warn("Got reactor rpc from %s for client-side-only reactor mod %s",
+                            sender, senderMod);
+
                         return;
                     }
                 }
 
-                const rpcHandlers = this.pluginLoader.reactorRpcHandlers.get(`${senderMod.modId}:${reactorRpc.customRpc.messageTag}`);
+                const reactorRpc = player.room.reactorRpcs.get(`${senderMod.modId}:${reactorRpcMessage.customRpc.messageTag}`);
+
+                if (!reactorRpc) {
+                    this.logger.warn("Got unhandled reactor rpc message from %s for mod %s with message tag %s",
+                        sender, senderMod.modId, reactorRpcMessage.customRpc.messageTag);
+
+                    return;
+                }
+
+                const rpcHandlers = player.room.reactorRpcHandlers.get(reactorRpc);
                 if (rpcHandlers) {
-                    for (const handler of rpcHandlers) {
-                        handler(component, reactorRpc.customRpc);
+                    for (let i = 0; i < rpcHandlers.length; i++) {
+                        const handler = rpcHandlers[i];
+                        handler(component, reactorRpcMessage.customRpc);
                     }
                 }
 
@@ -835,12 +849,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             message.netid,
                             new ReactorRpcMessage(
                                 receiverMods.netId,
-                                reactorRpc.customRpc
+                                reactorRpcMessage.customRpc
                             )
                         )
                     ], undefined, [ receiveClient ]);
                 }
-            }*/
+            }
         });
 
         this.decoder.on(GameDataMessage, async (message, direction, { sender, reliable }) => {

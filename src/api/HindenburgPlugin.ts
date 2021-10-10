@@ -1,35 +1,34 @@
 import "reflect-metadata";
-import { hindenburgPluginDirectory, Plugin, PluginMeta } from "../handlers/PluginLoader";
+import { hindenburgPluginDirectory, Plugin, PluginMetadata } from "../handlers";
 
 export interface DeclaredPlugin {
-    new(...args: any[]): Plugin
+    new(...args: any[]): Plugin;
 }
 
 const hindenburgPluginKey = Symbol("hindenburg:plugin");
 
-export function HindenburgPlugin(meta: Partial<PluginMeta>) {
-    if (!meta.id) {
+export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
+    if (!id) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }
 
-    if (typeof meta.id !== "string") {
+    if (typeof id !== "string") {
         throw new TypeError("Expected 'id' to be a string in reverse domain name notation (com.example.myplugin).");
     }
 
-    const actualMeta: PluginMeta = {
-        id: "",
-        version: "1.0.0",
-        defaultConfig: {},
-        order: "none",
-        ...meta
+    const metadata: PluginMetadata = {
+        id,
+        version,
+        defaultConfig,
+        order
     };
 
     return function<T extends DeclaredPlugin>(constructor: T) {
         Reflect.defineMetadata(hindenburgPluginKey, true, constructor);
 
         const hookedClass = class extends constructor {
-            static meta = actualMeta;
-            meta = actualMeta;
+            static meta = metadata;
+            meta = metadata;
 
             constructor(...args: any) {
                 super(...args);

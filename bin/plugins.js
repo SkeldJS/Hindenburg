@@ -8,19 +8,15 @@ const resolveFrom = require("resolve-from");
 const { isHindenburgPlugin } = require("../src");
 const { runCommandInDir, createSpinner, stopSpinner } = require("./util");
 
-function createHelloWorldPlugin(pluginName, typescript) {
+function createHelloWorldPlugin(pluginName, workerPlugin, typescript) {
     return `import {
     HindenburgPlugin,
-    Plugin,
+    ${workerPlugin ? "WorkerPlugin" : "RoomPlugin"},
     EventListener${typescript ? ",\n    PlayerSetNameEvent,\n    Room" : ""}
 } from "@skeldjs/hindenburg";
 
-@HindenburgPlugin({
-    id: "${pluginName}",
-    version: "1.0.0",
-    order: "none"
-})
-export default class extends Plugin {
+@HindenburgPlugin("${pluginName}", "1.0.0", "none")
+export default class extends ${workerPlugin ? "WorkerPlugin" : "RoomPlugin"} {
     @EventListener("player.setname")
     onPlayerSetName(ev${typescript ? ": PlayerSetNameEvent<Room>" : ""}) {
         ev.room.sendChat("Hello, world!");
@@ -38,11 +34,10 @@ function readChar() {
         });
     });
 }
-
-async function getYesOrNo(question) {
+async function pressKeyForAnswer(question, keys) {
     let output;
     while (output === undefined) {
-        process.stdout.write(question + " (Y/N): ");
+        process.stdout.write(question + " (" + keys.join("/") + "): ");
         const char = await readChar();
 
         if (char === "\x03") {
@@ -50,10 +45,8 @@ async function getYesOrNo(question) {
             process.exit();
         }
 
-        if (char === "y" || char === "Y") {
-            output = true;
-        } else if (char === "n" || char === "N") {
-            output = false;
+        if (keys.includes(char.toUpperCase())) {
+            output = char.toUpperCase();
         } else {
             process.stdout.clearLine();
             process.stdout.cursorTo(0);
@@ -61,6 +54,10 @@ async function getYesOrNo(question) {
     }
     process.stdout.write("\n");
     return output;
+}
+
+async function getYesOrNo(question) {
+    return await pressKeyForAnswer(question, ["Y", "N"]) === "Y";
 }
 
 const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
@@ -261,7 +258,7 @@ async function getPackageInfo(packageName) {
         try {
             await fs.writeFile(
                 path.resolve(pluginDirectory, isTypescript ? "index.ts" : "index.js"),
-                createHelloWorldPlugin(pluginName, isTypescript),
+                createHelloWorldPlugin(pluginName, true, isTypescript),
                 "utf8"
             );
         } catch (e) {

@@ -377,7 +377,7 @@ export class PluginLoader {
         }
     }
 
-    async loadPlugin(pluginCtr: string|typeof Plugin, room?: Room): Promise<void> {
+    async loadPlugin(pluginCtr: string|typeof Plugin, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
         if (typeof pluginCtr === "string") {
             const _pluginCtr = room
                 ? this.roomPlugins.get(pluginCtr)
@@ -386,7 +386,7 @@ export class PluginLoader {
             if (!_pluginCtr) {
                 throw new Error("Plugin with ID '" + pluginCtr + "' not loaded.");
             }
-            return this.loadPlugin(_pluginCtr as unknown as typeof Plugin, room);
+            return await this.loadPlugin(_pluginCtr as unknown as typeof Plugin, room);
         }
 
         const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig);
@@ -474,6 +474,8 @@ export class PluginLoader {
         }
 
         await initPlugin.onPluginLoad();
+
+        return initPlugin;
     }
 
     async unloadPlugin(pluginCtr: string|Plugin|typeof Plugin, room?: Room) {

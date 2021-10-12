@@ -1,5 +1,5 @@
 import { PlayerData } from "@skeldjs/core";
-import { Color } from "@skeldjs/constant";
+import { Color, Hat, Skin } from "@skeldjs/constant";
 
 export enum MessageSide {
     Left,
@@ -64,4 +64,26 @@ export interface SendChatOptions {
      * ```
      */
     color: Color;
+    /**
+     * The skin that the player should be wearing in the chat message.
+     * @example
+     * ```ts
+     * ev.room.sendChat("looking for salvation in a secular age", {
+     *   name: "the 1975",
+     *   skin: Skin.Prisoner
+     * })
+     * ```
+     */
+    skin: Skin;
+    /**
+     * The hat that the player should be wearing in the chat message.
+     * @example
+     * ```ts
+     * ev.room.sendChat("I'm a cowboy baby", {
+     *   name: "Cowboy",
+     *   hat: Hat.TenGallonHat
+     * })
+     * ```
+     */
+    hat: Hat;
 }

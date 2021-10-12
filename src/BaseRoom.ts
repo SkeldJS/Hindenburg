@@ -8,6 +8,8 @@ import {
     GameMap,
     GameOverReason,
     GameState,
+    Hat,
+    Skin,
     SpawnType
 } from "@skeldjs/constant";
 
@@ -30,7 +32,9 @@ import {
     RpcMessage,
     SendChatMessage,
     SetColorMessage,
+    SetHatMessage,
     SetNameMessage,
+    SetSkinMessage,
     StartGameMessage,
     UnreliablePacket,
     WaitForHostMessage
@@ -1147,6 +1151,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         const oldName = sendPlayer.info.name;
         const oldColor = sendPlayer.info.color;
+        const oldHat = sendPlayer.info.hat;
+        const oldSkin = sendPlayer.info.skin;
         await this.broadcast([
             new RpcMessage(
                 sendPlayer.control.netId,
@@ -1155,6 +1161,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             new RpcMessage(
                 sendPlayer.control.netId,
                 new SetColorMessage(options.color)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetHatMessage(options.hat)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetSkinMessage(options.skin)
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
@@ -1167,6 +1181,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             new RpcMessage(
                 sendPlayer.control.netId,
                 new SetColorMessage(oldColor)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetHatMessage(oldHat)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetSkinMessage(oldSkin)
             )
         ], true, player);
     }
@@ -1208,6 +1230,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             targets: undefined,
             name: "<color=yellow>[Server]</color>",
             color: Color.Yellow,
+            hat: Hat.None,
+            skin: Skin.None,
             ...options
         };
 
@@ -1217,7 +1241,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             for (const player of defaultOptions.targets) {
                 promises.push(this._sendChatFor(player, message, defaultOptions));
             }
-            await Promise.all(promises);
         } else {
             for (const [ , player ] of this.players) {
                 promises.push(this._sendChatFor(player, message, defaultOptions));

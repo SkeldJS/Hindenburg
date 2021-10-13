@@ -101,8 +101,13 @@ function createDefaultConfig() {
                 hat: "None",
                 skin: "None"
             }
+<<<<<<< HEAD
         }
 >>>>>>> 3964371 (Add option in config to modify the server player)
+=======
+        },
+        exitConfirmation: true
+>>>>>>> 1c0a627 (Add exitConfirmation)
     };
 }
 

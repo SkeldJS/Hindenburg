@@ -178,7 +178,7 @@ export class PluginLoader {
     }
 
     isWorkerPlugin(pluginCtr: typeof Plugin) {
-        let currentCtr = pluginCtr;
+        let currentCtr: Function | {} = pluginCtr;
         while(currentCtr != {}) {
             currentCtr = Object.getPrototypeOf(currentCtr);
             if(currentCtr === WorkerPlugin) return true;
@@ -188,7 +188,7 @@ export class PluginLoader {
 
 
     isRoomPlugin(pluginCtr: typeof Plugin) {
-        let currentCtr = pluginCtr;
+        let currentCtr: Function | {} = pluginCtr;
         while(currentCtr != {}) {
             currentCtr = Object.getPrototypeOf(currentCtr);
             if(currentCtr === RoomPlugin) return true;

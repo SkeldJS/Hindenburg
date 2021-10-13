@@ -349,4 +349,9 @@ export interface HindenburgConfig {
      * Configuration for rooms, such as enabling/disabling features
      */
     rooms: RoomsConfig;
+    /**
+     * Confirmation to exit the application when you press Ctrl+C
+     * @default true
+     */
+    exitConfirmation: boolean;
 }

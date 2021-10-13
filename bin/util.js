@@ -96,7 +96,8 @@ function createDefaultConfig() {
                 hat: "None",
                 skin: "None"
             }
-        }
+        },
+        exitConfirmation: true
     };
 }
 

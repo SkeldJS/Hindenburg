@@ -178,12 +178,22 @@ export class PluginLoader {
     }
 
     isWorkerPlugin(pluginCtr: typeof Plugin) {
-        return Object.getPrototypeOf(Object.getPrototypeOf(pluginCtr)) === WorkerPlugin;
+        let currentCtr = pluginCtr;
+        while(currentCtr != {}) {
+            currentCtr = Object.getPrototypeOf(currentCtr);
+            if(currentCtr === WorkerPlugin) return true;
+        }
+        return false;
     }
 
 
     isRoomPlugin(pluginCtr: typeof Plugin) {
-        return Object.getPrototypeOf(Object.getPrototypeOf(pluginCtr)) === RoomPlugin;
+        let currentCtr = pluginCtr;
+        while(currentCtr != {}) {
+            currentCtr = Object.getPrototypeOf(currentCtr);
+            if(currentCtr === RoomPlugin) return true;
+        }
+        return false;
     }
 
     async importFromDirectory(pluginDirectory: string) {

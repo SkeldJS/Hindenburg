@@ -178,21 +178,25 @@ export class PluginLoader {
         return isHindenburgPlugin(someObject);
     }
 
-    isWorkerPlugin(pluginCtr: typeof Plugin) {
-        let currentCtr: Function | {} = pluginCtr;
-        while(currentCtr && currentCtr !== {}) {
+    isWorkerPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof WorkerPlugin {
+        let currentCtr: typeof WorkerPlugin|typeof RoomPlugin = pluginCtr;
+        while (currentCtr !== null) {
             currentCtr = Object.getPrototypeOf(currentCtr);
-            if(currentCtr === WorkerPlugin) return true;
+
+            if (currentCtr === WorkerPlugin)
+                return true;
         }
         return false;
     }
 
 
-    isRoomPlugin(pluginCtr: typeof Plugin) {
-        let currentCtr: Function | {} = pluginCtr;
-        while(currentCtr && currentCtr !== {}) {
+    isRoomPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof RoomPlugin {
+        let currentCtr: typeof WorkerPlugin|typeof RoomPlugin = pluginCtr;
+        while (currentCtr !== null) {
             currentCtr = Object.getPrototypeOf(currentCtr);
-            if(currentCtr === RoomPlugin) return true;
+
+            if (currentCtr === RoomPlugin)
+                return true;
         }
         return false;
     }
@@ -286,13 +290,13 @@ export class PluginLoader {
         }
     }
 
-    async importPlugin(pluginPath: string): Promise<typeof Plugin|false> {
+    async importPlugin(pluginPath: string): Promise<typeof WorkerPlugin|typeof RoomPlugin|false> {
         if (!path.isAbsolute(pluginPath)) {
             throw new Error("Expected an absolute path to a plugin but got a relative one.");
         }
 
         delete require.cache[require.resolve(pluginPath)];
-        const { default: pluginCtr } = await import(pluginPath) as { default: typeof Plugin };
+        const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
         if (!this.isHindenburgPlugin(pluginCtr))
             return false;
@@ -389,7 +393,9 @@ export class PluginLoader {
         }
     }
 
-    async loadPlugin(pluginCtr: string|typeof Plugin, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
+    async loadPlugin(pluginCtr: string|typeof WorkerPlugin): Promise<WorkerPlugin>;
+    async loadPlugin(pluginCtr: string|typeof RoomPlugin, room?: Room): Promise<RoomPlugin>;
+    async loadPlugin(pluginCtr: string|typeof WorkerPlugin|typeof RoomPlugin, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
         if (typeof pluginCtr === "string") {
             const _pluginCtr = room
                 ? this.roomPlugins.get(pluginCtr)
@@ -398,7 +404,11 @@ export class PluginLoader {
             if (!_pluginCtr) {
                 throw new Error("Plugin with ID '" + pluginCtr + "' not loaded.");
             }
-            return await this.loadPlugin(_pluginCtr as unknown as typeof Plugin, room);
+            if (this.isRoomPlugin(_pluginCtr)) {
+                return await this.loadPlugin(_pluginCtr, room);
+            } else {
+                return await this.loadPlugin(_pluginCtr);
+            }
         }
 
         const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig);
@@ -490,7 +500,9 @@ export class PluginLoader {
         return initPlugin;
     }
 
-    async unloadPlugin(pluginCtr: string|Plugin|typeof Plugin, room?: Room) {
+    unloadPlugin(pluginCtr: string|WorkerPlugin|typeof WorkerPlugin): void;
+    unloadPlugin(pluginCtr: string|RoomPlugin|typeof RoomPlugin, room: Room): void;
+    unloadPlugin(pluginCtr: string|RoomPlugin|typeof RoomPlugin|WorkerPlugin|typeof WorkerPlugin, room?: Room) {
         const pluginId = typeof pluginCtr === "string"
             ? pluginCtr
             : pluginCtr.meta.id;

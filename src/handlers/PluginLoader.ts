@@ -23,7 +23,8 @@ import {
     getPluginRegisteredMessages,
     isHindenburgPlugin,
     BaseReactorRpcMessage,
-    MessageHandlerOptions
+    MessageHandlerOptions,
+    shouldPreventLoading
 } from "../api";
 
 import { VorpalConsole } from "../util/VorpalConsoleTransport";
@@ -252,12 +253,17 @@ export class PluginLoader {
         }
     }
 
-    isEnabled(pluginId: string, room?: Room) {
-        if (this.worker.config.plugins[pluginId] === false) {
+    isEnabled(pluginId: typeof WorkerPlugin): boolean;
+    isEnabled(pluginId: typeof RoomPlugin, room: Room): boolean;
+    isEnabled(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, room?: Room) {
+        if (shouldPreventLoading(pluginClass))
+            return;
+
+        if (this.worker.config.plugins[pluginClass.meta.id] === false) {
             return false;
         }
 
-        if (room && !room.config.plugins[pluginId] === false) {
+        if (room && !room.config.plugins[pluginClass.meta.id] === false) {
             return false;
         }
 
@@ -266,20 +272,16 @@ export class PluginLoader {
 
     async loadAllWorkerPlugins() { // todo: plugin load ordering
         for (const [ , importedPlugin ] of this.workerPlugins) {
-            if (this.isEnabled(importedPlugin.meta.id)) {
+            if (this.isEnabled(importedPlugin)) {
                 await this.loadPlugin(importedPlugin.meta.id);
-            } else {
-                this.worker.logger.warn("Skipping plugin '%s' because it is disabled", importedPlugin.meta.id);
             }
         }
     }
 
     async loadAllRoomPlugins(room: Room) {
         for (const [ , importedPlugin ] of this.roomPlugins) {
-            if (this.isEnabled(importedPlugin.meta.id, room)) {
+            if (this.isEnabled(importedPlugin, room)) {
                 await this.loadPlugin(importedPlugin.meta.id, room);
-            } else {
-                this.worker.logger.warn("Skipping plugin '%s' for '%s' because it is disabled", importedPlugin.meta.id, room);
             }
         }
     }

@@ -89,7 +89,8 @@ function createDefaultConfig() {
         rooms: {
             chatCommands: true,
             gameCodes: "v2"
-        }
+        },
+        exitConfirmation: true
     };
 }
 

@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
-import { Deserializable } from "@skeldjs/protocol";
-import { Networkable } from "@skeldjs/core";
+import { Deserializable, RpcMessage } from "@skeldjs/protocol";
+import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
 
 import path from "path";
 import util from "util";
@@ -31,6 +31,7 @@ import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { recursiveClone } from "../util/recursiveClone";
 import { recursiveAssign } from "../util/recursiveAssign";
 import { RoomEvents } from "../BaseRoom";
+import { ReactorRpcMessage } from "../packets";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
@@ -79,6 +80,41 @@ export class Plugin {
     async onPluginLoad() {}
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     onPluginUnload() {}
+
+    async sendReactorRpc(component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
+        if (!rpc.modId)
+            throw new TypeError("Bad reactor rpc: expected modId property.");
+
+        if (typeof component.room.worker.config.reactor !== "boolean") {
+            const modConfig = component.room.worker.config.reactor.mods[rpc.modId];
+            if (typeof modConfig === "object") {
+                if (modConfig.doNetworking === false) { // doNetworking can be undefined and is defaulted to true
+                    return;
+                }
+            }
+        }
+
+        for (const [ , player ] of target ? [ [ target, target ]] : component.room.players) { // cheap way to do the same thing for whether a target is specified or not
+            const playerConnection = component.room.connections.get(player.clientId);
+
+            if (playerConnection) {
+                const targetMod = playerConnection.mods.get(rpc.modId);
+
+                if (!targetMod)
+                    continue;
+
+                await player.room.broadcast([
+                    new RpcMessage(
+                        component.netId,
+                        new ReactorRpcMessage(
+                            targetMod.netId,
+                            rpc
+                        )
+                    )
+                ], true, player);
+            }
+        }
+    }
 }
 
 export class RoomPlugin extends Plugin {
@@ -288,6 +324,8 @@ export class PluginLoader {
                 await this.loadPlugin(importedPlugin.meta.id, room);
             }
         }
+        this.applyChatCommands(room);
+        this.applyReactorRpcHandlers(room);
     }
 
     async importPlugin(pluginPath: string): Promise<typeof WorkerPlugin|typeof RoomPlugin|false> {
@@ -323,14 +361,14 @@ export class PluginLoader {
         for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin);
             for (const chatCommand of pluginChatCommands) {
-                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler);
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler.bind(loadedPlugin));
             }
         }
 
         for (const [ , loadedPlugin ] of room.loadedPlugins) {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin);
             for (const chatCommand of pluginChatCommands) {
-                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler);
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler.bind(loadedPlugin));
             }
         }
     }
@@ -349,13 +387,13 @@ export class PluginLoader {
         room.reactorRpcHandlers.clear();
         for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
-                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler);
+                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
             }
         }
 
         for (const [ , loadedPlugin ] of room.loadedPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
-                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler);
+                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
             }
         }
     }
@@ -430,8 +468,7 @@ export class PluginLoader {
         const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
 
         for (const reactorRpcHandler of reactorRpcHandlers) {
-            void reactorRpcHandler;
-            // todo: reactor rpcs
+            initPlugin.loadedReactorRpcHandlers.push(reactorRpcHandler);
         }
 
         if (isRoomPlugin && room) {

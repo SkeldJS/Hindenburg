@@ -155,7 +155,7 @@ export class RegisteredChatCommand {
 
             if (!consume) {
                 if (param.required) {
-                    throw new CommandCallError("Usage: <color=#12a50a>" + this.createUsage() + "</color>\n<color=#f7584e>Missing: " + param.name + "</color>\n\n" + this.description);
+                    throw new CommandCallError("Usage: " + this.createUsage() + "\nMissing '" + param.name + "'\n\n" + this.description);
                 }
                 return parsed; // No more arguments are left to consume
             }

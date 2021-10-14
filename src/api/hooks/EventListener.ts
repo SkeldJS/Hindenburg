@@ -1,5 +1,5 @@
 import { BasicEvent } from "@skeldjs/events";
-import { Plugin } from "../../handlers";
+import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers";
 import { WorkerEvents } from "../../Worker";
 
 const hindenburgEventListenersKey = Symbol("hindenburg:events");
@@ -17,7 +17,7 @@ export function EventListener<EventName extends keyof WorkerEvents>(eventName: E
             (ev: WorkerEvents[EventName]) => any
         >
     ) => any;
-export function EventListener<EventName extends keyof WorkerEvents>(pluginClass: typeof Plugin, eventName: EventName) :
+export function EventListener<EventName extends keyof WorkerEvents>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, eventName: EventName) :
     (
         target: any,
         propertyKey: string,
@@ -33,7 +33,7 @@ export function EventListener(eventName: string) :
             (ev: any) => any
         >
     ) => any;
-export function EventListener(pluginClass: typeof Plugin, eventName: string) :
+export function EventListener(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, eventName: string) :
     (
         target: any,
         propertyKey: string,
@@ -41,7 +41,23 @@ export function EventListener(pluginClass: typeof Plugin, eventName: string) :
             (ev: any) => any
         >
     ) => any;
-export function EventListener(pluginClassOrEventName: any, eventName?: any) {
+export function EventListener() :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<
+            (ev: any) => any
+        >
+    ) => any;
+export function EventListener(pluginClass: typeof WorkerPlugin|typeof RoomPlugin) :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<
+            (ev: any) => any
+        >
+    ) => any;
+export function EventListener(pluginClassOrEventName?: any, eventName?: any) {
     return function (
         target: any,
         propertyKey: string,
@@ -52,9 +68,16 @@ export function EventListener(pluginClassOrEventName: any, eventName?: any) {
         if (!descriptor.value)
             return;
 
-        const actualTarget = typeof pluginClassOrEventName === "string"
-            ? target
-            : pluginClassOrEventName.prototype;
+        const actualTarget = typeof pluginClassOrEventName === "function"
+            ? pluginClassOrEventName.prototype
+            : target;
+
+        const paramType = Reflect.getMetadata("design:paramtypes", target, propertyKey)?.[0] as typeof BasicEvent|undefined;
+        const actualEventName = paramType?.eventName || eventName || pluginClassOrEventName;
+
+        if (!actualEventName) {
+            throw new Error("No event name passed for event emitter, if you're in typescript, make sure 'emitDecoratorMetadata' is enabled in your tsconfig.json");
+        }
 
         const cachedSet: PluginRegisteredEventListenerInfo[]|undefined = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
         const eventListeners = cachedSet || [];
@@ -64,7 +87,7 @@ export function EventListener(pluginClassOrEventName: any, eventName?: any) {
 
         eventListeners.push({
             handler: descriptor.value,
-            eventName: eventName || pluginClassOrEventName
+            eventName: actualEventName
         });
     };
 }

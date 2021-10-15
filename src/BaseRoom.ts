@@ -1232,10 +1232,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const defaultOptions: SendChatOptions = {
             side: MessageSide.Left,
             targets: undefined,
-            name: this.config.serverPlayer?.name || "<color=yellow>[Server]</color>",
-            color: colorMap[this.config.serverPlayer?.color || "Yellow"],
-            hat: hatMap[this.config.serverPlayer?.hat || "None"],
-            skin: skinMap[this.config.serverPlayer?.skin || "None"],
+            name: this.config.serverPlayer.name || "<color=yellow>[Server]</color>",
+            color: colorMap[this.config.serverPlayer.color || "Yellow"],
+            hat: hatMap[this.config.serverPlayer.hat || "None"],
+            skin: skinMap[this.config.serverPlayer.skin || "None"],
             ...options
         };
 

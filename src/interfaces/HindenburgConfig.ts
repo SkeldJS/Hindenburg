@@ -1,5 +1,5 @@
 import { AllGameSettings } from "@skeldjs/protocol";
-import { Color, Hat, Skin } from "..";
+import { Color, Hat, Skin } from "@skeldjs/constant";
 
 export interface AnticheatPenalty {
     /**
@@ -274,7 +274,7 @@ export interface RoomsConfig {
     /**
      * Default appearance for a message sent by the server in game chat
      */
-    serverPlayer?: ServerPlayerOptions
+    serverPlayer: ServerPlayerOptions
 }
 
 export interface ServerPlayerOptions {

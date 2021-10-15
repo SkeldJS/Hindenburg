@@ -89,9 +89,20 @@ function createDefaultConfig() {
         rooms: {
             chatCommands: true,
             plugins: {},
+<<<<<<< HEAD
             gameCodes: "v2"
         },
         exitConfirmation: true
+=======
+            gameCodes: "v2",
+            serverPlayer: {
+                name: "<color=yellow>[Server]</color>",
+                color: "Yellow",
+                hat: "None",
+                skin: "None"
+            }
+        }
+>>>>>>> 3964371 (Add option in config to modify the server player)
     };
 }
 

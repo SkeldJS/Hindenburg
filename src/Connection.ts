@@ -73,9 +73,9 @@ export const locales = {
     [Language.German]: "de",
     [Language.Italian]: "it",
     [Language.Japanese]: "ja",
-    [Language.Spanish]: "es",
-    [Language.ChineseSimplified]: "zh-CN",
-    [Language.ChineseTraditional]: "zh-CN",
+    [Language.Spanish]: "es_ES",
+    [Language.ChineseSimplified]: "zh",
+    [Language.ChineseTraditional]: "zh",
     [Language.Irish]: "ga"
 };
 

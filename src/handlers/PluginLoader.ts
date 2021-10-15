@@ -77,9 +77,9 @@ export class Plugin {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    async onPluginLoad() {}
+    onPluginLoad(): any {}
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onPluginUnload() {}
+    onPluginUnload(): any {}
 
     async sendReactorRpc(component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, target?: PlayerData): Promise<void> {
         if (!rpc.modId)
@@ -118,11 +118,15 @@ export class Plugin {
 }
 
 export class RoomPlugin extends Plugin {
+    public readonly worker: Worker;
+
     constructor(
         public readonly room: Room,
         public readonly config: any
     ) {
         super(config);
+
+        this.worker = room.worker;
 
         this.logger = winston.createLogger({
             levels: {
@@ -404,8 +408,7 @@ export class PluginLoader {
         this.worker.decoder.listeners = listeners;
         this.worker.registerMessages();
 
-        const loadedPluginsArr = [...this.worker.loadedPlugins];
-        for (const [ , loadedPlugin ] of loadedPluginsArr) {
+        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             for (let i = 0; i <  loadedPlugin.loadedRegisteredMessages.length; i++) {
                 const messageClass = loadedPlugin.loadedRegisteredMessages[i];
                 this.worker.decoder.register(messageClass);
@@ -421,7 +424,7 @@ export class PluginLoader {
         for (let i = 0; i < loadedPluginsArr.length; i++) {
             const [, loadedPlugin ] = loadedPluginsArr[i];
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
-                const  { messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
+                const { messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
                 if (options.override) {
                     this.worker.decoder.listeners.delete(`${messageCtr.messageType}:${messageCtr.messageTag}`);
                 }
@@ -482,7 +485,7 @@ export class PluginLoader {
         if (isWorkerPlugin) {
             const cliCommands = getPluginCliCommands(initPlugin);
             const messageHandlers = getPluginMessageHandlers(initPlugin);
-            const registeredMessages = getPluginRegisteredMessages(initPlugin);
+            const registeredMessages = getPluginRegisteredMessages(pluginCtr);
 
             for (const commandInfo of cliCommands) {
                 const command = this.worker.vorpal.command(commandInfo.command.usage, commandInfo.command.description);
@@ -510,10 +513,11 @@ export class PluginLoader {
 
             initPlugin.loadedRegisteredMessages = [...registeredMessages];
 
+            this.worker.loadedPlugins.set(pluginCtr.meta.id, initPlugin as WorkerPlugin);
+
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
 
-            this.worker.loadedPlugins.set(pluginCtr.meta.id, initPlugin as WorkerPlugin);
             this.worker.logger.info("Loaded plugin '%s' globally", pluginCtr.meta.id);
         }
 

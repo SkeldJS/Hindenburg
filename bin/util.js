@@ -89,7 +89,13 @@ function createDefaultConfig() {
         rooms: {
             chatCommands: true,
             plugins: {},
-            gameCodes: "v2"
+            gameCodes: "v2",
+            serverPlayer: {
+                name: "<color=yellow>[Server]</color>",
+                color: "Yellow",
+                hat: "None",
+                skin: "None"
+            }
         }
     };
 }

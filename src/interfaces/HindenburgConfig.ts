@@ -1,4 +1,5 @@
 import { AllGameSettings } from "@skeldjs/protocol";
+import { Color, Hat, Skin } from "@skeldjs/constant";
 
 export interface AnticheatPenalty {
     /**
@@ -270,6 +271,29 @@ export interface RoomsConfig {
      * @default false
      */
     serverAsHost: boolean;
+    /**
+     * Default appearance for a message sent by the server in game chat
+     */
+    serverPlayer: ServerPlayerOptions
+}
+
+export interface ServerPlayerOptions {
+    /**
+     * The name of the player for a message sent by the server in game chat
+     */
+    name?: string;
+    /**
+     * The color of the player for a message sent by the server in game chat
+     */
+    color?: string;
+    /**
+     * The hat of the player for a message sent by the server in game chat
+     */
+    hat?: string;
+    /**
+     * The skin of the player for a message sent by the server in game chat
+     */
+    skin?: string;
 }
 
 export interface HindenburgConfig {

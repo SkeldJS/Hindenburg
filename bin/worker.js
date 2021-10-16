@@ -37,8 +37,9 @@ async function resolveConfig() {
 }
 
 function checkForPortArgument() {
-    if(process.argv[2] !== '--port') return;
-    const portString = process.argv[3];
+    const portIdx = process.argv.indexOf('--port');
+    if(portIdx === -1) return;
+    const portString = process.argv[portIdx + 1];
     if(!portString) return;
     const port = Number.parseInt(portString);
     if(!Number.isInteger(port) || Number.isNaN(port)) return;

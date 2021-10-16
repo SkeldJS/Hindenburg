@@ -162,13 +162,13 @@ async function getInternalIp() {
         }
     }
 
-    const worker = checkForPortArgument() || new Worker("TEST", 0, workerConfig);
+    const worker = new Worker("TEST", 0, workerConfig);
 
     if (!resolvedConfig) {
         worker.logger.warn("Cannot open config file; using default config");
     }
 
-    const port = worker.config.socket.port;
+    const port = checkForPortArgument() || worker.config.socket.port;
     await worker.listen(port);
 
     worker.logger.info("Listening on:");

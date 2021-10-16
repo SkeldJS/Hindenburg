@@ -192,7 +192,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal = new vorpal;
 
         if (!this.config.exitConfirmation)
-            this.vorpal.sigint(process.exit)
+            this.vorpal.sigint(process.exit);
 
         this.logger = winston.createLogger({
             levels: {

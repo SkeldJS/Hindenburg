@@ -1,6 +1,6 @@
 import { Deserializable, GetSerialized } from "@skeldjs/protocol";
 import { PacketContext } from "../../Worker";
-import { Plugin } from "../../handlers/PluginLoader";
+import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers/PluginLoader";
 
 const hindenburgMessageHandlersKey = Symbol("hindenburg:message");
 
@@ -26,13 +26,13 @@ export function MessageHandler<T extends Deserializable>(messageClass: T, option
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<MessageHandlerCallback<T>>
     ) => any;
-export function MessageHandler<T extends Deserializable>(pluginClass: typeof Plugin, messageClass: T, options: Partial<MessageHandlerOptions>):
+export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options: Partial<MessageHandlerOptions>):
     (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<MessageHandlerCallback<T>>
     ) => any;
-export function MessageHandler<T extends Deserializable>(pluginClassOrMessageClass: typeof Plugin|T, messageClassOrOptions: T|Partial<MessageHandlerOptions>, _options?: Partial<MessageHandlerOptions>) {
+export function MessageHandler<T extends Deserializable>(pluginClassOrMessageClass: typeof WorkerPlugin|typeof RoomPlugin|T, messageClassOrOptions: T|Partial<MessageHandlerOptions>, _options?: Partial<MessageHandlerOptions>) {
     return function (
         target: any,
         propertyKey: string,

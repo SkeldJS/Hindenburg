@@ -1,5 +1,5 @@
 import { Deserializable } from "@skeldjs/protocol";
-import { Plugin } from "../../handlers";
+import { WorkerPlugin, RoomPlugin } from "../../handlers";
 
 const hindenburgRegisterMessageKey = Symbol("hindenburg:registermessage");
 
@@ -15,6 +15,6 @@ export function RegisterMessage<T extends Deserializable>(deserializable: T) {
     };
 }
 
-export function getPluginRegisteredMessages(pluginCtr: typeof Plugin|Plugin): Deserializable[] {
+export function getPluginRegisteredMessages(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): Deserializable[] {
     return Reflect.getMetadata(hindenburgRegisterMessageKey, pluginCtr) || [];
 }

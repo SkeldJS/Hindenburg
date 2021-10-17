@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import winston from "winston";
 
 import {
     AlterGameTag,
@@ -85,6 +84,7 @@ import {
 
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
+import { Logger } from "./logger";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: PlayerData<BaseRoom>) {
@@ -152,7 +152,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     /**
      * This room's console logger.
      */
-    logger!: winston.Logger;
+    logger!: Logger;
 
     /**
      * All IP addresses banned from this room.
@@ -1225,13 +1225,17 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (!this.gameData)
             throw new TypeError("No gamedata spawned.");
 
+        const colorMap = Color as any as {[key: string]: Color};
+        const hatMap = Hat as any as {[key: string]: Hat};
+        const skinMap = Skin as any as {[key: string]: Skin};
+
         const defaultOptions: SendChatOptions = {
             side: MessageSide.Left,
             targets: undefined,
-            name: "<color=yellow>[Server]</color>",
-            color: Color.Yellow,
-            hat: Hat.None,
-            skin: Skin.None,
+            name: this.config.serverPlayer.name || "<color=yellow>[Server]</color>",
+            color: colorMap[this.config.serverPlayer.color || "Yellow"],
+            hat: hatMap[this.config.serverPlayer.hat || "None"],
+            skin: skinMap[this.config.serverPlayer.skin || "None"],
             ...options
         };
 

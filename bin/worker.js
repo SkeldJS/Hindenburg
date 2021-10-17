@@ -36,6 +36,63 @@ async function resolveConfig() {
     }
 }
 
+function parseCommmandLine(config) {
+    const argv = process.argv.slice(2);
+    for (let i = 0; i < argv.length; i++) {
+        if (argv[i].startsWith("--")) {
+            const configPath = argv[i].substr(2);
+            const cmdValue = argv[i + 1];
+
+            if (!cmdValue) {
+                continue;
+            }
+
+            const configValue = JSON.parse(cmdValue);
+
+            const pathParts = [];
+            let acc = "";
+            for (let i = 0; i < configPath.length; i++) {
+                if (configPath[i] === ".") {
+                    if (acc) {
+                        pathParts.push(acc);
+                        acc = "";
+                    }
+                } else if (configPath[i] === "[") {
+                    pathParts.push(acc);
+                    acc = "";
+                    let computed = "";
+                    for (let j = i + 1; j < configPath.length; j++) {
+                        if (configPath[j] === "]") {
+                            i = j;
+                            break;
+                        }
+
+                        computed += configPath[j];
+                    }
+                    acc += computed;
+                } else {
+                    acc += configPath[i];
+                }
+            }
+            if (acc) {
+                pathParts.push(acc);
+                acc = "";
+            }
+
+            let curObj = config;
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                if (typeof curObj[pathParts[i]] !== "object") {
+                    curObj[pathParts[i]] = {};
+                }
+
+                curObj = curObj[pathParts[i]];
+            }
+
+            curObj[pathParts[pathParts.length - 1]] = configValue;
+        }
+    }
+}
+
 function makeHttpRequest(url) {
     return new Promise((resolve, reject) => {
         const req = https.get(url, res => {
@@ -115,6 +172,7 @@ async function getInternalIp() {
     const resolvedConfig = await resolveConfig();
     recursiveAssign(workerConfig, resolvedConfig || {});
     await fixConfig(workerConfig);
+    parseCommmandLine(workerConfig);
 
     if (workerConfig.autoUpdate) {
         const versionSpinner = createSpinner("Checking for updates..");
@@ -168,7 +226,8 @@ async function getInternalIp() {
         }
     }
 
-    const worker = new Worker("TEST", 0, workerConfig);
+    const pluginDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
+    const worker = new Worker("TEST", 0, workerConfig, pluginDirectory);
 
     if (!resolvedConfig) {
         worker.logger.warn("Cannot open config file; using default config");
@@ -186,9 +245,7 @@ async function getInternalIp() {
     worker.logger.info(chalk.grey`   Local: ${chalk.white("127.0.0.1")}:${port}`);
 
     if (worker.config.plugins.loadDirectory) {
-        const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
-
-        await worker.pluginLoader.importFromDirectory(pluginsDirectory);
+        await worker.pluginLoader.importFromDirectory();
         await worker.pluginLoader.loadAllWorkerPlugins();
     }
 
@@ -203,7 +260,8 @@ async function getInternalIp() {
             const workerConfig = createDefaultConfig();
             const updatedConfig = JSON.parse(await fs.promises.readFile(configFile, "utf8"));
             recursiveAssign(workerConfig, updatedConfig || {});
-            fixConfig(workerConfig);
+            await fixConfig(workerConfig);
+            parseCommmandLine(workerConfig);
 
             worker.updateConfig(workerConfig);
         } catch (e) {

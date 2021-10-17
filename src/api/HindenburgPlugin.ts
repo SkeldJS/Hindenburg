@@ -1,11 +1,17 @@
 import "reflect-metadata";
-import { hindenburgPluginDirectory, Plugin, PluginMetadata } from "../handlers";
+
+import {
+    hindenburgPluginDirectory,
+    Plugin,
+    PluginMetadata
+} from "../handlers";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin;
 }
 
 const hindenburgPluginKey = Symbol("hindenburg:plugin");
+const hindenburgPreventLoad = Symbol("hindenburg:preventload");
 
 export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
     if (!id) {
@@ -41,6 +47,14 @@ export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"
     };
 }
 
+export function PreventLoad(target: any) {
+    Reflect.defineMetadata(hindenburgPreventLoad, 1, target);
+}
+
 export function isHindenburgPlugin(object: any)  {
     return Reflect.hasMetadata(hindenburgPluginKey, object);
+}
+
+export function shouldPreventLoading(object: any) {
+    return Reflect.hasMetadata(hindenburgPreventLoad, object);
 }

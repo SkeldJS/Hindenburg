@@ -10,6 +10,7 @@ import fs from "fs/promises";
 import winston from "winston";
 import vorpal from "vorpal";
 import resolvePkg from "resolve-pkg";
+import chalk from "chalk";
 
 import { Worker, WorkerEvents } from "../Worker";
 import { Room } from "../Room";
@@ -74,6 +75,10 @@ export class Plugin {
         this.loadedMessageHandlers = [];
         this.loadedReactorRpcHandlers = [];
         this.loadedRegisteredMessages = [];
+    }
+
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+        return chalk.green(this.meta.id) + chalk.grey("@v" + this.meta.version);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -208,7 +213,8 @@ export class PluginLoader {
     roomPlugins: Map<string, typeof RoomPlugin>;
 
     constructor(
-        public readonly worker: Worker
+        public readonly worker: Worker,
+        public readonly pluginDirectory: string
     ) {
         this.workerPlugins = new Map;
         this.roomPlugins = new Map;
@@ -241,20 +247,35 @@ export class PluginLoader {
         return false;
     }
 
-    async importFromDirectory(pluginDirectory: string) {
-        if (!path.isAbsolute(pluginDirectory)) {
+    async importFromId(id: string) {
+        const resolvedPkg = resolvePkg(id, { cwd: this.pluginDirectory });
+
+        const pluginPath = resolvedPkg
+            || path.resolve(this.pluginDirectory, "./" + id);
+
+        const pluginCtr = await this.importPlugin(pluginPath);
+
+        if (!pluginCtr) {
+            return false;
+        }
+
+        return true;
+    }
+
+    async importFromDirectory() {
+        if (!path.isAbsolute(this.pluginDirectory)) {
             throw new Error("Expected an absolute path to a plugin directory");
         }
 
         const pluginPaths: string[] = [];
 
         try {
-            const packageJson = await fs.readFile(path.resolve(pluginDirectory, "package.json"), "utf8");
+            const packageJson = await fs.readFile(path.resolve(this.pluginDirectory, "package.json"), "utf8");
             const json = JSON.parse(packageJson) as { dependencies: Record<string, string> };
 
             for (const dependencyName in json.dependencies) {
                 if (dependencyName.startsWith("hbplugin-")) {
-                    const resolvedPkg = resolvePkg(dependencyName, { cwd: pluginDirectory });
+                    const resolvedPkg = resolvePkg(dependencyName, { cwd: this.pluginDirectory });
                     if (resolvedPkg) {
                         pluginPaths.push(resolvedPkg);
                     }
@@ -272,10 +293,10 @@ export class PluginLoader {
             throw e;
         }
 
-        const filesInDir = await fs.readdir(pluginDirectory);
+        const filesInDir = await fs.readdir(this.pluginDirectory);
         for (const file of filesInDir) {
             if (file.startsWith("hbplugin-")) {
-                pluginPaths.push(path.resolve(pluginDirectory, file));
+                pluginPaths.push(path.resolve(this.pluginDirectory, file));
             }
         }
 
@@ -288,8 +309,6 @@ export class PluginLoader {
                         pluginPath);
                     continue;
                 }
-
-                Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, pluginCtr);
             } catch (e) {
                 this.worker.logger.warn("Could not import plugin '%s': %s", path.basename(pluginPath), e);
                 throw e;
@@ -337,7 +356,11 @@ export class PluginLoader {
             throw new Error("Expected an absolute path to a plugin but got a relative one.");
         }
 
-        delete require.cache[require.resolve(pluginPath)];
+        try {
+            delete require.cache[require.resolve(pluginPath)];
+        } catch (e) { // require.resolve will error if the module is not found
+            return false;
+        }
         const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
         if (!this.isHindenburgPlugin(pluginCtr))
@@ -355,6 +378,7 @@ export class PluginLoader {
             this.roomPlugins.set(pluginCtr.meta.id, pluginCtr as unknown as typeof RoomPlugin);
         }
 
+        Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, pluginCtr);
 
         return pluginCtr;
     }
@@ -420,9 +444,7 @@ export class PluginLoader {
         this.worker.decoder.listeners.clear();
         this.worker.registerPacketHandlers();
 
-        const loadedPluginsArr = [...this.worker.loadedPlugins];
-        for (let i = 0; i < loadedPluginsArr.length; i++) {
-            const [, loadedPlugin ] = loadedPluginsArr[i];
+        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
                 const { messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
                 if (options.override) {
@@ -443,7 +465,7 @@ export class PluginLoader {
                 : this.workerPlugins.get(pluginCtr);
 
             if (!_pluginCtr) {
-                throw new Error("Plugin with ID '" + pluginCtr + "' not loaded.");
+                throw new Error("Plugin with ID '" + pluginCtr + "' not imported.");
             }
             if (this.isRoomPlugin(_pluginCtr)) {
                 return await this.loadPlugin(_pluginCtr, room);
@@ -479,7 +501,7 @@ export class PluginLoader {
             this.applyChatCommands(room);
             this.applyReactorRpcHandlers(room);
 
-            room.logger.info("Loaded plugin '%s'", pluginCtr.meta.id);
+            room.logger.info("Loaded plugin: %s", initPlugin);
         }
 
         if (isWorkerPlugin) {
@@ -518,7 +540,7 @@ export class PluginLoader {
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
 
-            this.worker.logger.info("Loaded plugin '%s' globally", pluginCtr.meta.id);
+            this.worker.logger.info("Loaded plugin globally: %s", initPlugin);
         }
 
         const eventListeners = getPluginEventListeners(initPlugin);
@@ -560,10 +582,12 @@ export class PluginLoader {
         if (room) {
             room.loadedPlugins.delete(pluginId);
             this.applyChatCommands(room);
+            room.logger.info("Unloaded plugin: %s", loadedPlugin);
         } else {
             this.worker.loadedPlugins.delete(pluginId);
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
+            this.worker.logger.info("Unloaded plugin globally: %s", loadedPlugin);
         }
 
         for (const loadedEventListener of loadedPlugin.loadedEventListeners) {

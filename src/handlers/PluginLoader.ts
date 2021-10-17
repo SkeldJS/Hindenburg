@@ -7,12 +7,12 @@ import path from "path";
 import util from "util";
 import fs from "fs/promises";
 
-import winston from "winston";
 import vorpal from "vorpal";
 import resolvePkg from "resolve-pkg";
 import chalk from "chalk";
 
 import { Worker, WorkerEvents } from "../Worker";
+import { RoomEvents } from "../BaseRoom";
 import { Room } from "../Room";
 
 import {
@@ -28,11 +28,11 @@ import {
     shouldPreventLoading
 } from "../api";
 
-import { VorpalConsole } from "../util/VorpalConsoleTransport";
 import { recursiveClone } from "../util/recursiveClone";
 import { recursiveAssign } from "../util/recursiveAssign";
-import { RoomEvents } from "../BaseRoom";
+
 import { ReactorRpcMessage } from "../packets";
+import { Logger } from "../logger";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
@@ -125,7 +125,7 @@ export class Plugin {
     /**
      * A console logger for the plugin.
      */
-    logger!: winston.Logger;
+    logger!: Logger;
 
     /**
      * The directory of the plugin.
@@ -298,37 +298,7 @@ export class RoomPlugin extends Plugin {
 
         this.worker = room.worker;
 
-        this.logger = winston.createLogger({
-            levels: {
-                error: 0,
-                debug: 1,
-                warn: 2,
-                data: 3,
-                info: 4,
-                verbose: 5,
-                silly: 6,
-                custom: 7
-            },
-            transports: [
-                new VorpalConsole(this.room.worker.vorpal, {
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.colorize(),
-                        winston.format.printf(info => {
-                            return `[${util.format(this.room)} ${this.meta.id}] ${info.level}: ${info.message}`;
-                        }),
-                    ),
-
-                }),
-                new winston.transports.File({
-                    filename: "logs.txt",
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.simple()
-                    )
-                })
-            ]
-        });
+        this.logger = new Logger(() => `${util.format(this.room)} ${this.meta.id}`, this.worker.vorpal);
     }
 }
 
@@ -351,37 +321,7 @@ export class WorkerPlugin extends Plugin {
     ) {
         super(config);
 
-        this.logger = winston.createLogger({
-            levels: {
-                error: 0,
-                debug: 1,
-                warn: 2,
-                data: 3,
-                info: 4,
-                verbose: 5,
-                silly: 6,
-                custom: 7
-            },
-            transports: [
-                new VorpalConsole(this.worker.vorpal, {
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.colorize(),
-                        winston.format.printf(info => {
-                            return `[${this.meta.id}] ${info.level}: ${info.message}`;
-                        }),
-                    ),
-
-                }),
-                new winston.transports.File({
-                    filename: "logs.txt",
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.simple()
-                    )
-                })
-            ]
-        });
+        this.logger = new Logger(() => this.meta.id, this.worker.vorpal);
     }
 }
 

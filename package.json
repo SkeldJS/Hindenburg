@@ -9,7 +9,7 @@
     "lint": "eslint src/**/*.ts",
     "fix": "eslint src/**/*.ts --fix",
     "plugins": "ts-node ./bin/plugins",
-    "prepack": "rm -rf dist && yarn build",
+    "prepack": "yarn build",
     "publish": "yarn npm publish --access public",
     "start": "node ./dist/bin/worker",
     "dev": "ts-node ./bin/worker",

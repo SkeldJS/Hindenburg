@@ -1110,7 +1110,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     continue;
                 }
 
-                if(room.privacy === "private") continue;
+                if (room.privacy === "private") continue;
 
                 const roomHost = room.host ? room.connections.get(room.host.clientId) : undefined;
 

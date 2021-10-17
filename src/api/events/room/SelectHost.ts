@@ -12,7 +12,7 @@ export class RoomSelectHostEvent extends CancelableEvent {
     static eventName = "room.selecthost" as const;
     eventName = "room.selecthost" as const;
 
-    private _alteredSelected: Connection
+    private _alteredSelected: Connection;
 
     constructor(
         public readonly room: Room,

@@ -298,11 +298,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
 
-                const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
                     ? 0x20
                     : Code2Int(roomName);
@@ -312,37 +313,152 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (room) {
                     await room.destroy(reason as unknown as number);
                 } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
+                    this.logger.error("Couldn't find room: %s", roomName);
                 }
             });
 
         this.vorpal
-            .command("list <something>", "List something about the server, \"clients\", \"rooms\" or \"plugins\".")
-            .alias("ls")
+            .command("list clients")
+            .alias("ls c")
+            .action(async () => {
+                this.logger.info("%s client(s)", this.connections.size);
+                const connections = [...this.connections];
+                for (let i = 0; i < connections.length; i++) {
+                    const [ , connection ] = connections[i];
+                    this.logger.info("%s) %s", i + 1, connection);
+                }
+            });
+
+        this.vorpal
+            .command("list rooms")
+            .alias("ls r")
+            .action(async () => {
+                this.logger.info("%s room(s)", this.rooms.size);
+                const rooms = [...this.rooms];
+                for (let i = 0; i < rooms.length; i++) {
+                    const [ , room ] = rooms[i];
+                    this.logger.info("%s) %s", i + 1, room);
+                }
+            });
+
+        this.vorpal
+            .command("list plugins [room code]", "List all plugins loaded into the server or into a room.")
+            .alias("ls p")
             .action(async args => {
-                if (args.something === "clients") {
-                    this.logger.info("%s client(s)", this.connections.size);
-                    const connections = [...this.connections];
-                    for (let i = 0; i < connections.length; i++) {
-                        const [ , connection ] = connections[i];
-                        this.logger.info("%s) %s", i + 1, connection);
-                    }
-                } else if (args.something === "rooms") {
-                    this.logger.info("%s room(s)", this.rooms.size);
-                    const rooms = [...this.rooms];
-                    for (let i = 0; i < rooms.length; i++) {
-                        const [ , room ] = rooms[i];
-                        this.logger.info("%s) %s", i + 1, room);
-                    }
-                } else if (args.something === "plugins") {
-                    this.logger.info("%s plugins(s) loaded", this.loadedPlugins.size);
-                    const loadedPlugins = [...this.loadedPlugins];
-                    for (let i = 0; i < loadedPlugins.length; i++) {
-                        const [ , plugin ] = loadedPlugins[i];
-                        this.logger.info("%s) %s", i + 1, plugin.meta.id);
-                    }
+                const roomName = args["room code"]
+                    ? args["room code"].toUpperCase()
+                    : "";
+
+                const extendable = roomName
+                    ? this.rooms.get(Code2Int(roomName))
+                    : this;
+
+                if (!extendable) {
+                    this.logger.warn("Couldn't find a room with code: %s", roomName);
+                    return;
+                }
+
+                if (roomName) {
+                    this.logger.info("%s plugins(s) loaded in %s", extendable.loadedPlugins.size, extendable);
                 } else {
-                    this.logger.error("Expected either \"clients\", \"rooms\" or \"plugins\": %s", args.something);
+                    this.logger.info("%s plugins(s) loaded", extendable.loadedPlugins.size);
+                }
+                const loadedPlugins = [...extendable.loadedPlugins];
+                for (let i = 0; i < loadedPlugins.length; i++) {
+                    const [ , plugin ] = loadedPlugins[i];
+                    this.logger.info("%s) %s", i + 1, plugin);
+                }
+            });
+
+        this.vorpal
+            .command("unload <plugin id> [room code]", "Unload a plugin loaded into the server or into a room, pass 'all' into 'plugin id' to unload all plugins.")
+            .action(async args => {
+                const roomName = args["room code"]
+                    ? args["room code"].toUpperCase()
+                    : "";
+
+                const extendable = roomName
+                    ? this.rooms.get(Code2Int(roomName))
+                    : this;
+
+                if (!extendable) {
+                    this.logger.warn("Couldn't find a room with code: %s", roomName);
+                    return;
+                }
+
+                if (args["plugin id"] === "all") {
+                    for (const [ pluginId ] of extendable.loadedPlugins) {
+                        this.pluginLoader.unloadPlugin(pluginId);
+                    }
+                    return;
+                }
+
+                try {
+                    if (roomName) {
+                        this.pluginLoader.unloadPlugin(args["plugin id"], extendable as Room);
+                    } else {
+                        this.pluginLoader.unloadPlugin(args["plugin id"]);
+                    }
+                } catch (e) {
+                    if ((e as Error).message.includes("Tried to ")) {
+                        this.logger.warn("Plugin with id '%s' not loaded", args["plugin id"]);
+                        return;
+                    }
+
+                    throw e;
+                }
+            });
+
+        this.vorpal
+            .command("load <plugin id> [room code]", "Load a plugin into the server or into the room, importing if necessary, pass 'all' into 'plugin id' to load all plugins.")
+            .option("--hot, -h", "Whether to re-import the plugin if it's already imported")
+            .option("--reload, -r", "Whether to reload the plugin if it's already loaded")
+            .action(async args => {
+                const roomName = args["room code"]
+                    ? args["room code"].toUpperCase()
+                    : "";
+
+                const extendable = roomName
+                    ? this.rooms.get(Code2Int(roomName))
+                    : this;
+
+                if (!extendable)
+                    return;
+
+                if (extendable.loadedPlugins.has(args["plugin id"]) && !args.options.reload) {
+                    this.logger.warn("Not loading plugin, as it is already loaded (pass the --reload or -r flag to load anyway)");
+                    return;
+                }
+
+                if (roomName) {
+                    const room = this.rooms.get(Code2Int(roomName));
+
+                    if (!room) {
+                        this.logger.warn("Couldn't find a room with code: %s", roomName);
+                        return;
+                    }
+
+                    if (!this.pluginLoader.roomPlugins.has(args["plugin id"]) || args.options.hot) {
+                        const didImport = await this.pluginLoader.importFromId(args["plugin id"]);
+
+                        if (!didImport) {
+                            this.logger.warn("Couldn't find hindenburg plugin: %s", args["plugin id"]);
+                            return;
+                        }
+                    }
+
+                    this.pluginLoader.loadPlugin(args["plugin id"], room);
+                } else {
+                    if (!this.pluginLoader.workerPlugins.has(args["plugin id"]) || args.options.hot) {
+                        const didImport = await this.pluginLoader.importFromId(args["plugin id"]);
+
+                        if (!didImport) {
+                            this.logger.warn("Couldn't find hindenburg plugin: %s", args["plugin id"]);
+                            return;
+                        }
+                    }
+
+                    this.pluginLoader.loadPlugin(args["plugin id"]);
                 }
             });
 
@@ -385,7 +501,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         this.logger.info("%s) %s", i + 1, player);
                     }
                 } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
+                    this.logger.error("Couldn't find room: %s", roomName);
                 }
             });
 
@@ -407,7 +523,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         this.logger.info("%s) %s", i + 1, pov);
                     }
                 } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
+                    this.logger.error("Couldn't find room: %s", roomName);
                 }
             });
 
@@ -446,7 +562,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     this.logger.info("- anonymous votes: %s", room.settings.anonymousVotes);
                     this.logger.info("- task bar updates: %s", TaskBarUpdate[room.settings.taskbarUpdates]);
                 } else {
-                    this.logger.error("Couldn't find room: " + args["room code"]);
+                    this.logger.error("Couldn't find room: %s", roomName);
                 }
             });
 

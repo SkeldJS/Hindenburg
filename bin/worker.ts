@@ -19,31 +19,27 @@ import { recursiveAssign } from "../src/util/recursiveAssign";
 let Worker = FakeWorker;
 
 type DeepPartial<T> = {
-    [K in keyof T]: Partial<T[K]>
+    [K in keyof T]?: DeepPartial<T[K]>|undefined
 };
 
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
-async function resolveConfig(): Promise<false | DeepPartial<HindenburgConfig>> {
+async function resolveConfig(logger: Logger): Promise<DeepPartial<HindenburgConfig>> {
     try {
         return JSON.parse(await fs.readFile(configFile, "utf8"));
     } catch (e) {
-        if (e.code === "ENOENT"){
-            const configSpinner = createSpinner("Creating config.json..");
+        const err = e as { code: string };
+        if (err.code === "ENOENT") {
+            logger.warn("No config file found; performing first-time setup..");
+            await (await import("./setup")).default;
             try {
-                const defaultConfig = createDefaultConfig();
-                await fs.promises.writeFile(
-                    configFile,
-                    JSON.stringify(defaultConfig, undefined, 4),
-                    "utf8"
-                );
-                stopSpinner(configSpinner, true);
-                return true;
+                return JSON.parse(await fs.readFile(configFile, "utf8"));
             } catch (e) {
-                stopSpinner(configSpinner, false);
-                return false;
+                logger.error("Failed to read config: %s", err.code || e);
+                return {};
             }
         }
-        return false;
+        logger.error("Failed to read config: %s", err.code || e);
+        return {};
     }
 }
 
@@ -202,7 +198,7 @@ async function fetchUpdates(logger: Logger) {
 }
 
 async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
-    const versionSpinner = new Spinner("Checking for updates..").start();
+    const versionSpinner = new Spinner("Checking for updates.. %s").start();
 
     try {
         const latestVersion = await getLatestVersion();
@@ -228,7 +224,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     const internalIp = await getInternalIp();
 
     const workerConfig = createDefaultConfig();
-    const resolvedConfig = await resolveConfig();
+    const resolvedConfig = await resolveConfig(logger);
     recursiveAssign(workerConfig, resolvedConfig || {});
     if (resolvedConfig && resolvedConfig.socket && resolvedConfig.socket.ip) {
         resolvedConfig.socket.ip = await fetchExternalIp(logger);

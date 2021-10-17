@@ -26,7 +26,7 @@ const defaultPackageJson = {
 const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.join(process.cwd(), "./plugins");
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 
-(async () => {
+export default (async () => {
     const logger = new Logger;
 
     const yarnLockFile = path.join(pluginsDirectory, "yarn.lock");

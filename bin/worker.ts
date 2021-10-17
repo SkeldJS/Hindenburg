@@ -1,20 +1,31 @@
-require("./modulePatch");
-const path = require("path");
-const fs = require("fs");
-const net = require("net");
-const chalk = require("chalk");
-const https = require("https");
-const compareVersions = require("compare-versions");
-const chokidar = require("chokidar");
+import "./modulePatch";
 
-const { createSpinner, stopSpinner, createDefaultConfig, runCommandInDir } = require("./util");
-const { Worker } = require("../src");
-const { recursiveAssign } = require("../src/util/recursiveAssign");
+import https from "https";
+import net from "net";
+import path from "path";
+import fs from "fs/promises";
+
+import compareVersions from "compare-versions";
+import chalk from "chalk";
+import chokidar from "chokidar";
+
+import { Spinner } from "./util/Spinner";
+import { runCommandInDir } from "./util/runCommandInDir";
+
+import { Worker as FakeWorker, HindenburgConfig, Logger } from "../src";
+import { createDefaultConfig } from "./createDefaultConfig";
+import { recursiveAssign } from "../src/util/recursiveAssign";
+
+let Worker = FakeWorker;
+
+type DeepPartial<T> = {
+    [K in keyof T]: Partial<T[K]>
+};
 
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
-async function resolveConfig() {
+async function resolveConfig(): Promise<false | DeepPartial<HindenburgConfig>> {
     try {
-        return JSON.parse(await fs.promises.readFile(configFile, "utf8"));
+        return JSON.parse(await fs.readFile(configFile, "utf8"));
     } catch (e) {
         if (e.code === "ENOENT"){
             const configSpinner = createSpinner("Creating config.json..");
@@ -36,7 +47,7 @@ async function resolveConfig() {
     }
 }
 
-function parseCommmandLine(config) {
+function applyCommandLineArgs(config: HindenburgConfig) {
     const argv = process.argv.slice(2);
     for (let i = 0; i < argv.length; i++) {
         if (argv[i].startsWith("--")) {
@@ -79,7 +90,7 @@ function parseCommmandLine(config) {
                 acc = "";
             }
 
-            let curObj = config;
+            let curObj: any = config;
             for (let i = 0; i < pathParts.length - 1; i++) {
                 if (typeof curObj[pathParts[i]] !== "object") {
                     curObj[pathParts[i]] = {};
@@ -93,13 +104,13 @@ function parseCommmandLine(config) {
     }
 }
 
-function makeHttpRequest(url) {
-    return new Promise((resolve, reject) => {
+function makeHttpRequest(url: string) {
+    return new Promise<Buffer>((resolve, reject) => {
         const req = https.get(url, res => {
             if (res.statusCode !== 200) {
                 return reject("Got non-200 status code for " + url + ": " + res.statusCode);
             }
-            const buffers = [];
+            const buffers: Buffer[] = [];
             res.on("data", data => {
                 buffers.push(data);
             });
@@ -117,45 +128,35 @@ function makeHttpRequest(url) {
 
 async function getLatestVersion() {
     const fullData = await makeHttpRequest("https://raw.githubusercontent.com/SkeldJS/Hindenburg/master/package.json");
-    try {
-        const json = JSON.parse(fullData.toString("utf8"));
-        if (json.version) {
-            return json.version;
-        }
-    } catch (e) {
-        throw e;
+    const json = JSON.parse(fullData.toString("utf8"));
+    if (json.version) {
+        return json.version;
     }
 }
 
-let cachedIp;
-async function getOwnIpAddress() {
+let cachedIp: string;
+async function fetchExternalIp(logger: Logger) {
     if (cachedIp)
         return cachedIp;
 
-    const ipSpinner = createSpinner("Fetching ip address..");
+    const ipSpinner = new Spinner("Fetching ip address.. %s").start();
     try {
-        cachedIp = await makeHttpRequest("https://api.ipify.org");
+        cachedIp = (await makeHttpRequest("https://api.ipify.org")).toString("utf8");
         cachedIp = cachedIp.toString().trim();
-        stopSpinner(ipSpinner, true);
+        ipSpinner.success();
     } catch (e) {
-        stopSpinner(ipSpinner, false);
-        console.log("Failed to get ip address, please enter it manually in the config.socket.ip option.");
+        ipSpinner.fail();
+        logger.warn("Failed to get ip address, please enter it manually in the config.socket.ip option.");
     }
 
     return cachedIp;
-}
-
-async function fixConfig(config) {
-    if (config && config.socket && config.socket.ip === "auto") {
-        config.socket.ip = await getOwnIpAddress();
-    }
 }
 
 async function getInternalIp() {
     return new Promise((resolve, reject) => {
         const socket = net.createConnection(80, "api.ipify.org");
         socket.on("connect", function() {
-            resolve(socket.address().address);
+            resolve((socket.address() as net.AddressInfo).address);
             socket.end();
         });
         socket.on("error", function(e) {
@@ -165,65 +166,77 @@ async function getInternalIp() {
     });
 }
 
+async function fetchUpdates(logger: Logger) {
+    const gitPullSpinner = new Spinner("Pulling from remote repository.. %s").start();
+    try {
+        await runCommandInDir(process.cwd(), "git pull");
+        gitPullSpinner.success();
+
+        const installSpinner = new Spinner("Installing dependencies.. %s").start();
+        try {
+            await runCommandInDir(process.cwd(), "yarn");
+            installSpinner.fail();
+
+            const yarnBuildSpinner = new Spinner("Building.. %s").start();
+
+            try {
+                await runCommandInDir(process.cwd(), "yarn build");
+                yarnBuildSpinner.success();
+
+                delete require.cache[require.resolve("../src")];
+
+                // eslint-disable-next-line no-global-assign
+                Worker = (await import("../src")).Worker;
+            } catch (e) {
+                yarnBuildSpinner.fail();
+                logger.error("Failed to build latest changes, use 'yarn build' to update manually.");
+            }
+        } catch (e) {
+            installSpinner.fail();
+            logger.error("Failed to install dependencies, use 'yarn' and 'yarn build' to update manually.");
+        }
+    } catch (e) {
+        gitPullSpinner.fail();
+        logger.error("Failed to pull latest changes, use 'git pull', 'yarn' and 'yarn build' to update manually.");
+    }
+}
+
+async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
+    const versionSpinner = new Spinner("Checking for updates..").start();
+
+    try {
+        const latestVersion = await getLatestVersion();
+        const compare = compareVersions(latestVersion, process.env.npm_package_version as string);
+        versionSpinner.success();
+
+        if (compare === 1) {
+            if (autoUpdate) {
+                logger.info(chalk.yellow("New version of Hindenburg available: " + latestVersion + ", updating.."));
+                await fetchUpdates(logger);
+            } else {
+                logger.info(chalk.yellow("New version of Hindenburg available: " + latestVersion + ", use 'git pull && yarn build' to update"));
+            }
+        }
+    } catch (e) {
+        versionSpinner.fail();
+        logger.error("Failed to check for updates, nevermind");
+    }
+}
+
 (async () => {
+    const logger = new Logger;
     const internalIp = await getInternalIp();
 
     const workerConfig = createDefaultConfig();
     const resolvedConfig = await resolveConfig();
     recursiveAssign(workerConfig, resolvedConfig || {});
-    await fixConfig(workerConfig);
-    parseCommmandLine(workerConfig);
+    if (resolvedConfig && resolvedConfig.socket && resolvedConfig.socket.ip) {
+        resolvedConfig.socket.ip = await fetchExternalIp(logger);
+    }
+    applyCommandLineArgs(workerConfig);
 
-    if (workerConfig.autoUpdate) {
-        const versionSpinner = createSpinner("Checking for updates..");
-        try {
-            const latestVersion = await getLatestVersion();
-            const compare = compareVersions(latestVersion, process.env.npm_package_version);
-            stopSpinner(versionSpinner, true);
-
-            if (compare === 1) {
-                if (workerConfig.autoUpdate) {
-                    console.log(chalk.yellow("New version of Hindenburg available: " + latestVersion));
-
-                    const gitPullSpinner = createSpinner("Pulling from remote repository..");
-                    try {
-                        await runCommandInDir(process.cwd(), "git pull");
-                        stopSpinner(gitPullSpinner, true);
-
-                        const installSpinner = createSpinner("Installing dependencies..");
-                        try {
-                            await runCommandInDir(process.cwd(), "yarn");
-                            stopSpinner(installSpinner, true);
-
-                            const yarnBuildSpinner = createSpinner("Building..");
-
-                            try {
-                                await runCommandInDir(process.cwd(), "yarn build");
-                                stopSpinner(yarnBuildSpinner, true);
-
-                                delete require.cache[require.resolve("../src")];
-
-                                Worker = require("../src").Worker;
-                            } catch (e) {
-                                stopSpinner(gitPullSpinner, false);
-                                console.error("Failed to build latest changes, use 'yarn build' to update manually.");
-                            }
-                        } catch (e) {
-                            stopSpinner(installSpinner, false);
-                            console.error("Failed to install dependencies, use 'yarn' and 'yarn build' to update manually.");
-                        }
-                    } catch (e) {
-                        stopSpinner(gitPullSpinner, false);
-                        console.error("Failed to pull latest changes, use 'git pull', 'yarn' and 'yarn build' to update manually.");
-                    }
-                } else {
-                    console.log(chalk.yellow("New version of Hindenburg available: " + latestVersion + ", use 'git pull && yarn build' to update"));
-                }
-            }
-        } catch (e) {
-            stopSpinner(versionSpinner, false);
-            console.error("Failed to check for updates, nevermind");
-        }
+    if (workerConfig.checkForUpdates) {
+        await checkForUpdates(logger, workerConfig.autoUpdate);
     }
 
     const pluginDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
@@ -250,23 +263,25 @@ async function getInternalIp() {
     }
 
     const configWatch = chokidar.watch(configFile, {
-        persistent: false,
-        encoding: "utf8"
+        persistent: false
     });
 
-    configWatch.on("change", async eventType => {
+    configWatch.on("change", async () => {
         worker.logger.info("Config file updated, reloading..");
         try {
             const workerConfig = createDefaultConfig();
-            const updatedConfig = JSON.parse(await fs.promises.readFile(configFile, "utf8"));
+            const updatedConfig = JSON.parse(await fs.readFile(configFile, "utf8"));
             recursiveAssign(workerConfig, updatedConfig || {});
-            await fixConfig(workerConfig);
-            parseCommmandLine(workerConfig);
+            if (resolvedConfig && resolvedConfig.socket && resolvedConfig.socket.ip) {
+                resolvedConfig.socket.ip = await fetchExternalIp(logger);
+            }
+            applyCommandLineArgs(workerConfig);
 
             worker.updateConfig(workerConfig);
         } catch (e) {
-            if (e.code) {
-                worker.logger.warn("Cannot open config file (" + e.code + "); not reloading config.");
+            const err = e as { code: string };
+            if (err.code) {
+                worker.logger.warn("Cannot open config file (%s); not reloading config.", err.code);
             }
         }
     });

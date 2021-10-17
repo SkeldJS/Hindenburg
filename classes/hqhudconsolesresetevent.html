@@ -101,7 +101,6 @@
 				<ul class="tsd-hierarchy">
 					<li><span class="tsd-signature-type">RoomEvent</span></li>
 					<li><span class="tsd-signature-type">HqHudEvent</span></li>
-					<li><span class="tsd-signature-type">ProtocolEvent</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -114,8 +113,6 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="hqhudconsolesresetevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudconsolesresetevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#hqhudsystem" class="tsd-kind-icon">hqhudsystem</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#message" class="tsd-kind-icon">message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#player" class="tsd-kind-icon">player</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudconsolesresetevent.html#reverted" class="tsd-kind-icon">reverted</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudconsolesresetevent.html#room" class="tsd-kind-icon">room</a></li>
 							</ul>
@@ -144,7 +141,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides RevertableEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:21</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:13</li>
 						</ul>
 					</aside>
 				</section>
@@ -155,7 +152,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides RevertableEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:22</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:14</li>
 						</ul>
 					</aside>
 				</section>
@@ -166,35 +163,9 @@
 					<aside class="tsd-sources">
 						<p>Implementation of HqHudEvent.hqhudsystem</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:15</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:12</li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="message" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> message</h3>
-					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a></div>
-					<aside class="tsd-sources">
-						<p>Implementation of ProtocolEvent.message</p>
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:16</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="player" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> player</h3>
-					<div class="tsd-signature tsd-kind-icon">player<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:20</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The player that reset the consoles. Only available if the client is the host.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="reverted" class="tsd-anchor"></a>
@@ -214,7 +185,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of RoomEvent.room</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:14</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:11</li>
 						</ul>
 					</aside>
 				</section>
@@ -225,14 +196,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>HqHud<wbr>Consoles<wbr>Reset<wbr>Event&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, hqhudsystem<span class="tsd-signature-symbol">: </span><a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a>, player<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hqhudconsolesresetevent.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudConsolesResetEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>HqHud<wbr>Consoles<wbr>Reset<wbr>Event&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, hqhudsystem<span class="tsd-signature-symbol">: </span><a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hqhudconsolesresetevent.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudConsolesResetEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides RevertableEvent.constructor</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:22</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/hqhud/ConsolesReset.d.ts:14</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -248,12 +219,6 @@
 								</li>
 								<li>
 									<h5>hqhudsystem: <a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-								<li>
-									<h5>message: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a></h5>
-								</li>
-								<li>
-									<h5>player: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="hqhudconsolesresetevent.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudConsolesResetEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -351,12 +316,6 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="hqhudconsolesresetevent.html#hqhudsystem" class="tsd-kind-icon">hqhudsystem</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#message" class="tsd-kind-icon">message</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudconsolesresetevent.html#player" class="tsd-kind-icon">player</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="hqhudconsolesresetevent.html#revert" class="tsd-kind-icon">revert</a>

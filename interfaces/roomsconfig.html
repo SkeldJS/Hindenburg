@@ -85,7 +85,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="roomsconfig.html#chatcommands" class="tsd-kind-icon">chat<wbr>Commands</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="roomsconfig.html#enforcesettings" class="tsd-kind-icon">enforce<wbr>Settings</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="roomsconfig.html#gamecodes" class="tsd-kind-icon">game<wbr>Codes</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="roomsconfig.html#plugins" class="tsd-kind-icon">plugins</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="roomsconfig.html#serverashost" class="tsd-kind-icon">server<wbr>AsHost</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="roomsconfig.html#serverplayer" class="tsd-kind-icon">server<wbr>Player</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,7 +101,7 @@
 					<div class="tsd-signature tsd-kind-icon">chat<wbr>Commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="chatcommandconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">ChatCommandConfig</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/HindenburgConfig.ts#L253">src/interfaces/HindenburgConfig.ts:253</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L253">src/interfaces/HindenburgConfig.ts:253</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -119,7 +121,7 @@
 					<div class="tsd-signature tsd-kind-icon">enforce<wbr>Settings<span class="tsd-signature-symbol">:</span> <a href="allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/HindenburgConfig.ts#L263">src/interfaces/HindenburgConfig.ts:263</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L267">src/interfaces/HindenburgConfig.ts:267</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -134,7 +136,7 @@
 					<div class="tsd-signature tsd-kind-icon">game<wbr>Codes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;v1&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;v2&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/HindenburgConfig.ts#L259">src/interfaces/HindenburgConfig.ts:259</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L263">src/interfaces/HindenburgConfig.ts:263</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -150,12 +152,27 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="plugins" class="tsd-anchor"></a>
+					<h3>plugins</h3>
+					<div class="tsd-signature tsd-kind-icon">plugins<span class="tsd-signature-symbol">:</span> <a href="pluginconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginConfig</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L257">src/interfaces/HindenburgConfig.ts:257</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options regarding room plugins.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="serverashost" class="tsd-anchor"></a>
 					<h3>server<wbr>AsHost</h3>
 					<div class="tsd-signature tsd-kind-icon">server<wbr>AsHost<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/HindenburgConfig.ts#L268">src/interfaces/HindenburgConfig.ts:268</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L272">src/interfaces/HindenburgConfig.ts:272</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -167,6 +184,21 @@
 							<dd><p>false</p>
 							</dd>
 						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="serverplayer" class="tsd-anchor"></a>
+					<h3>server<wbr>Player</h3>
+					<div class="tsd-signature tsd-kind-icon">server<wbr>Player<span class="tsd-signature-symbol">:</span> <a href="serverplayeroptions.html" class="tsd-signature-type" data-tsd-kind="Interface">ServerPlayerOptions</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L276">src/interfaces/HindenburgConfig.ts:276</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Default appearance for a message sent by the server in game chat</p>
+						</div>
 					</div>
 				</section>
 			</section>
@@ -238,7 +270,13 @@
 								<a href="roomsconfig.html#gamecodes" class="tsd-kind-icon">game<wbr>Codes</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="roomsconfig.html#plugins" class="tsd-kind-icon">plugins</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="roomsconfig.html#serverashost" class="tsd-kind-icon">server<wbr>AsHost</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="roomsconfig.html#serverplayer" class="tsd-kind-icon">server<wbr>Player</a>
 							</li>
 						</ul>
 					</li>

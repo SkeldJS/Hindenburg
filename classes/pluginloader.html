@@ -67,6 +67,17 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Service for the worker node to import plugins &amp; load them globally or into
+						specific rooms.</p>
+					</div>
+					<p>An &quot;imported plugin&quot; is a plugin which has actually been loaded into memory
+						with require(), and a &quot;loaded plugin&quot; is a plugin which is enabled on a room
+					or globally.</p>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -80,88 +91,261 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="pluginloader.html#ishindenburgplugin" class="tsd-kind-icon">is<wbr>Hindenburg<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="pluginloader.html#isroomplugin" class="tsd-kind-icon">is<wbr>Room<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="pluginloader.html#isworkerplugin" class="tsd-kind-icon">is<wbr>Worker<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#importfromdirectory" class="tsd-kind-icon">import<wbr>From<wbr>Directory</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#importfromid" class="tsd-kind-icon">import<wbr>From<wbr>Id</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#importplugin" class="tsd-kind-icon">import<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#isenabled" class="tsd-kind-icon">is<wbr>Enabled</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#loadallroomplugins" class="tsd-kind-icon">load<wbr>All<wbr>Room<wbr>Plugins</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#loadallworkerplugins" class="tsd-kind-icon">load<wbr>All<wbr>Worker<wbr>Plugins</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#loadplugin" class="tsd-kind-icon">load<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#unloadplugin" class="tsd-kind-icon">unload<wbr>Plugin</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="pluginloader.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#getreactorrpchandlers" class="tsd-kind-icon">get<wbr>Reactor<wbr>Rpc<wbr>Handlers</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#importplugin" class="tsd-kind-icon">import<wbr>Plugin</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#loadall" class="tsd-kind-icon">load<wbr>All</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#loadplugin" class="tsd-kind-icon">load<wbr>Plugin</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#resetchatcommands" class="tsd-kind-icon">reset<wbr>Chat<wbr>Commands</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#resetmessagehandlers" class="tsd-kind-icon">reset<wbr>Message<wbr>Handlers</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#resetmessages" class="tsd-kind-icon">reset<wbr>Messages</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#resolveimportpath" class="tsd-kind-icon">resolve<wbr>Import<wbr>Path</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="pluginloader.html#unloadplugin" class="tsd-kind-icon">unload<wbr>Plugin</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#loadedplugins" class="tsd-kind-icon">loaded<wbr>Plugins</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#plugindir" class="tsd-kind-icon">plugin<wbr>Dir</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#reactorrpchandlers" class="tsd-kind-icon">reactor<wbr>Rpc<wbr>Handlers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#plugindirectory" class="tsd-kind-icon">plugin<wbr>Directory</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#roomplugins" class="tsd-kind-icon">room<wbr>Plugins</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#worker" class="tsd-kind-icon">worker</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="pluginloader.html#workerplugins" class="tsd-kind-icon">worker<wbr>Plugins</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Plugin<wbr>Loader<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a>, pluginDir<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pluginloader.html" class="tsd-signature-type" data-tsd-kind="Class">PluginLoader</a></li>
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="ishindenburgplugin" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Hindenburg<wbr>Plugin</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Hindenburg<wbr>Plugin<span class="tsd-signature-symbol">(</span>someObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L182">src/handlers/PluginLoader.ts:182</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L390">src/handlers/PluginLoader.ts:390</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check whether some object is that of a Hindenburg plugin, created with
+									the <a href="../modules.html#hindenburgplugin">HindenburgPlugin</a> decorator.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">isHindenburgPlugin</span><span style="color: #000000">({})); </span><span style="color: #008000">// false</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">isHindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">)); </span><span style="color: #008000">// true</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>worker: <a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></h5>
-								</li>
-								<li>
-									<h5>pluginDir: <span class="tsd-signature-type">string</span></h5>
+									<h5>someObject: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The object to check.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="pluginloader.html" class="tsd-signature-type" data-tsd-kind="Class">PluginLoader</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>Whether {@link someObject} is a Hindenburg plugin.</p>
 						</li>
 					</ul>
 				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getreactorrpchandlers" class="tsd-anchor"></a>
-					<h3>get<wbr>Reactor<wbr>Rpc<wbr>Handlers</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Reactor<wbr>Rpc<wbr>Handlers<span class="tsd-signature-symbol">(</span>rpc<span class="tsd-signature-symbol">: </span><a href="basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><a href="networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#networkableevents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><a href="basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="isroomplugin" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Room<wbr>Plugin</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Room<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">pluginCtr</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L236">src/handlers/PluginLoader.ts:236</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L449">src/handlers/PluginLoader.ts:449</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check whether an imported Hindenburg plugin is a room plugin to be loaded
+									into rooms, extending <a href="roomplugin.html">RoomPlugin</a>.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoad</span><span style="color: #000000">.</span><span style="color: #795E26">isRoomPlugin</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">)); </span><span style="color: #008000">// true</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoad</span><span style="color: #000000">.</span><span style="color: #795E26">isRoomPlugin</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">)); </span><span style="color: #008000">// false</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>rpc: <a href="basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a></h5>
+									<h5>pluginCtr: <span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin to check.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><a href="networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#networkableevents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><a href="basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">pluginCtr</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a></h4>
+							<p>Whether {@link pluginCtr} is a room plugin.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="isworkerplugin" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Worker<wbr>Plugin</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Worker<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">pluginCtr</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L416">src/handlers/PluginLoader.ts:416</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check whether an imported Hindenburg plugin is a worker plugin to be loaded
+									globally, extending <a href="workerplugin.html">WorkerPlugin</a>.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoad</span><span style="color: #000000">.</span><span style="color: #795E26">isWorkerPlugin</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">)); </span><span style="color: #008000">// false</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoad</span><span style="color: #000000">.</span><span style="color: #795E26">isWorkerPlugin</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">)); </span><span style="color: #008000">// true</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pluginCtr: <span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin to check.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">pluginCtr</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></h4>
+							<p>Whether {@link pluginCtr} is a global worker plugin.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="importfromdirectory" class="tsd-anchor"></a>
+					<h3>import<wbr>From<wbr>Directory</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">import<wbr>From<wbr>Directory<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L508">src/handlers/PluginLoader.ts:508</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Import all plugins from the <a href="pluginloader.html#plugindirectory">PluginLoader.pluginDirectory</a>, from
+									both installed NPM plugins and local plugin folders.</p>
+								</div>
+								<p>Does not load any of the plugins into the worker or a room, see <a href="pluginloader.html#loadallworkerplugins">PluginLoader.loadAllWorkerPlugins</a> and <a href="pluginloader.html#loadallroomplugins">PluginLoader.loadAllRoomPlugins</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">importedPlugins</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginDirectory</span><span style="color: #000000">.</span><span style="color: #795E26">importFromDirectory</span><span style="color: #000000">();</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Imported %s plugins!&quot;</span><span style="color: #000000">, </span><span style="color: #001080">importedPlugins</span><span style="color: #000000">.</span><span style="color: #001080">size</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A map of all plugins that were imported.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="importfromid" class="tsd-anchor"></a>
+					<h3>import<wbr>From<wbr>Id</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">import<wbr>From<wbr>Id<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L478">src/handlers/PluginLoader.ts:478</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Import a plugin via its ID, checking both installed NPM plugins and also
+									local plugin folders.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">pluginCtr</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">importFromId</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">pluginCtr</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Failed to load my plugin.&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The ID of the plugin to import.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The loaded plugin, or &#39;undefined&#39; if unsuccessful (e.g. the
+								module could not be found, or it was loaded but it was not a Hindenburg
+							plugin).</p>
 						</li>
 					</ul>
 				</section>
@@ -169,38 +353,203 @@
 					<a name="importplugin" class="tsd-anchor"></a>
 					<h3>import<wbr>Plugin</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">import<wbr>Plugin<span class="tsd-signature-symbol">(</span>importPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">typeof </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">import<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L246">src/handlers/PluginLoader.ts:246</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L681">src/handlers/PluginLoader.ts:681</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Import a plugin from its absolute path on the filesystem.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">pluginCtr</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">importPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;/home/user/hindenburg/plugins/hbplugin-my-plugin&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">pluginCtr</span><span style="color: #000000">) {</span>
+<span style="color: #000000">  </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Failed to load my plugin!&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>importPath: <span class="tsd-signature-type">string</span></h5>
+									<h5>pluginPath: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The path of the plugin to import.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">typeof </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The imported plugin constructor, or false if the plugin failed
+							to be imported or was not a Hindenburg plugin.</p>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="loadall" class="tsd-anchor"></a>
-					<h3>load<wbr>All</h3>
+					<a name="isenabled" class="tsd-anchor"></a>
+					<h3>is<wbr>Enabled</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">load<wbr>All<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Enabled<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Enabled<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a>, room<span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L424">src/handlers/PluginLoader.ts:424</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L590">src/handlers/PluginLoader.ts:590</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether a worker plugin is enabled from both the config, and if the plugin
+									isn&#39;t marked with the <a href="../modules.html#preventload">PreventLoad</a> decorator.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">isEnabled</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">)); </span><span style="color: #008000">// true</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #001080">PreventLoad</span>
+<span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">isEnabled</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">)); </span><span style="color: #008000">// false</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pluginCtr: <span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin class to check.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L617">src/handlers/PluginLoader.ts:617</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether a room plugin is enabled from both the global worker config, the
+										room config, and if the plugin isn&#39;t marked with the <a href="../modules.html#preventload">PreventLoad</a>
+									decorator.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">config</span><span style="color: #000000">.</span><span style="color: #001080">plugins</span><span style="color: #000000">[</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">] = </span><span style="color: #0000FF">false</span><span style="color: #000000">;</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">isEnabled</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">, </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">)); </span><span style="color: #008000">// true</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #000000">.@</span><span style="color: #001080">PreventLoad</span>
+<span style="color: #000000">.@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {}</span>
+
+<span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">isEnabled</span><span style="color: #000000">(</span><span style="color: #001080">MyPlugin</span><span style="color: #000000">, </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">)); </span><span style="color: #008000">// false</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pluginCtr: <span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin class to check.</p>
+									</div>
+								</li>
+								<li>
+									<h5>room: <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The room to check.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="loadallroomplugins" class="tsd-anchor"></a>
+					<h3>load<wbr>All<wbr>Room<wbr>Plugins</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">load<wbr>All<wbr>Room<wbr>Plugins<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L655">src/handlers/PluginLoader.ts:655</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Load all imported room plugins into a room, checking <a href="pluginloader.html#isenabled">PluginLoader.isEnabled</a>.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadAllWorkerPlugins</span><span style="color: #000000">();</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>room: <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="loadallworkerplugins" class="tsd-anchor"></a>
+					<h3>load<wbr>All<wbr>Worker<wbr>Plugins</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">load<wbr>All<wbr>Worker<wbr>Plugins<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L640">src/handlers/PluginLoader.ts:640</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Load all imported worker plugins into the worker, checking <a href="pluginloader.html#isenabled">PluginLoader.isEnabled</a>.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadAllWorkerPlugins</span><span style="color: #000000">();</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
@@ -209,96 +558,103 @@
 					<a name="loadplugin" class="tsd-anchor"></a>
 					<h3>load<wbr>Plugin</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">load<wbr>Plugin<span class="tsd-signature-symbol">(</span>loadedPluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">load<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">load<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a>, room<span class="tsd-signature-symbol">?: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L256">src/handlers/PluginLoader.ts:256</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L811">src/handlers/PluginLoader.ts:811</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Load a global worker plugin into the worker, does not regard <a href="pluginloader.html#isenabled">PluginLoader.isEnabled</a>,
+									waits for <a href="plugin.html#onpluginload">Plugin.onPluginLoad</a> to be finish.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>If there was an attempt to load a plugin that isn&#39;t imported, or
+										if the server tries load a worker plugin onto a room.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">importedPlugin</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">workerPlugins</span><span style="color: #000000">.</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadPlugin</span><span style="color: #000000">(</span><span style="color: #001080">importedPlugin</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">importedPlugin</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">workerPlugins</span><span style="color: #000000">.</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadPlugin</span><span style="color: #000000">(</span><span style="color: #001080">importedPlugin</span><span style="color: #000000">, </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">); </span><span style="color: #008000">// !! Attempted to load a worker plugin on a room or other non-worker object</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-what-the-hell&quot;</span><span style="color: #000000">); </span><span style="color: #008000">// !! Plugin with ID &#039;hbplugin-what-the-hell&#039; not imported</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>loadedPluginCtr: <span class="tsd-signature-symbol">typeof </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a></h5>
+									<h5>pluginCtr: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin ID or class to load.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The plugin instance that was loaded.</p>
 						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="resetchatcommands" class="tsd-anchor"></a>
-					<h3>reset<wbr>Chat<wbr>Commands</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">reset<wbr>Chat<wbr>Commands<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L225">src/handlers/PluginLoader.ts:225</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L838">src/handlers/PluginLoader.ts:838</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="resetmessagehandlers" class="tsd-anchor"></a>
-					<h3>reset<wbr>Message<wbr>Handlers</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">reset<wbr>Message<wbr>Handlers<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L207">src/handlers/PluginLoader.ts:207</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="resetmessages" class="tsd-anchor"></a>
-					<h3>reset<wbr>Messages</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">reset<wbr>Messages<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L192">src/handlers/PluginLoader.ts:192</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="resolveimportpath" class="tsd-anchor"></a>
-					<h3>resolve<wbr>Import<wbr>Path</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">resolve<wbr>Import<wbr>Path<span class="tsd-signature-symbol">(</span>importName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L504">src/handlers/PluginLoader.ts:504</a></li>
-								</ul>
-							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Load a room plugin into a room, does not regard <a href="pluginloader.html#isenabled">PluginLoader.isEnabled</a>,
+									waits for <a href="plugin.html#onpluginload">Plugin.onPluginLoad</a> to be finish.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>If there was an attempt to load a plugin that isn&#39;t imported, or
+										if the server tries load a room plugin onto the worker.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">importedPlugin</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">roomPlugins</span><span style="color: #000000">.</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadPlugin</span><span style="color: #000000">(</span><span style="color: #001080">importedPlugin</span><span style="color: #000000">, </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">importedPlugin</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">roomPlugins</span><span style="color: #000000">.</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-my-plugin&quot;</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadPlugin</span><span style="color: #000000">(</span><span style="color: #001080">importedPlugin</span><span style="color: #000000">); </span><span style="color: #008000">// !! Attempted to load a room plugin on a worker or other non-room object</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">loadPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-what-the-hell&quot;</span><span style="color: #000000">, </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">); </span><span style="color: #008000">// !! Plugin with ID &#039;hbplugin-what-the-hell&#039; not imported</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>importName: <span class="tsd-signature-type">string</span></h5>
+									<h5>pluginCtr: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin ID or class to load.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> room: <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The room to load the plugin into.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The plugin instance that was loaded.</p>
 						</li>
 					</ul>
 				</section>
@@ -306,19 +662,84 @@
 					<a name="unloadplugin" class="tsd-anchor"></a>
 					<h3>unload<wbr>Plugin</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">unload<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">unload<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">unload<wbr>Plugin<span class="tsd-signature-symbol">(</span>pluginCtr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a>, room<span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L390">src/handlers/PluginLoader.ts:390</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L959">src/handlers/PluginLoader.ts:959</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unload a global worker plugin from the worker, calls but doesn&#39;t wait for
+									<a href="plugin.html#onpluginunload">Plugin.onPluginUnload</a> to finish.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>If there was an attempt to unload a plugin that isn&#39;t loaded.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">unloadPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">unloadPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-what-the-hell&quot;</span><span style="color: #000000">); </span><span style="color: #008000">// !! Plugin with id &#039;hbplugin-what-the-hell&#039; not loaded</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>pluginId: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a></h5>
+									<h5>pluginCtr: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin ID, class, or instance to unload.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L976">src/handlers/PluginLoader.ts:976</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Unload a room plugin from a room, calls but doesn&#39;t wait for
+									<a href="plugin.html#onpluginunload">Plugin.onPluginUnload</a> to finish.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>throws</dt>
+									<dd><p>If there was an attempt to unload a plugin that isn&#39;t loaded.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">unloadPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">.</span><span style="color: #001080">pluginLoader</span><span style="color: #000000">.</span><span style="color: #795E26">unloadPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-what-the-hell&quot;</span><span style="color: #000000">); </span><span style="color: #008000">// !! Plugin with id &#039;hbplugin-what-the-hell&#039; not loaded</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>pluginCtr: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The plugin ID, class, or instance to unload.</p>
+									</div>
+								</li>
+								<li>
+									<h5>room: <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The room to unload the plugin from.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -327,36 +748,73 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Plugin<wbr>Loader<span class="tsd-signature-symbol">(</span>worker<span class="tsd-signature-symbol">: </span><a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a>, pluginDirectory<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pluginloader.html" class="tsd-signature-type" data-tsd-kind="Class">PluginLoader</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L345">src/handlers/PluginLoader.ts:345</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a plugin loader. Note that the worker instantiates one itself, see
+									<a href="worker.html#pluginloader">Worker.pluginLoader</a>.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">pluginLoader</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">PluginLoader</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">worker</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;/home/user/hindenburg/plugins&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>worker: <a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The worker that the plugin loader is for.</p>
+									</div>
+								</li>
+								<li>
+									<h5>pluginDirectory: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The base directory for installed plugins.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="pluginloader.html" class="tsd-signature-type" data-tsd-kind="Class">PluginLoader</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="loadedplugins" class="tsd-anchor"></a>
-					<h3>loaded<wbr>Plugins</h3>
-					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Plugins<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L178">src/handlers/PluginLoader.ts:178</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="plugindir" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> plugin<wbr>Dir</h3>
-					<div class="tsd-signature tsd-kind-icon">plugin<wbr>Dir<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="plugindirectory" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> plugin<wbr>Directory</h3>
+					<div class="tsd-signature tsd-kind-icon">plugin<wbr>Directory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="reactorrpchandlers" class="tsd-anchor"></a>
-					<h3>reactor<wbr>Rpc<wbr>Handlers</h3>
-					<div class="tsd-signature tsd-kind-icon">reactor<wbr>Rpc<wbr>Handlers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-type">:</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><a href="networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#networkableevents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><a href="basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="roomplugins" class="tsd-anchor"></a>
+					<h3>room<wbr>Plugins</h3>
+					<div class="tsd-signature tsd-kind-icon">room<wbr>Plugins<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">typeof </span><a href="roomplugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L182">src/handlers/PluginLoader.ts:182</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L345">src/handlers/PluginLoader.ts:345</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>classname : mod id : rpc tag</p>
+							<p>All imported room plugins ready to be loaded onto a room.</p>
 						</div>
 					</div>
 				</section>
@@ -366,6 +824,21 @@
 					<div class="tsd-signature tsd-kind-icon">worker<span class="tsd-signature-symbol">:</span> <a href="worker.html" class="tsd-signature-type" data-tsd-kind="Class">Worker</a></div>
 					<aside class="tsd-sources">
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="workerplugins" class="tsd-anchor"></a>
+					<h3>worker<wbr>Plugins</h3>
+					<div class="tsd-signature tsd-kind-icon">worker<wbr>Plugins<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">typeof </span><a href="workerplugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L340">src/handlers/PluginLoader.ts:340</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>All imported worker plugins ready to be loaded lobally.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -426,47 +899,53 @@
 					<li class="current tsd-kind-class">
 						<a href="pluginloader.html" class="tsd-kind-icon">Plugin<wbr>Loader</a>
 						<ul>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="pluginloader.html#ishindenburgplugin" class="tsd-kind-icon">is<wbr>Hindenburg<wbr>Plugin</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="pluginloader.html#isroomplugin" class="tsd-kind-icon">is<wbr>Room<wbr>Plugin</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="pluginloader.html#isworkerplugin" class="tsd-kind-icon">is<wbr>Worker<wbr>Plugin</a>
+							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="pluginloader.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginloader.html#getreactorrpchandlers" class="tsd-kind-icon">get<wbr>Reactor<wbr>Rpc<wbr>Handlers</a>
+								<a href="pluginloader.html#importfromdirectory" class="tsd-kind-icon">import<wbr>From<wbr>Directory</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="pluginloader.html#importfromid" class="tsd-kind-icon">import<wbr>From<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="pluginloader.html#importplugin" class="tsd-kind-icon">import<wbr>Plugin</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginloader.html#loadall" class="tsd-kind-icon">load<wbr>All</a>
+								<a href="pluginloader.html#isenabled" class="tsd-kind-icon">is<wbr>Enabled</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="pluginloader.html#loadallroomplugins" class="tsd-kind-icon">load<wbr>All<wbr>Room<wbr>Plugins</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="pluginloader.html#loadallworkerplugins" class="tsd-kind-icon">load<wbr>All<wbr>Worker<wbr>Plugins</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="pluginloader.html#loadplugin" class="tsd-kind-icon">load<wbr>Plugin</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="pluginloader.html#loadedplugins" class="tsd-kind-icon">loaded<wbr>Plugins</a>
+								<a href="pluginloader.html#plugindirectory" class="tsd-kind-icon">plugin<wbr>Directory</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="pluginloader.html#plugindir" class="tsd-kind-icon">plugin<wbr>Dir</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="pluginloader.html#reactorrpchandlers" class="tsd-kind-icon">reactor<wbr>Rpc<wbr>Handlers</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginloader.html#resetchatcommands" class="tsd-kind-icon">reset<wbr>Chat<wbr>Commands</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginloader.html#resetmessagehandlers" class="tsd-kind-icon">reset<wbr>Message<wbr>Handlers</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginloader.html#resetmessages" class="tsd-kind-icon">reset<wbr>Messages</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="pluginloader.html#resolveimportpath" class="tsd-kind-icon">resolve<wbr>Import<wbr>Path</a>
+								<a href="pluginloader.html#roomplugins" class="tsd-kind-icon">room<wbr>Plugins</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="pluginloader.html#unloadplugin" class="tsd-kind-icon">unload<wbr>Plugin</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="pluginloader.html#worker" class="tsd-kind-icon">worker</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="pluginloader.html#workerplugins" class="tsd-kind-icon">worker<wbr>Plugins</a>
 							</li>
 						</ul>
 					</li>

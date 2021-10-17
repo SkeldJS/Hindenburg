@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PluginMeta | @skeldjs/hindenburg</title>
+	<title>CliCommandInformation | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="pluginmeta.html">PluginMeta</a>
+					<a href="clicommandinformation.html">CliCommandInformation</a>
 				</li>
 			</ul>
-			<h1>Interface PluginMeta</h1>
+			<h1>Interface CliCommandInformation</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">PluginMeta</span>
+						<a href="clicommandoptioninformation.html" class="tsd-signature-type" data-tsd-kind="Interface">CliCommandOptionInformation</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">CliCommandInformation</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -82,10 +87,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmeta.html#defaultconfig" class="tsd-kind-icon">default<wbr>Config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmeta.html#id" class="tsd-kind-icon">id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmeta.html#order" class="tsd-kind-icon">order</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmeta.html#version" class="tsd-kind-icon">version</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="clicommandinformation.html#description" class="tsd-kind-icon">description</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="clicommandinformation.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="clicommandinformation.html#usage" class="tsd-kind-icon">usage</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,43 +97,35 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="defaultconfig" class="tsd-anchor"></a>
-					<h3>default<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="description" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> description</h3>
+					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="clicommandoptioninformation.html">CliCommandOptionInformation</a>.<a href="clicommandoptioninformation.html#description">description</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L48">src/handlers/PluginLoader.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/api/hooks/CliCommand.ts#L9">src/api/hooks/CliCommand.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="id" class="tsd-anchor"></a>
-					<h3>id</h3>
-					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="options" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> options</h3>
+					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="clicommandoptioninformation.html" class="tsd-signature-type" data-tsd-kind="Interface">CliCommandOptionInformation</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L46">src/handlers/PluginLoader.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/api/hooks/CliCommand.ts#L13">src/api/hooks/CliCommand.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="order" class="tsd-anchor"></a>
-					<h3>order</h3>
-					<div class="tsd-signature tsd-kind-icon">order<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PluginOrder</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="usage" class="tsd-anchor"></a>
+					<h3>usage</h3>
+					<div class="tsd-signature tsd-kind-icon">usage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="clicommandoptioninformation.html">CliCommandOptionInformation</a>.<a href="clicommandoptioninformation.html#usage">usage</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L49">src/handlers/PluginLoader.ts:49</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="version" class="tsd-anchor"></a>
-					<h3>version</h3>
-					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/handlers/PluginLoader.ts#L47">src/handlers/PluginLoader.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/api/hooks/CliCommand.ts#L8">src/api/hooks/CliCommand.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -190,19 +186,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="pluginmeta.html" class="tsd-kind-icon">Plugin<wbr>Meta</a>
+						<a href="clicommandinformation.html" class="tsd-kind-icon">Cli<wbr>Command<wbr>Information</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="pluginmeta.html#defaultconfig" class="tsd-kind-icon">default<wbr>Config</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="clicommandinformation.html#description" class="tsd-kind-icon">description</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="pluginmeta.html#id" class="tsd-kind-icon">id</a>
+								<a href="clicommandinformation.html#options" class="tsd-kind-icon">options</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="pluginmeta.html#order" class="tsd-kind-icon">order</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="pluginmeta.html#version" class="tsd-kind-icon">version</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="clicommandinformation.html#usage" class="tsd-kind-icon">usage</a>
 							</li>
 						</ul>
 					</li>

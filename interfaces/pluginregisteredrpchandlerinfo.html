@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>VorpalCommandOptionInformation | @skeldjs/hindenburg</title>
+	<title>PluginRegisteredRpcHandlerInfo | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="vorpalcommandoptioninformation.html">VorpalCommandOptionInformation</a>
+					<a href="pluginregisteredrpchandlerinfo.html">PluginRegisteredRpcHandlerInfo</a>
 				</li>
 			</ul>
-			<h1>Interface VorpalCommandOptionInformation</h1>
+			<h1>Interface PluginRegisteredRpcHandlerInfo</h1>
 		</div>
 	</div>
 </header>
@@ -71,12 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">VorpalCommandOptionInformation</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<a href="vorpalcommandinformation.html" class="tsd-signature-type" data-tsd-kind="Interface">VorpalCommandInformation</a>
-							</li>
-						</ul>
+						<span class="target">PluginRegisteredRpcHandlerInfo</span>
 					</li>
 				</ul>
 			</section>
@@ -87,8 +82,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vorpalcommandoptioninformation.html#description" class="tsd-kind-icon">description</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="vorpalcommandoptioninformation.html#usage" class="tsd-kind-icon">usage</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginregisteredrpchandlerinfo.html#handler" class="tsd-kind-icon">handler</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginregisteredrpchandlerinfo.html#reactorrpc" class="tsd-kind-icon">reactor<wbr>Rpc</a></li>
 							</ul>
 						</section>
 					</div>
@@ -97,22 +92,46 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="description" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> description</h3>
-					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="handler" class="tsd-anchor"></a>
+					<h3>handler</h3>
+					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><a href="../classes/networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#networkableevents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><a href="../classes/basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/api/hooks/CliCommand.ts#L6">src/api/hooks/CliCommand.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/api/hooks/ReactorRpcHandler.ts#L19">src/api/hooks/ReactorRpcHandler.ts:19</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><a href="../classes/networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#networkableevents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><a href="../classes/basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>component: <a href="../classes/networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#networkableevents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+											</li>
+											<li>
+												<h5>rpc: <a href="../classes/basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="usage" class="tsd-anchor"></a>
-					<h3>usage</h3>
-					<div class="tsd-signature tsd-kind-icon">usage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="reactorrpc" class="tsd-anchor"></a>
+					<h3>reactor<wbr>Rpc</h3>
+					<div class="tsd-signature tsd-kind-icon">reactor<wbr>Rpc<span class="tsd-signature-symbol">:</span> <a href="../modules.html#reactorrpcconstructor" class="tsd-signature-type" data-tsd-kind="Type alias">ReactorRpcConstructor</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/basereactorrpcmessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/api/hooks/CliCommand.ts#L5">src/api/hooks/CliCommand.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/api/hooks/ReactorRpcHandler.ts#L20">src/api/hooks/ReactorRpcHandler.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -173,13 +192,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="vorpalcommandoptioninformation.html" class="tsd-kind-icon">Vorpal<wbr>Command<wbr>Option<wbr>Information</a>
+						<a href="pluginregisteredrpchandlerinfo.html" class="tsd-kind-icon">Plugin<wbr>Registered<wbr>Rpc<wbr>Handler<wbr>Info</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vorpalcommandoptioninformation.html#description" class="tsd-kind-icon">description</a>
+								<a href="pluginregisteredrpchandlerinfo.html#handler" class="tsd-kind-icon">handler</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="vorpalcommandoptioninformation.html#usage" class="tsd-kind-icon">usage</a>
+								<a href="pluginregisteredrpchandlerinfo.html#reactorrpc" class="tsd-kind-icon">reactor<wbr>Rpc</a>
 							</li>
 						</ul>
 					</li>

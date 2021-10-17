@@ -91,9 +91,11 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendchatoptions.html#color" class="tsd-kind-icon">color</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendchatoptions.html#hat" class="tsd-kind-icon">hat</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendchatoptions.html#name" class="tsd-kind-icon">name</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendchatoptions.html#side" class="tsd-kind-icon">side</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendchatoptions.html#target" class="tsd-kind-icon">target</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendchatoptions.html#skin" class="tsd-kind-icon">skin</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="sendchatoptions.html#targets" class="tsd-kind-icon">targets</a></li>
 							</ul>
 						</section>
 					</div>
@@ -107,7 +109,7 @@
 					<div class="tsd-signature tsd-kind-icon">color<span class="tsd-signature-symbol">:</span> <a href="../enums/color.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Color</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/SendChatOptions.ts#L66">src/interfaces/SendChatOptions.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/SendChatOptions.ts#L66">src/interfaces/SendChatOptions.ts:66</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -126,12 +128,36 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="hat" class="tsd-anchor"></a>
+					<h3>hat</h3>
+					<div class="tsd-signature tsd-kind-icon">hat<span class="tsd-signature-symbol">:</span> <a href="../enums/hat.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Hat</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/SendChatOptions.ts#L88">src/interfaces/SendChatOptions.ts:88</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The hat that the player should be wearing in the chat message.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>example</dt>
+							<dd><pre><code class="language-ts"><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;I&#039;m a cowboy baby&quot;</span><span style="color: #000000">, {</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Cowboy&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">hat:</span><span style="color: #000000"> </span><span style="color: #001080">Hat</span><span style="color: #000000">.</span><span style="color: #001080">TenGallonHat</span>
+<span style="color: #000000">})</span>
+</code></pre>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="name" class="tsd-anchor"></a>
 					<h3>name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/SendChatOptions.ts#L55">src/interfaces/SendChatOptions.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/SendChatOptions.ts#L55">src/interfaces/SendChatOptions.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -155,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">side<span class="tsd-signature-symbol">:</span> <a href="../enums/messageside.html" class="tsd-signature-type" data-tsd-kind="Enumeration">MessageSide</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/SendChatOptions.ts#L27">src/interfaces/SendChatOptions.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/SendChatOptions.ts#L27">src/interfaces/SendChatOptions.ts:27</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -177,12 +203,36 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="target" class="tsd-anchor"></a>
-					<h3>target</h3>
-					<div class="tsd-signature tsd-kind-icon">target<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../classes/playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="skin" class="tsd-anchor"></a>
+					<h3>skin</h3>
+					<div class="tsd-signature tsd-kind-icon">skin<span class="tsd-signature-symbol">:</span> <a href="../enums/skin.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Skin</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/624652f/src/interfaces/SendChatOptions.ts#L44">src/interfaces/SendChatOptions.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/SendChatOptions.ts#L77">src/interfaces/SendChatOptions.ts:77</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The skin that the player should be wearing in the chat message.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>example</dt>
+							<dd><pre><code class="language-ts"><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;looking for salvation in a secular age&quot;</span><span style="color: #000000">, {</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;the 1975&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">skin:</span><span style="color: #000000"> </span><span style="color: #001080">Skin</span><span style="color: #000000">.</span><span style="color: #001080">Prisoner</span>
+<span style="color: #000000">})</span>
+</code></pre>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="targets" class="tsd-anchor"></a>
+					<h3>targets</h3>
+					<div class="tsd-signature tsd-kind-icon">targets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../classes/playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/SendChatOptions.ts#L44">src/interfaces/SendChatOptions.ts:44</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -198,7 +248,7 @@
 <span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
 
 <span style="color: #000000">  </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;&lt;color=red&gt;Potential cheater detected: &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">info</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot;&lt;/color&gt;&quot;</span><span style="color: #000000">, {</span>
-<span style="color: #000000">    </span><span style="color: #001080">target:</span><span style="color: #000000"> </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">players</span><span style="color: #000000">.</span><span style="color: #001080">host</span>
+<span style="color: #000000">    </span><span style="color: #001080">targets:</span><span style="color: #000000"> [ </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">players</span><span style="color: #000000">.</span><span style="color: #001080">host</span><span style="color: #000000"> ]</span>
 <span style="color: #000000">  });</span>
 <span style="color: #000000">}</span>
 </code></pre>
@@ -269,13 +319,19 @@
 								<a href="sendchatoptions.html#color" class="tsd-kind-icon">color</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="sendchatoptions.html#hat" class="tsd-kind-icon">hat</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="sendchatoptions.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="sendchatoptions.html#side" class="tsd-kind-icon">side</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="sendchatoptions.html#target" class="tsd-kind-icon">target</a>
+								<a href="sendchatoptions.html#skin" class="tsd-kind-icon">skin</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="sendchatoptions.html#targets" class="tsd-kind-icon">targets</a>
 							</li>
 						</ul>
 					</li>

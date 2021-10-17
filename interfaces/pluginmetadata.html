@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SocketConfig | @skeldjs/hindenburg</title>
+	<title>PluginMetadata | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,21 +57,28 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="socketconfig.html">SocketConfig</a>
+					<a href="pluginmetadata.html">PluginMetadata</a>
 				</li>
 			</ul>
-			<h1>Interface SocketConfig</h1>
+			<h1>Interface PluginMetadata</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Metadata about a plugin, created with <a href="../modules.html#hindenburgplugin">HindenburgPlugin</a>.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SocketConfig</span>
+						<span class="target">PluginMetadata</span>
 					</li>
 				</ul>
 			</section>
@@ -82,10 +89,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="socketconfig.html#broadcastunknowngamedata" class="tsd-kind-icon">broadcast<wbr>Unknown<wbr>Gamedata</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="socketconfig.html#ip" class="tsd-kind-icon">ip</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="socketconfig.html#messageordering" class="tsd-kind-icon">message<wbr>Ordering</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="socketconfig.html#port" class="tsd-kind-icon">port</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmetadata.html#defaultconfig" class="tsd-kind-icon">default<wbr>Config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmetadata.html#id" class="tsd-kind-icon">id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmetadata.html#order" class="tsd-kind-icon">order</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="pluginmetadata.html#version" class="tsd-kind-icon">version</a></li>
 							</ul>
 						</section>
 					</div>
@@ -94,81 +101,101 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="broadcastunknowngamedata" class="tsd-anchor"></a>
-					<h3>broadcast<wbr>Unknown<wbr>Gamedata</h3>
-					<div class="tsd-signature tsd-kind-icon">broadcast<wbr>Unknown<wbr>Gamedata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="defaultconfig" class="tsd-anchor"></a>
+					<h3>default<wbr>Config</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L74">src/interfaces/HindenburgConfig.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L81">src/handlers/PluginLoader.ts:81</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Whether or not to broadcast gamedata messages that don&#39;t get handled by the server.</p>
+							<p>The default configuration values for the plugin.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>false</p>
+							<dt>example</dt>
+							<dd><pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;redis&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;host&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;127.0.0.1&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;port&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;6379&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;password&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;H1nd3nburgR0cks&quot;</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 							</dd>
 						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="ip" class="tsd-anchor"></a>
-					<h3>ip</h3>
-					<div class="tsd-signature tsd-kind-icon">ip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="id" class="tsd-anchor"></a>
+					<h3>id</h3>
+					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L84">src/interfaces/HindenburgConfig.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L48">src/handlers/PluginLoader.ts:48</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The IP address of this node, set to <code>auto</code> for it to get auto-discovered.</p>
+							<p>The ID of the plugin, beginning with <code>hbplugin-</code>.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>&quot;auto&quot;</p>
+							<dt>example</dt>
+							<dd><p>&quot;hbplugin-my-plugin&quot;</p>
 							</dd>
 						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="messageordering" class="tsd-anchor"></a>
-					<h3>message<wbr>Ordering</h3>
-					<div class="tsd-signature tsd-kind-icon">message<wbr>Ordering<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="order" class="tsd-anchor"></a>
+					<h3>order</h3>
+					<div class="tsd-signature tsd-kind-icon">order<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;first&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;none&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;last&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L79">src/interfaces/HindenburgConfig.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L67">src/handlers/PluginLoader.ts:67</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Whether to order reliable packets received from clients.</p>
+							<p>The order that the plugin should be loaded into, where:
+								First = -1
+								None = 0
+							Last = 1</p>
 						</div>
+						<p>Or you can provide a number to provide your own priority.</p>
 						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>false</p>
+							<dt>example</dt>
+							<dd><p>&quot;first&quot;</p>
+							</dd>
+							<dt>example</dt>
+							<dd><p>9999999999999</p>
+							</dd>
+							<dt>example</dt>
+							<dd><p>-9999999999999</p>
 							</dd>
 						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="port" class="tsd-anchor"></a>
-					<h3>port</h3>
-					<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="version" class="tsd-anchor"></a>
+					<h3>version</h3>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/interfaces/HindenburgConfig.ts#L69">src/interfaces/HindenburgConfig.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/cce644a/src/handlers/PluginLoader.ts#L54">src/handlers/PluginLoader.ts:54</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The port to listen on.</p>
+							<p>The version of the plugin.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>22023</p>
+							<dt>example</dt>
+							<dd><p>&quot;1.0.0&quot;</p>
+							</dd>
+							<dt>example</dt>
+							<dd><p>&quot;2.0.0-beta.1&quot;</p>
 							</dd>
 						</dl>
 					</div>
@@ -230,19 +257,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="socketconfig.html" class="tsd-kind-icon">Socket<wbr>Config</a>
+						<a href="pluginmetadata.html" class="tsd-kind-icon">Plugin<wbr>Metadata</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="socketconfig.html#broadcastunknowngamedata" class="tsd-kind-icon">broadcast<wbr>Unknown<wbr>Gamedata</a>
+								<a href="pluginmetadata.html#defaultconfig" class="tsd-kind-icon">default<wbr>Config</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="socketconfig.html#ip" class="tsd-kind-icon">ip</a>
+								<a href="pluginmetadata.html#id" class="tsd-kind-icon">id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="socketconfig.html#messageordering" class="tsd-kind-icon">message<wbr>Ordering</a>
+								<a href="pluginmetadata.html#order" class="tsd-kind-icon">order</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="socketconfig.html#port" class="tsd-kind-icon">port</a>
+								<a href="pluginmetadata.html#version" class="tsd-kind-icon">version</a>
 							</li>
 						</ul>
 					</li>

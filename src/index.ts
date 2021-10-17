@@ -7,6 +7,7 @@ export * from "@skeldjs/util";
 export * from "./api";
 export * from "./handlers";
 export * from "./interfaces";
+export * from "./logger";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore typescript doesn't let you re-export
 export * from "./packets";

@@ -212,8 +212,10 @@ __metadata:
     "@skeldjs/state": ^2.14.14
     "@skeldjs/util": ^2.14.14
     "@types/chalk": ^2.2.0
+    "@types/cli-spinner": ^0.2.1
     "@types/minimatch": ^3.0.5
     "@types/node": ^15.12.2
+    "@types/prompts": ^2.0.14
     "@types/reflect-metadata": ^0.1.0
     "@types/triple-beam": ^1.3.2
     "@types/vorpal": ^1.12.0
@@ -227,7 +229,9 @@ __metadata:
     lint-staged: ^11.1.1
     minimatch: ^3.0.4
     pinst: ^2.1.6
+    prompts: ^2.4.2
     reflect-metadata: ^0.1.13
+    resolve-from: ^5.0.0
     resolve-pkg: ^2.0.0
     triple-beam: ^1.3.0
     ts-node: ^10.0.0
@@ -324,6 +328,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cli-spinner@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@types/cli-spinner@npm:0.2.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 9398ec51319bc4196770dff7aa80c9f837fe5072561bebda414450ca90747df67b3f696dbe0314f99bc21fa3ab0e72a1198fb6553433ac02b9306f5d99415a72
+  languageName: node
+  linkType: hard
+
 "@types/json-schema@npm:^7.0.7":
   version: 7.0.8
   resolution: "@types/json-schema@npm:7.0.8"
@@ -338,6 +351,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:*":
+  version: 16.11.1
+  resolution: "@types/node@npm:16.11.1"
+  checksum: 22cea470b89292810733b8b9fc1b6a1873bc3ed4d4cdf2f25e777dc607994bd7c12e64166d1a66dd5924734192b0a891b6aeb6813aa935f731345f4086234375
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^15.12.2":
   version: 15.12.2
   resolution: "@types/node@npm:15.12.2"
@@ -349,6 +369,13 @@ __metadata:
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
   checksum: fd6bce2b674b6efc3db4c7c3d336bd70c90838e8439de639b909ce22f3720d21344f52427f1d9e57b265fcb7f6c018699b99e5e0c208a1a4823014269a6bf35b
+  languageName: node
+  linkType: hard
+
+"@types/prompts@npm:^2.0.14":
+  version: 2.4.0
+  resolution: "@types/prompts@npm:2.4.0"
+  checksum: ec75655f07fbc3cb2df60a3e3bdd13bfda0554a16f5541285c4b1cc0610756838a2863dccfc911cbb1385492054c07210512164e3dbef272ec638d631783b278
   languageName: node
   linkType: hard
 
@@ -1914,6 +1941,13 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"kleur@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "kleur@npm:3.0.3"
+  checksum: df82cd1e172f957bae9c536286265a5cdbd5eeca487cb0a3b2a7b41ef959fc61f8e7c0e9aeea9c114ccf2c166b6a8dd45a46fd619c1c569d210ecd2765ad5169
+  languageName: node
+  linkType: hard
+
 "levn@npm:^0.4.1":
   version: 0.4.1
   resolution: "levn@npm:0.4.1"
@@ -2509,6 +2543,16 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"prompts@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "prompts@npm:2.4.2"
+  dependencies:
+    kleur: ^3.0.3
+    sisteransi: ^1.0.5
+  checksum: d8fd1fe63820be2412c13bfc5d0a01909acc1f0367e32396962e737cb2fc52d004f3302475d5ce7d18a1e8a79985f93ff04ee03007d091029c3f9104bffc007d
+  languageName: node
+  linkType: hard
+
 "punycode@npm:^2.1.0":
   version: 2.1.1
   resolution: "punycode@npm:2.1.1"
@@ -2765,6 +2809,13 @@ fsevents@~2.3.2:
   version: 3.0.3
   resolution: "signal-exit@npm:3.0.3"
   checksum: f0169d3f1263d06df32ca072b0bf33b34c6f8f0341a7a1621558a2444dfbe8f5fec76b35537fcc6f0bc4944bdb5336fe0bdcf41a5422c4e45a1dba3f45475e6c
+  languageName: node
+  linkType: hard
+
+"sisteransi@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "sisteransi@npm:1.0.5"
+  checksum: aba6438f46d2bfcef94cf112c835ab395172c75f67453fe05c340c770d3c402363018ae1ab4172a1026a90c47eaccf3af7b6ff6fa749a680c2929bd7fa2b37a4
   languageName: node
   linkType: hard
 

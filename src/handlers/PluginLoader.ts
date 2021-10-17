@@ -387,7 +387,7 @@ export class PluginLoader {
      * console.log(this.worker.pluginLoader.isHindenburgPlugin(MyPlugin)); // true
      * ```
      */
-    isHindenburgPlugin(someObject: any) {
+    static isHindenburgPlugin(someObject: any) {
         return isHindenburgPlugin(someObject);
     }
 
@@ -413,7 +413,7 @@ export class PluginLoader {
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // true
      * ```
      */
-    isWorkerPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof WorkerPlugin {
+    static isWorkerPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof WorkerPlugin {
         let currentCtr: typeof WorkerPlugin|typeof RoomPlugin = pluginCtr;
         while (currentCtr !== null) {
             currentCtr = Object.getPrototypeOf(currentCtr);
@@ -446,7 +446,7 @@ export class PluginLoader {
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // false
      * ```
      */
-    isRoomPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof RoomPlugin {
+    static isRoomPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof RoomPlugin {
         let currentCtr: typeof WorkerPlugin|typeof RoomPlugin = pluginCtr;
         while (currentCtr !== null) {
             currentCtr = Object.getPrototypeOf(currentCtr);
@@ -690,11 +690,11 @@ export class PluginLoader {
         }
         const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
-        if (!this.isHindenburgPlugin(pluginCtr))
+        if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             return false;
 
-        const isWorkerPlugin = this.isWorkerPlugin(pluginCtr);
-        const isRoomPlugin = this.isRoomPlugin(pluginCtr);
+        const isWorkerPlugin = PluginLoader.isWorkerPlugin(pluginCtr);
+        const isRoomPlugin = PluginLoader.isRoomPlugin(pluginCtr);
 
         if (!isWorkerPlugin && !isRoomPlugin)
             return false;
@@ -845,7 +845,7 @@ export class PluginLoader {
             if (!_pluginCtr) {
                 throw new Error("Plugin with ID '" + pluginCtr + "' not imported");
             }
-            if (this.isRoomPlugin(_pluginCtr)) {
+            if (PluginLoader.isRoomPlugin(_pluginCtr)) {
                 return await this.loadPlugin(_pluginCtr, room);
             } else {
                 return await this.loadPlugin(_pluginCtr);
@@ -855,8 +855,8 @@ export class PluginLoader {
         const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig);
         recursiveAssign(defaultConfig, this.worker.config.plugins[pluginCtr.meta.id] || {});
 
-        const isWorkerPlugin = this.isWorkerPlugin(pluginCtr);
-        const isRoomPlugin = this.isRoomPlugin(pluginCtr);
+        const isWorkerPlugin = PluginLoader.isWorkerPlugin(pluginCtr);
+        const isRoomPlugin = PluginLoader.isRoomPlugin(pluginCtr);
 
         if (isWorkerPlugin && room) {
             throw new Error("Attempted to load a worker plugin on a room or other non-worker object");

@@ -1,12 +1,12 @@
-const path = require("path");
-const BuiltinModule = require("module");
+import path from "path";
+import BuiltinModule from "module";
 
-const Module = module.constructor.length > 1
+const Module: any = module.constructor.length > 1
     ? module.constructor
     : BuiltinModule;
 
 const oldResolveFilename = Module._resolveFilename;
-Module._resolveFilename = function (request, parentModule, isMain, options) {
+Module._resolveFilename = function (request: string, parentModule: any, isMain: boolean, options: any) {
     if (request === "@skeldjs/hindenburg") {
         return oldResolveFilename.call(this, path.resolve(__dirname, "../src/index"), parentModule, isMain, options);
     }

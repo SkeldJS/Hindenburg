@@ -1,5 +1,4 @@
 import { AllGameSettings } from "@skeldjs/protocol";
-import { Color, Hat, Skin } from "@skeldjs/constant";
 
 export interface AnticheatPenalty {
     /**

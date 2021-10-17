@@ -20,14 +20,62 @@ async function resolveConfig() {
     }
 }
 
-function checkForPortArgument() {
-    const portIdx = process.argv.indexOf('--port');
-    if(portIdx === -1) return;
-    const portString = process.argv[portIdx + 1];
-    if(!portString) return;
-    const port = Number.parseInt(portString);
-    if(!Number.isInteger(port) || Number.isNaN(port)) return;
-    return port;
+
+function parseCommmandLine(config) {
+    const argv = process.argv.slice(2);
+    for (let i = 0; i < argv.length; i++) {
+        if (argv[i].startsWith("--")) {
+            const configPath = argv[i].substr(2);
+            const cmdValue = argv[i + 1];
+
+            if (!cmdValue) {
+                continue;
+            }
+
+            const configValue = JSON.parse(cmdValue);
+
+            const pathParts = [];
+            let acc = "";
+            for (let i = 0; i < configPath.length; i++) {
+                if (configPath[i] === ".") {
+                    if (acc) {
+                        pathParts.push(acc);
+                        acc = "";
+                    }
+                } else if (configPath[i] === "[") {
+                    pathParts.push(acc);
+                    acc = "";
+                    let computed = "";
+                    for (let j = i + 1; j < configPath.length; j++) {
+                        if (configPath[j] === "]") {
+                            i = j;
+                            break;
+                        }
+
+                        computed += configPath[j];
+                    }
+                    acc += computed;
+                } else {
+                    acc += configPath[i];
+                }
+            }
+            if (acc) {
+                pathParts.push(acc);
+                acc = "";
+            }
+
+            let curObj = config;
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                if (typeof curObj[pathParts[i]] !== "object") {
+                    curObj[pathParts[i]] = {};
+                }
+
+                curObj = curObj[pathParts[i]];
+            }
+
+            curObj[pathParts[pathParts.length - 1]] = configValue;
+        }
+    }
 }
 
 function makeHttpRequest(url) {
@@ -109,6 +157,7 @@ async function getInternalIp() {
     const resolvedConfig = await resolveConfig();
     recursiveAssign(workerConfig, resolvedConfig || {});
     await fixConfig(workerConfig);
+    parseCommmandLine(workerConfig);
 
     if (workerConfig.autoUpdate) {
         const versionSpinner = createSpinner("Checking for updates..");
@@ -169,7 +218,7 @@ async function getInternalIp() {
         worker.logger.warn("Cannot open config file; using default config");
     }
 
-    const port = checkForPortArgument() || worker.config.socket.port;
+    const port = worker.config.socket.port;
     await worker.listen(port);
 
     worker.logger.info("Listening on:");
@@ -196,7 +245,8 @@ async function getInternalIp() {
             const workerConfig = createDefaultConfig();
             const updatedConfig = JSON.parse(await fs.promises.readFile(configFile, "utf8"));
             recursiveAssign(workerConfig, updatedConfig || {});
-            fixConfig(workerConfig);
+            await fixConfig(workerConfig);
+            parseCommmandLine(workerConfig);
 
             worker.updateConfig(workerConfig);
         } catch (e) {

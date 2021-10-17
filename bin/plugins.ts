@@ -45,7 +45,7 @@ export default class extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomP
 }
 
 async function getPackageInfo(packageName: string, logger: Logger) {
-    const pluginInfoSpinner = new Spinner("Getting plugin information.. %s").start();
+    const pluginInfoSpinner = new Spinner("Fetching plugin information.. %s").start();
     try {
         const packageInfoData = await runCommandInDir(pluginsDirectory, "yarn npm info " + packageName + " --json");
         pluginInfoSpinner.success();
@@ -405,7 +405,7 @@ async function runInstallPlugin() {
 
         verifySpinner.success();
 
-        const configSpinner = new Spinner("Creating config entry for plugin..").start();
+        const configSpinner = new Spinner("Creating config entry for plugin.. %s").start();
         const defaultConfig = importedPlugin.meta.defaultConfig;
 
         try {
@@ -436,7 +436,7 @@ async function runInstallPlugin() {
             }
         }
 
-        logger.info("Installed plugin: %s", importedPlugin);
+        logger.info("Installed plugin: %s", chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version));
     } catch (e) {
         if (verifySpinner.isSpinning()) {
             verifySpinner.fail();

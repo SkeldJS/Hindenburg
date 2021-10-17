@@ -1,6 +1,8 @@
-// Spanish translations: Songaku
 // Portuguese translations: Matador
 // French translations: DumbPlayer2
+// Spanish translations: Songaku
+// German: EnderB0YHD
+// Swedish: Captain
 
 export default {
     "havent_received_all_mods": {
@@ -8,7 +10,7 @@ export default {
         "pt_BR": "O servidor não conseguiu receber todos os seus mods, por favor tente novamente",
         "fr": "Le serveur n'a pas réussi à recevoir tous vos mods, veuillez réessayer",
         "es_ES": "El servidor no ha conseguido recibir todos sus mods, por favor, intentelo de nuevo",
-        "de:": "Der Server scheiterte alle Ihrer Mods zu empfangen, bitte versuchen Sie erneut",
+        "de": "Der Server scheiterte alle Ihrer Mods zu empfangen, bitte versuchen Sie erneut",
         "sv": "Servern fick inte alla av dina moddar, försök igen"
     },
     "reactor_required_on_server": {

@@ -51,7 +51,6 @@
     "resolve-pkg": "^2.0.0",
     "triple-beam": "^1.3.0",
     "vorpal": "^1.12.0",
-    "winston": "^3.3.3",
     "winston-transport": "^4.4.0"
   },
   "files": [

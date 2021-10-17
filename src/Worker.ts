@@ -1,5 +1,4 @@
 import dgram from "dgram";
-import winston from "winston";
 import vorpal from "vorpal";
 import chalk from "chalk";
 import minimatch from "minimatch";
@@ -55,7 +54,6 @@ import {
 
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
-import { VorpalConsole } from "./util/VorpalConsoleTransport";
 import { recursiveAssign } from "./util/recursiveAssign";
 import { recursiveCompare } from "./util/recursiveCompare";
 import { recursiveClone } from "./util/recursiveClone";
@@ -90,6 +88,7 @@ import {
 
 import i18n from "./i18n";
 import { Networkable } from "@skeldjs/core";
+import { Logger } from "./logger";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -120,9 +119,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
     validVersions: number[];
 
     /**
-     * Winston logger for this server.
+     * Logger for this server.
      */
-    logger: winston.Logger;
+    logger: Logger;
 
     /**
      * Vorpal instance responsible for handling interactive CLI.
@@ -195,38 +194,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         if (!this.config.exitConfirmation)
             this.vorpal.sigint(process.exit);
 
-        this.logger = winston.createLogger({
-            levels: {
-                error: 0,
-                debug: 1,
-                warn: 2,
-                data: 3,
-                info: 4,
-                verbose: 5,
-                silly: 6,
-                custom: 7
-            },
-            transports: [
-                new VorpalConsole(this.vorpal, {
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.colorize(),
-                        winston.format.label({ label: this.config.clusterName + this.config.nodeId }),
-                        winston.format.printf(info => {
-                            return `${info.level}: ${info.message}`;
-                        }),
-                    ),
-
-                }),
-                new winston.transports.File({
-                    filename: "logs.txt",
-                    format: winston.format.combine(
-                        winston.format.splat(),
-                        winston.format.simple()
-                    )
-                })
-            ]
-        });
+        this.logger = new Logger(undefined, this.vorpal);
 
         this.pluginLoader = new PluginLoader(this, pluginDirectory);
         this.loadedPlugins = new Map;

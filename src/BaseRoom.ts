@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import winston from "winston";
 
 import {
     AlterGameTag,
@@ -85,6 +84,7 @@ import {
 
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
+import { Logger } from "./logger";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: PlayerData<BaseRoom>) {
@@ -152,7 +152,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     /**
      * This room's console logger.
      */
-    logger!: winston.Logger;
+    logger!: Logger;
 
     /**
      * All IP addresses banned from this room.

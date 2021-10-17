@@ -16,6 +16,22 @@ async function resolveConfig() {
     try {
         return JSON.parse(await fs.promises.readFile(configFile, "utf8"));
     } catch (e) {
+        if (e.code === "ENOENT"){
+            const configSpinner = createSpinner("Creating config.json..");
+            try {
+                const defaultConfig = createDefaultConfig();
+                await fs.promises.writeFile(
+                    configFile,
+                    JSON.stringify(defaultConfig, undefined, 4),
+                    "utf8"
+                );
+                stopSpinner(configSpinner, true);
+                return true;
+            } catch (e) {
+                stopSpinner(configSpinner, false);
+                return false;
+            }
+        }
         return false;
     }
 }

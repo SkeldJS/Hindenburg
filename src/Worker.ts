@@ -182,7 +182,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
         /**
          * The global configuration for Hindenburg.
          */
-        config: HindenburgConfig
+        config: HindenburgConfig,
+        pluginDirectory: string
     ) {
         super();
 
@@ -227,7 +228,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ]
         });
 
-        this.pluginLoader = new PluginLoader(this);
+        this.pluginLoader = new PluginLoader(this, pluginDirectory);
         this.loadedPlugins = new Map;
         this.reactorRpcHandlers = new Map;
 

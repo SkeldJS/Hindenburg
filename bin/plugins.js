@@ -302,7 +302,7 @@ async function getPackageInfo(packageName) {
         const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
         try {
             await fs.stat(pluginDirectory);
-            console.error("Plugin is a local folder, not installed with NPM.")
+            console.error("Plugin is a local folder, not installed with NPM.");
             console.log("To avoid conflicts in Hindenburg, you cannot have both a plugin installed from NPM and a local plugin with the same name");
             return;
         } catch (e) {}
@@ -399,7 +399,7 @@ async function getPackageInfo(packageName) {
         try {
             await fs.stat(pluginDirectory);
             stopSpinner(resolvingPlugin, false);
-            console.error("Plugin is a local folder, not installed with NPM.")
+            console.error("Plugin is a local folder, not installed with NPM.");
             console.log("To avoid accidentally and permanently deleting important data, this must be uninstalled manually by deleting the folder and all references to it in your config.json");
             return;
         } catch (e) {}

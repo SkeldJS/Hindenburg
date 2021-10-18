@@ -262,19 +262,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 ev.setSettings(this.config.enforceSettings);
             }
         });
-
-        this.on("room.gamestart", () => {
-            this.logger.info("Game started");
-        });
-
-        this.on("room.gameend", ev => {
-            this.logger.info("Game ended: %s", GameOverReason[ev.reason]);
-
-            setImmediate(() => {
-                this.logger.info("Clearing connections for clients to re-join");
-                this.connections.clear();
-            });
-        });
     }
 
     async emit<Event extends RoomEvents[keyof RoomEvents]>(
@@ -386,7 +373,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const ev = await this.emit(
             new RoomFixedUpdateEvent(
                 this,
-                this.stream
+                this.stream,
+                delta
             )
         );
 
@@ -714,24 +702,18 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async handleRemoteJoin(joiningClient: Connection) {
+        console.log("b");
         if (this.connections.get(joiningClient.clientId))
             return;
 
-
-        if (this.hostIsMe) {
-            if (!this.lobbyBehaviour && this.state === GameState.NotStarted) {
-                this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
-            }
-
-            if (!this.gameData) {
-                this.spawnPrefab(SpawnType.GameData, -2);
-            }
-        }
+        console.log("c");
 
         const joiningPlayer = await this.handleJoin(joiningClient.clientId) || this.players.get(joiningClient.clientId);
 
         if (!joiningPlayer)
             return;
+
+        console.log("d");
 
         if (this.config.serverAsHost) {
             if (this.actingHostIds.size === 0) {
@@ -757,6 +739,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
                 this.logger.info("%s joined, joining other clients..",
                     joiningPlayer);
+
+                this.state = GameState.NotStarted;
 
                 if (this.config.serverAsHost) {
                     const promises = [];
@@ -869,13 +853,24 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             )
         );
 
-        await this.broadcastMessages([], [
-            new JoinGameMessage(
-                this.code,
-                joiningClient.clientId,
-                this.hostId
-            )
-        ]);
+        const promises = [];
+        for (const [ clientId, connection ] of this.connections) {
+            if (this.players.has(clientId)) {
+                promises.push(connection.sendPacket(
+                    new ReliablePacket(
+                        connection.getNextNonce(),
+                        [
+                            new JoinGameMessage(
+                                this.code,
+                                joiningClient.clientId,
+                                this.hostId
+                            )
+                        ]
+                    )
+                ));
+            }
+        }
+        await Promise.all(promises);
 
         this.connections.set(joiningClient.clientId, joiningClient);
 
@@ -890,6 +885,20 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             "%s joined the game",
             joiningClient
         );
+
+        if (this.state === GameState.Ended) {
+            this.state = GameState.NotStarted;
+        }
+
+        if (this.hostIsMe) {
+            if (!this.lobbyBehaviour && this.state === GameState.NotStarted) {
+                this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
+            }
+
+            if (!this.gameData) {
+                this.spawnPrefab(SpawnType.GameData, -2);
+            }
+        }
     }
 
     async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.None) {
@@ -1038,6 +1047,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             new StartGameMessage(this.code)
         ]);
 
+        this.logger.info("Game started");
+
         if (this.hostIsMe) {
             await Promise.race([
                 Promise.all(
@@ -1080,6 +1091,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 );
             }
 
+            this.meetingHud;
+
             if (this.lobbyBehaviour)
                 this.despawnComponent(
                     this.lobbyBehaviour
@@ -1093,12 +1106,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 SpawnType.Airship
             ];
 
+            console.log("hello");
+
             this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
             await this.shipStatus?.selectImpostors();
-
-            for (const [, player] of this.players) {
-                this.gameData?.setTasks(player, [1, 2, 3]);
-            }
+            await this.shipStatus?.assignTasks();
         }
     }
 
@@ -1126,6 +1138,17 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         await this.broadcastMessages([], [
             new EndGameMessage(this.code, reason, false)
         ]);
+
+        this.logger.info("Game ended: %s", GameOverReason[ev.reason]);
+
+        setImmediate(() => {
+            this.logger.info("Clearing connections for clients to re-join");
+            this.connections.clear();
+        });
+    }
+
+    async endGame(reason: GameOverReason) {
+        await this.handleEnd(reason);
     }
 
     private getOtherPlayer(base: PlayerData) {

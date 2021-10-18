@@ -1244,9 +1244,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * }
      * ```
      */
-    async sendChat(message: string, options: Partial<SendChatOptions> = {}): Promise<void> {
+    async sendChat(message: string, options: Partial<SendChatOptions> = {}): Promise<boolean> {
         if (!this.gameData)
-            throw new TypeError("No gamedata spawned.");
+            return false;
 
         const colorMap = Color as any as {[key: string]: Color};
         const hatMap = Hat as any as {[key: string]: Hat};
@@ -1274,6 +1274,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             }
         }
         await Promise.all(promises);
+        return true;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -129,7 +129,7 @@ async function runCreatePlugin() {
     const { useTypescript } = await prompts({
         type: "confirm",
         name: "useTypescript",
-        message: "Use typescript?",
+        message: "Use typescript (recommended)?",
         initial: true
     });
 

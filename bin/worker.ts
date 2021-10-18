@@ -235,8 +235,8 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
         await checkForUpdates(logger, workerConfig.autoUpdate);
     }
 
-    const pluginDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
-    const worker = new Worker("TEST", 0, workerConfig, pluginDirectory);
+    const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
+    const worker = new Worker("TEST", 0, workerConfig, pluginsDirectories);
 
     if (!resolvedConfig) {
         worker.logger.warn("Cannot open config file; using default config");

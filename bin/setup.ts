@@ -23,60 +23,66 @@ const defaultPackageJson = {
     }
 };
 
-const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.join(process.cwd(), "./plugins");
+const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 
 export default (async () => {
     const logger = new Logger;
 
-    const yarnLockFile = path.join(pluginsDirectory, "yarn.lock");
+    for (let i = 0; i < pluginsDirectories.length; i++) {
+        const pluginsDirectory = pluginsDirectories[i];
 
-    const packageJsonFile = path.join(pluginsDirectory, "package.json");
-    const pluginsSpinner = new Spinner("Creating plugins directory.. %s").start();
-    if (!await doesExist(pluginsDirectory)) {
-        try {
-            await fs.mkdir(pluginsDirectory);
-            await fs.writeFile(yarnLockFile, "", "utf8");
-            await fs.writeFile(packageJsonFile, JSON.stringify(defaultPackageJson, undefined, 4), "utf8");
-            pluginsSpinner.success();
-        } catch (e) {
-            pluginsSpinner.fail();
-            logger.error("Failed to create plugins directory: %s", e);
-            return;
+        logger.info("Checking plugin directory '%s'..", pluginsDirectory);
+
+        const yarnLockFile = path.join(pluginsDirectory, "yarn.lock");
+
+        const packageJsonFile = path.join(pluginsDirectory, "package.json");
+        const pluginsSpinner = new Spinner("Creating plugins directory.. %s").start();
+        if (!await doesExist(pluginsDirectory)) {
+            try {
+                await fs.mkdir(pluginsDirectory);
+                await fs.writeFile(yarnLockFile, "", "utf8");
+                await fs.writeFile(packageJsonFile, JSON.stringify(defaultPackageJson, undefined, 4), "utf8");
+                pluginsSpinner.success();
+            } catch (e) {
+                pluginsSpinner.fail();
+                logger.error("Failed to create plugins directory: %s", e);
+                continue;
+            }
         }
-    }
 
-    if (!await doesExist(yarnLockFile)) {
-        try {
-            await fs.writeFile(yarnLockFile, "", "utf8");
-        } catch (e) {
-            pluginsSpinner.fail();
-            logger.error("Failed to create plugins directory: %s", e);
-            return;
+        if (!await doesExist(yarnLockFile)) {
+            try {
+                await fs.writeFile(yarnLockFile, "", "utf8");
+            } catch (e) {
+                pluginsSpinner.fail();
+                logger.error("Failed to create plugins directory: %s", e);
+                continue;
+            }
         }
-    }
 
-    if (!await doesExist(packageJsonFile)) {
-        try {
-            await fs.writeFile(
-                packageJsonFile,
-                JSON.stringify(defaultPackageJson, undefined, 4),
-                "utf8"
-            );
-        } catch (e) {
-            pluginsSpinner.fail();
-            logger.error("Failed to create plugins directory: %s", e);
-            return;
+        if (!await doesExist(packageJsonFile)) {
+            try {
+                await fs.writeFile(
+                    packageJsonFile,
+                    JSON.stringify(defaultPackageJson, undefined, 4),
+                    "utf8"
+                );
+            } catch (e) {
+                pluginsSpinner.fail();
+                logger.error("Failed to create plugins directory: %s", e);
+                continue;
+            }
         }
-    }
-    pluginsSpinner.success();
+        pluginsSpinner.success();
 
-    const installingSpinner = new Spinner("Installing plugins.. %s").start();
-    try {
-        await runCommandInDir(pluginsDirectory, "yarn install");
-        installingSpinner.success();
-    } catch (e) {
-        installingSpinner.fail();
+        const installingSpinner = new Spinner("Installing plugins.. %s").start();
+        try {
+            await runCommandInDir(pluginsDirectory, "yarn install");
+            installingSpinner.success();
+        } catch (e) {
+            installingSpinner.fail();
+        }
     }
 
     let flag = false;

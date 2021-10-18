@@ -182,7 +182,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
          * The global configuration for Hindenburg.
          */
         config: HindenburgConfig,
-        pluginDirectory: string
+        pluginDirectories: string[]
     ) {
         super();
 
@@ -196,7 +196,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.logger = new Logger(undefined, this.vorpal);
 
-        this.pluginLoader = new PluginLoader(this, pluginDirectory);
+        this.pluginLoader = new PluginLoader(this, pluginDirectories);
         this.loadedPlugins = new Map;
         this.reactorRpcHandlers = new Map;
 

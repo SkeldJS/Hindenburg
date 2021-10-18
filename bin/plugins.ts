@@ -12,8 +12,8 @@ import { runCommandInDir } from "./util/runCommandInDir";
 import { Spinner } from "./util/Spinner";
 import { PluginLoader } from "../src/handlers";
 
-const pluginsDirectory = process.env.HINDENBURG_PLUGINS || path.resolve(process.cwd(), "./plugins");
-const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
+const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
+const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 
 async function buildHindenburg(logger: Logger) {
     const buildSpinner = new Spinner("Building Hindenburg.. %s").start();
@@ -44,7 +44,7 @@ export default class extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomP
 }\n`.trim();
 }
 
-async function getPackageInfo(packageName: string, logger: Logger) {
+async function getPackageInfo(pluginsDirectory: string, packageName: string, logger: Logger) {
     const pluginInfoSpinner = new Spinner("Fetching plugin information.. %s").start();
     try {
         const packageInfoData = await runCommandInDir(pluginsDirectory, "yarn npm info " + packageName + " --json");
@@ -70,6 +70,26 @@ async function getPackageInfo(packageName: string, logger: Logger) {
     }
 }
 
+async function choosePluginsDirectory() {
+    if (pluginsDirectories.length === 1) {
+        return pluginsDirectories[0];
+    }
+
+    const { pluginsDirectory } = await prompts({
+        type: "select",
+        name: "pluginsDirectory",
+        message: "Choose plugin directory",
+        choices: pluginsDirectories.map(directory => {
+            return {
+                title: chalk.grey(directory),
+                value: directory
+            };
+        })
+    });
+
+    return pluginsDirectory;
+}
+
 async function runCreatePlugin() {
     const logger = new Logger;
 
@@ -77,6 +97,20 @@ async function runCreatePlugin() {
 
     if (!argvPluginName) {
         logger.error("Expected plugin name as an argument, usage: `yarn plugins create <plugiun name>`.");
+        return;
+    }
+
+    const pluginsDirectory = await choosePluginsDirectory();
+
+    try {
+        const stat = await fs.stat(pluginsDirectory);
+
+        if (!stat.isDirectory()) {
+            logger.error("Plugins directory found but was not a directory, please delete the file and run 'yarn setup'");
+            return;
+        }
+    } catch (e) {
+        logger.error("Plugins directory not found or inaccessible, please run 'yarn setup'");
         return;
     }
 
@@ -354,6 +388,20 @@ async function runInstallPlugin() {
         return;
     }
 
+    const pluginsDirectory = await choosePluginsDirectory();
+
+    try {
+        const stat = await fs.stat(pluginsDirectory);
+
+        if (!stat.isDirectory()) {
+            logger.error("Plugins directory found but was not a directory, please delete the file and run 'yarn setup'");
+            return;
+        }
+    } catch (e) {
+        logger.error("Plugins directory not found or inaccessible, please run 'yarn setup'");
+        return;
+    }
+
     const pluginName = argvPluginName.startsWith("hbplugin-")
         ? argvPluginName
         : "hbplugin-" + argvPluginName;
@@ -366,7 +414,7 @@ async function runInstallPlugin() {
         return;
     } catch (e) { void e; }
 
-    const packageInfoJson = await getPackageInfo(pluginName, logger);
+    const packageInfoJson = await getPackageInfo(pluginsDirectory, pluginName, logger);
 
     let installingText = "Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version);
     if (packageInfoJson.maintainers[0]) {
@@ -465,6 +513,20 @@ async function runUninstallPlugin() {
         return;
     }
 
+    const pluginsDirectory = await choosePluginsDirectory();
+
+    try {
+        const stat = await fs.stat(pluginsDirectory);
+
+        if (!stat.isDirectory()) {
+            logger.error("Plugins directory found but was not a directory, please delete the file and run 'yarn setup'");
+            return;
+        }
+    } catch (e) {
+        logger.error("Plugins directory not found or inaccessible, please run 'yarn setup'");
+        return;
+    }
+
     const pluginName = argvPluginName.startsWith("hbplugin-")
         ? argvPluginName
         : "hbplugin-" + argvPluginName;
@@ -544,7 +606,7 @@ async function runInfo() {
         ? argvPluginName
         : "hbplugin-" + argvPluginName;
 
-    const packageInfoJson = await getPackageInfo(pluginName, logger);
+    const packageInfoJson = await getPackageInfo(process.cwd(), pluginName, logger);
 
     if (!packageInfoJson)
         return;
@@ -552,24 +614,27 @@ async function runInfo() {
     let pluginType: "worker"|"room"|undefined = undefined;
     let pluginVersion = packageInfoJson.version;
 
-    const verifySpinner = new Spinner("Checking installation.. %s").start();
-    try {
-        const packageLocation = resolveFrom(pluginsDirectory, packageInfoJson.name);
-        const { default: importedPlugin } = await import(packageLocation);
+    const verifySpinner = new Spinner("Checking for local installation.. %s").start();
+    for (const pluginsDirectory of pluginsDirectories) {
+        try {
+            const packageLocation = resolveFrom(pluginsDirectory, packageInfoJson.name);
+            const { default: importedPlugin } = await import(packageLocation);
 
-        if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
-            throw 0;
-        }
-        verifySpinner.success();
+            if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
+                throw 0;
+            }
 
-        if (PluginLoader.isWorkerPlugin(importedPlugin)) {
-            pluginType = "worker";
-        } else if (PluginLoader.isRoomPlugin(importedPlugin)) {
-            pluginType = "room";
-        }
+            if (PluginLoader.isWorkerPlugin(importedPlugin)) {
+                pluginType = "worker";
+            } else if (PluginLoader.isRoomPlugin(importedPlugin)) {
+                pluginType = "room";
+            }
 
-        pluginVersion = importedPlugin.meta.version;
-    } catch (e) { verifySpinner.fail();  }
+            pluginVersion = importedPlugin.meta.version;
+            break;
+        } catch (e) { continue; }
+    }
+    verifySpinner.success();
 
     logger.info(chalk.green(packageInfoJson.name) + chalk.gray("@v" + pluginVersion));
     if (packageInfoJson.maintainers[0]) {
@@ -590,46 +655,50 @@ async function runInfo() {
 async function runList() {
     const logger = new Logger;
 
-    const resolveNpmSpinner = new Spinner("Resolving NPM plugins.. %s").start();
     const allInstalledPlugins = [];
-    try {
-        const packageJson = await fs.readFile(path.join(pluginsDirectory, "package.json"), "utf8");
-        const json = JSON.parse(packageJson);
+    for (const pluginsDirectory of pluginsDirectories) {
+        logger.info("Fetching from '%s'..", chalk.grey(pluginsDirectory));
 
-        for (const depenencyName in json.dependencies) {
-            allInstalledPlugins.push({
-                name: depenencyName,
-                type: "npm"
-            });
+        const resolveNpmSpinner = new Spinner("Resolving NPM plugins.. %s").start();
+        try {
+            const packageJson = await fs.readFile(path.join(pluginsDirectory, "package.json"), "utf8");
+            const json = JSON.parse(packageJson);
+
+            for (const depenencyName in json.dependencies) {
+                allInstalledPlugins.push({
+                    name: depenencyName,
+                    type: "npm"
+                });
+            }
+
+            resolveNpmSpinner.success();
+        } catch (e) {
+            resolveNpmSpinner.fail();
+            if ((e as { code: string }).code === "ENOENT") {
+                return;
+            }
+            logger.error("Failed to resovle npm plugins: %s", (e as any).message || e);
+            continue;
         }
 
-        resolveNpmSpinner.success();
-    } catch (e) {
-        resolveNpmSpinner.fail();
-        if ((e as { code: string }).code === "ENOENT") {
-            return;
-        }
-        logger.error("Failed to resovle npm plugins: %s", (e as any).message || e);
-        return;
-    }
+        const resolveLocalSpinner = new Spinner("Resolving local plugins..").success();
+        try {
+            const files = await fs.readdir(pluginsDirectory);
+            for (const file of files) {
+                if (!file.startsWith("hbplugin-"))
+                    continue;
 
-    const resolveLocalSpinner = new Spinner("Resolving local plugins..").success();
-    try {
-        const files = await fs.readdir(pluginsDirectory);
-        for (const file of files) {
-            if (!file.startsWith("hbplugin-"))
-                continue;
-
-            allInstalledPlugins.push({
-                name: path.basename(path.basename(file, ".ts"), ".js"),
-                type: "local"
-            });
+                allInstalledPlugins.push({
+                    name: path.basename(path.basename(file, ".ts"), ".js"),
+                    type: "local"
+                });
+            }
+            resolveLocalSpinner.success();
+        } catch (e) {
+            resolveLocalSpinner.fail();
+            logger.error("Could not read plugin directory: %s", (e as any).code || e);
+            continue;
         }
-        resolveLocalSpinner.success();
-    } catch (e) {
-        resolveLocalSpinner.fail();
-        logger.error("Could not read plugin directory: %s", (e as any).code || e);
-        return;
     }
 
     logger.info("%s plugin%s installed",
@@ -644,19 +713,7 @@ async function runList() {
 (async () => {
     const logger = new Logger;
 
-    try {
-        const stat = await fs.stat(pluginsDirectory);
-
-        if (!stat.isDirectory()) {
-            logger.error("Plugins directory found but was not a directory, please delete the file and run 'yarn setup'");
-            return;
-        }
-    } catch (e) {
-        logger.error("Plugins directory not found or inaccessible, please run 'yarn setup'");
-        return;
-    }
-
-    logger.info("Found plugins directory: %s", chalk.grey(pluginsDirectory));
+    logger.info("Found plugins directory: %s", chalk.grey(pluginsDirectories));
 
     const action = process.argv[2];
 

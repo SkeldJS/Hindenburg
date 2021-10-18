@@ -348,7 +348,7 @@ export class PluginLoader {
      * Create a plugin loader. Note that the worker instantiates one itself, see
      * {@link Worker.pluginLoader}.
      * @param worker The worker that the plugin loader is for.
-     * @param pluginDirectory The base directory for installed plugins.
+     * @param pluginDirectories The base directory for installed plugins.
      * @example
      * ```ts
      * const pluginLoader = new PluginLoader(this.worker, "/home/user/hindenburg/plugins");
@@ -362,7 +362,7 @@ export class PluginLoader {
         /**
          * The base directory for installed plugins.
          */
-        public readonly pluginDirectory: string
+        public readonly pluginDirectories: string[]
     ) {
         this.workerPlugins = new Map;
         this.roomPlugins = new Map;
@@ -476,22 +476,26 @@ export class PluginLoader {
      * ```
      */
     async importFromId(id: string) {
-        const resolvedPkg = resolvePkg(id, { cwd: this.pluginDirectory });
+        for (const pluginDirectory of this.pluginDirectories) {
+            const resolvedPkg = resolvePkg(id, { cwd: pluginDirectory });
 
-        const pluginPath = resolvedPkg
-            || path.resolve(this.pluginDirectory, "./" + id);
+            const pluginPath = resolvedPkg
+                || path.resolve(pluginDirectory, "./" + id);
 
-        const pluginCtr = await this.importPlugin(pluginPath);
+            const pluginCtr = await this.importPlugin(pluginPath);
 
-        if (!pluginCtr) {
-            return undefined;
+            if (!pluginCtr) {
+                continue;
+            }
+
+            return pluginCtr;
         }
 
-        return pluginCtr;
+        return undefined;
     }
 
     /**
-     * Import all plugins from the {@link PluginLoader.pluginDirectory}, from
+     * Import all plugins from the {@link PluginLoader.pluginDirectories}, from
      * both installed NPM plugins and local plugin folders.
      *
      * Does not load any of the plugins into the worker or a room, see {@link
@@ -506,42 +510,40 @@ export class PluginLoader {
      * ```
      */
     async importFromDirectory() {
-        if (!path.isAbsolute(this.pluginDirectory)) {
-            throw new Error("Expected an absolute path to a plugin directory");
-        }
-
         const importedPlugins: Map<string, typeof WorkerPlugin|typeof RoomPlugin> = new Map;
 
         const pluginPaths: string[] = [];
 
-        try {
-            const packageJson = await fs.readFile(path.resolve(this.pluginDirectory, "package.json"), "utf8");
-            const json = JSON.parse(packageJson) as { dependencies: Record<string, string> };
+        for (const pluginDirectory of this.pluginDirectories) {
+            try {
+                const packageJson = await fs.readFile(path.resolve(pluginDirectory, "package.json"), "utf8");
+                const json = JSON.parse(packageJson) as { dependencies: Record<string, string> };
 
-            for (const dependencyName in json.dependencies) {
-                if (dependencyName.startsWith("hbplugin-")) {
-                    const resolvedPkg = resolvePkg(dependencyName, { cwd: this.pluginDirectory });
-                    if (resolvedPkg) {
-                        pluginPaths.push(resolvedPkg);
+                for (const dependencyName in json.dependencies) {
+                    if (dependencyName.startsWith("hbplugin-")) {
+                        const resolvedPkg = resolvePkg(dependencyName, { cwd: pluginDirectory });
+                        if (resolvedPkg) {
+                            pluginPaths.push(resolvedPkg);
+                        }
                     }
                 }
-            }
-        } catch (e) {
-            if ((e as any).code !== undefined) {
-                if ((e as any).code === "ENOENT") {
-                    this.worker.logger.warn("No package.json in plugin directory");
+            } catch (e) {
+                if ((e as any).code !== undefined) {
+                    if ((e as any).code === "ENOENT") {
+                        this.worker.logger.warn("No package.json in plugin directory '%s'", chalk.grey(pluginDirectory));
+                    }
+
+                    this.worker.logger.warn("Could not open package.json at '%s': %s", chalk.grey(pluginDirectory), (e as any).code);
+                } else {
+                    throw e;
                 }
-
-                this.worker.logger.warn("Could not open package.json: %s", (e as any).code);
-            } else {
-                throw e;
             }
-        }
 
-        const filesInDir = await fs.readdir(this.pluginDirectory);
-        for (const file of filesInDir) {
-            if (file.startsWith("hbplugin-")) {
-                pluginPaths.push(path.resolve(this.pluginDirectory, file));
+            const filesInDir = await fs.readdir(pluginDirectory);
+            for (const file of filesInDir) {
+                if (file.startsWith("hbplugin-")) {
+                    pluginPaths.push(path.resolve(pluginDirectory, file));
+                }
             }
         }
 

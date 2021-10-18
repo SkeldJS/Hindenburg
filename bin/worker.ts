@@ -165,10 +165,10 @@ async function getInternalIp() {
 async function fetchUpdates(logger: Logger) {
     const gitPullSpinner = new Spinner("Pulling from remote repository.. %s").start();
     try {
-        await runCommandInDir(process.cwd(), "git pull");
+        await runCommandInDir(process.cwd(), "git pull origin master");
         gitPullSpinner.success();
 
-        const installSpinner = new Spinner("Installing dependencies.. %s").start();
+        const installSpinner = new Spinner("Updating dependencies.. %s").start();
         try {
             await runCommandInDir(process.cwd(), "yarn");
             installSpinner.fail();

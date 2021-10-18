@@ -356,7 +356,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 if (args["plugin id"] === "all") {
                     for (const [ pluginId ] of extendable.loadedPlugins) {
-                        this.pluginLoader.unloadPlugin(pluginId);
+                        if (roomName) {
+                            this.pluginLoader.unloadPlugin(pluginId, extendable as Room);
+                        } else {
+                            this.pluginLoader.unloadPlugin(pluginId);
+                        }
                     }
                     return;
                 }

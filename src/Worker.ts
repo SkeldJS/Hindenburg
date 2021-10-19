@@ -397,7 +397,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--reload, -r", "Whether to reload the plugin if it's already loaded")
             .autocomplete({
                 data: async () => {
-                    return [...this.loadedPlugins.keys()];
+                    return [...this.pluginLoader.workerPlugins.keys(),...this.pluginLoader.roomPlugins.keys()];
                 }
             })
             .action(async args => {

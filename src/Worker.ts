@@ -312,6 +312,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal
             .command("list plugins [room code]", "List all plugins loaded into the server or into a room.")
             .alias("ls p")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
             .action(async args => {
                 const roomName = args["room code"]
                     ? args["room code"].toUpperCase()
@@ -340,6 +345,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("unload <plugin id> [room code]", "Unload a plugin loaded into the server or into a room, pass 'all' into 'plugin id' to unload all plugins.")
+            .autocomplete({
+                data: async () => {
+                    return [...this.loadedPlugins.keys()];
+                }
+            })
             .action(async args => {
                 const roomName = args["room code"]
                     ? args["room code"].toUpperCase()
@@ -385,6 +395,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("load <plugin id> [room code]", "Load a plugin into the server or into the room, importing if necessary, pass 'all' into 'plugin id' to load all plugins.")
             .option("--hot, -h", "Whether to re-import the plugin if it's already imported")
             .option("--reload, -r", "Whether to reload the plugin if it's already loaded")
+            .autocomplete({
+                data: async () => {
+                    return [...this.loadedPlugins.keys()];
+                }
+            })
             .action(async args => {
                 const roomName = args["room code"]
                     ? args["room code"].toUpperCase()
@@ -437,6 +452,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal
             .command("list mods <client id>", "List all of a client's mods.")
             .alias("ls mods")
+            .autocomplete({
+                data: async () => {
+                    return [...this.connections.values()].map(cl => ""+cl.clientId);
+                }
+            })
             .action(async args => {
                 for (const [ , connection ] of this.connections) {
                     if (
@@ -457,6 +477,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal
             .command("list players <room code>", "List all players in a room.")
             .alias("ls players")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
@@ -480,6 +505,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal
             .command("list pov <room code>", "List all active perspectives in a room.")
             .alias("ls pov")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
@@ -502,6 +532,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.vorpal
             .command("list settings <room code>", "List the game settings of a room.")
             .alias("ls settings")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"

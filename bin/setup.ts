@@ -111,6 +111,8 @@ export default (async () => {
     if (flag) {
         const defaultConfig = createDefaultConfig();
 
+        (defaultConfig as any)["$schema"] = "./misc/config.schema.json";
+
         const { reactorSupport } = await prompts({
             type: "confirm",
             name: "reactorSupport",

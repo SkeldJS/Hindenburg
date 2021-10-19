@@ -228,11 +228,11 @@
                       "properties": {
                         "optional": {
                           "type": "boolean",
-                          "description": "Whether this mod is optional, and clients can connect without it. If the client does have this mod, then it still must be the same version as the one specified in {@link ReactorModConfig.version}."
+                          "description": "Whether this mod is optional, and clients can connect without it."
                         },
                         "banned": {
                           "type": "boolean",
-                          "description": "Whether this mod is banned, only really applies when 'allowExtraMods' is enabled, as otherwise, only mods in the {@link ReactorConfig.mods} would be accepted anyway."
+                          "description": "Whether clients with this mod cannot connect."
                         },
                         "version": {
                           "type": "string",
@@ -407,12 +407,26 @@
           }
         },
         "plugins": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
+          "type": "object",
+          "description": "Options regarding plugins, such as disabling them or passing configuration options.",
+          "properties": {
+            "loadDirectory": {
+              "type": "boolean",
+              "description": "Whether to load all plugins in the plugin directory."
             }
-          ]
+          },
+          "patternProperties": {
+            ".+": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            }
+          }
         },
         "serverAsHost": {
           "type": "boolean",

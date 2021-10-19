@@ -702,18 +702,13 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async handleRemoteJoin(joiningClient: Connection) {
-        console.log("b");
         if (this.connections.get(joiningClient.clientId))
             return;
-
-        console.log("c");
 
         const joiningPlayer = await this.handleJoin(joiningClient.clientId) || this.players.get(joiningClient.clientId);
 
         if (!joiningPlayer)
             return;
-
-        console.log("d");
 
         if (this.config.serverAsHost) {
             if (this.actingHostIds.size === 0) {
@@ -1105,8 +1100,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 SpawnType.AprilShipStatus,
                 SpawnType.Airship
             ];
-
-            console.log("hello");
 
             this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
             await this.shipStatus?.selectImpostors();

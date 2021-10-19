@@ -1,0 +1,265 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Installation | @skeldjs/hindenburg</title>
+	<meta name="description" content="Documentation for @skeldjs/hindenburg">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../../index.html" class="title">@skeldjs/hindenburg</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../../modules.html">Globals</a>
+				</li>
+				<li>
+					<a href="Installation.html">Getting Started</a>
+				</li>
+				<li>
+					<a href="Installation.html">Installation</a>
+				</li>
+			</ul>
+			<h1>Installation</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#discord-server" id="discord-server" style="color: inherit; text-decoration: none;">
+					<h3>Discord Server</h3>
+				</a>
+				<p>If you&#39;re ever having issues installing Hindenburg, want to discuss updates or
+				just want to chat, you can join the <a href="https://discord.gg/8ewNJYmYAU">discord server</a>.</p>
+				<a href="#copy-the-source-code" id="copy-the-source-code" style="color: inherit; text-decoration: none;">
+					<h3>Copy the Source Code</h3>
+				</a>
+				<p>Hindenburg uses <a href="https://nodejs.org">Node.js</a>, so it can run on virtually every
+				platform with no configuration.</p>
+				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
+					<h4>Prerequisites</h4>
+				</a>
+				<p>You will need to install the following programs to get started with Hindenburg.</p>
+				<ul>
+					<li><a href="https://nodejs.org">Node.js</a></li>
+					<li><a href="https://npmjs.com">NPM</a> (Comes pre-installed with Node.js)</li>
+					<li><a href="https://git-scm.org">Git</a></li>
+					<li>A terminal of your choice (You can just use Windows command prompt)</li>
+				</ul>
+				<p>Open your command prompt in the folder where you want to install Hindenburg.</p>
+				<blockquote>
+					<p>If you&#39;re unsure about this, check out <a href="https://www.wikihow.com/Open-a-Folder-in-Cmd">this wikihow article</a>.</p>
+				</blockquote>
+				<p>Run the following commands:</p>
+				<p><strong>Clone the repository from GitHub</strong></p>
+				<pre><code class="language-sh"><span style="color: #000000">git clone https://github.com/skeldjs/Hindenburg</span>
+</code></pre>
+				<p><strong>Move into the cloned folder</strong></p>
+				<pre><code class="language-sh"><span style="color: #795E26">cd</span><span style="color: #000000"> Hindenburg</span>
+</code></pre>
+				<p><strong>Install dependencies</strong></p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn</span>
+</code></pre>
+				<p><strong>Build Hindenburg</strong></p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn build</span>
+</code></pre>
+				<p>Hindenburg should now be ready to roll!</p>
+				<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
+					<h3>Setup</h3>
+				</a>
+				<p>Hindenburg will run a short setup the first time you <a href="#Quick%20Start">start it</a>
+					(or you can manually run the <code>yarn setup</code> command), running through a few basic
+					configuration questions. You can just accept the recommended answers if you&#39;re
+				unsure.</p>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h3>Configuration</h3>
+				</a>
+				<p>Hindenburg will look for a <code>config.json</code> in the folder where you start the server,
+					see the <code>HINDENBURG_CONFIG</code> <a href="#Hindenburg%20Config">environment variable</a>
+				to change where Hindenburg looks for a config file.</p>
+				<p>By default, Hindenburg will automatically check for updates from the github
+					repository, you can configure Hindenburg to auto-update, or to stop checking for
+				updates completely.</p>
+				<p>Check out the <a href="Configuration.html">Configuration</a> guide for more
+				information.</p>
+				<a href="#environment-variables" id="environment-variables" style="color: inherit; text-decoration: none;">
+					<h3>Environment Variables</h3>
+				</a>
+				<p>Hindenburg also allows you to change where your config file is located and also
+				where to find locally installed plugins.</p>
+				<blockquote>
+					<p>Follow <a href="https://www.architectryan.com/2018/08/31/how-to-change-environment-variables-on-windows-10/">this article</a>
+					if you&#39;re unsure how to set environment variables on Windows.</p>
+				</blockquote>
+				<blockquote>
+					<p>On MacOS or Linux, you can check out <a href="https://linuxconfig.org/how-to-set-and-list-environment-variables-on-linux">this article</a>.</p>
+				</blockquote>
+				<a href="#hindenburg_config" id="hindenburg_config" style="color: inherit; text-decoration: none;">
+					<h4><code>HINDENBURG_CONFIG</code></h4>
+				</a>
+				<p>Absolute path to Hindenburg&#39;s <code>config.json</code></p>
+				<p><strong>Example:</strong> <code>HINDENBURG_CONFIG=&quot;C:/Users/Edward/Documents/Hindenburg/config.json&quot;</code></p>
+				<blockquote>
+					<p>Check out the <a href="Configuration.html">Configuration</a> guide for more
+					information on configuring Hindenburg.</p>
+				</blockquote>
+				<a href="#hindenburg_plugins" id="hindenburg_plugins" style="color: inherit; text-decoration: none;">
+					<h4><code>HINDENBURG_PLUGINS</code></h4>
+				</a>
+				<p>A list of absolute paths to folders where Hindenburg can look for locally installed folders
+				on your machine, separated by commas (<code>,</code>).</p>
+				<p><strong>Example:</strong> <code>HINDENBURG_PLUGINS=&quot;C:/Users/Edward/Documents/Hindenburg/plugins,C:/Users/Edward/Downloads/Hindenburg Plugins&quot;</code></p>
+				<a href="#quick-start" id="quick-start" style="color: inherit; text-decoration: none;">
+					<h3>Quick Start</h3>
+				</a>
+				<a href="#in-production" id="in-production" style="color: inherit; text-decoration: none;">
+					<h4>In Production</h4>
+				</a>
+				<p>If you want to run Hindenburg in production (i.e. You&#39;re not planning on doing
+				any debugging or development) then you can use <code>yarn start</code>.</p>
+				<blockquote>
+					<p>Remember to build Hindenburg with <code>yarn build</code> beforehand.</p>
+				</blockquote>
+				<a href="#in-development" id="in-development" style="color: inherit; text-decoration: none;">
+					<h4>In Development</h4>
+				</a>
+				<p>If you&#39;re developing with Hindenburg (e.g. plugins or Hindenburg itself), you can
+					run <code>yarn dev</code>. This will compile all of the typescript files on the fly so you
+				don&#39;t have to worry about building all the time.</p>
+				<a href="#advanced-start" id="advanced-start" style="color: inherit; text-decoration: none;">
+					<h3>Advanced Start</h3>
+				</a>
+				<p>if you&#39;re looking to host a Hindenburg server full-time and want to make sure that
+					your server never goes down if Hindenburg ever crashes (<a href="https://en.wikipedia.org/wiki/Hindenburg_disaster">it would not be the first time</a>),
+					you can use a process manager like <code>pm2</code> to ensure your server restarts if it
+				goes down.</p>
+				<p>If you&#39;re hosting multiple Hindenburg server nodes and want a way to balance
+				connection load between them, check out the official <a href="https://github.com/SkeldJS/Hindenburg-Loadbalancer">load-balancer</a>.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="label pp-nav pp-group">
+						<span>Getting <wbr>Started</span>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Installation.html">Installation</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Configuration.html">Configuration</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Information</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Interactive CLI.html">Interactive CLI</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Plugins.html">Plugins</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Reactor Support.html">Reactor <wbr>Support</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
+					</li>
+					<li class=" ">
+						<a href="../../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
+</body>
+</html>

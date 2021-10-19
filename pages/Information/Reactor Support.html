@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Plugins | @skeldjs/hindenburg</title>
+	<title>Reactor Support | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -57,13 +57,13 @@
 					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Installation.html">Setting Up</a>
+					<a href="Chat Commands.html">Information</a>
 				</li>
 				<li>
-					<a href="Plugins.html">Plugins</a>
+					<a href="Reactor Support.html">Reactor Support</a>
 				</li>
 			</ul>
-			<h1>Plugins</h1>
+			<h1>Reactor Support</h1>
 		</div>
 	</div>
 </header>
@@ -71,96 +71,51 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#plugins" id="plugins" style="color: inherit; text-decoration: none;">
-					<h1>Plugins</h1>
+				<p>Hindenburg provides native support for <a href="https://reactor.gg">Reactor</a>, a client-side
+				modding framework, used by many developers and public mods.</p>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h3>Configuration</h3>
 				</a>
-				<p>Hindenburg has some useful scripts that can be used to manage plugins, such as
-				installing, uninstalling and creating your own.</p>
-				<blockquote>
-					<p>You can use the <code>HINDENBURG_PLUGINS</code> environment variable to specify the location
-					of your plugins.</p>
-				</blockquote>
-				<a href="#install-plugins" id="install-plugins" style="color: inherit; text-decoration: none;">
-					<h2>Install Plugins</h2>
+				<p><a href="../Getting Started/Installation.html">If you&#39;re running a server yourself</a>, you&#39;ll find that Hindenburg provides great support all-round for Reactor, <a href="../Getting Started/Configuration.html">with configuration options to ensure players are using Reactor</a>, <em>and</em> the correct mods, even allowing you to ban certain mods and requiring specific versions for mods that you allow.</p>
+				<p>Hindenburg also gives you access to see the mods of specific players, with <a href="/Using%20Hindenburg/Logs">excellent logging</a> when they connect and an <a href="/Using%20Hindenburg/Interactive%20CLI#list-mods">interactive CLI to check up on them</a>.</p>
+				<a href="#plugin-support" id="plugin-support" style="color: inherit; text-decoration: none;">
+					<h3>Plugin Support</h3>
 				</a>
-				<p>Install a plugin via NPM:</p>
-				<pre><code class="language-sh"><span style="color: #000000">yarn plugins install &lt;plugin name&gt;</span>
-</code></pre>
-				<a href="#manual-install" id="manual-install" style="color: inherit; text-decoration: none;">
-					<h3>Manual Install</h3>
-				</a>
-				<p>Alternatively, if you have access to the plugin&#39;s source, you can manually install
-					a plugin. This is helpful if you want to run and modify your plugin in a development
-				environment.</p>
-				<p>You can simply copy the folder (<code>git clone</code> your repository) into your plugins
-				directory.</p>
-				<p>Remember to build your plugin before every change, or use typescript&#39;s <a href="https://www.typescriptlang.org/docs/handbook/configuring-watch.html">watch</a>
-				functionality.</p>
-				<a href="#uninstall-plugins" id="uninstall-plugins" style="color: inherit; text-decoration: none;">
-					<h2>Uninstall Plugins</h2>
-				</a>
-				<p>Uninstalling and removing all references to a plugin is as simple as running</p>
-				<pre><code class="language-sh"><span style="color: #000000">yarn plugins uninstall &lt;plugin name&gt;</span>
-</code></pre>
-				<p>Note that this command only works for commands installed via NPM, or the <a href="#install-plugins"><code>yarn plugins install</code></a> command.</p>
-				<a href="#list-installed-plugins" id="list-installed-plugins" style="color: inherit; text-decoration: none;">
-					<h2>List Installed Plugins</h2>
-				</a>
-				<p>You can also list all of your installed plugins, both installed via NPM and those
-				installed manually:</p>
-				<pre><code class="language-sh"><span style="color: #000000">yarn plugins list</span>
-</code></pre>
-				<a href="#creating-plugins" id="creating-plugins" style="color: inherit; text-decoration: none;">
-					<h2>Creating Plugins</h2>
-				</a>
-				<p>See the page on <a href="https://skeldjs.github.io/Hindenburg/pages/Writing%20Plugins/Getting%20Started.html">Writing Plugins</a>
-				to learn how to start writing your own plugin.</p>
+				<p>Hindenburg also works great with client-side mods made with Reactor, <a href="/Plugins/Reactor%20Integration">as it provides a native reactor rpc API</a> for plugins, allowing them to communicate directly with mods of specific players, or to entire rooms.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class="label pp-nav pp-group">
-						<span>Setting <wbr>Up</span>
+						<span>Getting <wbr>Started</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Installation.html">Installation</a>
+						<a href="../Getting Started/Installation.html">Installation</a>
 					</li>
-					<li class="current pp-nav pp-page">
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Configuration.html">Configuration</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Information</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Interactive CLI.html">Interactive CLI</a>
+					</li>
+					<li class=" pp-nav pp-page">
 						<a href="Plugins.html">Plugins</a>
 					</li>
-					<li class="label pp-nav pp-group">
-						<span>Using <wbr>Hindenburg</span>
+					<li class="current pp-nav pp-page">
+						<a href="Reactor Support.html">Reactor <wbr>Support</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Using Hindenburg/Interactive CLI.html">Interactive CLI</a>
-					</li>
-					<li class="label pp-nav pp-group">
-						<span>Writing <wbr>Plugins</span>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Getting Started.html">Getting <wbr>Started</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Publishing Plugins to NPM.html">Publishing <wbr>Plugins to NPM</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Plugin Lifecycle Methods.html">Plugin <wbr>Lifecycle <wbr>Methods</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Event Listeners.html">Event <wbr>Listeners</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Splitting Plugin Listeners.html">Splitting <wbr>Plugin <wbr>Listeners</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Terminal Commands.html">Terminal <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Writing Plugins/Player Perspectives.html">Player <wbr>Perspectives</a>
+						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

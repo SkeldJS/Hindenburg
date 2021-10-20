@@ -475,6 +475,100 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
+            .command("setsaah <room code> <on/off>", "Change whether a room is in SaaH mode.")
+            .alias("saah")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
+            .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(roomName);
+
+                const room = this.rooms.get(codeId);
+
+                if (!room) {
+                    this.logger.error("Couldn't find room: %s", roomName);
+                    return;
+                }
+
+                if (args["on/off"] !== "on" && args["on/off"] !== "off") {
+                    this.logger.error("Expected 'on' or 'off' for whether to enable SaaH on that room or not.");
+                }
+
+                room.setSaaHEnabled(args["on/off"] === "on");
+            });
+
+        this.vorpal
+            .command("sethost <room code> <client id>", "List all players in a room.")
+            .option("--acting, -a", "Add the host as an acting host or 'fake' host.")
+            .option("--remove-acting, -r", "Remove the player as an acting or 'fake' host.")
+            .alias("sh")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
+            .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : Code2Int(roomName);
+
+                const room = this.rooms.get(codeId);
+                const clientId = parseInt(args["client id"]);
+
+                if (isNaN(clientId)) {
+                    this.logger.error("Expected a number for the client id: %s", clientId);
+                    return;
+                }
+
+                if (!room) {
+                    this.logger.error("Couldn't find room: %s", roomName);
+                    return;
+                }
+
+                const playerConnection = room.connections.get(clientId);
+
+                if (!playerConnection) {
+                    this.logger.error("No player in room with client id: %s", clientId);
+                    return;
+                }
+
+                if (args.options.acting) {
+                    if (room.actingHostIds.has(playerConnection.clientId)) {
+                        this.logger.error("%s is already an acting host.", playerConnection);
+                        return;
+                    }
+
+                    room.addActingHost(playerConnection);
+                } else if (args.options["remove-acting"]) {
+                    if (!room.actingHostIds.has(playerConnection.clientId)) {
+                        this.logger.error("%s isn't an acting host.", playerConnection);
+                        return;
+                    }
+                    room.removeActingHost(playerConnection);
+                } else {
+                    const player = room.players.get(clientId);
+
+                    if (!player) {
+                        this.logger.error("No player in room with client id: %s", clientId);
+                        return;
+                    }
+
+                    if (room.config.serverAsHost) {
+                        this.logger.error("Can only set acting hosts with a room in SaaH, try run the command again with the --acting or -a flag.");
+                        return;
+                    }
+
+                    room.setHost(player);
+                }
+            });
+
+        this.vorpal
             .command("list players <room code>", "List all players in a room.")
             .alias("ls players")
             .autocomplete({

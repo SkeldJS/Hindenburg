@@ -131,6 +131,7 @@ export interface LoggingConfig {
          *
          * @players The total number of players currently connected to the room.
          * @map The map that the room is currently playing.
+         * @saah Whether or not the room is in SaaH.
          *
          * @example
          * ```json
@@ -142,7 +143,7 @@ export interface LoggingConfig {
          * // => ABCDEF
          * ```
          *
-         * @default ["players", "map"]
+         * @default ["players", "map", "saah"]
          */
         format?: RoomFormatOptions[]
     };

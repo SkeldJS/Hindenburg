@@ -172,7 +172,8 @@
                   "type": "string",
                   "enum": [
                     "players",
-                    "map"
+                    "map",
+                    "saah"
                   ]
                 }
               ]

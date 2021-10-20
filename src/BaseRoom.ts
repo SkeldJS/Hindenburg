@@ -90,12 +90,15 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
     value(this: PlayerData<BaseRoom>) {
         const connection = this.room.connections.get(this.clientId);
 
+        const isHost = this.room.hostId === this.clientId;
+        const isActingHost = !isHost && this.room.actingHostsEnabled && this.room.actingHostIds.has(this.clientId);
+
         const paren = fmtLogFormat(
             this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
             {
                 id: this.clientId,
                 ping: connection?.roundTripPing,
-                ishost: this.isHost ? "host" : undefined
+                ishost: isHost ? "host" : isActingHost ? "acting host" : undefined
             }
         );
 
@@ -106,11 +109,7 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
 
 Object.defineProperty(PlayerData.prototype, "isHost", {
     get(this: PlayerData<BaseRoom>) {
-        if (this.room.config.serverAsHost) {
-            return this.room.actingHostIds.has(this.clientId);
-        } else {
-            return this.room.hostId === this.clientId;
-        }
+        return this.room.hostId === this.clientId || (this.room.actingHostsEnabled && this.room.actingHostIds.has(this.clientId));
     }
 });
 
@@ -160,7 +159,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     bannedAddresses: Set<string>;
 
     state: GameState;
-    saahWaitingFor: PlayerData|undefined;
+    actingHostWaitingFor: PlayerData|undefined;
 
     loadedPlugins: Map<string, RoomPlugin>;
     reactorRpcHandlers: Map<typeof BaseReactorRpcMessage, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
@@ -190,7 +189,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.settings = settings;
 
         this.state = GameState.NotStarted;
-        this.saahWaitingFor = undefined;
+        this.actingHostWaitingFor = undefined;
 
         this.loadedPlugins = new Map;
         this.reactorRpcHandlers = new Map;
@@ -217,15 +216,17 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 this.logger.info("%s set their name to %s",
                     ev.player, ev.newName);
             }
-            if (this.config.serverAsHost && this.saahWaitingFor === ev.player) {
+
+            if (this.actingHostsEnabled) {
                 for (const actingHostId of this.actingHostIds) {
                     const actingHostConn = this.connections.get(actingHostId);
                     if (actingHostConn) {
                         await this.updateHost(actingHostId, actingHostConn);
                     }
                 }
-                this.saahWaitingFor = undefined;
             }
+
+            this.actingHostWaitingFor = undefined;
         });
 
         this.on("player.chat", async ev => {
@@ -280,10 +281,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtLogFormat(
-            this.worker.config.logging.rooms?.format || ["players", "map"],
+            this.worker.config.logging.rooms?.format || ["players", "map", "saah"],
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",
-                map: logMaps[this.settings.map]
+                map: logMaps[this.settings.map],
+                saah: this.config.serverAsHost ? "SaaH" : undefined
             }
         );
 
@@ -589,9 +591,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (!remote)
             throw new Error("Cannot set host without a connection");
 
-        if (this.actingHostIds.has(resolvedId))
-            return;
-
         this.hostId = resolvedId;
 
         const player = this.players.get(resolvedId);
@@ -603,12 +602,28 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             this.state = GameState.NotStarted;
             await this._joinOtherClients();
         }
+
+        for (const [ , connection ] of this.connections) {
+            if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
+                await this.updateHost(connection.clientId, connection);
+            } else {
+                await this.updateHost(this.hostId, connection);
+            }
+        }
     }
 
     async setSaaHEnabled(saahEnabled: boolean) {
         this.config.serverAsHost = saahEnabled;
         if (saahEnabled) {
             this.hostId = SpecialClientId.Server;
+
+            for (const [ , connection ] of this.connections) {
+                if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
+                    await this.updateHost(connection.clientId, connection);
+                } else {
+                    await this.updateHost(SpecialClientId.Server, connection);
+                }
+            }
         } else {
             const connection = this.actingHostIds.size > 0
                 ? this.connections.get([...this.actingHostIds][0])
@@ -623,6 +638,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 const player = ev.alteredSelected.getPlayer();
 
                 this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
+                this.actingHostIds.delete(this.hostId);
                 if (player) {
                     await player.emit(new PlayerSetHostEvent(this, player));
                 }
@@ -632,8 +648,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     await this._joinOtherClients();
                 }
             }
-            await this.updateHost(connection.clientId);
-            this.actingHostIds.clear();
+
+            for (const [ , connection ] of this.connections) {
+                if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
+                    await this.updateHost(connection.clientId, connection);
+                } else {
+                    await this.updateHost(this.hostId, connection);
+                }
+            }
         }
     }
 
@@ -642,14 +664,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * @param player The player to make host.
      */
     async addActingHost(player: PlayerData<this>|Connection) {
-        if (!this.config.serverAsHost)
-            throw new Error("Cannot add extra actor hosts to a non-server-as-a-host room!");
-
         this.actingHostIds.add(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
 
-        if (connection && this.saahWaitingFor === undefined) {
+        if (connection && this.actingHostWaitingFor === undefined) {
             await this.updateHost(player.clientId, connection);
         }
     }
@@ -659,9 +678,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * @param player The player to remove as host.
      */
     async removeActingHost(player: PlayerData<this>|Connection) {
-        if (!this.config.serverAsHost)
-            throw new Error("Cannot remove actor host from a non-server-as-a-host room!");
-
         this.actingHostIds.delete(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
@@ -672,20 +688,27 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async disableActingHosts() {
-        if (!this.config.serverAsHost)
-            throw new Error("Cannot disable actor hosts in a non-server-as-a-host room!");
-
         for (const actingHostId of this.actingHostIds) {
             const connection = this.connections.get(actingHostId);
             if (connection) {
-                await this.updateHost(SpecialClientId.Server, connection);
+                if (this.config.serverAsHost) {
+                    await this.updateHost(SpecialClientId.Server, connection);
+                } else {
+                    await this.updateHost(this.hostId, connection);
+                }
             }
         }
+        this.actingHostsEnabled = false;
     }
 
     async enableActingHosts() {
-        if (!this.config.serverAsHost)
-            throw new Error("Cannot disable actor hosts in a non-server-as-a-host room!");
+        for (const actingHostId of this.actingHostIds) {
+            const connection = this.connections.get(actingHostId);
+            if (connection) {
+                await this.updateHost(connection.clientId, connection);
+            }
+        }
+        this.actingHostsEnabled = true;
     }
 
     async handleJoin(clientId: number): Promise<PlayerData<this>|null> {
@@ -720,8 +743,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             }
         } else {
             if (!this.host) {
-                this.hostId = joiningPlayer.clientId; // set host manually as the connection has not been created yet
-                await joiningPlayer.emit(new PlayerSetHostEvent(this, joiningPlayer));
+                const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
+                if (!ev.canceled) {
+                    this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
+                    await joiningPlayer.emit(new PlayerSetHostEvent(this, joiningPlayer));
+                }
             }
         }
 
@@ -751,8 +777,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                     new JoinGameMessage(
                                         this.code,
                                         joiningClient.clientId,
-                                        this.actingHostIds.has(clientId)
-                                            ? clientId
+                                        this.actingHostsEnabled
+                                            ? this.actingHostIds.has(clientId)
+                                                ? clientId
+                                                : SpecialClientId.Server
                                             : SpecialClientId.Server
                                     )
                                 ]
@@ -789,8 +817,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                     new JoinGameMessage(
                                         this.code,
                                         joiningClient.clientId,
-                                        this.actingHostIds.has(clientId)
-                                            ? clientId
+                                        this.actingHostsEnabled
+                                            ? this.actingHostIds.has(clientId)
+                                                ? clientId
+                                                : SpecialClientId.Server
                                             : SpecialClientId.Server
                                     )
                                 ]
@@ -826,7 +856,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             return;
         }
 
-        this.saahWaitingFor = joiningPlayer;
+        this.actingHostWaitingFor = joiningPlayer;
 
         await joiningClient.sendPacket(
             new ReliablePacket(
@@ -907,66 +937,63 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             return;
         }
 
+        if (this.actingHostIds.has(leavingConnection.clientId)) {
+            this.actingHostIds.delete(leavingConnection.clientId);
+        }
+
         if (this.config.serverAsHost) {
-            if (this.actingHostIds.has(leavingConnection.clientId)) {
-                this.actingHostIds.delete(leavingConnection.clientId);
+            if (this.actingHostIds.size === 0) {
+                const newHostConn = [...this.connections.values()][0];
+                const ev = await this.emit(new RoomSelectHostEvent(this, true, false, newHostConn));
 
-                if (this.actingHostIds.size === 0) {
-                    const newHostConn = [...this.connections.values()][0];
-                    const ev = await this.emit(new RoomSelectHostEvent(this, true, false, newHostConn));
+                if (!ev.canceled) {
+                    await this.addActingHost(ev.alteredSelected);
+                }
+            }
+        } else {
+            if (this.hostId === leavingConnection.clientId) {
+                const newHostConn = [...this.connections.values()][0];
+                const ev = await this.emit(new RoomSelectHostEvent(this, false, false, newHostConn));
 
-                    if (!ev.canceled) {
-                        await this.addActingHost(ev.alteredSelected);
+                if (!ev.canceled) {
+                    const player = ev.alteredSelected.getPlayer();
+
+                    this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
+                    if (player) {
+                        await player.emit(new PlayerSetHostEvent(this, player));
+                    }
+
+                    if (this.state === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
+                        this.state = GameState.NotStarted;
+                        await this._joinOtherClients();
                     }
                 }
             }
-        } else {
-            const newHostConn = [...this.connections.values()][0];
-            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, newHostConn));
-
-            if (!ev.canceled) {
-                const player = ev.alteredSelected.getPlayer();
-
-                this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
-                if (player) {
-                    await player.emit(new PlayerSetHostEvent(this, player));
-                }
-
-                if (this.state === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
-                    this.state = GameState.NotStarted;
-                    await this._joinOtherClients();
-                }
-            }
         }
 
-        if (this.config.serverAsHost) {
-            const promises = [];
-            for (const [ , connection ] of this.connections) {
-                promises.push(connection.sendPacket(
-                    new ReliablePacket(
-                        connection.getNextNonce(),
-                        [
-                            new RemovePlayerMessage(
-                                this.code,
-                                leavingConnection.clientId,
-                                reason,
-                                SpecialClientId.Server
-                            )
-                        ]
-                    )
-                ));
-            }
-            await Promise.all(promises);
-        } else {
-            await this.broadcastMessages([], [
-                new RemovePlayerMessage(
-                    this.code,
-                    leavingConnection.clientId,
-                    reason,
-                    this.hostId
+        const promises = [];
+        for (const [ , connection ] of this.connections) {
+            promises.push(connection.sendPacket(
+                new ReliablePacket(
+                    connection.getNextNonce(),
+                    [
+                        new RemovePlayerMessage(
+                            this.code,
+                            leavingConnection.clientId,
+                            reason,
+                            this.config.serverAsHost
+                                ? SpecialClientId.Server
+                                : this.actingHostsEnabled
+                                    ? this.actingHostIds.has(connection.clientId)
+                                        ? connection.clientId
+                                        : this.hostId
+                                    : this.hostId
+                        )
+                    ]
                 )
-            ]);
+            ));
         }
+        await Promise.all(promises);
 
         this.logger.info(
             "%s left or was removed.",
@@ -988,8 +1015,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                     new JoinedGameMessage(
                                         this.code,
                                         clientId,
-                                        this.actingHostIds.has(clientId)
-                                            ? clientId
+                                        this.actingHostsEnabled
+                                            ? this.actingHostIds.has(clientId)
+                                                ? clientId
+                                                : this.hostId
                                             : this.hostId,
                                         [...this.connections.values()]
                                             .reduce<number[]>((prev, cur) => {
@@ -1012,7 +1041,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async handleStart() {
-        if (this.config.serverAsHost) {
+        if (this.actingHostsEnabled) {
             for (const actingHostId of this.actingHostIds) {
                 const actingHostConn = this.connections.get(actingHostId);
                 if (actingHostConn) {
@@ -1027,7 +1056,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         if (ev.canceled) {
             this.state = GameState.NotStarted;
-            if (this.config.serverAsHost) {
+            if (this.actingHostsEnabled) {
                 for (const actingHostId of this.actingHostIds) {
                     const actingHostConn = this.connections.get(actingHostId);
                     if (actingHostConn) {

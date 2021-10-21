@@ -37,7 +37,8 @@ import {
     VoteBanSystem,
     AlterGameTag,
     MiraShipStatus,
-    DisconnectReason
+    DisconnectReason,
+    HeliSabotageSystem
 } from "@skeldjs/core";
 
 import {
@@ -396,13 +397,12 @@ export class Perspective extends BaseRoom {
         const newSystems: AllSystems<this> = {};
         for (const [ systemType, system ] of systemsEntries) {
             if (system instanceof AutoDoorsSystem) {
-                const autoDoors = system as AutoDoorsSystem<this>;
-                const newAd = new AutoDoorsSystem(ship);
+                const newAd = new AutoDoorsSystem(ship, system.systemType);
 
-                newAd.dirtyBit = autoDoors.dirtyBit;
+                newAd.dirtyBit = system.dirtyBit;
 
-                for (let i = 0; i < autoDoors.doors.length; i++) {
-                    const door = autoDoors.doors[i];
+                for (let i = 0; i < system.doors.length; i++) {
+                    const door = system.doors[i];
                     const newDoor = new AutoOpenDoor(newAd, door.id, door.isOpen);
                     newDoor.timer = door.timer;
                     newAd.doors.push(newDoor);
@@ -410,120 +410,117 @@ export class Perspective extends BaseRoom {
 
                 newSystems[systemType] = newAd;
             } else if (system instanceof DeconSystem) {
-                const decon = system as DeconSystem<this>;
-                const newDecon = new DeconSystem(ship);
+                const newDecon = new DeconSystem(ship, system.systemType);
 
-                newDecon.timer = decon.timer;
-                newDecon.state = decon.state;
+                newDecon.timer = system.timer;
+                newDecon.state = system.state;
 
                 newSystems[systemType] = newDecon;
             } else if (system instanceof DoorsSystem) {
-                const doors = system as DoorsSystem<this>;
-                const newDoors = new DoorsSystem(ship);
+                const newDoors = new DoorsSystem(ship, system.systemType);
 
-                newDoors.cooldowns = new Map(doors.cooldowns.entries());
+                newDoors.cooldowns = new Map(system.cooldowns.entries());
 
-                for (let i = 0; i < doors.doors.length; i++) {
-                    const door = doors.doors[i];
+                for (let i = 0; i < system.doors.length; i++) {
+                    const door = system.doors[i];
                     const newDoor = new Door(newDoors, door.id, door.isOpen);
                     newDoors.doors.push(newDoor);
                 }
 
                 newSystems[systemType] = newDoors;
             } else if (system instanceof ElectricalDoorsSystem) {
-                const electricalDoors = system as ElectricalDoorsSystem<this>;
-                const newEd = new ElectricalDoorsSystem(ship);
+                const newEd = new ElectricalDoorsSystem(ship, system.systemType);
 
-                for (let i = 0; i < electricalDoors.doors.length; i++) {
-                    const door = electricalDoors.doors[i];
+                for (let i = 0; i < system.doors.length; i++) {
+                    const door = system.doors[i];
                     const newDoor = new Door(newEd, door.id, door.isOpen);
                     newEd.doors.push(newDoor);
                 }
 
                 newSystems[systemType] = newEd;
             } else if (system instanceof HqHudSystem) {
-                const hqHud = system as HqHudSystem<this>;
-                const newHh = new HqHudSystem(ship);
+                const newHh = new HqHudSystem(ship, system.systemType);
 
-                newHh.timer = hqHud.timer;
-                newHh.active = hqHud.active.map(active => ({
+                newHh.timer = system.timer;
+                newHh.activeConsoles = system.activeConsoles.map(active => ({
                     playerid: active.playerid,
                     consoleid: active.consoleid
                 }));
-                newHh.completed = new Set(newHh.completed);
+                newHh.completedConsoles = new Set(newHh.completedConsoles);
 
                 newSystems[systemType] = newHh;
             } else if (system instanceof HudOverrideSystem) {
-                const hudOverride = system as HudOverrideSystem<this>;
-                const newHo = new HudOverrideSystem(ship);
+                const newHo = new HudOverrideSystem(ship, system.systemType);
 
-                (newHo as any)._sabotaged = (hudOverride as any)._sabotaged;
+                newHo["_sabotaged"] = system["_sabotaged"];
 
                 newSystems[systemType] = newHo;
             } else if (system instanceof LifeSuppSystem) {
-                const lifeSupp = system as LifeSuppSystem<this>;
-                const newLs = new LifeSuppSystem(ship);
+                const newLs = new LifeSuppSystem(ship, system.systemType);
 
-                newLs.timer = lifeSupp.timer;
-                newLs.completed = new Set(lifeSupp.completed);
+                newLs.timer = system.timer;
+                newLs.completed = new Set(system.completed);
 
                 newSystems[systemType] = newLs;
-            } else if (system instanceof MedScanSystem) {
-                const medScan = system as MedScanSystem<this>;
-                const newMs = new MedScanSystem(ship);
+            } else if (system instanceof HeliSabotageSystem) {
+                const newHs = new HeliSabotageSystem(ship, system.systemType);
 
-                for (let i = 0; i < medScan.queue.length; i++) {
-                    const queuePlayer = medScan.queue[i];
+                newHs.countdown = system.countdown;
+                newHs.resetTimer = system.resetTimer;
+                newHs.activeConsoles = new Map(system.activeConsoles.entries());
+                newHs.completedConsoles = new Set(system.completedConsoles);
+
+                newSystems[systemType] = newHs;
+            } else if (system instanceof MedScanSystem) {
+                const newMs = new MedScanSystem(ship, system.systemType);
+
+                for (let i = 0; i < system.queue.length; i++) {
+                    const queuePlayer = system.queue[i];
                     const newPlayer = this.players.get(queuePlayer.clientId);
                     newMs.queue.push(newPlayer!);
                 }
 
                 newSystems[systemType] = newMs;
             } else if (system instanceof MovingPlatformSystem) {
-                const movingPlatform = system as MovingPlatformSystem<this>;
-                const newMp = new MovingPlatformSystem(ship);
+                const newMp = new MovingPlatformSystem(ship, system.systemType);
 
-                newMp.useId = movingPlatform.useId;
-                newMp.side = movingPlatform.side;
+                newMp.useId = system.useId;
+                newMp.side = system.side;
 
-                if (movingPlatform.target) {
-                    const newTarget = this.players.get(movingPlatform.target.clientId);
+                if (system.target) {
+                    const newTarget = this.players.get(system.target.clientId);
                     newMp.target = newTarget;
                 }
 
                 newSystems[systemType] = newMp;
             } else if (system instanceof ReactorSystem) {
-                const reactor = system as ReactorSystem<this>;
-                const newReactor = new ReactorSystem(ship);
+                const newReactor = new ReactorSystem(ship, system.systemType);
 
-                newReactor.timer = reactor.timer;
-                newReactor.completed = new Set(reactor.completed);
+                newReactor.timer = system.timer;
+                newReactor.completed = new Set(system.completed);
 
                 newSystems[systemType] = newReactor;
             } else if (system instanceof SabotageSystem) {
-                const sabotage = system as SabotageSystem<this>;
-                const newSab = new SabotageSystem(ship);
+                const newSab = new SabotageSystem(ship, system.systemType);
 
-                newSab.cooldown = sabotage.cooldown;
+                newSab.cooldown = system.cooldown;
 
                 newSystems[systemType] = newSab;
             } else if (system instanceof SecurityCameraSystem) {
-                const securityCamera = system as SecurityCameraSystem<this>;
-                const newSc = new SecurityCameraSystem(ship);
+                const newSc = new SecurityCameraSystem(ship, system.systemType);
 
-                for (const player of securityCamera.players) {
+                for (const player of system.players) {
                     const newPlayer = this.players.get(player.clientId);
                     newSc.players.add(newPlayer!);
                 }
 
                 newSystems[systemType] = newSc;
             } else if (system instanceof SwitchSystem) {
-                const switches = system as SwitchSystem<this>;
-                const newSwitches = new SwitchSystem(ship);
+                const newSwitches = new SwitchSystem(ship, system.systemType);
 
-                newSwitches.expected = [...switches.expected];
-                newSwitches.actual = [...switches.actual];
-                newSwitches.brightness = switches.brightness;
+                newSwitches.expected = [...system.expected];
+                newSwitches.actual = [...system.actual];
+                newSwitches.brightness = system.brightness;
 
                 newSystems[systemType] = newSwitches;
             }

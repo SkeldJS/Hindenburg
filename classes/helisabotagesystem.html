@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>HqHudSystem | @skeldjs/hindenburg</title>
+	<title>HeliSabotageSystem | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="hqhudsystem.html">HqHudSystem</a>
+					<a href="helisabotagesystem.html">HeliSabotageSystem</a>
 				</li>
 			</ul>
-			<h1>Class HqHudSystem&lt;RoomType&gt;</h1>
+			<h1>Class HeliSabotageSystem&lt;RoomType&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -70,9 +70,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Represents a system responsible for handling communication consoles on Mira HQ.</p>
+						<p>Represents a system responsible for handling communication sabotages on The Skeld and Polus.</p>
 					</div>
-					<p>See <a href="../modules.html#hqhudsystemevents">HqHudSystemEvents</a> for events to listen to.</p>
+					<p>See <a href="../modules.html#helisabotagesystemevents">HeliSabotageSystemEvents</a> for events to listen to.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -87,10 +87,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="systemstatus.html" class="tsd-signature-type" data-tsd-kind="Class">SystemStatus</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/hqhudsystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HqHudSystemData</a><span class="tsd-signature-symbol">, </span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>
+						<a href="systemstatus.html" class="tsd-signature-type" data-tsd-kind="Class">SystemStatus</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/helisabotagesystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HeliSabotageSystemData</a><span class="tsd-signature-symbol">, </span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">HqHudSystem</span>
+								<span class="target">HeliSabotageSystem</span>
 							</li>
 						</ul>
 					</li>
@@ -99,7 +99,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/hqhudsystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HqHudSystemData</a></li>
+					<li><a href="../interfaces/helisabotagesystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HeliSabotageSystemData</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -109,51 +109,54 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudsystem.html#deserialize" class="tsd-kind-icon">Deserialize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudsystem.html#detoriorate" class="tsd-kind-icon">Detoriorate</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudsystem.html#handlerepair" class="tsd-kind-icon">Handle<wbr>Repair</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudsystem.html#handlesabotage" class="tsd-kind-icon">Handle<wbr>Sabotage</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudsystem.html#serialize" class="tsd-kind-icon">Serialize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#closeconsole" class="tsd-kind-icon">close<wbr>Console</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#closeconsoleas" class="tsd-kind-icon">close<wbr>Console<wbr>As</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#completeconsole" class="tsd-kind-icon">complete<wbr>Console</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#emit" class="tsd-kind-icon">emit</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#emitserial" class="tsd-kind-icon">emit<wbr>Serial</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#off" class="tsd-kind-icon">off</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#on" class="tsd-kind-icon">on</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#once" class="tsd-kind-icon">once</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#openconsole" class="tsd-kind-icon">open<wbr>Console</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#openconsoleas" class="tsd-kind-icon">open<wbr>Console<wbr>As</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="hqhudsystem.html#repair" class="tsd-kind-icon">repair</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#sabotage" class="tsd-kind-icon">sabotage</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#wait" class="tsd-kind-icon">wait</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#waitf" class="tsd-kind-icon">waitf</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#deserialize" class="tsd-kind-icon">Deserialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#detoriorate" class="tsd-kind-icon">Detoriorate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#handlerepair" class="tsd-kind-icon">Handle<wbr>Repair</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#handlesabotage" class="tsd-kind-icon">Handle<wbr>Sabotage</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#serialize" class="tsd-kind-icon">Serialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#_repair" class="tsd-kind-icon">_repair</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#closeconsole" class="tsd-kind-icon">close<wbr>Console</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#closeconsoleas" class="tsd-kind-icon">close<wbr>Console<wbr>As</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#completeconsole" class="tsd-kind-icon">complete<wbr>Console</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#emit" class="tsd-kind-icon">emit</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#emitserial" class="tsd-kind-icon">emit<wbr>Serial</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#off" class="tsd-kind-icon">off</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#on" class="tsd-kind-icon">on</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#once" class="tsd-kind-icon">once</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#openconsole" class="tsd-kind-icon">open<wbr>Console</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#openconsoleas" class="tsd-kind-icon">open<wbr>Console<wbr>As</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#patch" class="tsd-kind-icon">patch</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#repair" class="tsd-kind-icon">repair</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#sabotage" class="tsd-kind-icon">sabotage</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#wait" class="tsd-kind-icon">wait</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#waitf" class="tsd-kind-icon">waitf</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#activeconsoles" class="tsd-kind-icon">active<wbr>Consoles</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#completedconsoles" class="tsd-kind-icon">completed<wbr>Consoles</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#systemtype" class="tsd-kind-icon">system<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="hqhudsystem.html#timer" class="tsd-kind-icon">timer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#activeconsoles" class="tsd-kind-icon">active<wbr>Consoles</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#completedconsoles" class="tsd-kind-icon">completed<wbr>Consoles</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#countdown" class="tsd-kind-icon">countdown</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="helisabotagesystem.html#resettimer" class="tsd-kind-icon">reset<wbr>Timer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#systemtype" class="tsd-kind-icon">system<wbr>Type</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external"><a href="hqhudsystem.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external"><a href="helisabotagesystem.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#dirty" class="tsd-kind-icon">dirty</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#room" class="tsd-kind-icon">room</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hqhudsystem.html#sabotaged" class="tsd-kind-icon">sabotaged</a></li>
+								<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#dirty" class="tsd-kind-icon">dirty</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#room" class="tsd-kind-icon">room</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="helisabotagesystem.html#sabotaged" class="tsd-kind-icon">sabotaged</a></li>
 							</ul>
 						</section>
 					</div>
@@ -172,7 +175,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="systemstatus.html">SystemStatus</a>.<a href="systemstatus.html#deserialize">Deserialize</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:51</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:46</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -199,7 +202,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="systemstatus.html">SystemStatus</a>.<a href="systemstatus.html#detoriorate">Detoriorate</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:78</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:73</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -216,20 +219,20 @@
 					<a name="handlerepair" class="tsd-anchor"></a>
 					<h3>Handle<wbr>Repair</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">Handle<wbr>Repair<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, amount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, rpc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">Handle<wbr>Repair<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, amount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, rpc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="systemstatus.html">SystemStatus</a>.<a href="systemstatus.html#handlerepair">HandleRepair</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:77</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:72</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>player: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>player: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>amount: <span class="tsd-signature-type">number</span></h5>
@@ -246,20 +249,20 @@
 					<a name="handlesabotage" class="tsd-anchor"></a>
 					<h3>Handle<wbr>Sabotage</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">Handle<wbr>Sabotage<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">Handle<wbr>Sabotage<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="systemstatus.html">SystemStatus</a>.<a href="systemstatus.html#handlesabotage">HandleSabotage</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:53</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:48</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>player: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>player: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>rpc: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a></h5>
@@ -280,7 +283,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="systemstatus.html">SystemStatus</a>.<a href="systemstatus.html#serialize">Serialize</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:52</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:47</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -297,6 +300,32 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="_repair" class="tsd-anchor"></a>
+					<h3>_repair</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">_repair<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:70</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>player: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>rpc: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="repairsystemmessage.html" class="tsd-signature-type" data-tsd-kind="Class">RepairSystemMessage</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="closeconsole" class="tsd-anchor"></a>
 					<h3>close<wbr>Console</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
@@ -306,7 +335,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:68</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:63</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -337,7 +366,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:63</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:58</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -363,7 +392,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:74</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:69</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -478,7 +507,7 @@
 					<a name="off" class="tsd-anchor"></a>
 					<h3>off</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">off&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">off&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -491,7 +520,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.complete&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.complete&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -500,7 +529,7 @@
 									<h5>event: <span class="tsd-signature-type">EventName</span></h5>
 								</li>
 								<li>
-									<h5>listener: <span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>listener: <span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -511,7 +540,7 @@
 					<a name="on" class="tsd-anchor"></a>
 					<h3>on</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">on&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">on&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></li>
 						<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
@@ -525,7 +554,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.complete&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.complete&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -534,7 +563,7 @@
 									<h5>event: <span class="tsd-signature-type">EventName</span></h5>
 								</li>
 								<li>
-									<h5>listener: <span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>listener: <span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h4>
@@ -587,7 +616,7 @@
 					<a name="once" class="tsd-anchor"></a>
 					<h3>once</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">once&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">once&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></li>
 						<li class="tsd-signature tsd-kind-icon">once<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, listener<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
@@ -601,7 +630,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.complete&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.complete&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -610,7 +639,7 @@
 									<h5>event: <span class="tsd-signature-type">EventName</span></h5>
 								</li>
 								<li>
-									<h5>listener: <span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>listener: <span class="tsd-signature-type">Listener</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h4>
@@ -669,7 +698,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:61</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:56</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -700,7 +729,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:56</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:51</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -713,6 +742,30 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+					<a name="patch" class="tsd-anchor"></a>
+					<h3>patch</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../interfaces/helisabotagesystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HeliSabotageSystemData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides SystemStatus.patch</p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:45</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <a href="../interfaces/helisabotagesystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HeliSabotageSystemData</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -769,7 +822,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="systemstatus.html">SystemStatus</a>.<a href="systemstatus.html#repair">repair</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:76</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:71</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -808,7 +861,7 @@
 					<a name="wait" class="tsd-anchor"></a>
 					<h3>wait</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">wait&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">wait&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 						<li class="tsd-signature tsd-kind-icon">wait<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
@@ -822,7 +875,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.complete&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.complete&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -831,7 +884,7 @@
 									<h5>event: <span class="tsd-signature-type">EventName</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
@@ -854,7 +907,7 @@
 					<a name="waitf" class="tsd-anchor"></a>
 					<h3>waitf</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">waitf&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">waitf&lt;EventName&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">EventName</span>, filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 						<li class="tsd-signature tsd-kind-icon">waitf<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, filter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
@@ -868,7 +921,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;hqhud.consoles.complete&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;doors.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;doors.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.sabotage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;system.repair&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.open&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.reset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.close&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;heli.consoles.complete&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -877,18 +930,18 @@
 									<h5>event: <span class="tsd-signature-type">EventName</span></h5>
 								</li>
 								<li>
-									<h5>filter: <span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>filter: <span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>ev<span class="tsd-signature-symbol">: </span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
 											</ul>
 											<ul class="tsd-descriptions">
 												<li class="tsd-description">
 													<h4 class="tsd-parameters-title">Parameters</h4>
 													<ul class="tsd-parameters">
 														<li>
-															<h5>ev: <a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span></h5>
+															<h5>ev: <a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span></h5>
 														</li>
 													</ul>
 													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -898,7 +951,7 @@
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#hqhudsystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HqHudSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules.html#helisabotagesystemevents" class="tsd-signature-type" data-tsd-kind="Type alias">HeliSabotageSystemEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">EventName</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
@@ -944,34 +997,46 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="activeconsoles" class="tsd-anchor"></a>
 					<h3>active<wbr>Consoles</h3>
-					<div class="tsd-signature tsd-kind-icon">active<wbr>Consoles<span class="tsd-signature-symbol">:</span> <a href="../interfaces/userconsolepair.html" class="tsd-signature-type" data-tsd-kind="Interface">UserConsolePair</a><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">active<wbr>Consoles<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/hqhudsystemdata.html">HqHudSystemData</a>.<a href="../interfaces/hqhudsystemdata.html#activeconsoles">activeConsoles</a></p>
+						<p>Implementation of <a href="../interfaces/helisabotagesystemdata.html">HeliSabotageSystemData</a>.<a href="../interfaces/helisabotagesystemdata.html#activeconsoles">activeConsoles</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:43</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:38</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The currently opened consoles.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="completedconsoles" class="tsd-anchor"></a>
 					<h3>completed<wbr>Consoles</h3>
 					<div class="tsd-signature tsd-kind-icon">completed<wbr>Consoles<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/hqhudsystemdata.html">HqHudSystemData</a>.<a href="../interfaces/hqhudsystemdata.html#completedconsoles">completedConsoles</a></p>
+						<p>Implementation of <a href="../interfaces/helisabotagesystemdata.html">HeliSabotageSystemData</a>.<a href="../interfaces/helisabotagesystemdata.html#completedconsoles">completedConsoles</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:47</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:39</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The completed consoles.</p>
-						</div>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="countdown" class="tsd-anchor"></a>
+					<h3>countdown</h3>
+					<div class="tsd-signature tsd-kind-icon">countdown<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/helisabotagesystemdata.html">HeliSabotageSystemData</a>.<a href="../interfaces/helisabotagesystemdata.html#countdown">countdown</a></p>
+						<ul>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:36</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="resettimer" class="tsd-anchor"></a>
+					<h3>reset<wbr>Timer</h3>
+					<div class="tsd-signature tsd-kind-icon">reset<wbr>Timer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/helisabotagesystemdata.html">HeliSabotageSystemData</a>.<a href="../interfaces/helisabotagesystemdata.html#resettimer">resetTimer</a></p>
+						<ul>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:37</li>
+						</ul>
+					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="systemtype" class="tsd-anchor"></a>
@@ -984,21 +1049,6 @@
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="timer" class="tsd-anchor"></a>
-					<h3>timer</h3>
-					<div class="tsd-signature tsd-kind-icon">timer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:39</li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The timer until the consoles are reset.</p>
-						</div>
-					</div>
-				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Constructors</h2>
@@ -1006,14 +1056,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>HqHud<wbr>System&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>ship<span class="tsd-signature-symbol">: </span><a href="innershipstatus.html" class="tsd-signature-type" data-tsd-kind="Class">InnerShipStatus</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, systemType<span class="tsd-signature-symbol">: </span><a href="../enums/systemtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SystemType</a>, data<span class="tsd-signature-symbol">?: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/hqhudsystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HqHudSystemData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Heli<wbr>Sabotage<wbr>System&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>ship<span class="tsd-signature-symbol">: </span><a href="innershipstatus.html" class="tsd-signature-type" data-tsd-kind="Class">InnerShipStatus</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, systemType<span class="tsd-signature-symbol">: </span><a href="../enums/systemtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SystemType</a>, data<span class="tsd-signature-symbol">?: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/helisabotagesystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HeliSabotageSystemData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="helisabotagesystem.html" class="tsd-signature-type" data-tsd-kind="Class">HeliSabotageSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="systemstatus.html">SystemStatus</a>.<a href="systemstatus.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:48</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:43</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1031,10 +1081,10 @@
 									<h5>systemType: <a href="../enums/systemtype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SystemType</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/hqhudsystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HqHudSystemData</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> data: <a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/helisabotagesystemdata.html" class="tsd-signature-type" data-tsd-kind="Interface">HeliSabotageSystemData</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="hqhudsystem.html" class="tsd-signature-type" data-tsd-kind="Class">HqHudSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="helisabotagesystem.html" class="tsd-signature-type" data-tsd-kind="Class">HeliSabotageSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1105,9 +1155,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HqHudSystem.d.ts:48</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/HeliSabotageSystem.d.ts:43</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether or not communications is sabotaged.</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
@@ -1157,97 +1212,106 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-has-type-parameter tsd-is-external">
-						<a href="hqhudsystem.html" class="tsd-kind-icon">Hq<wbr>Hud<wbr>System</a>
+						<a href="helisabotagesystem.html" class="tsd-kind-icon">Heli<wbr>Sabotage<wbr>System</a>
 						<ul>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="hqhudsystem.html#deserialize" class="tsd-kind-icon">Deserialize</a>
+								<a href="helisabotagesystem.html#deserialize" class="tsd-kind-icon">Deserialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="hqhudsystem.html#detoriorate" class="tsd-kind-icon">Detoriorate</a>
+								<a href="helisabotagesystem.html#detoriorate" class="tsd-kind-icon">Detoriorate</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="hqhudsystem.html#handlerepair" class="tsd-kind-icon">Handle<wbr>Repair</a>
+								<a href="helisabotagesystem.html#handlerepair" class="tsd-kind-icon">Handle<wbr>Repair</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="hqhudsystem.html#handlesabotage" class="tsd-kind-icon">Handle<wbr>Sabotage</a>
+								<a href="helisabotagesystem.html#handlesabotage" class="tsd-kind-icon">Handle<wbr>Sabotage</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="hqhudsystem.html#serialize" class="tsd-kind-icon">Serialize</a>
+								<a href="helisabotagesystem.html#serialize" class="tsd-kind-icon">Serialize</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="helisabotagesystem.html#_repair" class="tsd-kind-icon">_repair</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#activeconsoles" class="tsd-kind-icon">active<wbr>Consoles</a>
+								<a href="helisabotagesystem.html#activeconsoles" class="tsd-kind-icon">active<wbr>Consoles</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#closeconsole" class="tsd-kind-icon">close<wbr>Console</a>
+								<a href="helisabotagesystem.html#closeconsole" class="tsd-kind-icon">close<wbr>Console</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#closeconsoleas" class="tsd-kind-icon">close<wbr>Console<wbr>As</a>
+								<a href="helisabotagesystem.html#closeconsoleas" class="tsd-kind-icon">close<wbr>Console<wbr>As</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#completeconsole" class="tsd-kind-icon">complete<wbr>Console</a>
+								<a href="helisabotagesystem.html#completeconsole" class="tsd-kind-icon">complete<wbr>Console</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#completedconsoles" class="tsd-kind-icon">completed<wbr>Consoles</a>
+								<a href="helisabotagesystem.html#completedconsoles" class="tsd-kind-icon">completed<wbr>Consoles</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-								<a href="hqhudsystem.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#dirty" class="tsd-kind-icon">dirty</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#emit" class="tsd-kind-icon">emit</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#emitserial" class="tsd-kind-icon">emit<wbr>Serial</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#off" class="tsd-kind-icon">off</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#on" class="tsd-kind-icon">on</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#once" class="tsd-kind-icon">once</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#openconsole" class="tsd-kind-icon">open<wbr>Console</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#openconsoleas" class="tsd-kind-icon">open<wbr>Console<wbr>As</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="hqhudsystem.html#repair" class="tsd-kind-icon">repair</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#room" class="tsd-kind-icon">room</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#sabotage" class="tsd-kind-icon">sabotage</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#sabotaged" class="tsd-kind-icon">sabotaged</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#systemtype" class="tsd-kind-icon">system<wbr>Type</a>
+								<a href="helisabotagesystem.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="hqhudsystem.html#timer" class="tsd-kind-icon">timer</a>
+								<a href="helisabotagesystem.html#countdown" class="tsd-kind-icon">countdown</a>
+							</li>
+							<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#dirty" class="tsd-kind-icon">dirty</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#wait" class="tsd-kind-icon">wait</a>
+								<a href="helisabotagesystem.html#emit" class="tsd-kind-icon">emit</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-								<a href="hqhudsystem.html#waitf" class="tsd-kind-icon">waitf</a>
+								<a href="helisabotagesystem.html#emitserial" class="tsd-kind-icon">emit<wbr>Serial</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#off" class="tsd-kind-icon">off</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#on" class="tsd-kind-icon">on</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#once" class="tsd-kind-icon">once</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="helisabotagesystem.html#openconsole" class="tsd-kind-icon">open<wbr>Console</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="helisabotagesystem.html#openconsoleas" class="tsd-kind-icon">open<wbr>Console<wbr>As</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+								<a href="helisabotagesystem.html#patch" class="tsd-kind-icon">patch</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+								<a href="helisabotagesystem.html#repair" class="tsd-kind-icon">repair</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="helisabotagesystem.html#resettimer" class="tsd-kind-icon">reset<wbr>Timer</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#room" class="tsd-kind-icon">room</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#sabotage" class="tsd-kind-icon">sabotage</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#sabotaged" class="tsd-kind-icon">sabotaged</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#systemtype" class="tsd-kind-icon">system<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#wait" class="tsd-kind-icon">wait</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="helisabotagesystem.html#waitf" class="tsd-kind-icon">waitf</a>
 							</li>
 						</ul>
 					</li>

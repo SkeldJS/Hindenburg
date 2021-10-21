@@ -255,10 +255,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         });
 
         this.on("player.syncsettings", async ev => {
-            // todo: log settings diff
-            this.logger.info("Updated game settings, use `ls settings %s`",
-                fmtCode(this.code));
-
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
             }

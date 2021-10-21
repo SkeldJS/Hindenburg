@@ -265,7 +265,7 @@ export interface RoomsConfig {
     /**
      * Enforce certain settings, preventing the host from changing them.
      */
-    enforceSettings?: AllGameSettings;
+    enforceSettings: Partial<AllGameSettings>;
     /**
      * Whether the server should act as the host of the room. (experimental)
      * @default false

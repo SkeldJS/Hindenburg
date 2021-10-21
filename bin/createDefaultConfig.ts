@@ -57,6 +57,7 @@ export function createDefaultConfig(): HindenburgConfig {
                 hat: "None",
                 skin: "None"
             },
+            enforceSettings: {},
             serverAsHost: false
         },
         exitConfirmation: true

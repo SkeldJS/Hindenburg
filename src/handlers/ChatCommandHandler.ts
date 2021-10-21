@@ -129,8 +129,8 @@ export class RegisteredChatCommand {
      * Create a formatted usage of this command, in [standard unix command-line
      * command syntax](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
      */
-    createUsage() {
-        return "/" + this.name + " " + this.params.map(param => {
+    createUsage(prefix: string) {
+        return prefix + this.name + " " + this.params.map(param => {
             return (param.required ? "<" : "[")
                 + param.name
                 + (param.required ? ">" : "]");
@@ -143,7 +143,7 @@ export class RegisteredChatCommand {
      * @returns The arguments mapped from parameter name to value of the argument
      * passed.
      */
-    verify(args: string[]): Record<string, string> {
+    verify(prefix: string, args: string[]): Record<string, string> {
         const argsCloned = [...args]; // Clone the array to not affect the original arguments array
         const parsed: Record<string, string> = {};
 
@@ -155,7 +155,7 @@ export class RegisteredChatCommand {
 
             if (!consume) {
                 if (param.required) {
-                    throw new CommandCallError("Usage: " + this.createUsage() + "\nMissing '" + param.name + "'\n\n" + this.description);
+                    throw new CommandCallError("Usage: " + this.createUsage(prefix) + "\nMissing '" + param.name + "'\n\n" + this.description);
                 }
                 return parsed; // No more arguments are left to consume
             }
@@ -200,7 +200,7 @@ export class ChatCommandHandler {
                     return;
                 }
 
-                await ctx.reply("Usage: " + command.createUsage() + "\n\n" + command.description);
+                await ctx.reply("Usage: " + command.createUsage(prefix) + "\n\n" + command.description);
                 return;
             }
 
@@ -223,7 +223,7 @@ export class ChatCommandHandler {
                 i++
             ) {
                 const command = allCommands[i];
-                outMessage += "\n\n" + command.createUsage() + " - " + command.description;
+                outMessage += "\n\n" + command.createUsage(prefix) + " - " + command.description;
                 num++;
             }
 
@@ -296,7 +296,11 @@ export class ChatCommandHandler {
         if (!command)
             throw new CommandCallError("No command with name: " + commandName);
 
-        const parsed = command.verify(args);
+        const prefix = typeof ctx.room.config.chatCommands === "object"
+            ? ctx.room.config.chatCommands.prefix || "/"
+            : "/";
+
+        const parsed = command.verify(prefix, args);
         await command.callback(ctx, parsed);
     }
 }

@@ -58,23 +58,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fidm/asn1@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@fidm/asn1@npm:1.0.4"
-  checksum: cc228cb7d396b2c038311da799bc32c52157772628ca1a25de25d5897420738d96dd72a5effa2241f438a99fc5cc998e1a9240b4ee746b45d474ef879352309a
-  languageName: node
-  linkType: hard
-
-"@fidm/x509@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@fidm/x509@npm:1.2.1"
-  dependencies:
-    "@fidm/asn1": ^1.0.4
-    tweetnacl: ^1.0.1
-  checksum: e38d75111928974e886c5bf438c31165d3e177f96b5f84aa02d5d38cc6e4ab6bced6b590cb438f0ab8f7a2e14d68dea24fc57115b064dda4b0a96da659a86758
-  languageName: node
-  linkType: hard
-
 "@humanwhocodes/config-array@npm:^0.5.0":
   version: 0.5.0
   resolution: "@humanwhocodes/config-array@npm:0.5.0"
@@ -130,71 +113,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skeldjs/client@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/client@npm:2.14.18"
+"@skeldjs/constant@npm:2.14.19, @skeldjs/constant@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/constant@npm:2.14.19"
   dependencies:
-    "@skeldjs/constant": 2.14.18
-    "@skeldjs/core": 2.14.18
-    "@skeldjs/data": 2.14.18
-    "@skeldjs/dtls": 2.14.18
-    "@skeldjs/events": 2.14.18
-    "@skeldjs/protocol": 2.14.18
-    "@skeldjs/state": 2.14.18
-    "@skeldjs/util": 2.14.18
-  checksum: 0da322b6c38ef1336b16c98866fec06731850da9bad7e8e7e14c23852061ddd9166641f00202d7c0cc9fbfa8f6b15ab8af17dfe5b985aed6df928182b31e55d3
+    "@skeldjs/util": 2.14.19
+  checksum: c84593775a678fc62f22066020bcb2de7e50b4c2c3faa2d840f9b37a5a2541201ddfcce37f78af1055cfb906ded00c9c7ff260f854436f48be6e34d8011c0124
   languageName: node
   linkType: hard
 
-"@skeldjs/constant@npm:2.14.18, @skeldjs/constant@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/constant@npm:2.14.18"
+"@skeldjs/core@npm:2.14.19, @skeldjs/core@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/core@npm:2.14.19"
   dependencies:
-    "@skeldjs/util": 2.14.18
-  checksum: d9bbb9696fac2b726b630fd04685672bccc340678c426782ed4e2e607a1b57e245efce90648ef8abd429899134adbd608556e345dfc07217e673410b02028402
+    "@skeldjs/constant": 2.14.19
+    "@skeldjs/data": 2.14.19
+    "@skeldjs/events": 2.14.19
+    "@skeldjs/protocol": 2.14.19
+    "@skeldjs/util": 2.14.19
+  checksum: 426e38c2b20e79e3f9687e256515d05f0b37efe8d87b81a50380aba77c0eb59150574044287023a02b01c810736d0620cda540da3b80cf45224add022f583f88
   languageName: node
   linkType: hard
 
-"@skeldjs/core@npm:2.14.18, @skeldjs/core@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/core@npm:2.14.18"
+"@skeldjs/data@npm:2.14.19, @skeldjs/data@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/data@npm:2.14.19"
   dependencies:
-    "@skeldjs/constant": 2.14.18
-    "@skeldjs/data": 2.14.18
-    "@skeldjs/events": 2.14.18
-    "@skeldjs/protocol": 2.14.18
-    "@skeldjs/util": 2.14.18
-  checksum: 0e35f0f453c8175624bb4c2f770488fd082f3b81bfcc9e45000a608fb8e39f5a7bcb65624cca5dbdae9bd42289816732313ef7548b5b0ec69e2b12a0520e3489
+    "@skeldjs/constant": 2.14.19
+    "@skeldjs/util": 2.14.19
+  checksum: 9bcdb7faf72d368e263642a6ea0b96473d95a8ee6942ec39f2b601080fbccba7f69615310e303d4e89304af371e1597bc6cb240aa475586dddcffe398f8b21f9
   languageName: node
   linkType: hard
 
-"@skeldjs/data@npm:2.14.18, @skeldjs/data@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/data@npm:2.14.18"
-  dependencies:
-    "@skeldjs/constant": 2.14.18
-    "@skeldjs/util": 2.14.18
-  checksum: 1fb06549d675e8bec900b070ce9d6cbbeaba3b48a652797791270ce156a15a4a52eae4c2d9c61e87b081903a8b862f09d5d2b8551e9b600a098c240ecbcbee57
-  languageName: node
-  linkType: hard
-
-"@skeldjs/dtls@npm:2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/dtls@npm:2.14.18"
-  dependencies:
-    "@fidm/x509": ^1.2.1
-    "@skeldjs/util": 2.14.18
-  dependenciesMeta:
-    node-aes-gcm:
-      unplugged: false
-  checksum: 8fe199aea2b109a40066ef2e18688fcc378ebb7f54c0c9294e1ffe5361d1b07b33d88a31bd460d61840855ffeec790ba76e7556b55a2f2e6a79e7502659c6a96
-  languageName: node
-  linkType: hard
-
-"@skeldjs/events@npm:2.14.18, @skeldjs/events@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/events@npm:2.14.18"
-  checksum: dc8aec8dc032f8a904299d6e4f30e9cf81e729ac0937616d4d086b8a037bef1ac1650038e5b12fac1990b0dfecab67c6af1abf6a627e9c08c7f613560b4b87a8
+"@skeldjs/events@npm:2.14.19, @skeldjs/events@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/events@npm:2.14.19"
+  checksum: e33ed6d1e8da5165af7f341556976b8902139238783541ebda3a43e56074270f766d66694b44d6ec6d1d11d28911ac4d6849d0a4b8e005217f3f5b07a4d1c5d3
   languageName: node
   linkType: hard
 
@@ -202,15 +156,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@skeldjs/hindenburg@workspace:."
   dependencies:
-    "@skeldjs/client": ^2.14.18
-    "@skeldjs/constant": ^2.14.18
-    "@skeldjs/core": ^2.14.18
-    "@skeldjs/data": ^2.14.18
-    "@skeldjs/events": ^2.14.18
-    "@skeldjs/protocol": ^2.14.18
-    "@skeldjs/reactor": ^2.14.18
-    "@skeldjs/state": ^2.14.18
-    "@skeldjs/util": ^2.14.18
+    "@skeldjs/constant": ^2.14.19
+    "@skeldjs/core": ^2.14.19
+    "@skeldjs/data": ^2.14.19
+    "@skeldjs/events": ^2.14.19
+    "@skeldjs/protocol": ^2.14.19
+    "@skeldjs/reactor": ^2.14.19
+    "@skeldjs/state": ^2.14.19
+    "@skeldjs/util": ^2.14.19
     "@types/chalk": ^2.2.0
     "@types/cli-spinner": ^0.2.1
     "@types/minimatch": ^3.0.5
@@ -243,44 +196,44 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@skeldjs/protocol@npm:2.14.18, @skeldjs/protocol@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/protocol@npm:2.14.18"
+"@skeldjs/protocol@npm:2.14.19, @skeldjs/protocol@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/protocol@npm:2.14.19"
   dependencies:
-    "@skeldjs/constant": 2.14.18
-    "@skeldjs/util": 2.14.18
-  checksum: 0983ca1002e99ae95621b9a790b7be2169405b5c1ec2c0188cf01a67ca0886004c8ef60a1e6672097d534c6a60b64e64fe22c262fd8b242024c0343a3adb461e
+    "@skeldjs/constant": 2.14.19
+    "@skeldjs/util": 2.14.19
+  checksum: 9271b5aee9bef39c349f165cd7ebbc0051bcd0c45e69eaf65757561f09f9bf9d9aefee0d7c28ce196a7ef2931a1e23578e540544e953251c1898f60107bf8e20
   languageName: node
   linkType: hard
 
-"@skeldjs/reactor@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/reactor@npm:2.14.18"
+"@skeldjs/reactor@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/reactor@npm:2.14.19"
   dependencies:
-    "@skeldjs/constant": 2.14.18
-    "@skeldjs/protocol": 2.14.18
-    "@skeldjs/util": 2.14.18
+    "@skeldjs/constant": 2.14.19
+    "@skeldjs/protocol": 2.14.19
+    "@skeldjs/util": 2.14.19
   peerDependencies:
     "@skeldjs/client": "*"
-  checksum: 77e900f09251e4b268a3d83e5215968b8351ee4b7d3f69ba0141db1bb72c35e2a6a509c80a2c65a796b63eb3d0fdc6046fcea086328450574401c401091660e9
+  checksum: 332bed24cc9ea8d2707f152e156e3b6701cc8a36b2db7d3b56dd5f643064cf60565eff4242e85b5dd93e50723a01e504a708a6a229adea7650cf65e780842c14
   languageName: node
   linkType: hard
 
-"@skeldjs/state@npm:2.14.18, @skeldjs/state@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/state@npm:2.14.18"
+"@skeldjs/state@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/state@npm:2.14.19"
   dependencies:
-    "@skeldjs/core": 2.14.18
-    "@skeldjs/protocol": 2.14.18
-    "@skeldjs/util": 2.14.18
-  checksum: f73ff274a5c4fb06ec33abbb902fd4bb1f92fd3ab66a96620c9b102b71225a2283c072885c765163d8b6b0bae8afa0186ff386a9ef9e3a666955f4de4f8db7fb
+    "@skeldjs/core": 2.14.19
+    "@skeldjs/protocol": 2.14.19
+    "@skeldjs/util": 2.14.19
+  checksum: 26cbb94105b939518a214592f0a9b4f1cbd6594667e100904af364ef27d5f5b6aec91135dbe75ab719c6642bbadf504ba1ad5cb5b73c2463a08f17853d3bb857
   languageName: node
   linkType: hard
 
-"@skeldjs/util@npm:2.14.18, @skeldjs/util@npm:^2.14.18":
-  version: 2.14.18
-  resolution: "@skeldjs/util@npm:2.14.18"
-  checksum: 1ae9e75ccb15b3b82fc241c31ae587ad24ea761c1c33d97e2aeb511046359f5f0c5ac436d0660ba018a3fbdac166cd78f0fd10fc74bceb23ba3819ad95c8e969
+"@skeldjs/util@npm:2.14.19, @skeldjs/util@npm:^2.14.19":
+  version: 2.14.19
+  resolution: "@skeldjs/util@npm:2.14.19"
+  checksum: 4ee9efa6387ab11e46c2b28dd89e83b2515acaa278089f3a3b515cd83f63f6a8c51a5ac240a683425dc7b3fd576ca913b5219224e3228e4114c47279695351c8
   languageName: node
   linkType: hard
 
@@ -3141,13 +3094,6 @@ fsevents@~2.3.2:
   peerDependencies:
     typescript: ">=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta"
   checksum: 1843f4c1b2e0f975e08c4c21caa4af4f7f65a12ac1b81b3b8489366826259323feb3fc7a243123453d2d1a02314205a7634e048d4a8009921da19f99755cdc48
-  languageName: node
-  linkType: hard
-
-"tweetnacl@npm:^1.0.1":
-  version: 1.0.3
-  resolution: "tweetnacl@npm:1.0.3"
-  checksum: e4a57cac188f0c53f24c7a33279e223618a2bfb5fea426231991652a13247bea06b081fd745d71291fcae0f4428d29beba1b984b1f1ce6f66b06a6d1ab90645c
   languageName: node
   linkType: hard
 

@@ -5,6 +5,7 @@
 // Swedish:..................Captain
 // Dutch:....................Jeira
 // Portuguese................Bloody
+// Russian...................Galster
 
 export default {
     "havent_received_all_mods": {
@@ -15,7 +16,8 @@ export default {
         "de": "Der Server scheiterte alle Ihrer Mods zu empfangen, bitte versuchen Sie erneut",
         "sv": "Servern fick inte alla av dina moddar, försök igen",
         "nl": "De server heeft niet alle mods ontvangen. Probeer het nog een keer",
-        "pt": "O servidor não conseguiu receber todos os seus mods, por favor tente novamente"
+        "pt": "O servidor não conseguiu receber todos os seus mods, por favor tente novamente",
+        "ru": "Серверу не удалось получить все ваши моды, пожалуйста, попробуйте снова"
     },
     "reactor_required_on_server": {
         "en_US": "This server requires you to have Reactor, see https://reactor.gg/ for more information",
@@ -25,7 +27,8 @@ export default {
         "de": "Dieser Server benötigt Reactor, siehe https://reactor.gg/ für weitere Informationen",
         "sv": "Den här servern kräver att du har Reactor, se https://reactor.gg/ för mer information",
         "nl": "Het is benodigd dat je Reactor hebt voor deze server. Zie https://reactor.gg/ voor meer informatie",
-        "pt": "Este servidor requer que você tenha o Reactor, veja https://reactor.gg/ para mais informações"
+        "pt": "Este servidor requer que você tenha o Reactor, veja https://reactor.gg/ para mais informações",
+        "ru": "Данный сервер требует Reactor, см. https://reactor.gg/ для дополнительной информации"
     },
     "reactor_not_enabled_on_server": {
         "en_US": "Reactor is not enabled on this server, please disable it",
@@ -35,7 +38,8 @@ export default {
         "de": "Reactor ist für diesen Server nicht aktiviert, deaktivieren Sie es bitte",
         "sv": "Reactor är inte aktiverat på den här servern, stäng av det",
         "nl": "Reactor is niet geactiveerd op deze server. Dit graag deactiveren",
-        "pt": "Reactor não está ativo neste servidor, por favor desative-o"
+        "pt": "Reactor não está ativo neste servidor, por favor desative-o",
+        "ru": "Данный сервер не использует Reactor, пожалуйста, отключите его"
     },
     "mod_banned_on_server": {
         // %1 = ID of mod that is banned
@@ -46,7 +50,8 @@ export default {
         "de": "Mod ist auf diesen Server gebannt: %1",
         "sv": "Mod bannad från server: %1",
         "nl": "Mod heeft een ban van de server: %1",
-        "pt": "Mod banido no servidor: %1"
+        "pt": "Mod banido no servidor: %1",
+        "ru": "Данный мод заблокирован на сервере: %1"
     },
     "reactor_required_for_room": {
         "en_US": "This room requires you to have Reactor, see https://reactor.gg/ for more information",
@@ -56,7 +61,8 @@ export default {
         "de": "Dieser Raum benötigt Reactor, siehe https://reactor.gg/ für weitere Informationen",
         "sv": "Detta rum kräver att du har Reactor, se https://reactor.gg/ för mer information",
         "nl": "Voor deze ruimte is het benodigd dat je Reactor hebt. Zie https://reactor.gg/ voor meer informatie",
-        "pt": "Esta sala requer que você tenha o Reactor, veja https://reactor.gg/ para mais informações"
+        "pt": "Esta sala requer que você tenha o Reactor, veja https://reactor.gg/ para mais informações",
+        "ru": "Эта комната требует Reactor, см. https://reactor.gg/ для дополнительной информации"
     },
     "reactor_not_enabled_for_room": {
         "en_US": "Reactor is not enabled for this room, please disable it",
@@ -66,7 +72,8 @@ export default {
         "de": "Reactor ist für diesen Raum nicht aktiviert, deaktivieren Sie es bitte",
         "sv": "Reactor är inte aktiverat för detta rum, stäng av det",
         "nl": "Reactor is niet geactiveerd in deze kamer. Dit graag deactiveren",
-        "pt": "Reactor não está ativo nesta sala, por favor desative-o"
+        "pt": "Reactor não está ativo nesta sala, por favor desative-o",
+        "ru": "Данная комната не использует Reactor, пожалуйста, отключите его"
     },
     "missing_required_mod": {
         // %1 = ID of mod that is required
@@ -78,7 +85,8 @@ export default {
         "de": "Fehlende benötigte Mod: %1 (%2)",
         "sv": "Saknar mod: %1 (%2)",
         "nl": "Mist benodigde mod: %1 (%2)",
-        "pt": "Mod necessário em falta: %1 (%2)"
+        "pt": "Mod necessário em falta: %1 (%2)",
+        "ru": "Мод не найден: %1 (%2)"
     },
     "bad_mod_version": {
         // %1 = ID of mod that has a bad version
@@ -91,7 +99,8 @@ export default {
         "de": "Schlechte Mod Version für %1: %2, benötigt %3",
         "sv": "Dålig version för mod %1: %2, behöver %3",
         "nl": "Verslechterde mod versie voor %1: %2, heeft %3 nodig",
-        "pt": "Versão incorreta do mod para %1: %2, precisa %3"
+        "pt": "Versão incorreta do mod para %1: %2, precisa %3",
+        "ru": "Неправильная версия мода %1: %2, требуется %3"
     },
     "mod_not_recognised": {
         // %1 = ID of the mod that is not allowed
@@ -102,6 +111,7 @@ export default {
         "de": "Unbekannte Mod nicht erlaubt: %1",
         "sv": "Okänd mod inte tillåten: %1",
         "nl": "Onbekende mod niet toegestaan: %1",
-        "pt": "Mod desconhecido não permitido: %1"
+        "pt": "Mod desconhecido não permitido: %1",
+        "ru": "Неизвестный мод не разрешён: %1"
     }
 } as const;

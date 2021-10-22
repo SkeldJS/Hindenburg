@@ -286,8 +286,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("list clients")
-            .alias("ls c")
+            .command("list clients", "List all clients connected to server.")
+            .alias("lsc")
             .action(async () => {
                 this.logger.info("%s client(s)", this.connections.size);
                 const connections = [...this.connections];
@@ -298,8 +298,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("list rooms")
-            .alias("ls r")
+            .command("list rooms", "List all rooms in the server.")
+            .alias("lsr")
             .action(async () => {
                 this.logger.info("%s room(s)", this.rooms.size);
                 const rooms = [...this.rooms];
@@ -311,7 +311,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("list plugins [room code]", "List all plugins loaded into the server or into a room.")
-            .alias("ls p")
+            .alias("lspl")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
@@ -451,7 +451,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("list mods <client id>", "List all of a client's mods.")
-            .alias("ls mods")
+            .alias("lsm")
             .autocomplete({
                 data: async () => {
                     return [...this.connections.values()].map(cl => ""+cl.clientId);
@@ -570,7 +570,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("list players <room code>", "List all players in a room.")
-            .alias("ls players")
+            .alias("lsp")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
@@ -598,7 +598,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("list pov <room code>", "List all active perspectives in a room.")
-            .alias("ls pov")
+            .alias("lspov")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
@@ -624,8 +624,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("list settings <room code>", "List the game settings of a room.")
-            .alias("ls settings")
+            .command("settings <room code>", "Get the current game settings for a room.")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());

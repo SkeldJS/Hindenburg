@@ -138,14 +138,34 @@ export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
 ]>;
 
 export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
+    /**
+     * The unix (milliseconds) timestamp. that the room was created.
+     */
     createdAt: number;
+    /**
+     * All connections in the room, mapped by client ID to connection object.
+     */
     connections: Map<number, Connection>;
+    /**
+     * The connections/players that are waiting for the host to join back.
+     */
     waitingForHost: Set<Connection>;
-
+    /**
+     * Player perspectives for each player, mapped by clientId to perspective object.
+     */
     playerPerspectives: Map<number, Perspective>;
+    /**
+     * An array of every player perspective created in the room.
+     */
     activePerspectives: Perspective[];
 
+    /**
+     * Whether or not acting hosts are enabled on this room.
+     */
     actingHostsEnabled: boolean;
+    /**
+     * The client IDs of every acting host in the room.
+     */
     actingHostIds: Set<number>;
 
     /**
@@ -158,17 +178,42 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      */
     bannedAddresses: Set<string>;
 
+    /**
+     * The state that the game is currently in, after starting, ending or destroying a game.
+     */
     state: GameState;
-    actingHostWaitingFor: PlayerData|undefined;
 
+    private actingHostWaitingFor: PlayerData|undefined;
+
+    /**
+     * All plugins loaded and scoped to the room, mapped by plugin id to room plugin object.
+     */
     loadedPlugins: Map<string, RoomPlugin>;
+    /**
+     * All reactor rpc handlers in the room, mapped by reactor message to an array of handlers for that message.
+     */
     reactorRpcHandlers: Map<typeof BaseReactorRpcMessage, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
+    /**
+     * All reactor rpcs registered on the room, mapped by modId:reactorTag to the reactor rpc class.
+     */
     reactorRpcs: Map<`${string}:${number}`, typeof BaseReactorRpcMessage>;
+    /**
+     * The chat command handler in the room.
+     */
     chatCommandHandler: ChatCommandHandler;
 
     constructor(
+        /**
+         * The worker that instantiated this object.
+         */
         public readonly worker: Worker,
+        /**
+         * The config for the room, the worker uses the worker's {@link HindenburgConfig.rooms} config to initialise it as.
+         */
         public readonly config: RoomsConfig,
+        /**
+         * The game settings for the room.
+         */
         settings: GameSettings
     ) {
         super({ doFixedUpdate: true });
@@ -297,7 +342,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         return this.players.get(this.hostId);
     }
 
-    get actingHosts() {
+    /**
+     * An array of all acting hosts in the room.
+     */
+    getActingHosts() {
         const hosts = [];
         for (const actingHostId of this.actingHostIds) {
             const player = this.players.get(actingHostId);
@@ -312,14 +360,27 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         return this.hostId === SpecialClientId.Server;
     }
 
+    /**
+     * The name of the room, or just the code formatted as a string.
+     *
+     * @example REDSUS
+     * @example LOCAL
+     */
     get roomName() {
         return fmtCode(this.code);
     }
 
+    /**
+     * Whether or not this room has been destroyed, and is no longer active on the server.
+     */
     get destroyed() {
         return this.state === GameState.Destroyed;
     }
 
+    /**
+     * Destroy this room.
+     * @param reason Reason for the destroying the room.
+     */
     async destroy(reason = DisconnectReason.Destroy) {
         const ev = await this.emit(new RoomBeforeDestroyEvent(this, reason));
 
@@ -557,6 +618,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         ]);
     }
 
+    /**
+     * Update the host for the room or for a specific client.
+     * @param hostId The host to set.
+     * @param recipient The specific client recipient if required.
+     */
     async updateHost(hostId: number, recipient?: Connection) {
         await this.broadcastMessages([], [
             new JoinGameMessage(
@@ -573,6 +639,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         ], recipient ? [ recipient ] : undefined);
     }
 
+    /**
+     * Set the actual host for the room, cannot be used in rooms using SaaH.
+     * @param playerResolvable The player to set as the host.
+     */
     async setHost(playerResolvable: PlayerDataResolvable) {
         if (this.config.serverAsHost)
             throw new Error("Cannot set setHost while in SaaH mode, use addActingHost and removeActingHost");
@@ -608,6 +678,16 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
+    /**
+     * Set whether SaaH is enabled on this room.
+     *
+     * If enabling SaaH, it will do nothing special except tell clients that the
+     * server is now the host.
+     *
+     * If disabling SaaH, it will assign a new host (the first acting host if available),
+     * and tell clients the new host (unless they are an acting host.).
+     * @param saahEnabled Whether or not SaaH should be enabled.
+     */
     async setSaaHEnabled(saahEnabled: boolean) {
         this.config.serverAsHost = saahEnabled;
         if (saahEnabled) {
@@ -683,6 +763,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
+    /**
+     * Disable acting hosts on the room, leaving either no hosts if the server is
+     * in SaaH mode, or leaving 1 host otherwise. It doesn't clear the list of
+     * acting hosts, just disables them from being in use.
+     *
+     * This function will prevent any acting hosts from being assigned at any point
+     * until enabled again with {@link BaseRoom.enableActingHosts}.
+     */
     async disableActingHosts() {
         for (const actingHostId of this.actingHostIds) {
             const connection = this.connections.get(actingHostId);
@@ -697,6 +785,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.actingHostsEnabled = false;
     }
 
+    /**
+     * Enable acting hosts on the room.
+     */
     async enableActingHosts() {
         for (const actingHostId of this.actingHostIds) {
             const connection = this.connections.get(actingHostId);

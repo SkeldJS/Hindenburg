@@ -384,9 +384,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     async destroy(reason = DisconnectReason.Destroy) {
         const ev = await this.emit(new RoomBeforeDestroyEvent(this, reason));
 
-        if (ev.canceled) {
+        if (ev.canceled)
             return;
-        }
 
         super.destroy();
 
@@ -1019,7 +1018,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.waitingForHost.delete(leavingConnection);
         this.connections.delete(leavingConnection.clientId);
 
-        if (this.players.size === 0) {
+        if (this.connections.size === 0) {
             await this.destroy();
             return;
         }
@@ -1262,7 +1261,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
     private getOtherPlayer(base: PlayerData) {
         for (const [ , player ] of this.players) {
-            if (player.info && player.control && base !== player) {
+            if (player.info && player.info.color > -1 && player.control && base !== player) {
                 return player;
             }
         }
@@ -1285,6 +1284,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const oldColor = sendPlayer.info.color;
         const oldHat = sendPlayer.info.hat;
         const oldSkin = sendPlayer.info.skin;
+
         await this.broadcast([
             new RpcMessage(
                 sendPlayer.control.netId,
@@ -1326,15 +1326,18 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     /**
-     * Send a message into the chat as the server.
+     * Send a message into the chat as the server. Requries game data to be spawned,
+     * can only send messages on the left side of the chat room if there is at least
+     * 2 players in the room.
      *
      * @summary
-     * If on the left side, the room spawns a new player owned by the room with
-     * a player ID of 127 and updates their name and colour and despawns them
-     * immediately after sending the message.
+     * If on the right side, for each player the room sets their name and colour,
+     * sends the message then immediately sets them back.
      *
-     * If on the right side, for each player the room sets their name and colour
-     * and immediately sets them back after sending the message.
+     * If on the left side, for each player the room finds a different player,
+     * sets their name and colour and immediately sets them back after sending
+     * the message. If there is no other player, it shows it on the right side
+     * instead.
      * @param message The message to send.
      * @param options Options for the method.
      * @example

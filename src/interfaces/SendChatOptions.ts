@@ -12,7 +12,8 @@ export enum MessageSide {
  */
 export interface SendChatOptions {
     /**
-     * The side of the chat box for the message to appear on for each player.
+     * The side of the chat box for the message to appear on for each player. Can only
+     * send on the left side if there are at least 2 players in the room.
      * @example
      * ```ts
      * room.sendChat("Slide to the left", {

@@ -25,6 +25,31 @@
       "type": "boolean",
       "description": "Whether or not to auto-update Hindenburg when there is an update available."
     },
+    "exitConfirmation": {
+      "type": "boolean",
+      "description": "Whether or not to confirm when pressing CTRL+C to close Hindenburg."
+    },
+    "defaultLanuage": {
+      "type": "string",
+      "description": "Default language to localise disconnect messages to.",
+      "enum": [
+        "en",
+        "es_US",
+        "pt_BR",
+        "pt",
+        "ko",
+        "ru",
+        "nl",
+        "fil",
+        "fr",
+        "de",
+        "it",
+        "ja",
+        "es_ES",
+        "zh",
+        "ga"
+      ]
+    },
     "socket": {
       "type": "object",
       "description": "Options regarding the socket that the server listens on.",
@@ -145,18 +170,17 @@
             "format": {
               "type": "array",
               "description": "Custom formatting for the extra information provided when logging client connections. (The part in parenthesis after their username.)",
-              "items": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "id",
-                    "ip",
-                    "ping",
-                    "room",
-                    "language"
-                  ]
-                }
-              ]
+              "items":{
+                "type": "string",
+                "enum": [
+                  "id",
+                  "ip",
+                  "ping",
+                  "room",
+                  "language"
+                ]
+              },
+              "uniqueItems": true
             }
           }
         },
@@ -167,16 +191,15 @@
             "format": {
               "type": "array",
               "description": "Custom formatting for the extra information provided when rooms are logged. (The part in parenthesis after the game code.)",
-              "items": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "players",
-                    "map",
-                    "saah"
-                  ]
-                }
-              ]
+              "items": {
+                "type": "string",
+                "enum": [
+                  "players",
+                  "map",
+                  "saah"
+                ]
+              },
+              "uniqueItems": true
             }
           }
         },
@@ -187,16 +210,15 @@
             "format": {
               "type": "array",
               "description": "Custom formatting for the extra information provided when players are logged. (The part in parenthesis after the player's name.)",
-              "items": [
-                {
-                  "type": "string",
-                  "enum": [
-                    "id",
-                    "ping",
-                    "ishost"
-                  ]
-                }
-              ]
+              "items":  {
+                "type": "string",
+                "enum": [
+                  "id",
+                  "ping",
+                  "ishost"
+                ]
+              },
+              "uniqueItems": true
             }
           }
         }

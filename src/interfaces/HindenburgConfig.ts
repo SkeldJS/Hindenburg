@@ -323,6 +323,16 @@ export interface HindenburgConfig {
      */
     autoUpdate: boolean;
     /**
+     * Whether or not to confirm when pressing CTRL+C to close Hindenburg.
+     * @default true
+     */
+    exitConfirmation: boolean;
+    /**
+     * Default language to localise disconnect messages to.
+     * @default "en"
+     */
+    defaultLanguage: string;
+    /**
      * Options regarding the socket that the server listens on.
      */
     socket: SocketConfig;
@@ -349,9 +359,4 @@ export interface HindenburgConfig {
      * Configuration for rooms, such as enabling/disabling features
      */
     rooms: RoomsConfig;
-    /**
-     * Confirmation to exit the application when you press Ctrl+C
-     * @default true
-     */
-    exitConfirmation: boolean;
 }

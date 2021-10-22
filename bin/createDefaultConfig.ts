@@ -7,6 +7,8 @@ export function createDefaultConfig(): HindenburgConfig {
         nodeId: 0,
         checkForUpdates: true,
         autoUpdate: false,
+        exitConfirmation: true,
+        defaultLanguage: "en",
         socket: {
             port: 22023,
             broadcastUnknownGamedata: false,
@@ -59,7 +61,6 @@ export function createDefaultConfig(): HindenburgConfig {
             },
             enforceSettings: {},
             serverAsHost: false
-        },
-        exitConfirmation: true
+        }
     };
 }

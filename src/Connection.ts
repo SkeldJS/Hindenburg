@@ -61,7 +61,7 @@ const logLanguages = {
 };
 
 export const locales = {
-    [Language.English]: "en_US",
+    [Language.English]: "en",
     [Language.SpanishAmericas]: "es_US",
     [Language.PortugueseBrazil]: "pt_BR",
     [Language.Portuguese]: "pt",
@@ -295,8 +295,8 @@ export class Connection {
     }
 
     getLocale(i18n: Record<typeof locales[keyof typeof locales], string>) {
-        const myLocale = locales[this.language] || "en_US";
-        const myI18n = i18n[myLocale] || i18n["en_US"];
+        const myLocale = locales[this.language] || this.worker.config.defaultLanguage;
+        const myI18n = i18n[myLocale] || i18n[this.worker.config.defaultLanguage];
         if (!myI18n)
             return undefined;
 

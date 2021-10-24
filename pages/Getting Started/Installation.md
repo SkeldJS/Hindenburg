@@ -8,7 +8,7 @@ platform with no configuration.
 
 #### Prerequisites
 You will need to install the following programs to get started with Hindenburg.
-* [Node.js](https://nodejs.org)
+* [Node.js](https://nodejs.org) (at least >=v14, preferably the current LTS)
 * [NPM](https://npmjs.com) (Comes pre-installed with Node.js)
 * [Git](https://git-scm.org)
 * A terminal of your choice (You can just use Windows command prompt)

@@ -1260,7 +1260,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 ) {
                     const gameListing = new GameListing(
                         room.code,
-                        this.config.socket.ip || "127.0.0.1",
+                        process.env.NODE_ENV === "dev"
+                            ? "127.0.0.1"
+                            : this.config.socket.ip,
                         this.config.socket.port,
                         roomHost?.username || room.roomName,
                         room.players.size,

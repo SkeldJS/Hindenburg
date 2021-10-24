@@ -226,10 +226,10 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     const workerConfig = createDefaultConfig();
     const resolvedConfig = await resolveConfig(logger);
     recursiveAssign(workerConfig, resolvedConfig || {});
-    if (resolvedConfig && resolvedConfig.socket && resolvedConfig.socket.ip) {
-        resolvedConfig.socket.ip = await fetchExternalIp(logger);
-    }
     applyCommandLineArgs(workerConfig);
+    if (workerConfig.socket.ip === "auto") {
+        workerConfig.socket.ip = await fetchExternalIp(logger);
+    }
 
     if (workerConfig.checkForUpdates) {
         await checkForUpdates(logger, workerConfig.autoUpdate);
@@ -268,10 +268,10 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
             const workerConfig = createDefaultConfig();
             const updatedConfig = JSON.parse(await fs.readFile(configFile, "utf8"));
             recursiveAssign(workerConfig, updatedConfig || {});
-            if (resolvedConfig && resolvedConfig.socket && resolvedConfig.socket.ip) {
-                resolvedConfig.socket.ip = await fetchExternalIp(logger);
-            }
             applyCommandLineArgs(workerConfig);
+            if (workerConfig.socket.ip === "auto") {
+                workerConfig.socket.ip = await fetchExternalIp(logger);
+            }
 
             worker.updateConfig(workerConfig);
         } catch (e) {

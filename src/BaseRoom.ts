@@ -202,6 +202,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      */
     chatCommandHandler: ChatCommandHandler;
 
+    private roomNameOverride?: string;
+
     constructor(
         /**
          * The worker that instantiated this object.
@@ -367,6 +369,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * @example LOCAL
      */
     get roomName() {
+        if (this.roomNameOverride !== undefined) {
+            return this.roomNameOverride;
+        }
+
         return fmtCode(this.code);
     }
 
@@ -1387,6 +1393,22 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
         await Promise.all(promises);
         return true;
+    }
+
+    /**
+     * Add an override for the name of the room. Can be used anywhere, but only
+     * used in Among Us in the "find public games" list.
+     * @param roomName The name of the room to use instead.
+     */
+    setRoomNameOverride(roomName: string) {
+        this.roomNameOverride = roomName;
+    }
+
+    /**
+     * Clear a room name override made with {@link setRoomNameOverride}.
+     */
+    clearRoomNameOverride() {
+        this.roomNameOverride = undefined;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

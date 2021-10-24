@@ -74,7 +74,8 @@ import {
     RoomCreateEvent,
     RoomBeforeCreateEvent,
     WorkerBeforeJoinEvent,
-    BaseReactorRpcMessage
+    BaseReactorRpcMessage,
+    WorkerGetGameListEvent
 } from "./api";
 
 import { PluginLoader, WorkerPlugin } from "./handlers";
@@ -111,7 +112,8 @@ export type WorkerEvents = RoomEvents
         ClientBanEvent,
         ClientConnectEvent,
         RoomBeforeCreateEvent,
-        WorkerBeforeJoinEvent
+        WorkerBeforeJoinEvent,
+        WorkerGetGameListEvent
     ]>;
 
 export class Worker extends EventEmitter<WorkerEvents> {
@@ -1275,12 +1277,25 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             }
 
-            if (returnList.length) {
+            const ev = await this.emit(
+                new WorkerGetGameListEvent(
+                    sender,
+                    message.options.keywords,
+                    message.options.map,
+                    message.options.numImpostors,
+                    returnList
+                )
+            );
+
+            if (ev.canceled)
+                return;
+
+            if (ev.alteredGames.length) {
                 await sender.sendPacket(
                     new ReliablePacket(
                         sender.getNextNonce(),
                         [
-                            new GetGameListMessage(returnList)
+                            new GetGameListMessage(ev.alteredGames)
                         ]
                     )
                 );

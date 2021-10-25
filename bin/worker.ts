@@ -236,6 +236,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
 
             if (autoUpdate) {
                 logger.info(chalk.yellow("New version of Hindenburg available: %s, updating.."), latestVersion);
+                await fetchUpdates(logger);
             } else {
                 logger.info(chalk.yellow("New version of Hindenburg available: %s, use 'git pull && yarn build' to update"), latestVersion);
             }
@@ -246,8 +247,6 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
                     logger.info(chalk.yellow(" - %s (%s)"), note.description, note.commits.map(commit => commit.substr(0, 6)).join(", "));
                 }
             }
-
-            await fetchUpdates(logger);
         }
     } catch (e) {
         versionSpinner.fail();

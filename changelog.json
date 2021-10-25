@@ -1,3 +1,14 @@
 {
-  "$schema": "./misc/changelog.schema.json"
+  "$schema": "./misc/changelog.schema.json",
+  "1.0.0-beta.37": {
+    "version": "1.0.0-beta.37",
+    "contributors": ["edward"],
+    "date": "2021-10-25",
+    "notes": [
+      {
+        "description": "Added changelogs, where the server will check for changelogs if there's a new update available",
+        "commits": ["6b6552f478bf14ceadd2164c514f4fe11db9fbae", "9666704e8c85d31873f2a37ce2c9e4dac85b4068"]
+      }
+    ]
+  }
 }

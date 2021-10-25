@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "patternProperties": {
+    ".+": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "contributors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^20\\d{2}-((1[012])|\\d)-((3[01])|(2\\d)|(1\\d)|\\d)$"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "commits": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

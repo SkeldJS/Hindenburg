@@ -130,6 +130,14 @@ async function getLatestVersion() {
     }
 }
 
+async function getChangelog() {
+    const fullData = await makeHttpRequest("https://raw.githubusercontent.com/SkeldJS/Hindenburg/master/changelog.json");
+    const json = JSON.parse(fullData.toString("utf8"));
+    if (json) {
+        return json;
+    }
+}
+
 let cachedIp: string;
 async function fetchExternalIp(logger: Logger) {
     if (cachedIp)
@@ -197,21 +205,49 @@ async function fetchUpdates(logger: Logger) {
     }
 }
 
+export interface ChangelogJson {
+    [K: string]: {
+        version: string;
+        contributors: string;
+        date: string;
+        notes: {
+            description: string;
+            commits: string[]
+        }[];
+    }
+}
+
 async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     const versionSpinner = new Spinner("Checking for updates.. %s").start();
 
     try {
         const latestVersion = await getLatestVersion();
         const compare = compareVersions(latestVersion, process.env.npm_package_version as string);
-        versionSpinner.success();
 
         if (compare === 1) {
-            if (autoUpdate) {
-                logger.info(chalk.yellow("New version of Hindenburg available: " + latestVersion + ", updating.."));
-                await fetchUpdates(logger);
-            } else {
-                logger.info(chalk.yellow("New version of Hindenburg available: " + latestVersion + ", use 'git pull && yarn build' to update"));
+            let changelog: ChangelogJson|undefined;
+            try {
+                changelog = await getChangelog();
+            } catch (e) {
+                logger.warn("Failed to fetch changelogs");
             }
+
+            versionSpinner.success();
+
+            if (autoUpdate) {
+                logger.info(chalk.yellow("New version of Hindenburg available: %s, updating.."), latestVersion);
+            } else {
+                logger.info(chalk.yellow("New version of Hindenburg available: %s, use 'git pull && yarn build' to update"), latestVersion);
+            }
+
+            if (changelog && changelog[latestVersion]) {
+                logger.info(chalk.yellow("Change logs for version %s (%s):"), changelog[latestVersion].version, changelog[latestVersion].date);
+                for (const note of changelog[latestVersion].notes) {
+                    logger.info(chalk.yellow(" - %s (%s)"), note.description, note.commits.map(commit => commit.substr(0, 6)).join(", "));
+                }
+            }
+
+            await fetchUpdates(logger);
         }
     } catch (e) {
         versionSpinner.fail();

@@ -372,8 +372,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (this.roomNameOverride !== undefined) {
             return this.roomNameOverride;
         }
+        
+        const hostConnection = this.host ? this.connections.get(this.host.clientId) : undefined;
 
-        return fmtCode(this.code);
+        return hostConnection?.username || fmtCode(this.code);
     }
 
     /**

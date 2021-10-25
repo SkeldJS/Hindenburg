@@ -244,7 +244,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
             if (changelog && changelog[latestVersion]) {
                 logger.info(chalk.yellow("Change logs for version %s (%s):"), changelog[latestVersion].version, changelog[latestVersion].date);
                 for (const note of changelog[latestVersion].notes) {
-                    logger.info(chalk.yellow(" - %s (%s)"), note.description, note.commits.map(commit => commit.substr(0, 6)).join(", "));
+                    logger.info(chalk.yellow(" - %s (%s)"), note.description, note.commits.map(commit => commit.substr(0, 7)).join(", "));
                 }
             }
         }

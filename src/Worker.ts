@@ -1246,8 +1246,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 if (room.privacy === "private") continue;
 
-                const roomHost = room.host ? room.connections.get(room.host.clientId) : undefined;
-
                 const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
 
                 if (
@@ -1264,7 +1262,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             ? "127.0.0.1"
                             : this.config.socket.ip,
                         this.config.socket.port,
-                        roomHost?.username || room.roomName,
+                        room.roomName,
                         room.players.size,
                         roomAge,
                         room.settings.map,

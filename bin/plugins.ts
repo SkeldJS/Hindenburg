@@ -29,11 +29,11 @@ async function buildHindenburg(logger: Logger) {
 }
 
 function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, pluginType: "room"|"worker") {
-    return `import {
+    return `${isTypescript ? "import" : "const" } {
     HindenburgPlugin,
     ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"},
     EventListener${isTypescript ? ",\n    PlayerSetNameEvent,\n    Room" : ""}
-} from "@skeldjs/hindenburg";
+} ${isTypescript ? "from " : "= require("}"@skeldjs/hindenburg"${isTypescript ? "" : ")"};
 
 @HindenburgPlugin("${pluginName}", "1.0.0", "none")
 export default class extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {

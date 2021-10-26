@@ -417,14 +417,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
     async FixedUpdate() {
         const curTime = Date.now();
-        const delta = curTime - (this as any).last_fixed_update;
+        const delta = curTime - this.last_fixed_update;
 
         if (this.config.createTimeout > 0 && curTime - this.createdAt > this.config.createTimeout * 1000 && !this.playerJoinedFlag) {
             this.destroy(DisconnectReason.ServerRequest);
             this.playerJoinedFlag = true;
         }
 
-        (this as any).last_fixed_update = Date.now();
+        this.last_fixed_update = Date.now();
         if (this.hostIsMe) {
             if (this.state === GameState.Started) {
                 await this.checkForGameEnd();

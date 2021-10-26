@@ -153,8 +153,8 @@ temp/
 
 logs.txt
 plugins
+!pages/Plugins
 banned_ips.json
-examples/*.yarn
 config.json
 docs
 

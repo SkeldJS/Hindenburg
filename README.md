@@ -14,6 +14,9 @@ in if you need help installing, want to discuss Hindenburg, or just want to chat
 https://discord.gg/8ewNJYmYAU
 
 ## Features
+### 👮‍♀️ Server-As-A-Host
+Hindenburg has complete authority, and does much more than a glorified relay network. It interacts directly with games, making sure everything runs smoothly and gives lots of power to plugins.
+
 ### 🎨 Highly Configurable
 Hindenburg is completely customisable with a simple json file, giving you full
 control.
@@ -23,25 +26,20 @@ Leveraging the power of SkeldJS, Hindenburg has full knowledge of running games,
 giving you the ability to write or easily install plugins to control the behaviour
 of the server.
 
-### 👮‍♂️ Anti-Cheat
-With the power of [HACS](https://skeldjs.github.io/Hindenburg/pages/Using%20Hindenburg/HACS.html),
-Hindenburg's Anti-Cheat System, you can make sure that cheaters are stopped quickly
-and effectively through a highly customisable and easy anti-cheat config.
-
 ### 🧬 Reactor Support
 Hindenburg also natively supports clients using [Reactor](https://github.com/NuclearPowered/Reactor),
 allowing plugins to communicate directly with mods, and giving you the ability
 to leverage the full potential of the Reactor protocol.
 
 ## Getting Started
-Check out the [installation docs](https://skeldjs.github.io/Hindenburg/pages/Setting%20Up/Installation.html)
+Check out the [installation docs](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Installation.html)
 to get started using Hindenburg.
 
 ## Plugins
-For information on installing plugins, check out the [setting up plugins](https://skeldjs.github.io/Hindenburg/pages/Setting%20Up/Plugins.html)
+For information on installing plugins, check out the [setting up plugins](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Installing%20Plugins.html)
 page.
 
-For information on writing your own plugins, see the [getting started on writing plugins](https://skeldjs.github.io/Hindenburg/pages/Writing%20Plugins/Getting%20Started.html) page.
+For information on writing your own plugins, see the [getting started on writing plugins](https://skeldjs.github.io/Hindenburg/pages/Plugins/Creating%20a%20Plugin.html) page.
 
 ## Issues
 For issues regarding bugs that you encounter while using Hindenburg, please create

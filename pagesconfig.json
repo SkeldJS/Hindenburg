@@ -8,8 +8,37 @@
           "source": "./pages/Getting Started/Installation.md"
         },
         {
+          "title": "Environment Variables",
+          "source": "./pages/Getting Started/Environment Variables.md"
+        },
+        {
           "title": "Configuration",
           "source": "./pages/Getting Started/Configuration.md"
+        },
+        {
+          "title": "Installing Plugins",
+          "source": "./pages/Getting Started/Installing Plugins.md"
+        }
+      ]
+    },
+    {
+      "title": "Plugins",
+      "pages": [
+        {
+          "title": "Creating a Plugin",
+          "source": "./pages/Plugins/Creating a Plugin.md"
+        },
+        {
+          "title": "Event Listeners",
+          "source": "./pages/Plugins/Event Listeners.md"
+        },
+        {
+          "title": "Lifecycle Methods",
+          "source": "./pages/Plugins/Lifecycle Methods.md"
+        },
+        {
+          "title": "Worker and Room Plugins",
+          "source": "./pages/Plugins/Worker and Room Plugins.md"
         }
       ]
     },
@@ -27,6 +56,10 @@
         {
           "title": "Interactive CLI",
           "source": "./pages/Information/Interactive CLI.md"
+        },
+        {
+          "title": "Message Ordering",
+          "source": "./pages/Information/Message Ordering.md"
         },
         {
           "title": "Plugins",

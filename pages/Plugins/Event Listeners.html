@@ -87,6 +87,11 @@
 				<blockquote>
 					<p>You can access every symbol, <code>EventListener</code>, <code>PlayerSetColorEvent</code> and <code>Color</code> via the <code>@skeldjs/hindenburg</code> package.</p>
 				</blockquote>
+				<p>Many (not all) events will allow you to cancel what would normally happen, or allow you to revert any changes that the event made. Most events also allow you to change data, for example the <a href="https://skeld.js.org/classes/core.RoomSelectImpostorsEvent.html"><code>room.selectimpostors</code></a> event allows you to modify the impostors that will be set when the game starts.</p>
+				<p>Some events will also wait for any asynchronous tasks to complete.</p>
+				<blockquote>
+					<p>Be careful what you do in certain events. The <a href="https://skeld.js.org/classes/core.RoomFixedUpdateEvent.html"><code>room.fixedupdate</code></a> event, for example, can significantly slow down your server if handlers for this event take too long.</p>
+				</blockquote>
 				<a href="#typescript" id="typescript" style="color: inherit; text-decoration: none;">
 					<h2>TypeScript</h2>
 				</a>

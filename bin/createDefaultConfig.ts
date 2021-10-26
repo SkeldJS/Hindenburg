@@ -53,14 +53,15 @@ export function createDefaultConfig(): HindenburgConfig {
                 loadDirectory: true
             },
             gameCodes: "v2",
+            enforceSettings: {},
+            serverAsHost: false,
             serverPlayer: {
                 name: "<color=yellow>[Server]</color>",
                 color: "Yellow",
                 hat: "None",
                 skin: "None"
             },
-            enforceSettings: {},
-            serverAsHost: false
+            createTimeout: 10
         }
     };
 }

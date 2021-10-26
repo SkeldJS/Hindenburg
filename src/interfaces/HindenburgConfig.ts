@@ -274,7 +274,13 @@ export interface RoomsConfig {
     /**
      * Default appearance for a message sent by the server in game chat
      */
-    serverPlayer: ServerPlayerOptions
+    serverPlayer: ServerPlayerOptions;
+    /**
+     * The timeout in seconds to wait for a player joins before considering the
+     * room empty and destroying it.
+     * @default 10
+     */
+    createTimeout: number;
 }
 
 export interface ServerPlayerOptions {

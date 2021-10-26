@@ -634,6 +634,10 @@
               ]
             }
           }
+        },
+        "createTimeout": {
+          "type": "number",
+          "description": "The timeout in seconds to wait for a player joins before considering the room empty and destroying it."
         }
       }
     }

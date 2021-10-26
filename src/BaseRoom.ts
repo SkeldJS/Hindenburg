@@ -142,6 +142,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * The unix (milliseconds) timestamp. that the room was created.
      */
     createdAt: number;
+
+    private playerJoinedFlag: boolean;
+
     /**
      * All connections in the room, mapped by client ID to connection object.
      */
@@ -227,6 +230,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.actingHostIds = new Set;
 
         this.createdAt = Date.now();
+
+        this.playerJoinedFlag = false;
+
         this.connections = new Map;
         this.waitingForHost = new Set;
 
@@ -410,7 +416,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async FixedUpdate() {
-        const delta = Date.now() - (this as any).last_fixed_update;
+        const curTime = Date.now();
+        const delta = curTime - (this as any).last_fixed_update;
+
+        if (this.config.createTimeout > 0 && curTime - this.createdAt > this.config.createTimeout * 1000 && !this.playerJoinedFlag) {
+            this.destroy(DisconnectReason.ServerRequest);
+            this.playerJoinedFlag = true;
+        }
+
         (this as any).last_fixed_update = Date.now();
         if (this.hostIsMe) {
             if (this.state === GameState.Started) {
@@ -992,6 +1005,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         await Promise.all(promises);
 
         this.connections.set(joiningClient.clientId, joiningClient);
+        this.playerJoinedFlag = true;
 
         await this.emit(
             new PlayerJoinEvent(

@@ -16,4 +16,6 @@ RUN yarn setup
 RUN yarn build
 
 # Start the server
+ENV HINDENBURG_PLUGINS /Hindenburg/plugins
+ENV HINDENBURG_CONFIG /Hindenburg/config.json
 CMD ["yarn", "start"]

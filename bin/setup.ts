@@ -43,7 +43,6 @@ export default (async () => {
                 await fs.mkdir(pluginsDirectory);
                 await fs.writeFile(yarnLockFile, "", "utf8");
                 await fs.writeFile(packageJsonFile, JSON.stringify(defaultPackageJson, undefined, 4), "utf8");
-                pluginsSpinner.success();
             } catch (e) {
                 pluginsSpinner.fail();
                 logger.error("Failed to create plugins directory: %s", e);

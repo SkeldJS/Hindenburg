@@ -1303,7 +1303,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
     }
 
-    doPings() {
+    async doPings() {
+        const promises = [];
         for (const [ , connection ] of this.connections) {
             if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
                 this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
@@ -1313,11 +1314,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 continue;
             }
 
-            connection.sendPacket(
+            promises.push(connection.sendPacket(
                 new PingPacket(
                     connection.getNextNonce()
                 )
-            );
+            ));
             for (let i = 0; i < connection.sentPackets.length; i++) {
                 const sent = connection.sentPackets[i];
                 if (!sent.acked) {
@@ -1328,6 +1329,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             }
         }
+        await Promise.all(promises);
     }
 
     updateConfig(newConfig: Partial<HindenburgConfig>) {

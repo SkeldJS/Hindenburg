@@ -1,5 +1,20 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.0-beta.40": {
+    "version": "1.0.0-beta.40",
+    "contributors": ["edward"],
+    "date": "2021-10-26",
+    "notes": [
+      {
+        "description": "Add a createTimeout config option, to create a room if it has been open for too long",
+        "commits": ["3910a2e1fe85dbaf041f1ea83d9d2f2a5182047d"]
+      },
+      {
+        "description": "Accept all defaults when running for the first time without a config",
+        "commits": ["0fa7f9cd2854a12f6c267a1d7c072efa3fe8a3de"]
+      }
+    ]
+  },
   "1.0.0-beta.39": {
     "version": "1.0.0-beta.39",
     "contributors": ["edward"],

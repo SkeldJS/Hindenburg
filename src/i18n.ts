@@ -1,9 +1,9 @@
-// Portuguese (Brazilian):...Matador
-// French:...................DumbPlayer2
-// Spanish:..................Songaku
-// German:...................EnderB0YHD
-// Swedish:..................Captain
-// Dutch:....................Jeira
+// Portuguese (Brazilian)....Matador
+// French....................DumbPlayer2
+// Spanish...................Songaku
+// German....................EnderB0YHD
+// Swedish...................Captain
+// Dutch.....................Jeira
 // Portuguese................Bloody
 // Russian...................Galster
 

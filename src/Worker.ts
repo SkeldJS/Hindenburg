@@ -1346,19 +1346,24 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const loadedPlugin = this.loadedPlugins.get(key);
 
                 if (!newConfig.plugins[key]) {
-                    this.pluginLoader.unloadPlugin(key);
-                } else {
-                    if (!loadedPlugin) {
-                        continue;
+                    if (loadedPlugin) {
+                        this.pluginLoader.unloadPlugin(key);
                     }
+                } else {
+                    if (!loadedPlugin)
+                        continue;
 
                     if (!recursiveCompare(newConfig.plugins[key], this.config.plugins[key])) {
+                        const oldConfig = loadedPlugin.config;
+
                         const setConfig = newConfig.plugins[loadedPlugin.meta.id];
                         const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig);
                         if (setConfig && setConfig !== true) {
                             recursiveAssign(pluginConfig, setConfig);
                         }
-                        // todo: setConfig plugin event
+
+                        loadedPlugin.config = pluginConfig;
+                        loadedPlugin.onConfigUpdate(oldConfig, loadedPlugin.config);
                     }
                 }
             }

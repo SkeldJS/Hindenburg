@@ -175,7 +175,7 @@ export class Plugin {
          * The config passed into this plugin, usually by the `config.json` on the
          * server.
          */
-        public readonly config: any
+        public config: any
     ) {
         this.loadedChatCommands = [];
         this.loadedCliCommands = [];
@@ -232,6 +232,14 @@ export class Plugin {
      */
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     onPluginUnload(): any {}
+
+    /**
+     * Method that is called when the plugin's config updates. You can use this
+     * to verify configuration, or just to do something such as switch ports or
+     * change authentication when the config changes.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    onConfigUpdate(oldConfig: any, newConfig: any): any {}
 
     /**
      * Send a reactor rpc from a component to a room or to a specific player.
@@ -292,7 +300,7 @@ export class RoomPlugin extends Plugin {
          * The room that this plugin is loaded into.
          */
         public readonly room: Room,
-        public readonly config: any
+        public config: any
     ) {
         super(config);
 
@@ -317,7 +325,7 @@ export class WorkerPlugin extends Plugin {
          * The worker that this plugin is loaded into.
          */
         public readonly worker: Worker,
-        public readonly config: any
+        public config: any
     ) {
         super(config);
 

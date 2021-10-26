@@ -248,6 +248,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
                 }
             }
         }
+        versionSpinner.success();
     } catch (e) {
         versionSpinner.fail();
         logger.error("Failed to check for updates, nevermind");

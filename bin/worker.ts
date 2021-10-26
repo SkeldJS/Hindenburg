@@ -43,8 +43,34 @@ async function resolveConfig(logger: Logger): Promise<DeepPartial<HindenburgConf
     }
 }
 
+function splitExceptInQuotes(str: string) {
+    const out: string[] = [];
+    let accu = "";
+    let in_quotes = false;
+    let in_escape = false;
+    for (let i = 0; i < str.length; i++) {
+        if (str[i] === "\\") {
+            in_escape = !in_escape;
+            continue;
+        }
+        if (str[i] === "\"" && !in_escape) {
+            in_quotes = !in_quotes;
+        } else if (str[i] === " " && !in_quotes && !in_escape) {
+            out.push(accu);
+            accu = "";
+        } else {
+            accu += str[i];
+        }
+        in_escape = false;
+    }
+    out.push(accu);
+    return out;
+}
+
 function applyCommandLineArgs(config: HindenburgConfig) {
-    const argv = process.argv.slice(2);
+    const HINDENBURG_CLI_ARGS = process.env.HINDENBURG_CLI_ARGS || "";
+    const argv = [...process.argv.slice(2), ...splitExceptInQuotes(HINDENBURG_CLI_ARGS)];
+
     for (let i = 0; i < argv.length; i++) {
         if (argv[i].startsWith("--")) {
             const configPath = argv[i].substr(2);

@@ -1,5 +1,16 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.0-beta.38": {
+    "version": "1.0.0-beta.38",
+    "contributors": ["edward"],
+    "date": "2021-10-26",
+    "notes": [
+      {
+        "description": "Update skeldjs, fixing Airship toilet doors all opening at the same time",
+        "commits": ["f8849351a99bd03f059fb05a9655ec73895490b"]
+      }
+    ]
+  },
   "1.0.0-beta.37": {
     "version": "1.0.0-beta.37",
     "contributors": ["edward"],

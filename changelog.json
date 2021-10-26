@@ -12,6 +12,10 @@
       {
         "description": "Accept all defaults when running for the first time without a config",
         "commits": ["0fa7f9cd2854a12f6c267a1d7c072efa3fe8a3de"]
+      },
+      {
+        "description": "Update SkeldJS, fixing delta time on first fixed update of the room",
+        "commits": ["e026b86aaf5b5c30d9e1b3abb2418b8312082164"]
       }
     ]
   },

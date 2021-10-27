@@ -7,3 +7,4 @@ plugins
 banned_ips.json
 config.json
 logs.txt
+publish-docker.sh

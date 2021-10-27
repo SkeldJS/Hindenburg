@@ -1,0 +1,9 @@
+.github
+.vscode
+misc
+node_modules
+pages
+plugins
+banned_ips.json
+config.json
+logs.txt

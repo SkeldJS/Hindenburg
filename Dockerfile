@@ -1,20 +1,18 @@
 FROM node:14.18.1-alpine3.14
 
-ENV NODE_VERSION 14.18.1
-ENV PATH /usr/local/bin:$PATH
-ENV LANG C.UTF-8
+RUN apk add bash
+RUN apk add git
 
-# Copy the project to the container
-RUN mkdir /Hindenburg
+RUN mkdir /HConfig && mkdir /HPlugins && mkdir /Hindenburg
 WORKDIR /Hindenburg
 COPY . /Hindenburg
 
-EXPOSE 22023/udp
+EXPOSE 22023
 
-# Install dependencies and setup Hindenburg
-RUN yarn && yarn build
+ENV HINDENBURG_PLUGINS /HPlugins
+ENV HINDENBURG_CONFIG /HConfig/config.json
 
-# Start the server
-ENV HINDENBURG_PLUGINS /Hindenburg/plugins
-ENV HINDENBURG_CONFIG /Hindenburg/config.json
-CMD ["yarn", "start"]
+RUN yarn
+RUN yarn build
+
+ENTRYPOINT ["yarn", "start"]

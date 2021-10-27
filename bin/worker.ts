@@ -53,7 +53,7 @@ function splitExceptInQuotes(str: string) {
             in_escape = !in_escape;
             continue;
         }
-        if (str[i] === "\"" && !in_escape) {
+        if (str[i] === "\"" || str[i] === "'" && !in_escape) {
             in_quotes = !in_quotes;
         } else if (str[i] === " " && !in_quotes && !in_escape) {
             out.push(accu);

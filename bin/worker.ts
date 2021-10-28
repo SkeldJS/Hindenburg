@@ -289,8 +289,9 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     const resolvedConfig = await resolveConfig(logger);
     recursiveAssign(workerConfig, resolvedConfig || {});
     applyCommandLineArgs(workerConfig);
+    const externalIp = await fetchExternalIp(logger);
     if (workerConfig.socket.ip === "auto") {
-        workerConfig.socket.ip = await fetchExternalIp(logger);
+        workerConfig.socket.ip = externalIp;
     }
 
     if (workerConfig.checkForUpdates) {
@@ -310,7 +311,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     worker.logger.info("Listening on:");
 
     if (!worker.config.logging.hideSensitiveInfo) {
-        worker.logger.info(chalk.grey`External: ${chalk.white(worker.config.socket.ip)}:${port}`);
+        worker.logger.info(chalk.grey`External: ${chalk.white(externalIp)}:${port}`);
     }
     worker.logger.info(chalk.grey`Internal: ${chalk.white(internalIp)}:${port}`);
     worker.logger.info(chalk.grey`   Local: ${chalk.white("127.0.0.1")}:${port}`);

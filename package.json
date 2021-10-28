@@ -11,8 +11,8 @@
     "plugins": "ts-node ./bin/plugins",
     "prepack": "yarn build",
     "publish": "yarn npm publish --access public",
-    "start": "cross-env node ./dist/bin/worker",
-    "dev": "cross-env NODE_ENV=dev ts-node ./bin/worker",
+    "start": "node ./dist/bin/worker",
+    "dev": "ts-node ./bin/worker",
     "docs": "typedoc src/index.ts --out docs"
   },
   "devDependencies": {
@@ -27,7 +27,6 @@
     "@types/yargs": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "^4.28.5",
-    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "lint-staged": "^11.1.1",
     "pinst": "^2.1.6",

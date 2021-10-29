@@ -1,5 +1,20 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.0-beta.41": {
+    "version": "1.0.0-beta.41",
+    "contributors": ["edward"],
+    "date": "2021-10-29",
+    "notes": [
+      {
+        "description": "Add plugin gitignore to template creation",
+        "commits": ["858166429b72e04c06bea3f31be43b743d0937e6"]
+      },
+      {
+        "description": "Add client.disconnect event",
+        "commits": ["2cc71d8d33b73211293e85b308bb91cb356dbf61"]
+      }
+    ]
+  },
   "1.0.0-beta.40": {
     "version": "1.0.0-beta.40",
     "contributors": ["edward"],

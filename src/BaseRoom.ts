@@ -1035,10 +1035,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.None) {
-        await this.handleLeave(leavingConnection.clientId);
-
         this.waitingForHost.delete(leavingConnection);
         this.connections.delete(leavingConnection.clientId);
+
+        await this.handleLeave(leavingConnection.clientId);
 
         if (this.connections.size === 0) {
             await this.destroy();

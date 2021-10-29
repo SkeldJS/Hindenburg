@@ -30,13 +30,7 @@ async function resolveConfig(logger: Logger): Promise<DeepPartial<HindenburgConf
         const err = e as { code: string };
         if (err.code === "ENOENT") {
             logger.warn("No config file found; performing first-time setup accepting all defaults..");
-            await (await import("./_setup")).default(true);
-            try {
-                return JSON.parse(await fs.readFile(configFile, "utf8"));
-            } catch (e) {
-                logger.error("Failed to read config: %s", err.code || e);
-                return {};
-            }
+            return (await (await import("./_setup")).default(true)) as DeepPartial<HindenburgConfig>;
         }
         logger.error("Failed to read config: %s", err.code || e);
         return {};

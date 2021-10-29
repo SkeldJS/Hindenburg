@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SentPacket | @skeldjs/hindenburg</title>
+	<title>ClientDisconnectEvent | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,22 +57,40 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="sentpacket.html">SentPacket</a>
+					<a href="clientdisconnectevent.html">ClientDisconnectEvent</a>
 				</li>
 			</ul>
-			<h1>Class SentPacket</h1>
+			<h1>Class ClientDisconnectEvent</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Emitted when a client disconnected or is force-disconnected from the server.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SentPacket</span>
+						<span class="tsd-signature-type">BasicEvent</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">ClientDisconnectEvent</span>
+							</li>
+						</ul>
 					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/clientevent.html" class="tsd-signature-type" data-tsd-kind="Interface">ClientEvent</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -82,16 +100,17 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sentpacket.html#acked" class="tsd-kind-icon">acked</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sentpacket.html#buffer" class="tsd-kind-icon">buffer</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sentpacket.html#nonce" class="tsd-kind-icon">nonce</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="sentpacket.html#sentat" class="tsd-kind-icon">sent<wbr>At</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="clientdisconnectevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientdisconnectevent.html#client" class="tsd-kind-icon">client</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientdisconnectevent.html#custommessage" class="tsd-kind-icon">custom<wbr>Message</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="clientdisconnectevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="clientdisconnectevent.html#reason" class="tsd-kind-icon">reason</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="sentpacket.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="clientdisconnectevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,66 +118,80 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="acked" class="tsd-anchor"></a>
-					<h3>acked</h3>
-					<div class="tsd-signature tsd-kind-icon">acked<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
+					<a name="eventname" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;client.disconnect&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
+						<p>Overrides BasicEvent.eventName</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/6bfddc0/src/api/events/client/ClientDisconnect.ts#L12">src/api/events/client/ClientDisconnect.ts:12</a></li>
+						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="buffer" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> buffer</h3>
-					<div class="tsd-signature tsd-kind-icon">buffer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Buffer</span></div>
+					<a name="client" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> client</h3>
+					<div class="tsd-signature tsd-kind-icon">client<span class="tsd-signature-symbol">:</span> <a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a></div>
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/clientevent.html">ClientEvent</a>.<a href="../interfaces/clientevent.html#client">client</a></p>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="nonce" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> nonce</h3>
-					<div class="tsd-signature tsd-kind-icon">nonce<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="custommessage" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> custom<wbr>Message</h3>
+					<div class="tsd-signature tsd-kind-icon">custom<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+					<a name="eventname-1" class="tsd-anchor"></a>
+					<h3>event<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;client.disconnect&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Overrides BasicEvent.eventName</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/6bfddc0/src/api/events/client/ClientDisconnect.ts#L13">src/api/events/client/ClientDisconnect.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="sentat" class="tsd-anchor"></a>
-					<h3>sent<wbr>At</h3>
-					<div class="tsd-signature tsd-kind-icon">sent<wbr>At<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="reason" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> reason</h3>
+					<div class="tsd-signature tsd-kind-icon">reason<span class="tsd-signature-symbol">:</span> <a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></div>
 					<aside class="tsd-sources">
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Sent<wbr>Packet<span class="tsd-signature-symbol">(</span>nonce<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, sentAt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, acked<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sentpacket.html" class="tsd-signature-type" data-tsd-kind="Class">SentPacket</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Client<wbr>Disconnect<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a>, customMessage<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="clientdisconnectevent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientDisconnectEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Overrides BasicEvent.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/6bfddc0/src/Connection.ts#L37">src/Connection.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/6bfddc0/src/api/events/client/ClientDisconnect.ts#L13">src/api/events/client/ClientDisconnect.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>nonce: <span class="tsd-signature-type">number</span></h5>
+									<h5>client: <a href="connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a></h5>
 								</li>
 								<li>
-									<h5>buffer: <span class="tsd-signature-type">Buffer</span></h5>
+									<h5>reason: <a href="../enums/disconnectreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></h5>
 								</li>
 								<li>
-									<h5>sentAt: <span class="tsd-signature-type">number</span></h5>
-								</li>
-								<li>
-									<h5>acked: <span class="tsd-signature-type">boolean</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> customMessage: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="sentpacket.html" class="tsd-signature-type" data-tsd-kind="Class">SentPacket</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="clientdisconnectevent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientDisconnectEvent</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -231,22 +264,25 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="sentpacket.html" class="tsd-kind-icon">Sent<wbr>Packet</a>
+						<a href="clientdisconnectevent.html" class="tsd-kind-icon">Client<wbr>Disconnect<wbr>Event</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sentpacket.html#acked" class="tsd-kind-icon">acked</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
+								<a href="clientdisconnectevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sentpacket.html#buffer" class="tsd-kind-icon">buffer</a>
+								<a href="clientdisconnectevent.html#client" class="tsd-kind-icon">client</a>
 							</li>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="sentpacket.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sentpacket.html#nonce" class="tsd-kind-icon">nonce</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="clientdisconnectevent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="sentpacket.html#sentat" class="tsd-kind-icon">sent<wbr>At</a>
+								<a href="clientdisconnectevent.html#custommessage" class="tsd-kind-icon">custom<wbr>Message</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
+								<a href="clientdisconnectevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="clientdisconnectevent.html#reason" class="tsd-kind-icon">reason</a>
 							</li>
 						</ul>
 					</li>

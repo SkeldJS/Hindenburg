@@ -7,6 +7,8 @@ import chalk from "chalk";
 import prompts from "prompts";
 import resolveFrom from "resolve-from";
 
+import pluginGitignore from "./resources/plugin-gitignore";
+
 import { Logger } from "../src/logger";
 import { runCommandInDir } from "./util/runCommandInDir";
 import { Spinner } from "./util/Spinner";
@@ -234,6 +236,12 @@ async function runCreatePlugin() {
         try {
             await runCommandInDir(pluginDirectory, "git init");
             gitSpinner.success();
+
+            try {
+                await fs.writeFile(path.resolve(pluginDirectory, ".gitignore"), pluginGitignore, "utf8");
+            } catch (e) {
+                logger.warn("Couldn't create .gitignore: %s", (e as any).code || e);
+            }
         } catch (e) {
             logger.warn("Failed to create git repository, moving on anyway");
             gitSpinner.fail();

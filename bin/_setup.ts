@@ -129,8 +129,6 @@ export default (async (useDefault: boolean) => {
 
         const defaultConfig = createDefaultConfig();
 
-        (defaultConfig as any)["$schema"] = "./misc/config.schema.json";
-
         const { reactorSupport } = await prompts({
             type: "confirm",
             name: "reactorSupport",
@@ -179,7 +177,7 @@ export default (async (useDefault: boolean) => {
         try {
             await fs.writeFile(
                 configFile,
-                JSON.stringify(defaultConfig, undefined, 4),
+                JSON.stringify({ $schema: "./misc/config.schema.json", ...defaultConfig }, undefined, 4),
                 "utf8"
             );
             configSpinner.success();
@@ -187,5 +185,7 @@ export default (async (useDefault: boolean) => {
             configSpinner.fail();
             logger.error("Failed to create config.json: %s", (e as { code: string }).code || e);
         }
+
+        return defaultConfig;
     }
 });

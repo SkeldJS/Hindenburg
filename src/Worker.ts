@@ -71,11 +71,12 @@ import { RoomEvents, SpecialClientId } from "./BaseRoom";
 import {
     ClientBanEvent,
     ClientConnectEvent,
+    ClientDisconnectEvent,
     RoomCreateEvent,
     RoomBeforeCreateEvent,
     WorkerBeforeJoinEvent,
-    BaseReactorRpcMessage,
-    WorkerGetGameListEvent
+    WorkerGetGameListEvent,
+    BaseReactorRpcMessage
 } from "./api";
 
 import { PluginLoader, WorkerPlugin } from "./handlers";
@@ -111,6 +112,7 @@ export type WorkerEvents = RoomEvents
     & ExtractEventTypes<[
         ClientBanEvent,
         ClientConnectEvent,
+        ClientDisconnectEvent,
         RoomBeforeCreateEvent,
         WorkerBeforeJoinEvent,
         WorkerGetGameListEvent

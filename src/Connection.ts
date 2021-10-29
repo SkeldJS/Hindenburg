@@ -14,6 +14,8 @@ import {
     RemoveGameMessage
 } from "@skeldjs/protocol";
 
+import { ClientDisconnectEvent } from "./api";
+
 import { Worker } from "./Worker";
 import { Room } from "./Room";
 import { fmtCode } from "./util/fmtCode";
@@ -369,6 +371,14 @@ export class Connection {
         if (this.room) {
             await this.room.handleRemoteLeave(this, reason || DisconnectReason.None);
         }
+
+        await this.worker.emit(
+            new ClientDisconnectEvent(
+                this,
+                reason!,
+                messageJoined
+            )
+        );
     }
 
     /**

@@ -177,7 +177,7 @@ export default (async (useDefault: boolean) => {
         try {
             await fs.writeFile(
                 configFile,
-                JSON.stringify({ $schema: "./misc/config.schema.json", ...defaultConfig }, undefined, 4),
+                JSON.stringify({ $schema: path.relative(path.dirname(configFile), path.resolve(__dirname, "../misc/config.schema.json")), ...defaultConfig }, undefined, 4),
                 "utf8"
             );
             configSpinner.success();

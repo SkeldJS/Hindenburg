@@ -4,7 +4,6 @@ import { Deserializable, RpcMessage } from "@skeldjs/protocol";
 import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
 
 import path from "path";
-import util from "util";
 import fs from "fs/promises";
 
 import vorpal from "vorpal";
@@ -33,6 +32,7 @@ import { recursiveAssign } from "../util/recursiveAssign";
 
 import { ReactorRpcMessage } from "../packets";
 import { Logger } from "../logger";
+import { fmtCode } from "../util/fmtCode";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
@@ -305,8 +305,7 @@ export class RoomPlugin extends Plugin {
         super(config);
 
         this.worker = room.worker;
-
-        this.logger = new Logger(() => `${util.format(this.room)} ${this.meta.id}`, this.worker.vorpal);
+        this.logger = new Logger(() => `${chalk.yellow(fmtCode(this.room.code))} ${this.meta.id}`, this.worker.vorpal);
     }
 }
 

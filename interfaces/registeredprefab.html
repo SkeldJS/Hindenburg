@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MessageHandlerOptions | @skeldjs/hindenburg</title>
+	<title>RegisteredPrefab | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="messagehandleroptions.html">MessageHandlerOptions</a>
+					<a href="registeredprefab.html">RegisteredPrefab</a>
 				</li>
 			</ul>
-			<h1>Interface MessageHandlerOptions</h1>
+			<h1>Interface RegisteredPrefab</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">MessageHandlerOptions</span>
+						<span class="target">RegisteredPrefab</span>
 					</li>
 				</ul>
 			</section>
@@ -82,7 +82,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="messagehandleroptions.html#override" class="tsd-kind-icon">override</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="registeredprefab.html#components" class="tsd-kind-icon">components</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="registeredprefab.html#spawntype" class="tsd-kind-icon">spawn<wbr>Type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,12 +92,22 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="override" class="tsd-anchor"></a>
-					<h3>override</h3>
-					<div class="tsd-signature tsd-kind-icon">override<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="components" class="tsd-anchor"></a>
+					<h3>components</h3>
+					<div class="tsd-signature tsd-kind-icon">components<span class="tsd-signature-symbol">:</span> <a href="../modules.html#networkableconstructor" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableConstructor</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#networkableevents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/123b526/src/api/hooks/MessageHandler.ts#L8">src/api/hooks/MessageHandler.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/123b526/src/api/hooks/RegisterPrefab.ts#L8">src/api/hooks/RegisterPrefab.ts:8</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="spawntype" class="tsd-anchor"></a>
+					<h3>spawn<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">spawn<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/123b526/src/api/hooks/RegisterPrefab.ts#L7">src/api/hooks/RegisterPrefab.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -169,10 +180,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="messagehandleroptions.html" class="tsd-kind-icon">Message<wbr>Handler<wbr>Options</a>
+						<a href="registeredprefab.html" class="tsd-kind-icon">Registered<wbr>Prefab</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="messagehandleroptions.html#override" class="tsd-kind-icon">override</a>
+								<a href="registeredprefab.html#components" class="tsd-kind-icon">components</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="registeredprefab.html#spawntype" class="tsd-kind-icon">spawn<wbr>Type</a>
 							</li>
 						</ul>
 					</li>

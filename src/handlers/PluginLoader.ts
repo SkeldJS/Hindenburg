@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 import { Deserializable, RpcMessage } from "@skeldjs/protocol";
-import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
+import { AirshipStatus, AprilShipStatus, CustomNetworkTransform, GameData, LobbyBehaviour, MeetingHud, MiraShipStatus, Networkable, NetworkableEvents, PlayerControl, PlayerData, PlayerPhysics, PolusShipStatus, SkeldShipStatus, SpawnType, VoteBanSystem } from "@skeldjs/core";
 
 import path from "path";
 import fs from "fs/promises";
@@ -24,7 +24,9 @@ import {
     isHindenburgPlugin,
     BaseReactorRpcMessage,
     MessageHandlerOptions,
-    shouldPreventLoading
+    shouldPreventLoading,
+    RegisteredPrefab,
+    getPluginRegisteredPrefabs
 } from "../api";
 
 import { recursiveClone } from "../util/recursiveClone";
@@ -170,6 +172,11 @@ export class Plugin {
      */
     loadedRegisteredMessages: Deserializable[];
 
+    /**
+     * All registered spawn prefabs for the plugin, created with {@link RegisterPrefab}.
+     */
+    registeredPrefabs: RegisteredPrefab[]
+
     constructor(
         /**
          * The config passed into this plugin, usually by the `config.json` on the
@@ -183,6 +190,7 @@ export class Plugin {
         this.loadedMessageHandlers = [];
         this.loadedReactorRpcHandlers = [];
         this.loadedRegisteredMessages = [];
+        this.registeredPrefabs = [];
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -669,6 +677,7 @@ export class PluginLoader {
         }
         this.applyChatCommands(room);
         this.applyReactorRpcHandlers(room);
+        this.applyRegisteredPrefabs(room);
     }
 
     /**
@@ -758,6 +767,32 @@ export class PluginLoader {
         for (const [ , loadedPlugin ] of room.loadedPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
                 this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
+            }
+        }
+    }
+
+    private applyRegisteredPrefabs(room: Room) {
+        room.spawnPrefabs = new Map([
+            [SpawnType.ShipStatus, [ SkeldShipStatus ]],
+            [SpawnType.MeetingHud, [ MeetingHud ]],
+            [SpawnType.LobbyBehaviour, [ LobbyBehaviour ]],
+            [SpawnType.GameData, [ GameData, VoteBanSystem ]],
+            [SpawnType.Player, [ PlayerControl, PlayerPhysics, CustomNetworkTransform ]],
+            [SpawnType.Headquarters, [ MiraShipStatus ]],
+            [SpawnType.PlanetMap, [ PolusShipStatus ]],
+            [SpawnType.AprilShipStatus, [ AprilShipStatus ]],
+            [SpawnType.Airship, [ AirshipStatus ]]
+        ]);
+
+        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+            for (const registeredPrefab of loadedPlugin.registeredPrefabs) {
+                room.registerPrefab(registeredPrefab.spawnType, registeredPrefab.components);
+            }
+        }
+
+        for (const [ , loadedPlugin ] of room.loadedPlugins) {
+            for (const registeredPrefab of loadedPlugin.registeredPrefabs) {
+                room.registerPrefab(registeredPrefab.spawnType, registeredPrefab.components);
             }
         }
     }
@@ -895,6 +930,7 @@ export class PluginLoader {
             const cliCommands = getPluginCliCommands(initPlugin);
             const messageHandlers = getPluginMessageHandlers(initPlugin);
             const registeredMessages = getPluginRegisteredMessages(pluginCtr);
+            const registeredPrefabs = getPluginRegisteredPrefabs(pluginCtr);
 
             for (const commandInfo of cliCommands) {
                 const command = this.worker.vorpal.command(commandInfo.command.usage, commandInfo.command.description);
@@ -921,6 +957,7 @@ export class PluginLoader {
             }
 
             initPlugin.loadedRegisteredMessages = [...registeredMessages];
+            initPlugin.registeredPrefabs = [...registeredPrefabs];
 
             this.worker.loadedPlugins.set(pluginCtr.meta.id, initPlugin as WorkerPlugin);
 

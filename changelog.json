@@ -1,6 +1,21 @@
 {
   "$schema": "./misc/changelog.schema.json",
-  "1.0.0-beta.4": {
+  "1.0.0-beta.43": {
+    "version": "1.0.0-beta.43",
+    "contributors": ["edward"],
+    "date": "2021-11-01",
+    "notes": [
+      {
+        "description": "Add chat mode support and chat mode enforcement config",
+        "commits": ["611f0979337d16ab6318887e0fff8095b0c878be"]
+      },
+      {
+        "description": "Add @RegisterPrefab api to allow plugins to register spawn prefabs easily",
+        "commits": ["123b52672a1608e3643f2d02836d7b6850c91b8e"]
+      }
+    ]
+  },
+  "1.0.0-beta.42": {
     "version": "1.0.0-beta.42",
     "contributors": ["edward"],
     "date": "2021-11-01",

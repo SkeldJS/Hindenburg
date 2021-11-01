@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AnticheatConfig | @skeldjs/hindenburg</title>
+	<title>PlayersVoteOutEndgameMetadata | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="anticheatconfig.html">AnticheatConfig</a>
+					<a href="playersvoteoutendgamemetadata.html">PlayersVoteOutEndgameMetadata</a>
 				</li>
 			</ul>
-			<h1>Interface AnticheatConfig</h1>
+			<h1>Interface PlayersVoteOutEndgameMetadata</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">AnticheatConfig</span>
+						<span class="target">PlayersVoteOutEndgameMetadata</span>
 					</li>
 				</ul>
 			</section>
@@ -79,47 +79,48 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatconfig.html#penalty" class="tsd-kind-icon">penalty</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="anticheatconfig.html#rules" class="tsd-kind-icon">rules</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="playersvoteoutendgamemetadata.html#alivecrewmates" class="tsd-kind-icon">alive<wbr>Crewmates</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="playersvoteoutendgamemetadata.html#aliveimpostors" class="tsd-kind-icon">alive<wbr>Impostors</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="playersvoteoutendgamemetadata.html#exiled" class="tsd-kind-icon">exiled</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="penalty" class="tsd-anchor"></a>
-					<h3>penalty</h3>
-					<div class="tsd-signature tsd-kind-icon">penalty<span class="tsd-signature-symbol">:</span> <a href="anticheatpenalty.html" class="tsd-signature-type" data-tsd-kind="Interface">AnticheatPenalty</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="alivecrewmates" class="tsd-anchor"></a>
+					<h3>alive<wbr>Crewmates</h3>
+					<div class="tsd-signature tsd-kind-icon">alive<wbr>Crewmates<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/f097807/src/interfaces/HindenburgConfig.ts#L32">src/interfaces/HindenburgConfig.ts:32</a></li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/PlayersVoteOut.d.ts:4</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Global penalties for players brekaing any rule.</p>
-						</div>
-					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="rules" class="tsd-anchor"></a>
-					<h3>rules</h3>
-					<div class="tsd-signature tsd-kind-icon">rules<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="anticheatruleconfig.html" class="tsd-signature-type" data-tsd-kind="Interface">AnticheatRuleConfig</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="aliveimpostors" class="tsd-anchor"></a>
+					<h3>alive<wbr>Impostors</h3>
+					<div class="tsd-signature tsd-kind-icon">alive<wbr>Impostors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/f097807/src/interfaces/HindenburgConfig.ts#L36">src/interfaces/HindenburgConfig.ts:36</a></li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/PlayersVoteOut.d.ts:5</li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Configuration for each individual rule.</p>
-						</div>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="exiled" class="tsd-anchor"></a>
+					<h3>exiled</h3>
+					<div class="tsd-signature tsd-kind-icon">exiled<span class="tsd-signature-symbol">:</span> <a href="../classes/playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/PlayersVoteOut.d.ts:3</li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -189,14 +190,17 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="anticheatconfig.html" class="tsd-kind-icon">Anticheat<wbr>Config</a>
+					<li class="current tsd-kind-interface tsd-is-external">
+						<a href="playersvoteoutendgamemetadata.html" class="tsd-kind-icon">Players<wbr>Vote<wbr>Out<wbr>Endgame<wbr>Metadata</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="anticheatconfig.html#penalty" class="tsd-kind-icon">penalty</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="playersvoteoutendgamemetadata.html#alivecrewmates" class="tsd-kind-icon">alive<wbr>Crewmates</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="anticheatconfig.html#rules" class="tsd-kind-icon">rules</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="playersvoteoutendgamemetadata.html#aliveimpostors" class="tsd-kind-icon">alive<wbr>Impostors</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="playersvoteoutendgamemetadata.html#exiled" class="tsd-kind-icon">exiled</a>
 							</li>
 						</ul>
 					</li>

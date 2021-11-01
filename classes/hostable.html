@@ -131,7 +131,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hostable.html#fixedupdate" class="tsd-kind-icon">Fixed<wbr>Update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hostable.html#broadcast" class="tsd-kind-icon">broadcast</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hostable.html#checkforgameend" class="tsd-kind-icon">check<wbr>For<wbr>Game<wbr>End</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hostable.html#checkplayersremaining" class="tsd-kind-icon">check<wbr>Players<wbr>Remaining</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hostable.html#createfakeplayer" class="tsd-kind-icon">create<wbr>Fake<wbr>Player</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hostable.html#despawncomponent" class="tsd-kind-icon">despawn<wbr>Component</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hostable.html#destroy" class="tsd-kind-icon">destroy</a></li>
@@ -196,7 +196,7 @@
 					<div class="tsd-signature tsd-kind-icon">Fixed<wbr>Update<wbr>Interval<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:368</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:367</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -253,20 +253,21 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="endgameintents" class="tsd-anchor"></a>
 					<h3>end<wbr>Game<wbr>Intents</h3>
-					<div class="tsd-signature tsd-kind-icon">end<wbr>Game<wbr>Intents<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">end<wbr>Game<wbr>Intents<span class="tsd-signature-symbol">:</span> <a href="endgameintent.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameIntent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:160</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:162</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Information for controlling when the game shoudl end, this dictionary is
-							checked every fixed update to look for reasons to end a game.</p>
+							<p>Every end game intent that should happen in a queue to be or not to be
+							canceled.</p>
 						</div>
-						<p>See <a href="roomendgameintentevent.html">RoomEndGameIntentEvent</a> to cancel or listen for end game intent
-							criteria being fulfilled. Or see <a href="hostable.html#registerendgameintent">Hostable.registerEndGameIntent</a> to register
-						your own.</p>
+						<p>The first item of each element being the name of the end game intent and
+						the second being metadata passed with it.</p>
+						<p>See <a href="roomendgameintentevent.html">RoomEndGameIntentEvent</a> to cancel an end game intent, or see
+						<a href="hostable.html#registerendgameintent">Hostable.registerEndGameIntent</a> to register your own.</p>
 						<p>See <a href="roomgameendevent.html">RoomGameEndEvent</a> to listen for a game actually ending.</p>
 					</div>
 				</section>
@@ -540,7 +541,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:178</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:180</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -557,7 +558,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:177</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:179</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -580,19 +581,19 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="checkforgameend" class="tsd-anchor"></a>
-					<h3>check<wbr>For<wbr>Game<wbr>End</h3>
+					<a name="checkplayersremaining" class="tsd-anchor"></a>
+					<h3>check<wbr>Players<wbr>Remaining</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">check<wbr>For<wbr>Game<wbr>End<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">check<wbr>Players<wbr>Remaining<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:326</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:247</li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -606,7 +607,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:325</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:328</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -640,7 +641,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:294</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:297</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -677,7 +678,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:162</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:164</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -754,7 +755,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:260</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:263</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -777,7 +778,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:305</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:308</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -838,7 +839,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:163</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:165</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -855,7 +856,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:355</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:357</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -874,7 +875,7 @@
 								<li>
 									<h5>netid: <span class="tsd-signature-type">number</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The network ID of the component of the player to search.</p>
+										<p>The net ID of the component of the player to search.</p>
 									</div>
 								</li>
 							</ul>
@@ -893,7 +894,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:344</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:346</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -931,7 +932,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:345</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:347</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -954,7 +955,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:259</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:262</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -985,7 +986,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:244</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:246</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1016,7 +1017,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:249</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:252</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1047,7 +1048,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:265</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:268</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1078,7 +1079,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:253</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:256</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1316,47 +1317,27 @@
 					<a name="registerendgameintent" class="tsd-anchor"></a>
 					<h3>register<wbr>End<wbr>Game<wbr>Intent</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">register<wbr>End<wbr>Game<wbr>Intent<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, critera<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">register<wbr>End<wbr>Game<wbr>Intent<span class="tsd-signature-symbol">(</span>endGameIntent<span class="tsd-signature-symbol">: </span><a href="endgameintent.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameIntent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:363</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:362</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Register an end game intent to specify when a game should end.</p>
+									<p>Register an intent to end the game.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<h5>endGameIntent: <a href="endgameintent.html" class="tsd-signature-type" data-tsd-kind="Class">EndGameIntent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The name of the end game intent.</p>
+										<p>The intention to end the game.</p>
 									</div>
-								</li>
-								<li>
-									<h5>critera: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The critera to check for if the game should end. Should return
-											either undefined or false for if the game shouldn&#39;t end, or should return an
-										integer as a reason for why the game should end. See <a href="../enums/gameoverreason.html">GameOverReason</a>.</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-signature">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-external">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1373,7 +1354,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:334</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:336</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1454,7 +1435,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:189</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:191</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1493,7 +1474,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:201</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:203</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1525,7 +1506,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:195</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:197</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1557,7 +1538,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:209</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:211</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1591,7 +1572,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:239</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:241</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1623,7 +1604,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:220</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:222</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1657,7 +1638,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:232</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:234</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1697,7 +1678,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:284</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:287</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1744,7 +1725,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:233</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:235</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1761,7 +1742,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:316</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:319</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1958,7 +1939,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides EventEmitter&lt;T&gt;.constructor</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:160</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:162</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1990,7 +1971,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:172</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:174</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -2007,7 +1988,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:171</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:173</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2029,7 +2010,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:176</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:178</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2051,7 +2032,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:167</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/Hostable.d.ts:169</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2144,7 +2125,7 @@
 								<a href="hostable.html#broadcast" class="tsd-kind-icon">broadcast</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="hostable.html#checkforgameend" class="tsd-kind-icon">check<wbr>For<wbr>Game<wbr>End</a>
+								<a href="hostable.html#checkplayersremaining" class="tsd-kind-icon">check<wbr>Players<wbr>Remaining</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="hostable.html#code" class="tsd-kind-icon">code</a>

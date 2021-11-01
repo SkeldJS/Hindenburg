@@ -10,11 +10,11 @@
         "commits": ["cf6d75d28e3e49c3db3904a15a1fc6ffb9bc63cb"]
       },
       {
-        "description": "Bufix: Fix acting hosts getting set before next player joined when 2 players were joining simultaneously",
+        "description": "Bugfix: Fix acting hosts getting set before next player joined when 2 players were joining simultaneously",
         "commits": ["88571c6fe2661938e6bee705e9d6cbcc3b4eb863"]
       },
       {
-        "description": "Bufix: Fix acting hosts getting set before next player joined when 2 players were joining simultaneously",
+        "description": "Bugfix: Fix acting hosts getting set before next player joined when 2 players were joining simultaneously",
         "commits": ["cf6d75d28e3e49c3db3904a15a1fc6ffb9bc63cb"]
       }
     ]

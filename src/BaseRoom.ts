@@ -186,7 +186,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      */
     state: GameState;
 
-    private actingHostWaitingFor: PlayerData|undefined;
+    /**
+     * Player that the server is waiting to finish joining before resetting all
+     * acting hosts back.
+     */
+    actingHostWaitingFor: PlayerData|undefined;
 
     /**
      * All plugins loaded and scoped to the room, mapped by plugin id to room plugin object.
@@ -270,11 +274,13 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     ev.player, ev.newName);
             }
 
-            if (this.actingHostsEnabled) {
-                for (const actingHostId of this.actingHostIds) {
-                    const actingHostConn = this.connections.get(actingHostId);
-                    if (actingHostConn) {
-                        await this.updateHost(actingHostId, actingHostConn);
+            if (this.actingHostWaitingFor === ev.player) {
+                if (this.actingHostsEnabled) {
+                    for (const actingHostId of this.actingHostIds) {
+                        const actingHostConn = this.connections.get(actingHostId);
+                        if (actingHostConn) {
+                            await this.updateHost(actingHostId, actingHostConn);
+                        }
                     }
                 }
             }

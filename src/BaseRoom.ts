@@ -46,6 +46,7 @@ import {
     PlayerDataResolvable,
     PlayerJoinEvent,
     PlayerSetHostEvent,
+    RoomEndGameIntentEvent,
     RoomFixedUpdateEvent
 } from "@skeldjs/core";
 
@@ -431,11 +432,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
 
         this.last_fixed_update = Date.now();
-        if (this.hostIsMe) {
-            if (this.state === GameState.Started) {
-                await this.checkForGameEnd();
-            }
-        }
 
         for (const [, component] of this.netobjects) {
             if (
@@ -453,6 +449,29 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     component.dirtyBit = 0;
                 }
             }
+        }
+
+        if (this.endGameIntents.length) {
+            for (let i = 0; i < this.endGameIntents.length; i++) {
+                const intent = this.endGameIntents[i];
+                const ev = await this.emit(
+                    new RoomEndGameIntentEvent(
+                        this,
+                        intent.name,
+                        intent.reason,
+                        intent.metadata
+                    )
+                );
+                if (ev.canceled) {
+                    this.endGameIntents.splice(i, 1);
+                    i--;
+                }
+            }
+
+            if (this.endGameIntents[0]) {
+                await this.endGame(this.endGameIntents[0].reason);
+            }
+            this.endGameIntents.splice(0);
         }
 
         const ev = await this.emit(

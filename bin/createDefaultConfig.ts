@@ -48,6 +48,7 @@ export function createDefaultConfig(): HindenburgConfig {
             allowNormalClients: true
         },
         rooms: {
+            checkChatMode: false,
             chatCommands: true,
             plugins: {
                 loadDirectory: true

@@ -1,7 +1,7 @@
 import dgram from "dgram";
 import chalk from "chalk";
 
-import { DisconnectReason, Language } from "@skeldjs/constant";
+import { DisconnectReason, Language, QuickChatMode } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
 import { ModPluginSide } from "@skeldjs/reactor";
 import { VersionInfo } from "@skeldjs/util";
@@ -111,6 +111,11 @@ export class Connection {
     username: string;
 
     /**
+     * The chat mode setting that the client has enabled.
+     */
+    chatMode: QuickChatMode;
+
+    /**
      * The language that the client identified with.
      */
     language: Language;
@@ -196,6 +201,7 @@ export class Connection {
         this.sentDisconnect = false;
         this.usingReactor = false;
         this.username = "";
+        this.chatMode = QuickChatMode.FreeChat;
         this.language = Language.English;
 
         this.numMods = 0;

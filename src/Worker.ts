@@ -11,7 +11,8 @@ import {
     TaskBarUpdate,
     KillDistance,
     GameMap,
-    SendOption
+    SendOption,
+    QuickChatMode
 } from "@skeldjs/constant";
 
 import {
@@ -823,6 +824,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             sender.hasIdentified = true;
             sender.usingReactor = !message.isNormalHello();
             sender.username = message.username;
+            sender.chatMode = message.chatMode;
             sender.language = message.language;
             sender.clientVersion = message.clientver;
 
@@ -1692,11 +1694,29 @@ export class Worker extends EventEmitter<WorkerEvents> {
             return connection.joinError(DisconnectReason.GameStarted);
         }
 
+        const roomHost = ev.alteredRoom.host;
+        console.log(ev.alteredRoom.config.checkChatMode);
+        if (ev.alteredRoom.config.checkChatMode && roomHost) {
+            const hostConnection = ev.alteredRoom.connections.get(roomHost.clientId);
+            console.log(hostConnection?.chatMode, ev.client.chatMode);
+            if (hostConnection && hostConnection.chatMode !== ev.client.chatMode) {
+                if (hostConnection.chatMode === QuickChatMode.FreeChat) {
+                    this.logger.warn("%s attempted to join %s with the wrong chat mode (the room was on free-chat only)",
+                        ev.client, ev.alteredRoom);
+                    return connection.joinError(i18n.invalid_quick_chat_mode_free_chat);
+                } else if (hostConnection.chatMode === QuickChatMode.QuickChat) {
+                    this.logger.warn("%s attempted to join %s with the wrong chat mode (the room was on quick-chat only)",
+                        ev.client, ev.alteredRoom);
+                    return connection.joinError(i18n.invalid_quick_chat_mode_quick_chat);
+                }
+            }
+        }
+
         if (this.config.reactor !== false && (
             this.config.reactor === true ||
             this.config.reactor.requireHostMods
-        ) && ev.alteredRoom.hostId) {
-            const hostConnection = ev.alteredRoom.connections.get(ev.alteredRoom.hostId);
+        ) && roomHost) {
+            const hostConnection = ev.alteredRoom.connections.get(roomHost.clientId);
             if (hostConnection) {
                 if (hostConnection.usingReactor && !connection.usingReactor) {
                     return connection.joinError(i18n.reactor_required_for_room);

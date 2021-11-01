@@ -290,6 +290,10 @@
     "rooms": {
       "type": "object",
       "properties": {
+        "checkChatMode": {
+          "type": "boolean",
+          "description": "Whether or not to make sure players have the same chat mode as the host before joining."
+        },
         "chatCommands": {
           "anyOf": [
             {

@@ -113,5 +113,11 @@ export default {
         "nl": "Onbekende mod niet toegestaan: %1",
         "pt": "Mod desconhecido não permitido: %1",
         "ru": "Неизвестный мод не разрешён: %1"
+    },
+    "invalid_quick_chat_mode_quick_chat": {
+        "en": "Invalid quick chat mode, the room expected \"Quick Chat only\" but you had \"Free or Quick chat\" enabled"
+    },
+    "invalid_quick_chat_mode_free_chat": {
+        "en": "Invalid quick chat mode, the room expected \"Free or Quick chat\" but you had \"Quick Chat only\" enabled"
     }
 } as const;

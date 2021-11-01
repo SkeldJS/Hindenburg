@@ -248,6 +248,12 @@ export interface ChatCommandConfig {
 
 export interface RoomsConfig {
     /**
+     * Whether or not to make sure players have the same chat mode as the host
+     * before joining.
+     * @default false
+     */
+    checkChatMode: boolean;
+    /**
      * Whether to allow players to use chat commands.
      * @default true
      */

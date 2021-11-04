@@ -383,7 +383,7 @@ export class Perspective extends BaseRoom {
             }
         }
 
-        this.registeredPrefabs = new Map(parentRoom.registeredPrefabs.entries());
+        this.spawnPrefabs = new Map(parentRoom.spawnPrefabs.entries());
 
         this.code = parentRoom.code;
         this.hostId = parentRoom.hostId;

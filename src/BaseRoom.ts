@@ -452,26 +452,29 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
 
         if (this.endGameIntents.length) {
-            for (let i = 0; i < this.endGameIntents.length; i++) {
-                const intent = this.endGameIntents[i];
-                const ev = await this.emit(
-                    new RoomEndGameIntentEvent(
-                        this,
-                        intent.name,
-                        intent.reason,
-                        intent.metadata
-                    )
-                );
-                if (ev.canceled) {
-                    this.endGameIntents.splice(i, 1);
-                    i--;
+            const endGameIntents = this.endGameIntents;
+            this.endGameIntents = [];
+            if (this.hostIsMe) {
+                for (let i = 0; i < endGameIntents.length; i++) {
+                    const intent = endGameIntents[i];
+                    const ev = await this.emit(
+                        new RoomEndGameIntentEvent(
+                            this,
+                            intent.name,
+                            intent.reason,
+                            intent.metadata
+                        )
+                    );
+                    if (ev.canceled) {
+                        endGameIntents.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                if (endGameIntents[0]) {
+                    this.endGame(endGameIntents[0].reason);
                 }
             }
-
-            if (this.endGameIntents[0]) {
-                await this.endGame(this.endGameIntents[0].reason);
-            }
-            this.endGameIntents.splice(0);
         }
 
         const ev = await this.emit(
@@ -1248,12 +1251,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 );
             }
 
-            this.meetingHud;
-
             if (this.lobbyBehaviour)
-                this.despawnComponent(
-                    this.lobbyBehaviour
-                );
+                this.despawnComponent(this.lobbyBehaviour);
 
             const ship_prefabs = [
                 SpawnType.ShipStatus,
@@ -1266,6 +1265,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
             await this.shipStatus?.selectImpostors();
             await this.shipStatus?.assignTasks();
+
+            if (this.shipStatus) {
+                for (const [ , player ] of this.players) {
+                    this.shipStatus.spawnPlayer(player, true);
+                }
+            }
         }
     }
 

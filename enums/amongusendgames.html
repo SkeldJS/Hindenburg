@@ -93,9 +93,15 @@
 					<div class="tsd-signature tsd-kind-icon">O2<wbr>Sabotage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;o2 sabotage&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:3</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:7</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An intent to end the game when O2 is sabotaged and  the timer reaches
+							0, has no metadata.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a name="playersdisconnect" class="tsd-anchor"></a>
@@ -103,9 +109,16 @@
 					<div class="tsd-signature tsd-kind-icon">Players<wbr>Disconnect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;players disconnect&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:5</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:18</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An intent to end the game when a player disconnects, either by there not
+								being enough impostors or not being enough crewmates remaining to continue
+							the game. Uses <a href="../interfaces/playersdisconnectendgamemetadata.html">PlayersDisconnectEndgameMetadata</a> as metadata.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a name="playerskill" class="tsd-anchor"></a>
@@ -113,9 +126,16 @@
 					<div class="tsd-signature tsd-kind-icon">Players<wbr>Kill<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;players kill&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:7</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:31</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An intent to end the game after a player is murdered by a not player, but
+								not registered when a player is voted out, see <a href="amongusendgames.html#playersvoteout">AmongUsEndGames.PlayersVoteOut</a>.
+							Uses <a href="../interfaces/playerskillendgamemetadata.html">PlayersKillEndgameMetadata</a> as metadata.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a name="playersvoteout" class="tsd-anchor"></a>
@@ -123,19 +143,33 @@
 					<div class="tsd-signature tsd-kind-icon">Players<wbr>Vote<wbr>Out<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;players vote out&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:6</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:25</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An intent to end the game when a player is voted out after a meeting, either
+								the last impostor being voted out or there not being enough crewmates
+								remaining to continue the game.
+							Uses <a href="../interfaces/playersvoteoutendgamemetadata.html">PlayersVoteOutEndgameMetadata</a> as metadata.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a name="reactorsabotage" class="tsd-anchor"></a>
 					<h3>Reactor<wbr>Sabotage</h3>
-					<div class="tsd-signature tsd-kind-icon">Reactor<wbr>Sabotage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;reactor sabotaeg&quot;</span></div>
+					<div class="tsd-signature tsd-kind-icon">Reactor<wbr>Sabotage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;reactor sabotage&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:4</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:12</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An intent to end the game when reactor is sabotaged and the timer reaches
+							0, has no metadata.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a name="taskscomplete" class="tsd-anchor"></a>
@@ -143,9 +177,15 @@
 					<div class="tsd-signature tsd-kind-icon">Tasks<wbr>Complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;tasks complete&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:8</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/endgame/EndGameIntent.d.ts:36</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An intent to end the game when all crewmates complete their tasks, uses
+							<a href="../interfaces/taskscompleteendgamemetadata.html">TasksCompleteEndgameMetadata</a>.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>

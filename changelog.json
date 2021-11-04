@@ -6,6 +6,14 @@
     "date": "2021-11-01",
     "notes": [
       {
+        "description": "Fix registering end game intents in an end game intent event",
+        "commits": ["b7b1a35959de0abcce02462d6f537ef11472422d"]
+      },
+      {
+        "description": "Update skeldjs to fix positions when spawning",
+        "commits": ["bb22b70d2483172223205916c0a8afd05196b1a"]
+      },
+      {
         "description": "Add chat mode support and chat mode enforcement config",
         "commits": ["611f0979337d16ab6318887e0fff8095b0c878be"]
       },

@@ -434,21 +434,20 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.last_fixed_update = Date.now();
 
         for (const [, component] of this.netobjects) {
-            if (
-                component
-            ) {
-                component.FixedUpdate(delta / 1000);
-                if (component.dirtyBit) {
-                    component.PreSerialize();
-                    const writer = HazelWriter.alloc(0);
-                    if (component.Serialize(writer, false)) {
-                        this.stream.push(
-                            new DataMessage(component.netId, writer.buffer)
-                        );
-                    }
-                    component.dirtyBit = 0;
-                }
+            if (!component)
+                continue;
+
+            component.FixedUpdate(delta / 1000);
+
+            if (component.dirtyBit <= 0)
+                continue;
+
+            component.PreSerialize();
+            const writer = HazelWriter.alloc(0);
+            if (component.Serialize(writer, false)) {
+                this.stream.push(new DataMessage(component.netId, writer.buffer));
             }
+            component.dirtyBit = 0;
         }
 
         if (this.endGameIntents.length) {

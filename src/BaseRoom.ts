@@ -471,8 +471,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     }
                 }
 
-                if (endGameIntents[0]) {
-                    this.endGame(endGameIntents[0].reason);
+                const firstIntent = endGameIntents[0];
+                if (firstIntent) {
+                    this.endGame(firstIntent.reason, firstIntent);
                 }
             }
         }
@@ -1278,12 +1279,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         await this.handleStart();
     }
 
-    async handleEnd(reason: GameOverReason) {
+    async handleEnd(reason: GameOverReason, intent?: EndGameIntent) {
         const waiting = this.waitingForHost;
         this.waitingForHost = new Set;
         this.state = GameState.Ended;
 
-        const ev = await this.emit(new RoomGameEndEvent(this, reason));
+        const ev = await this.emit(new RoomGameEndEvent(this, reason, intent));
 
         if (ev.canceled) {
             this.waitingForHost = waiting;
@@ -1307,8 +1308,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         });
     }
 
-    async endGame(reason: GameOverReason) {
-        await this.handleEnd(reason);
+    async endGame(reason: GameOverReason, intent?: EndGameIntent) {
+        await this.handleEnd(reason, intent);
     }
 
     private getOtherPlayer(base: PlayerData) {

@@ -20,6 +20,7 @@ import { Worker } from "./Worker";
 import { Room } from "./Room";
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
+import { ClientLeaveEvent } from "./api/events/client/ClientLeave";
 
 export class ClientMod {
     constructor(
@@ -375,6 +376,12 @@ export class Connection {
         this.worker.removeConnection(this);
 
         if (this.room) {
+            await this.room.emit(
+                new ClientLeaveEvent(
+                    this,
+                    this.room
+                )
+            );
             await this.room.handleRemoteLeave(this, reason || DisconnectReason.None);
         }
 

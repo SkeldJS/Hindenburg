@@ -1695,7 +1695,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         }
 
         const roomHost = ev.alteredRoom.host;
-        console.log(ev.alteredRoom.config.checkChatMode);
         if (ev.alteredRoom.config.checkChatMode && roomHost) {
             const hostConnection = ev.alteredRoom.connections.get(roomHost.clientId);
             console.log(hostConnection?.chatMode, ev.client.chatMode);

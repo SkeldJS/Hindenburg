@@ -40,6 +40,7 @@ import {
 } from "@skeldjs/protocol";
 
 import {
+    EndGameIntent,
     HostableEvents,
     Networkable,
     PlayerData,
@@ -61,6 +62,7 @@ import { Perspective, PresetFilter } from "./Perspective";
 
 import {
     BaseReactorRpcMessage,
+    ClientLeaveEvent,
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
     RoomCreateEvent,
@@ -130,6 +132,7 @@ export const logMaps = {
 
 export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
     ClientBroadcastEvent,
+    ClientLeaveEvent,
     RoomBeforeDestroyEvent,
     RoomCreateEvent,
     RoomDestroyEvent,
@@ -1065,6 +1068,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.None) {
         this.waitingForHost.delete(leavingConnection);
         this.connections.delete(leavingConnection.clientId);
+        leavingConnection.room = undefined;
 
         await this.handleLeave(leavingConnection.clientId);
 

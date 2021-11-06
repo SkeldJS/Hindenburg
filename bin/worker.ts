@@ -1,5 +1,8 @@
 import "./modulePatch";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 import https from "https";
 import net from "net";
 import path from "path";

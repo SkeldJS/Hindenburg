@@ -93,7 +93,7 @@ export default {
         // %2 = The version of the mod that the client has
         // %3 = The version of the mod that the client needs
         "en": "Bad mod version for %1: %2, needs %3",
-        "pt_BR": "Versão do mod ruim para %1: v%2, precisa v%3",
+        "pt_BR": "Versão incorreta do mod para %1: v%2, precisa v%3",
         "fr": "Mauvaise version du mod pour %1: %2, nécessite %3",
         "es_ES": "Versión incorrecta para %1: %2, necesita %3",
         "de": "Schlechte Mod Version für %1: %2, benötigt %3",
@@ -116,8 +116,10 @@ export default {
     },
     "invalid_quick_chat_mode_quick_chat": {
         "en": "Invalid quick chat mode, the room expected \"Quick Chat only\" but you had \"Free or Quick chat\" enabled"
+        "pt_BR": "Modo de bate-papo invalido, a sala expectava \"Bate-Papo Rápido apenas\" mas você tem \"Livre ou bate-papo Rápido\" habilitado"
     },
     "invalid_quick_chat_mode_free_chat": {
         "en": "Invalid quick chat mode, the room expected \"Free or Quick chat\" but you had \"Quick Chat only\" enabled"
+        "pt_BR": "Modo de bate-papo invalido, a sala expectava \"Livre ou bate-papo Rápido\" mas você tem \"Bate-Papo Rápido apenas\" habilitado"
     }
 } as const;

@@ -654,10 +654,37 @@ export class PluginLoader {
      * await this.worker.pluginLoader.loadAllWorkerPlugins();
      * ```
      */
-    async loadAllWorkerPlugins() { // todo: plugin load ordering
+    async loadAllWorkerPlugins() {
+        const pluginCtrs = [];
         for (const [ , importedPlugin ] of this.workerPlugins) {
+            pluginCtrs.push(importedPlugin);
+        }
+        pluginCtrs.sort((a, b) => {
+            // first = -1
+            // last = 1
+            // none = 0
+            // sort from lowest to highest
+            const aInteger = a.meta.order === "first" ? -1 :
+                a.meta.order === "last" ? 1 :
+                    a.meta.order === "none" ? 0 : a.meta.order;
+
+            const bInteger = b.meta.order === "first" ? -1 :
+                b.meta.order === "last" ? 1 :
+                    b.meta.order === "none" ? 0 : b.meta.order;
+
+            if (bInteger < aInteger) {
+                return 1;
+            }
+            if (aInteger < bInteger) {
+                return -1;
+            }
+
+            return 0;
+        });
+        for (let i = 0; i < pluginCtrs.length; i++) {
+            const importedPlugin = pluginCtrs[i];
             if (this.isEnabled(importedPlugin)) {
-                await this.loadPlugin(importedPlugin.meta.id);
+                await this.loadPlugin(importedPlugin);
             }
         }
     }
@@ -670,9 +697,36 @@ export class PluginLoader {
      * ```
      */
     async loadAllRoomPlugins(room: Room) {
+        const pluginCtrs = [];
         for (const [ , importedPlugin ] of this.roomPlugins) {
+            pluginCtrs.push(importedPlugin);
+        }
+        pluginCtrs.sort((a, b) => {
+            // first = -1
+            // last = 1
+            // none = 0
+            // sort from lowest to highest
+            const aInteger = a.meta.order === "first" ? -1 :
+                a.meta.order === "last" ? 1 :
+                    a.meta.order === "none" ? 0 : a.meta.order;
+
+            const bInteger = b.meta.order === "first" ? -1 :
+                b.meta.order === "last" ? 1 :
+                    b.meta.order === "none" ? 0 : b.meta.order;
+
+            if (bInteger < aInteger) {
+                return 1;
+            }
+            if (aInteger < bInteger) {
+                return -1;
+            }
+
+            return 0;
+        });
+        for (let i = 0; i < pluginCtrs.length; i++) {
+            const importedPlugin = pluginCtrs[i];
             if (this.isEnabled(importedPlugin, room)) {
-                await this.loadPlugin(importedPlugin.meta.id, room);
+                await this.loadPlugin(importedPlugin, room);
             }
         }
         this.applyChatCommands(room);

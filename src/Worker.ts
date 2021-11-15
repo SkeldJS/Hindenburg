@@ -1307,8 +1307,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
     async doPings() {
         const promises = [];
+        const dateNow = Date.now();
         for (const [ , connection ] of this.connections) {
-            if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => !packet.acked)) {
+            if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => (dateNow - packet.sentAt) > 1500 && !packet.acked)) {
                 this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
                     connection);
 
@@ -1324,9 +1325,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
             for (let i = 0; i < connection.sentPackets.length; i++) {
                 const sent = connection.sentPackets[i];
                 if (!sent.acked) {
-                    if (Date.now() - sent.sentAt > 1500) {
+                    if (dateNow - sent.sentAt > 1500) {
                         this._sendPacket(connection.remoteInfo, sent.buffer);
-                        sent.sentAt = Date.now();
+                        sent.sentAt = dateNow;
                     }
                 }
             }

@@ -495,6 +495,19 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
+    getConnections(players: PlayerData[]|undefined) {
+        return players
+            ? players
+                .reduce<Connection[]>((acc, player) => {
+                    const connection = this.connections.get(player.clientId);
+                    if (connection) {
+                        acc.push(connection);
+                    }
+                    return acc;
+                }, [])
+            : undefined;
+    }
+
     /**
      * Broadcast [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
      * and root messages to all or some connections.

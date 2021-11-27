@@ -439,7 +439,7 @@ export class Perspective extends BaseRoom {
                 newHh.timer = system.timer;
                 newHh.activeConsoles = system.activeConsoles.map(active => ({
                     playerId: active.playerId,
-                    consoleid: active.consoleid
+                    consoleId: active.consoleId
                 }));
                 newHh.completedConsoles = new Set(newHh.completedConsoles);
 

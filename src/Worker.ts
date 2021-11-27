@@ -226,7 +226,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .action(async args => {
                 const reason = (typeof args.options.reason === "number"
                     ? args.options.reason
-                    : DisconnectReason[args.options.reason]) || DisconnectReason.None;
+                    : DisconnectReason[args.options.reason]) || DisconnectReason.Error;
 
                 const roomName = args["room code"]?.toUpperCase();
                 const codeId = roomName && (roomName === "LOCAL"
@@ -826,10 +826,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
             sender.username = message.username;
             sender.chatMode = message.chatMode;
             sender.language = message.language;
-            sender.clientVersion = message.clientver;
+            sender.clientVersion = message.clientVer;
+            sender.platform = message.platform;
+            sender.playerLevel = 0;
 
             if (sender.usingReactor) {
-                sender.numMods = message.modcount!;
+                sender.numMods = message.modCount!;
             }
 
             if (!this.validVersions.includes(sender.clientVersion.encode())) {
@@ -953,7 +955,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const ev = await this.emit(
                 new RoomBeforeCreateEvent(
                     sender,
-                    message.options,
+                    message.gameSettings,
                     roomCode
                 )
             );
@@ -961,7 +963,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (ev.canceled)
                 return;
 
-            const room = await this.createRoom(ev.alteredRoomCode, message.options);
+            const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings);
 
             this.logger.info("%s created room %s",
                 sender, room);
@@ -1005,7 +1007,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const reactorRpcMessage = message.data as unknown as ReactorRpcMessage;
             if (reactorRpcMessage.messageTag === 0xff) {
                 message.cancel();
-                const componentNetId = message.netid;
+                const componentNetId = message.netId;
                 const modNetId = reactorRpcMessage.modNetId;
 
                 const component = sender.room?.netobjects.get(componentNetId);
@@ -1069,7 +1071,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                     sender.room!.broadcastMessages([
                         new RpcMessage(
-                            message.netid,
+                            message.netId,
                             new ReactorRpcMessage(
                                 receiverMods.netId,
                                 reactorRpcMessage.customRpc
@@ -1174,7 +1176,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!recipientPlayer)
                 return;
 
-            await player.room.broadcast(message._children, true, recipientPlayer, []);
+            await player.room.broadcast(message._children, [], [ recipientPlayer ]);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, { sender }) => {
@@ -1188,7 +1190,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             sender.room?.decoder.emitDecoded(message, direction, player);
-            await sender.room?.broadcast([], true, undefined, [
+            await sender.room?.broadcast([], [
                 new AlterGameMessage(sender.room.code, message.alterTag, message.value)
             ]);
         });
@@ -1229,7 +1231,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            const targetConnection = sender.room.connections.get(message.clientid);
+            const targetConnection = sender.room.connections.get(message.clientId);
 
             if (!targetConnection)
                 return;

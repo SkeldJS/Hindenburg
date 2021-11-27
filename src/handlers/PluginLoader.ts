@@ -101,7 +101,7 @@ async function _sendReactorRpc(this: Plugin, component: Networkable<unknown, Net
                     rpc
                 )
             )
-        ], true, player);
+        ], undefined, [ player ]);
     }
 }
 
@@ -826,14 +826,14 @@ export class PluginLoader {
     }
 
     private applyRegisteredPrefabs(room: Room) {
-        room.spawnPrefabs = new Map([
-            [SpawnType.ShipStatus, [ SkeldShipStatus ]],
+        room.registeredPrefabs = new Map([
+            [SpawnType.SkeldShipStatus, [ SkeldShipStatus ]],
             [SpawnType.MeetingHud, [ MeetingHud ]],
             [SpawnType.LobbyBehaviour, [ LobbyBehaviour ]],
             [SpawnType.GameData, [ GameData, VoteBanSystem ]],
             [SpawnType.Player, [ PlayerControl, PlayerPhysics, CustomNetworkTransform ]],
-            [SpawnType.Headquarters, [ MiraShipStatus ]],
-            [SpawnType.PlanetMap, [ PolusShipStatus ]],
+            [SpawnType.MiraShipStatus, [ MiraShipStatus ]],
+            [SpawnType.Polus, [ PolusShipStatus ]],
             [SpawnType.AprilShipStatus, [ AprilShipStatus ]],
             [SpawnType.Airship, [ AirshipStatus ]]
         ]);

@@ -1,7 +1,7 @@
 import dgram from "dgram";
 import chalk from "chalk";
 
-import { DisconnectReason, Language, QuickChatMode } from "@skeldjs/constant";
+import { DisconnectReason, Language, Platform, QuickChatMode } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
 import { ModPluginSide } from "@skeldjs/reactor";
 import { VersionInfo } from "@skeldjs/util";
@@ -10,6 +10,7 @@ import {
     BaseRootPacket,
     DisconnectPacket,
     JoinGameMessage,
+    PlatformSpecificData,
     ReliablePacket,
     RemoveGameMessage
 } from "@skeldjs/protocol";
@@ -125,7 +126,17 @@ export class Connection {
      * The version of the client's game. Sent with the {@link Connection.hasIdentified identify}
      * packet.
      */
-    clientVersion?: VersionInfo;
+    clientVersion: VersionInfo;
+
+    /**
+     * The specific platform that this client is playing on.
+     */
+    platform: PlatformSpecificData;
+
+    /**
+     * This client's level/rank.
+     */
+    playerLevel: number;
 
     /**
      * The number of mods that the client said that they had loaded. Available
@@ -204,6 +215,9 @@ export class Connection {
         this.username = "";
         this.chatMode = QuickChatMode.FreeChat;
         this.language = Language.English;
+        this.clientVersion = new VersionInfo(2021, 11, 9);
+        this.platform = new PlatformSpecificData(Platform.Unknown, "Unknown");
+        this.playerLevel = 0;
 
         this.numMods = 0;
         this.mods = new Map;
@@ -343,7 +357,7 @@ export class Connection {
         if (typeof reason === "object") {
             const formatted = this.fgetLocale(reason, ...message);
             if (!formatted)
-                return this.disconnect(DisconnectReason.None);
+                return this.disconnect(DisconnectReason.Error);
 
             return this.disconnect(DisconnectReason.Custom, formatted);
         }
@@ -369,7 +383,9 @@ export class Connection {
         this.usingReactor = false;
         this.username = "";
         this.language = Language.English;
-        this.clientVersion = undefined;
+        this.clientVersion = new VersionInfo(2021, 11, 9);
+        this.platform = new PlatformSpecificData(Platform.Unknown, "Unknown");
+        this.playerLevel = 0;
         this.numMods = 0;
         this.mods = new Map;
 
@@ -382,7 +398,7 @@ export class Connection {
                     this.room
                 )
             );
-            await this.room.handleRemoteLeave(this, reason || DisconnectReason.None);
+            await this.room.handleRemoteLeave(this, reason || DisconnectReason.Error);
         }
 
         await this.worker.emit(
@@ -415,11 +431,11 @@ export class Connection {
      * await client.joinError("Alas, thou art barred from entering said establishment.")
      * ```
      */
-    async joinError(reason: string | DisconnectReason | Record<string, string> = DisconnectReason.None, ...message: string[]): Promise<void> {
+    async joinError(reason: string | DisconnectReason | Record<string, string> = DisconnectReason.Error, ...message: string[]): Promise<void> {
         if (typeof reason === "object") {
             const formatted = this.fgetLocale(reason, ...message);
             if (!formatted)
-                return this.disconnect(DisconnectReason.None);
+                return this.disconnect(DisconnectReason.Error);
 
             return this.disconnect(DisconnectReason.Custom, formatted);
         }

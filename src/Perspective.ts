@@ -24,7 +24,6 @@ import {
     MovingPlatformSystem,
     PlayerControl,
     PlayerData,
-    PlayerInfo,
     PlayerPhysics,
     PolusShipStatus,
     ReactorSystem,
@@ -38,7 +37,8 @@ import {
     AlterGameTag,
     MiraShipStatus,
     DisconnectReason,
-    HeliSabotageSystem
+    HeliSabotageSystem,
+    Platform
 } from "@skeldjs/core";
 
 import {
@@ -49,10 +49,12 @@ import {
     DataMessage,
     DespawnMessage,
     EnterVentMessage,
+    ExitVentMessage,
     GameDataMessage,
     GameSettings,
     JoinGameMessage,
     MessageDirection,
+    PlatformSpecificData,
     ReliablePacket,
     RemovePlayerMessage,
     RpcMessage,
@@ -61,9 +63,11 @@ import {
     SetHatMessage,
     SetInfectedMessage,
     SetNameMessage,
+    SetNameplateMessage,
     SetPetMessage,
     SetSkinMessage,
     SetStartCounterMessage,
+    SetVisorMessage,
     SnapToMessage,
     SpawnMessage,
     SyncSettingsMessage
@@ -223,9 +227,9 @@ export class Perspective extends BaseRoom {
             }
         }, this.worker.vorpal);
 
-        for (const [ clientId ] of parentRoom.players) {
-            const newPlayer = new PlayerData(this, clientId);
-            this.players.set(clientId, newPlayer);
+        for (const [ , player ] of parentRoom.players) {
+            const newPlayer = new PlayerData(this, player.clientId, player.username, player.platform, player.playerLevel);
+            this.players.set(player.clientId, newPlayer);
         }
 
         for (let i = 0; i < playersPov.length; i++) {
@@ -270,18 +274,8 @@ export class Perspective extends BaseRoom {
                     players: new Map
                 });
                 for (const [ playerId, playerInfo ] of gameData.players) {
-                    const newPlayerInfo = new PlayerInfo(
-                        newGd,
-                        playerInfo.playerId,
-                        playerInfo.name,
-                        playerInfo.color,
-                        playerInfo.hat,
-                        playerInfo.pet,
-                        playerInfo.skin,
-                        playerInfo.flags,
-                        playerInfo.taskIds,
-                        playerInfo.taskStates
-                    );
+                    const newPlayerInfo = playerInfo.clone(playerInfo.playerId);
+                    (newPlayerInfo as any).gamedata = newGd;
                     newGd.players.set(playerId, newPlayerInfo);
                 }
 
@@ -325,7 +319,7 @@ export class Perspective extends BaseRoom {
                 if (newPc.ownerId > 0) {
                     const clientOwner = this.players.get(newPc.ownerId);
                     if (clientOwner) {
-                        clientOwner.character = newPc;
+                        clientOwner.control = newPc;
                     }
                 }
                 this.netobjects.set(netId, newPc);
@@ -333,7 +327,7 @@ export class Perspective extends BaseRoom {
                 const playerPhysics = component as PlayerPhysics<this>;
                 const newPp = new PlayerPhysics(this, component.spawnType, netId, component.flags, component.ownerId);
 
-                newPp.ventid = playerPhysics.ventid;
+                newPp.ventId = playerPhysics.ventId;
                 this.netobjects.set(netId, newPp);
             } else if (component instanceof PolusShipStatus) {
                 const polusShipStatus = component as PolusShipStatus<this>;
@@ -383,7 +377,8 @@ export class Perspective extends BaseRoom {
             }
         }
 
-        this.spawnPrefabs = new Map(parentRoom.spawnPrefabs.entries());
+        this.registeredPrefabs = new Map(parentRoom.registeredPrefabs.entries());
+        this.registeredRoles = new Map(parentRoom.registeredRoles.entries());
 
         this.code = parentRoom.code;
         this.hostId = parentRoom.hostId;
@@ -403,7 +398,7 @@ export class Perspective extends BaseRoom {
 
                 for (let i = 0; i < system.doors.length; i++) {
                     const door = system.doors[i];
-                    const newDoor = new AutoOpenDoor(newAd, door.id, door.isOpen);
+                    const newDoor = new AutoOpenDoor(newAd, door.doorId, door.isOpen);
                     newDoor.timer = door.timer;
                     newAd.doors.push(newDoor);
                 }
@@ -423,7 +418,7 @@ export class Perspective extends BaseRoom {
 
                 for (let i = 0; i < system.doors.length; i++) {
                     const door = system.doors[i];
-                    const newDoor = new Door(newDoors, door.id, door.isOpen);
+                    const newDoor = new Door(newDoors, door.doorId, door.isOpen);
                     newDoors.doors.push(newDoor);
                 }
 
@@ -433,7 +428,7 @@ export class Perspective extends BaseRoom {
 
                 for (let i = 0; i < system.doors.length; i++) {
                     const door = system.doors[i];
-                    const newDoor = new Door(newEd, door.id, door.isOpen);
+                    const newDoor = new Door(newEd, door.doorId, door.isOpen);
                     newEd.doors.push(newDoor);
                 }
 
@@ -443,7 +438,7 @@ export class Perspective extends BaseRoom {
 
                 newHh.timer = system.timer;
                 newHh.activeConsoles = system.activeConsoles.map(active => ({
-                    playerid: active.playerid,
+                    playerId: active.playerId,
                     consoleid: active.consoleid
                 }));
                 newHh.completedConsoles = new Set(newHh.completedConsoles);
@@ -548,7 +543,7 @@ export class Perspective extends BaseRoom {
                 });
 
                 decoder.on([ DataMessage ], message => {
-                    const netobject = perspective.netobjects.get(message.netid);
+                    const netobject = perspective.netobjects.get(message.netId);
 
                     if (netobject instanceof CustomNetworkTransform) {
                         message.cancel();
@@ -575,19 +570,18 @@ export class Perspective extends BaseRoom {
     }
 
     async broadcast(
-        messages: BaseGameDataMessage[],
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reliable = true,
-        recipient: PlayerData | undefined = undefined,
-        payloads: BaseRootMessage[] = []
+        gamedata: BaseGameDataMessage[],
+        payloads: BaseRootMessage[] = [],
+        include?: PlayerData[],
+        exclude?: PlayerData[],
+        reliable = true
     ) {
-        const recipientConnection = recipient
-            ? this.connections.get(recipient.clientId)
-            : undefined;
+        const includeConnections = this.getConnections(include);
+        const excludedConnections = this.getConnections(exclude);
 
         const povNotCanceled = [];
-        for (let i = 0; i < messages.length; i++) {
-            const child = messages[i];
+        for (let i = 0; i < gamedata.length; i++) {
+            const child = gamedata[i];
 
             (child as any)._canceled = false; // child._canceled is private
             await this.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
@@ -595,7 +589,7 @@ export class Perspective extends BaseRoom {
             if (child.canceled)
                 continue;
 
-            if (!recipient) {
+            if (!includeConnections) {
                 await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
                 if (child.canceled)
@@ -606,32 +600,35 @@ export class Perspective extends BaseRoom {
         }
 
         if (povNotCanceled.length) {
-            let notCanceled = !recipient || recipient.room === this
-                ? povNotCanceled
-                : [];
+            const alreadySentIn: Set<Perspective> = new Set;
 
-            if (recipient && recipient.room !== this) {
-                if (recipient.room instanceof Perspective) { // match messages against the recipient player's perspective's incoming filter
-                    for (let i = 0; i < povNotCanceled.length; i++) {
-                        const child = povNotCanceled[i];
+            if (includeConnections) {
+                for (const recipient of includeConnections) {
+                    if (recipient && recipient.room !== this) {
+                        if (recipient.room instanceof Perspective) { // match messages against the recipient player's perspective's incoming filter
+                            if (alreadySentIn.has(recipient.room))
+                                continue;
 
-                        (child as any)._canceled = false; // child._canceled is private
-                        await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
+                            for (let i = 0; i < povNotCanceled.length; i++) {
+                                const child = povNotCanceled[i];
 
-                        if (child.canceled)
-                            continue;
+                                (child as any)._canceled = false; // child._canceled is private
+                                await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
 
-                        notCanceled.push(child);
+                                if (child.canceled)
+                                    continue;
+
+                                await recipient.room.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+                            }
+
+                            alreadySentIn.add(recipient.room);
+                        }
                     }
-                } else {
-                    notCanceled = povNotCanceled;
                 }
             }
-
-            await this.parentRoom.broadcastMessages(notCanceled, payloads, recipientConnection ? [recipientConnection] : undefined);
         }
 
-        return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
+        return this.broadcastMessages(povNotCanceled, payloads, includeConnections, excludedConnections, reliable);
     }
 
     /**
@@ -729,14 +726,17 @@ export class Perspective extends BaseRoom {
                         new JoinGameMessage(
                             this.code,
                             SpecialClientId.Temp,
-                            this.parentRoom.hostId
+                            this.parentRoom.hostId,
+                            "TEMP",
+                            new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
+                            0
                         )
                     );
                     payloads.push(
                         new RemovePlayerMessage(
                             this.code,
                             SpecialClientId.Temp,
-                            DisconnectReason.None,
+                            DisconnectReason.Error,
                             this.parentRoom.hostId
                         )
                     );
@@ -748,20 +748,23 @@ export class Perspective extends BaseRoom {
                             new RemovePlayerMessage(
                                 this.parentRoom.code,
                                 clientId,
-                                DisconnectReason.None,
+                                DisconnectReason.Error,
                                 this.parentRoom.hostId
                             )
                         );
                     }
                 }
 
-                for (const [ clientId ] of this.parentRoom.players) {
-                    if (!this.players.get(clientId)) {
+                for (const [ , player ] of this.parentRoom.players) {
+                    if (!this.players.has(player.clientId)) {
                         payloads.push(
                             new JoinGameMessage(
                                 this.parentRoom.code,
-                                clientId,
-                                this.parentRoom.hostId
+                                player.clientId,
+                                this.parentRoom.hostId,
+                                player.username,
+                                player.platform,
+                                player.playerLevel
                             )
                         );
                     }
@@ -789,52 +792,74 @@ export class Perspective extends BaseRoom {
 
                 const impostorIds = [];
                 for (const [ , player ] of this.parentRoom.players) {
-                    if (!player.info)
+                    const defaultOutfit = player.playerInfo?.defaultOutfit;
+                    if (!defaultOutfit)
                         continue;
 
                     const playerControl = player.control!;
                     messages.push(
                         new RpcMessage(
                             playerControl.netId,
-                            new SetNameMessage(player.info.name)
+                            new SetNameMessage(defaultOutfit.name)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
                             playerControl.netId,
-                            new SetColorMessage(player.info.color)
+                            new SetColorMessage(defaultOutfit.color)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
                             playerControl.netId,
-                            new SetHatMessage(player.info.hat)
+                            new SetHatMessage(defaultOutfit.hatId)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
                             playerControl.netId,
-                            new SetPetMessage(player.info.pet)
+                            new SetPetMessage(defaultOutfit.petId)
                         )
                     );
 
                     messages.push(
                         new RpcMessage(
                             playerControl.netId,
-                            new SetSkinMessage(player.info.skin)
+                            new SetSkinMessage(defaultOutfit.skinId)
+                        )
+                    );
+
+                    messages.push(
+                        new RpcMessage(
+                            playerControl.netId,
+                            new SetVisorMessage(defaultOutfit.visorId)
+                        )
+                    );
+
+                    messages.push(
+                        new RpcMessage(
+                            playerControl.netId,
+                            new SetNameplateMessage(defaultOutfit.nameplateId)
                         )
                     );
 
                     const playerPhysics = player.physics!;
 
-                    if (playerPhysics.ventid) {
+                    if (playerPhysics.isInVent) {
                         messages.push(
                             new RpcMessage(
                                 playerPhysics.netId,
-                                new EnterVentMessage(playerPhysics.ventid)
+                                new EnterVentMessage(playerPhysics.ventId)
+                            )
+                        );
+                    } else if (playersPov.physics) {
+                        messages.push(
+                            new RpcMessage(
+                                playerPhysics.netId,
+                                new ExitVentMessage(playersPov.physics?.ventId)
                             )
                         );
                     }
@@ -872,17 +897,17 @@ export class Perspective extends BaseRoom {
                         )
                     );
 
-                    if (player.info.isImpostor) {
+                    if (player.playerInfo?.isImpostor) {
                         impostorIds.push(player.playerId!);
 
-                        for (let i = 0; i < player.info.taskStates.length; i++) {
-                            const taskState = player.info.taskStates[i];
+                        for (let i = 0; i < player.playerInfo.taskStates.length; i++) {
+                            const taskState = player.playerInfo.taskStates[i];
 
                             if (taskState.completed) {
                                 messages.push(
                                     new RpcMessage(
                                         playerControl.netId,
-                                        new CompleteTaskMessage(taskState.taskidx)
+                                        new CompleteTaskMessage(i)
                                     )
                                 );
                             }

@@ -1,4 +1,5 @@
 import { AllGameSettings } from "@skeldjs/protocol";
+import { HostableOptions } from "..";
 
 export interface AnticheatPenalty {
     /**
@@ -246,7 +247,7 @@ export interface ChatCommandConfig {
     helpCommand: boolean;
 }
 
-export interface RoomsConfig {
+export interface RoomsConfig extends HostableOptions {
     /**
      * Whether or not to make sure players have the same chat mode as the host
      * before joining.
@@ -301,11 +302,15 @@ export interface ServerPlayerOptions {
     /**
      * The hat of the player for a message sent by the server in game chat
      */
-    hat?: string;
+    hatId?: string;
     /**
      * The skin of the player for a message sent by the server in game chat
      */
-    skin?: string;
+    skinId?: string;
+    /**
+     * The visor of the player for a message sent by the server in game chat
+     */
+    visorId?: string;
 }
 
 export interface HindenburgConfig {

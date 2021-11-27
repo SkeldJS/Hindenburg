@@ -8,8 +8,10 @@ import {
     GameOverReason,
     GameState,
     Hat,
+    Platform,
     Skin,
-    SpawnType
+    SpawnType,
+    Visor
 } from "@skeldjs/constant";
 
 import {
@@ -25,6 +27,8 @@ import {
     JoinedGameMessage,
     JoinGameMessage,
     MessageDirection,
+    PlatformSpecificData,
+    PlayerJoinData,
     ReliablePacket,
     RemoveGameMessage,
     RemovePlayerMessage,
@@ -34,6 +38,7 @@ import {
     SetHatMessage,
     SetNameMessage,
     SetSkinMessage,
+    SetVisorMessage,
     StartGameMessage,
     UnreliablePacket,
     WaitForHostMessage
@@ -105,7 +110,7 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
             }
         );
 
-        return chalk.blue(this.info?.name || "<No Name>")
+        return chalk.blue(this.username || "<No Name>")
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 });
@@ -448,7 +453,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             component.PreSerialize();
             const writer = HazelWriter.alloc(0);
             if (component.Serialize(writer, false)) {
-                this.stream.push(new DataMessage(component.netId, writer.buffer));
+                this.messageStream.push(new DataMessage(component.netId, writer.buffer));
             }
             component.dirtyBit = 0;
         }
@@ -483,14 +488,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const ev = await this.emit(
             new RoomFixedUpdateEvent(
                 this,
-                this.stream,
+                this.messageStream,
                 delta
             )
         );
 
-        if (!ev.canceled && this.stream.length) {
-            const stream = this.stream;
-            this.stream = [];
+        if (!ev.canceled && this.messageStream.length) {
+            const stream = this.messageStream;
+            this.messageStream = [];
             await this.broadcast(stream);
         }
     }
@@ -541,6 +546,58 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const clientsToBroadcast = include || [...this.connections.values()];
         const clientsToExclude = new Set(exclude);
         const promises: Promise<void>[] = [];
+
+        if (clientsToBroadcast.length === 1) {
+            const singleClient = clientsToBroadcast[0];
+
+            if (!singleClient)
+                return;
+
+            if (clientsToExclude.has(singleClient))
+                return;
+
+            if (this.playerPerspectives.has(singleClient.clientId))
+                return;
+
+            const ev = await this.emit(
+                new ClientBroadcastEvent(
+                    this,
+                    singleClient,
+                    gamedata,
+                    payloads
+                )
+            );
+
+            if (!ev.canceled) {
+                const messages = [
+                    ...(ev.alteredGameData.length
+                        ? [
+                            new GameDataToMessage(
+                                this.code,
+                                singleClient.clientId,
+                                ev.alteredGameData
+                            )
+                        ] : []
+                    ),
+                    ...payloads
+                ] as BaseRootMessage[];
+
+                if (messages.length) {
+                    promises.push(
+                        singleClient.sendPacket(
+                            reliable
+                                ? new ReliablePacket(
+                                    singleClient.getNextNonce(),
+                                    messages
+                                )
+                                : new UnreliablePacket(messages)
+                        )
+                    );
+                }
+            }
+
+            return;
+        }
 
         for (let i = 0; i < clientsToBroadcast.length; i++) {
             const connection = clientsToBroadcast[i];
@@ -598,23 +655,22 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     async broadcast(
-        messages: BaseGameDataMessage[],
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reliable = true,
-        recipient: PlayerData | undefined = undefined,
-        payloads: BaseRootMessage[] = []
+        gamedata: BaseGameDataMessage[],
+        payloads: BaseRootMessage[] = [],
+        include?: PlayerData[],
+        exclude?: PlayerData[],
+        reliable = true
     ) {
-        const recipientConnection = recipient
-            ? this.connections.get(recipient.clientId)
-            : undefined;
+        const includeConnections = this.getConnections(include);
+        const excludedConnections = this.getConnections(exclude);
 
         for (let i = 0; i < this.activePerspectives.length; i++) {
             const activePerspective = this.activePerspectives[i];
 
-            const messagesNotCanceled = [];
+            const gamedataNotCanceled = [];
             const payloadsNotCanceled = [];
-            for (let i = 0; i < messages.length; i++) {
-                const child = messages[i];
+            for (let i = 0; i < gamedata.length; i++) {
+                const child = gamedata[i];
 
                 (child as any)._canceled = false; // child._canceled is private
                 await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
@@ -631,7 +687,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     continue;
                 }
 
-                messagesNotCanceled.push(child);
+                gamedataNotCanceled.push(child);
             }
 
             for (let i = 0; i < payloads.length; i++) {
@@ -655,12 +711,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 payloadsNotCanceled.push(child);
             }
 
-            if (messagesNotCanceled.length || payloadsNotCanceled.length) {
-                await activePerspective.broadcastMessages(messagesNotCanceled, payloadsNotCanceled, recipientConnection ? [ recipientConnection ] : undefined, undefined, true);
+            if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
+                return this.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable);
             }
         }
 
-        return this.broadcastMessages(messages, payloads, recipientConnection ? [recipientConnection] : undefined);
+        return this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable);
     }
 
     async setCode(code: number|string): Promise<void> {
@@ -692,12 +748,15 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             new JoinGameMessage(
                 this.code,
                 SpecialClientId.Temp,
-                hostId
+                hostId,
+                "TEMP",
+                new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
+                0
             ),
             new RemovePlayerMessage(
                 this.code,
                 SpecialClientId.Temp,
-                DisconnectReason.None,
+                DisconnectReason.Error,
                 hostId
             )
         ], recipient ? [ recipient ] : undefined);
@@ -862,16 +921,20 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.actingHostsEnabled = true;
     }
 
-    async handleJoin(clientId: number): Promise<PlayerData<this>|null> {
-        if (this.players.has(clientId))
-            return null;
+    async handleJoin(joinInfo: PlayerJoinData): Promise<PlayerData<this>> {
+        const cachedPlayer = this.players.get(joinInfo.clientId);
+        if (cachedPlayer)
+            return cachedPlayer;
+
+        const player = new PlayerData(this, joinInfo.clientId, joinInfo.playerName, joinInfo.platform, joinInfo.playerLevel);
+        this.players.set(joinInfo.clientId, player);
 
         if (this.hostIsMe) {
-            await this.spawnNecessaryObjects();
+            this.spawnNecessaryObjects();
         }
 
-        const player = new PlayerData(this, clientId);
-        this.players.set(clientId, player);
+        await player.emit(new PlayerJoinEvent(this, player));
+
         return player;
     }
 
@@ -879,7 +942,17 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (this.connections.get(joiningClient.clientId))
             return;
 
-        const joiningPlayer = await this.handleJoin(joiningClient.clientId) || this.players.get(joiningClient.clientId);
+        if (this.players.has(joiningClient.clientId))
+            return;
+
+        const joinData = new PlayerJoinData(
+            joiningClient.clientId,
+            joiningClient.username,
+            joiningClient.platform,
+            joiningClient.playerLevel
+        );
+
+        const joiningPlayer = await this.handleJoin(joinData) || this.players.get(joiningClient.clientId);
 
         if (!joiningPlayer)
             return;
@@ -932,7 +1005,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                             ? this.actingHostIds.has(clientId)
                                                 ? clientId
                                                 : SpecialClientId.Server
-                                            : SpecialClientId.Server
+                                            : SpecialClientId.Server,
+                                        joiningClient.username,
+                                        joiningClient.platform,
+                                        joiningClient.playerLevel
                                     )
                                 ]
                             )
@@ -944,7 +1020,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         new JoinGameMessage(
                             this.code,
                             joiningClient.clientId,
-                            this.hostId
+                            this.hostId,
+                            joiningClient.username,
+                            joiningClient.platform,
+                            joiningClient.playerLevel
                         )
                     ], undefined, [ joiningClient ]);
                 }
@@ -972,7 +1051,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                             ? this.actingHostIds.has(clientId)
                                                 ? clientId
                                                 : SpecialClientId.Server
-                                            : SpecialClientId.Server
+                                            : SpecialClientId.Server,
+                                        joiningClient.username,
+                                        joiningClient.platform,
+                                        joiningClient.playerLevel
                                     )
                                 ]
                             )
@@ -984,7 +1066,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         new JoinGameMessage(
                             this.code,
                             joiningClient.clientId,
-                            this.hostId
+                            this.hostId,
+                            joiningClient.username,
+                            joiningClient.platform,
+                            joiningClient.playerLevel
                         )
                     ], undefined, [ joiningClient ]);
                 }
@@ -1018,7 +1103,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         joiningClient.clientId,
                         this.hostId,
                         [...this.connections]
-                            .map(([, client]) => client.clientId)
+                            .map(([ , client ]) => new PlayerJoinData(
+                                client.clientId,
+                                client.username,
+                                client.platform,
+                                client.playerLevel
+                            ))
                     ),
                     new AlterGameMessage(
                         this.code,
@@ -1039,7 +1129,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                             new JoinGameMessage(
                                 this.code,
                                 joiningClient.clientId,
-                                this.hostId
+                                this.hostId,
+                                joiningClient.username,
+                                joiningClient.platform,
+                                joiningClient.playerLevel
                             )
                         ]
                     )
@@ -1078,7 +1171,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
-    async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.None) {
+    async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.Error) {
         this.waitingForHost.delete(leavingConnection);
         this.connections.delete(leavingConnection.clientId);
         leavingConnection.room = undefined;
@@ -1157,13 +1250,13 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     private async _joinOtherClients() {
         await Promise.all(
             [...this.connections]
-                .map(([ clientId, connection ]) => {
-                    if (this.waitingForHost.has(connection)) {
-                        this.waitingForHost.delete(connection);
+                .map(([ clientId, client ]) => {
+                    if (this.waitingForHost.has(client)) {
+                        this.waitingForHost.delete(client);
 
-                        return connection?.sendPacket(
+                        return client?.sendPacket(
                             new ReliablePacket(
-                                connection.getNextNonce(),
+                                client.getNextNonce(),
                                 [
                                     new JoinedGameMessage(
                                         this.code,
@@ -1174,9 +1267,14 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                                 : this.hostId
                                             : this.hostId,
                                         [...this.connections.values()]
-                                            .reduce<number[]>((prev, cur) => {
-                                                if (cur !== connection) {
-                                                    prev.push(cur.clientId);
+                                            .reduce<PlayerJoinData[]>((prev, cur) => {
+                                                if (cur !== client) {
+                                                    prev.push(new PlayerJoinData(
+                                                        client.clientId,
+                                                        client.username,
+                                                        client.platform,
+                                                        client.playerLevel
+                                                    ));
                                                 }
                                                 return prev;
                                             }, [])
@@ -1255,8 +1353,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             if (removes.length) {
                 await this.broadcast(
                     [],
-                    true,
-                    undefined,
                     removes.map((clientid) => {
                         return new RemovePlayerMessage(
                             this.code,
@@ -1272,16 +1368,16 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 this.despawnComponent(this.lobbyBehaviour);
 
             const ship_prefabs = [
-                SpawnType.ShipStatus,
-                SpawnType.Headquarters,
-                SpawnType.PlanetMap,
+                SpawnType.SkeldShipStatus,
+                SpawnType.MiraShipStatus,
+                SpawnType.Polus,
                 SpawnType.AprilShipStatus,
                 SpawnType.Airship
             ];
 
             this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
-            await this.shipStatus?.selectImpostors();
             await this.shipStatus?.assignTasks();
+            await this.shipStatus?.assignRoles();
 
             if (this.shipStatus) {
                 for (const [ , player ] of this.players) {
@@ -1328,9 +1424,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         await this.handleEnd(reason, intent);
     }
 
-    private getOtherPlayer(base: PlayerData) {
+    private getOtherPlayer(base: PlayerData<this>) {
         for (const [ , player ] of this.players) {
-            if (player.info && player.info.color > -1 && player.control && base !== player) {
+            if (player.playerInfo?.defaultOutfit && player.playerInfo.defaultOutfit.color > -1 && player.control && base !== player) {
                 return player;
             }
         }
@@ -1338,7 +1434,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         return undefined;
     }
 
-    private async _sendChatFor(player: PlayerData, message: string, options: SendChatOptions) {
+    private async _sendChatFor(player: PlayerData<this>, message: string, options: SendChatOptions) {
         const sendPlayer = options.side === MessageSide.Left
             ? this.getOtherPlayer(player) || player
             : player;
@@ -1346,13 +1442,16 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (!sendPlayer.control)
             return;
 
-        if (!sendPlayer.info)
+        if (!sendPlayer.playerInfo)
             return;
 
-        const oldName = sendPlayer.info.name;
-        const oldColor = sendPlayer.info.color;
-        const oldHat = sendPlayer.info.hat;
-        const oldSkin = sendPlayer.info.skin;
+        const defaultOutfit = sendPlayer.playerInfo.defaultOutfit;
+
+        const oldName = defaultOutfit.name;
+        const oldColor = defaultOutfit.color;
+        const oldHat = defaultOutfit.hatId;
+        const oldSkin = defaultOutfit.skinId;
+        const oldVisor = defaultOutfit.visorId;
 
         await this.broadcast([
             new RpcMessage(
@@ -1365,11 +1464,15 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetHatMessage(options.hat)
+                new SetHatMessage(options.hatId)
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetSkinMessage(options.skin)
+                new SetSkinMessage(options.skinId)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetVisorMessage(options.visorId)
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
@@ -1390,8 +1493,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             new RpcMessage(
                 sendPlayer.control.netId,
                 new SetSkinMessage(oldSkin)
+            ),
+            new RpcMessage(
+                sendPlayer.control.netId,
+                new SetVisorMessage(oldVisor)
             )
-        ], true, player);
+        ], undefined, [ player ]);
     }
 
     /**
@@ -1430,16 +1537,15 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             return false;
 
         const colorMap = Color as any as {[key: string]: Color};
-        const hatMap = Hat as any as {[key: string]: Hat};
-        const skinMap = Skin as any as {[key: string]: Skin};
 
         const defaultOptions: SendChatOptions = {
             side: MessageSide.Left,
             targets: undefined,
             name: this.config.serverPlayer.name || "<color=yellow>[Server]</color>",
-            color: colorMap[this.config.serverPlayer.color || "Yellow"],
-            hat: hatMap[this.config.serverPlayer.hat || "None"],
-            skin: skinMap[this.config.serverPlayer.skin || "None"],
+            color:  colorMap[this.config.serverPlayer.color || "Yellow"],
+            hatId: this.config.serverPlayer.hatId || Hat.NoHat,
+            skinId: this.config.serverPlayer.skinId || Skin.None,
+            visorId: this.config.serverPlayer.visorId || Visor.EmptyVisor,
             ...options
         };
 
@@ -1447,7 +1553,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const promises = [];
         if (defaultOptions.targets) {
             for (const player of defaultOptions.targets) {
-                promises.push(this._sendChatFor(player, message, defaultOptions));
+                promises.push(this._sendChatFor(player as PlayerData<this>, message, defaultOptions));
             }
         } else {
             for (const [ , player ] of this.players) {

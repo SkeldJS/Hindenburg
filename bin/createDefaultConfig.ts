@@ -1,3 +1,4 @@
+import { Hat, Skin, Visor } from "@skeldjs/constant";
 import { HindenburgConfig } from "../src";
 
 export function createDefaultConfig(): HindenburgConfig {
@@ -59,8 +60,9 @@ export function createDefaultConfig(): HindenburgConfig {
             serverPlayer: {
                 name: "<color=yellow>[Server]</color>",
                 color: "Yellow",
-                hat: "None",
-                skin: "None"
+                hatId: Hat.NoHat,
+                skinId: Skin.None,
+                visorId: Visor.EmptyVisor
             },
             createTimeout: 10
         }

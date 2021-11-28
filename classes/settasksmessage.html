@@ -100,8 +100,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="settasksmessage.html#messagetype" class="tsd-kind-icon">message<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="settasksmessage.html#messagetag-1" class="tsd-kind-icon">message<wbr>Tag</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="settasksmessage.html#messagetype-1" class="tsd-kind-icon">message<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="settasksmessage.html#playerid" class="tsd-kind-icon">playerid</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="settasksmessage.html#taskids" class="tsd-kind-icon">taskids</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="settasksmessage.html#playerid" class="tsd-kind-icon">player<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="settasksmessage.html#taskids" class="tsd-kind-icon">task<wbr>Ids</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -254,8 +254,8 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="playerid" class="tsd-anchor"></a>
-					<h3>playerid</h3>
-					<div class="tsd-signature tsd-kind-icon">playerid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<h3>player<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">player<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/rpc/SetTasks.d.ts:7</li>
@@ -264,8 +264,8 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="taskids" class="tsd-anchor"></a>
-					<h3>taskids</h3>
-					<div class="tsd-signature tsd-kind-icon">taskids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
+					<h3>task<wbr>Ids</h3>
+					<div class="tsd-signature tsd-kind-icon">task<wbr>Ids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/rpc/SetTasks.d.ts:8</li>
@@ -299,7 +299,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Set<wbr>Tasks<wbr>Message<span class="tsd-signature-symbol">(</span>playerid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, taskids<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="settasksmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SetTasksMessage</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Set<wbr>Tasks<wbr>Message<span class="tsd-signature-symbol">(</span>playerId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, taskIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="settasksmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SetTasksMessage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -312,10 +312,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>playerid: <span class="tsd-signature-type">number</span></h5>
+									<h5>playerId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>taskids: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>taskIds: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="settasksmessage.html" class="tsd-signature-type" data-tsd-kind="Class">SetTasksMessage</a></h4>
@@ -349,13 +349,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
@@ -424,10 +427,10 @@
 								<a href="settasksmessage.html#messagetype-1" class="tsd-kind-icon">message<wbr>Type</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="settasksmessage.html#playerid" class="tsd-kind-icon">playerid</a>
+								<a href="settasksmessage.html#playerid" class="tsd-kind-icon">player<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="settasksmessage.html#taskids" class="tsd-kind-icon">taskids</a>
+								<a href="settasksmessage.html#taskids" class="tsd-kind-icon">task<wbr>Ids</a>
 							</li>
 						</ul>
 					</li>

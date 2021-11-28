@@ -130,11 +130,6 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="gamedata.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="gamedata.html#removelisteners" class="tsd-kind-icon">remove<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#resolveplayerdata" class="tsd-kind-icon">resolve<wbr>Player<wbr>Data</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#setcolor" class="tsd-kind-icon">set<wbr>Color</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#sethat" class="tsd-kind-icon">set<wbr>Hat</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#setname" class="tsd-kind-icon">set<wbr>Name</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#setpet" class="tsd-kind-icon">set<wbr>Pet</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#setskin" class="tsd-kind-icon">set<wbr>Skin</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#settasks" class="tsd-kind-icon">set<wbr>Tasks</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="gamedata.html#spawn" class="tsd-kind-icon">spawn</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="gamedata.html#update" class="tsd-kind-icon">update</a></li>
@@ -339,7 +334,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:140</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:90</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -378,7 +373,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:129</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:79</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -388,7 +383,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-typescript"><span style="color: #008000">// Complete all of a player&#039;s tasks.</span>
-<span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">i</span><span style="color: #000000"> = </span><span style="color: #098658">0</span><span style="color: #000000">; </span><span style="color: #001080">i</span><span style="color: #000000"> &lt; </span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">info</span><span style="color: #000000">.</span><span style="color: #001080">tasks</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000">; </span><span style="color: #001080">i</span><span style="color: #000000">++) {</span>
+<span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">i</span><span style="color: #000000"> = </span><span style="color: #098658">0</span><span style="color: #000000">; </span><span style="color: #001080">i</span><span style="color: #000000"> &lt; </span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">playerInfo</span><span style="color: #000000">.</span><span style="color: #001080">tasks</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000">; </span><span style="color: #001080">i</span><span style="color: #000000">++) {</span>
 <span style="color: #000000">  </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">gamedata</span><span style="color: #000000">.</span><span style="color: #795E26">completeTask</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #001080">i</span><span style="color: #000000">);</span>
 <span style="color: #000000">}</span>
 </code></pre>
@@ -580,7 +575,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -638,7 +633,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -720,7 +715,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -794,7 +789,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:145</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:95</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -890,228 +885,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="setcolor" class="tsd-anchor"></a>
-					<h3>set<wbr>Color</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Color<span class="tsd-signature-symbol">(</span>resolvable<span class="tsd-signature-symbol">: </span><a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a>, color<span class="tsd-signature-symbol">: </span><a href="../enums/color.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Color</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:68</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Change the colour of a player (Will not update on clients, use <a href="playercontrol.html#setcolor">PlayerControl.setColor</a>).</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-typescript"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">gamedata</span><span style="color: #000000">.</span><span style="color: #795E26">setColor</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #001080">ColorID</span><span style="color: #000000">.</span><span style="color: #001080">Blue</span><span style="color: #000000">);</span>
-</code></pre>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>resolvable: <a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The player to change the colour of.</p>
-									</div>
-								</li>
-								<li>
-									<h5>color: <a href="../enums/color.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Color</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The colour to change to.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="sethat" class="tsd-anchor"></a>
-					<h3>set<wbr>Hat</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Hat<span class="tsd-signature-symbol">(</span>resolvable<span class="tsd-signature-symbol">: </span><a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a>, hat<span class="tsd-signature-symbol">: </span><a href="../enums/hat.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Hat</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:78</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Change the hat of a player.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-typescript"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">gamedata</span><span style="color: #000000">.</span><span style="color: #795E26">setHat</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #001080">HatID</span><span style="color: #000000">.</span><span style="color: #001080">TopHat</span><span style="color: #000000">);</span>
-</code></pre>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>resolvable: <a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The player to change the hat of.</p>
-									</div>
-								</li>
-								<li>
-									<h5>hat: <a href="../enums/hat.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Hat</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The hat to change to.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="setname" class="tsd-anchor"></a>
-					<h3>set<wbr>Name</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Name<span class="tsd-signature-symbol">(</span>resolvable<span class="tsd-signature-symbol">: </span><a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:58</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Change the name of a player (Will not update on clients, use <a href="playercontrol.html#setname">PlayerControl.setName</a>).</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-typescript"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">gamedata</span><span style="color: #000000">.</span><span style="color: #795E26">setName</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;weakeyes&quot;</span><span style="color: #000000">);</span>
-</code></pre>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>resolvable: <a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The player to change the name of.</p>
-									</div>
-								</li>
-								<li>
-									<h5>name: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The name to change to.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="setpet" class="tsd-anchor"></a>
-					<h3>set<wbr>Pet</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Pet<span class="tsd-signature-symbol">(</span>resolvable<span class="tsd-signature-symbol">: </span><a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a>, pet<span class="tsd-signature-symbol">: </span><a href="../enums/pet.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Pet</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:98</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Change the pet of a player.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-typescript"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">gamedata</span><span style="color: #000000">.</span><span style="color: #795E26">setPet</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #001080">PetID</span><span style="color: #000000">.</span><span style="color: #001080">MiniCrewmate</span><span style="color: #000000">);</span>
-</code></pre>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>resolvable: <a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The player to change the pet of.</p>
-									</div>
-								</li>
-								<li>
-									<h5>pet: <a href="../enums/pet.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Pet</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="setskin" class="tsd-anchor"></a>
-					<h3>set<wbr>Skin</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Skin<span class="tsd-signature-symbol">(</span>resolvable<span class="tsd-signature-symbol">: </span><a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a>, skin<span class="tsd-signature-symbol">: </span><a href="../enums/skin.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Skin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:88</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Change the skin of a player.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-typescript"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">gamedata</span><span style="color: #000000">.</span><span style="color: #795E26">setSkin</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #001080">SkinID</span><span style="color: #000000">.</span><span style="color: #001080">Mechanic</span><span style="color: #000000">);</span>
-</code></pre>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>resolvable: <a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The player to change the skin of.</p>
-									</div>
-								</li>
-								<li>
-									<h5>skin: <a href="../enums/skin.html" class="tsd-signature-type" data-tsd-kind="Enumeration">Skin</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The skin to change to.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="settasks" class="tsd-anchor"></a>
 					<h3>set<wbr>Tasks</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Tasks<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a>, taskIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Tasks<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="../modules.html#playeridresolvable" class="tsd-signature-type" data-tsd-kind="Type alias">PlayerIDResolvable</a>, taskTypes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:116</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/objects/GameData.d.ts:66</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1139,9 +922,9 @@
 									</div>
 								</li>
 								<li>
-									<h5>taskIds: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>taskTypes: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The tasks to set.</p>
+										<p>The task types to give to the player, see <a href="../enums/tasktype.html">TaskType</a>.</p>
 									</div>
 								</li>
 							</ul>
@@ -1221,7 +1004,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1267,7 +1050,7 @@
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span></h4>
+									<h4>EventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;component.spawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;component.despawn&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.addplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.removeplayer&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;gamedata.settasks&quot;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1492,7 +1275,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Game<wbr>Data&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, spawnType<span class="tsd-signature-symbol">: </span><a href="../enums/spawntype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SpawnType</a>, netid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, ownerid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, flags<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">?: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/gamedatadata.html" class="tsd-signature-type" data-tsd-kind="Interface">GameDataData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="gamedata.html" class="tsd-signature-type" data-tsd-kind="Class">GameData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Game<wbr>Data&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span>, spawnType<span class="tsd-signature-symbol">: </span><a href="../enums/spawntype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SpawnType</a>, netId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, ownerid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, flags<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, data<span class="tsd-signature-symbol">?: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/gamedatadata.html" class="tsd-signature-type" data-tsd-kind="Interface">GameDataData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="gamedata.html" class="tsd-signature-type" data-tsd-kind="Class">GameData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -1517,7 +1300,7 @@
 									<h5>spawnType: <a href="../enums/spawntype.html" class="tsd-signature-type" data-tsd-kind="Enumeration">SpawnType</a></h5>
 								</li>
 								<li>
-									<h5>netid: <span class="tsd-signature-type">number</span></h5>
+									<h5>netId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
 									<h5>ownerid: <span class="tsd-signature-type">number</span></h5>
@@ -1580,13 +1363,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
@@ -1716,21 +1502,6 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="gamedata.html#room" class="tsd-kind-icon">room</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="gamedata.html#setcolor" class="tsd-kind-icon">set<wbr>Color</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="gamedata.html#sethat" class="tsd-kind-icon">set<wbr>Hat</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="gamedata.html#setname" class="tsd-kind-icon">set<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="gamedata.html#setpet" class="tsd-kind-icon">set<wbr>Pet</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="gamedata.html#setskin" class="tsd-kind-icon">set<wbr>Skin</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="gamedata.html#settasks" class="tsd-kind-icon">set<wbr>Tasks</a>

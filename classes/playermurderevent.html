@@ -72,9 +72,10 @@
 					<div class="lead">
 						<p>Emitted when a player murders another player.</p>
 					</div>
-					<p>Due to technical limitations, this event cannot be canceled or reverted
-						without advanced &quot;breaking game&quot;, therefore it is out of scope of a single
-					<code>.revert()</code> function.</p>
+					<p>Due to technical limitations, this event cannot be  reverted without advanced
+						&quot;breaking game&quot;, therefore it is out of scope of a single <code>.revert()</code> function.
+						However, see <a href="playercheckmurderevent.html">PlayerCheckMurderEvent</a> to see about canceling a murder
+					before it happens if you are the host.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -139,7 +140,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:23</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:24</li>
 						</ul>
 					</aside>
 				</section>
@@ -150,7 +151,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:24</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:25</li>
 						</ul>
 					</aside>
 				</section>
@@ -161,7 +162,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of ProtocolEvent.message</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:18</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:19</li>
 						</ul>
 					</aside>
 				</section>
@@ -172,7 +173,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of PlayerEvent.player</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:17</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:18</li>
 						</ul>
 					</aside>
 				</section>
@@ -183,7 +184,7 @@
 					<aside class="tsd-sources">
 						<p>Implementation of RoomEvent.room</p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:16</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:17</li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +194,7 @@
 					<div class="tsd-signature tsd-kind-icon">victim<span class="tsd-signature-symbol">:</span> <a href="playerdata.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:22</li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:23</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -216,7 +217,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BasicEvent.constructor</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:24</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/player/Murder.d.ts:25</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -271,13 +272,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>

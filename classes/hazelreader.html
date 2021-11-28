@@ -98,6 +98,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hazelreader.html#goto" class="tsd-kind-icon">goto</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#int16" class="tsd-kind-icon">int16</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#int32" class="tsd-kind-icon">int32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#int64" class="tsd-kind-icon">int64</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#int8" class="tsd-kind-icon">int8</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hazelreader.html#jump" class="tsd-kind-icon">jump</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external"><a href="hazelreader.html#list" class="tsd-kind-icon">list</a></li>
@@ -110,6 +111,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="hazelreader.html#tostring" class="tsd-kind-icon">to<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#uint16" class="tsd-kind-icon">uint16</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#uint32" class="tsd-kind-icon">uint32</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#uint64" class="tsd-kind-icon">uint64</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#uint8" class="tsd-kind-icon">uint8</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#upacked" class="tsd-kind-icon">upacked</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="hazelreader.html#vector" class="tsd-kind-icon">vector</a></li>
@@ -327,7 +329,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:239</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:257</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -450,7 +452,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:180</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:198</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -594,6 +596,41 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="int64" class="tsd-anchor"></a>
+					<h3>int64</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">int64<span class="tsd-signature-symbol">(</span>be<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:187</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read a signed 64-bit integer value.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-typescript"><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">reader</span><span style="color: #000000">.</span><span style="color: #795E26">int64</span><span style="color: #000000">()); </span><span style="color: #008000">// =&gt; 1666</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> be: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">bigint</span></h4>
+							<p>The value that was read.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="int8" class="tsd-anchor"></a>
 					<h3>int8</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
@@ -676,7 +713,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:253</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:271</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -720,7 +757,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:254</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:272</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -793,7 +830,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:226</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:244</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -826,7 +863,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:191</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:209</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -929,7 +966,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:213</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:231</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1049,6 +1086,41 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="uint64" class="tsd-anchor"></a>
+					<h3>uint64</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">uint64<span class="tsd-signature-symbol">(</span>be<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:178</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read an unsigned 64-bit integer value.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-typescript"><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">reader</span><span style="color: #000000">.</span><span style="color: #795E26">uint64</span><span style="color: #000000">()); </span><span style="color: #008000">// =&gt; 1666</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> be: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">bigint</span></h4>
+							<p>The value that was read.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="uint8" class="tsd-anchor"></a>
 					<h3>uint8</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
@@ -1089,7 +1161,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:202</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:220</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1120,7 +1192,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:259</li>
+									<li>Defined in node_modules/@skeldjs/util/dist/lib/HazelReader.d.ts:277</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1285,13 +1357,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
@@ -1369,6 +1444,9 @@
 								<a href="hazelreader.html#int32" class="tsd-kind-icon">int32</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="hazelreader.html#int64" class="tsd-kind-icon">int64</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="hazelreader.html#int8" class="tsd-kind-icon">int8</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
@@ -1409,6 +1487,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="hazelreader.html#uint32" class="tsd-kind-icon">uint32</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="hazelreader.html#uint64" class="tsd-kind-icon">uint64</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="hazelreader.html#uint8" class="tsd-kind-icon">uint8</a>

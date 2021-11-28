@@ -98,7 +98,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="reportplayermessage.html#messagetag" class="tsd-kind-icon">message<wbr>Tag</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="reportplayermessage.html#messagetype" class="tsd-kind-icon">message<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="reportplayermessage.html#clientid" class="tsd-kind-icon">clientid</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="reportplayermessage.html#clientid" class="tsd-kind-icon">client<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="reportplayermessage.html#code" class="tsd-kind-icon">code</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="reportplayermessage.html#messagetag-1" class="tsd-kind-icon">message<wbr>Tag</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="reportplayermessage.html#messagetype-1" class="tsd-kind-icon">message<wbr>Type</a></li>
@@ -241,8 +241,8 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="clientid" class="tsd-anchor"></a>
-					<h3>clientid</h3>
-					<div class="tsd-signature tsd-kind-icon">clientid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<h3>client<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">client<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/ReportPlayer.d.ts:11</li>
@@ -338,8 +338,8 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Report<wbr>Player<wbr>Message<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span>, clientid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/reportreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportReason</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="reportplayermessage.html" class="tsd-signature-type" data-tsd-kind="Class">ReportPlayerMessage</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Report<wbr>Player<wbr>Message<span class="tsd-signature-symbol">(</span>clientid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/reportreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportReason</a>, outcome<span class="tsd-signature-symbol">: </span><a href="../enums/reportoutcome.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportOutcome</a>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="reportplayermessage.html" class="tsd-signature-type" data-tsd-kind="Class">ReportPlayerMessage</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Report<wbr>Player<wbr>Message<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span>, clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/reportreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportReason</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="reportplayermessage.html" class="tsd-signature-type" data-tsd-kind="Class">ReportPlayerMessage</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Report<wbr>Player<wbr>Message<span class="tsd-signature-symbol">(</span>clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/reportreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportReason</a>, outcome<span class="tsd-signature-symbol">: </span><a href="../enums/reportoutcome.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportOutcome</a>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="reportplayermessage.html" class="tsd-signature-type" data-tsd-kind="Class">ReportPlayerMessage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -355,7 +355,7 @@
 									<h5>code: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
-									<h5>clientid: <span class="tsd-signature-type">number</span></h5>
+									<h5>clientId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
 									<h5>reason: <a href="../enums/reportreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportReason</a></h5>
@@ -373,7 +373,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>clientid: <span class="tsd-signature-type">number</span></h5>
+									<h5>clientId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
 									<h5>reason: <a href="../enums/reportreason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ReportReason</a></h5>
@@ -416,13 +416,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
@@ -479,7 +482,7 @@
 								<a href="reportplayermessage.html#canceled" class="tsd-kind-icon">canceled</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="reportplayermessage.html#clientid" class="tsd-kind-icon">clientid</a>
+								<a href="reportplayermessage.html#clientid" class="tsd-kind-icon">client<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 								<a href="reportplayermessage.html#clone" class="tsd-kind-icon">clone</a>

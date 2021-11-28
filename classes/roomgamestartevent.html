@@ -60,33 +60,18 @@
 					<a href="roomgamestartevent.html">RoomGameStartEvent</a>
 				</li>
 			</ul>
-			<h1>Class RoomGameStartEvent&lt;RoomType&gt;</h1>
+			<h1>Class RoomGameStartEvent</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Emitted when a game is started.</p>
-					</div>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-type-parameters">
-				<h3>Type parameters</h3>
-				<ul class="tsd-type-parameters">
-					<li>
-						<h4>RoomType<span class="tsd-signature-symbol">: </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a></h4>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">BasicEvent</span>
+						<span class="tsd-signature-type">SkeldjsRoomGameStartEvent</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">RoomGameStartEvent</span>
@@ -98,95 +83,126 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><span class="tsd-signature-type">RoomEvent</span></li>
+					<li><span class="tsd-signature-type">CancelableEvent</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external">
+						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external"><a href="roomgamestartevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="roomgamestartevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="roomgamestartevent.html#room" class="tsd-kind-icon">room</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="roomgamestartevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="roomgamestartevent.html#canceled" class="tsd-kind-icon">canceled</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="roomgamestartevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="roomgamestartevent.html#room" class="tsd-kind-icon">room</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-external">
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="roomgamestartevent.html#cancel" class="tsd-kind-icon">cancel</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external"><a href="roomgamestartevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="roomgamestartevent.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
 					<a name="eventname" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
 					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.gamestart&quot;</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
+						<p>Inherited from SkeldjsRoomGameStartEvent.eventName</p>
 						<ul>
 							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/room/GameStart.d.ts:9</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="canceled" class="tsd-anchor"></a>
+					<h3>canceled</h3>
+					<div class="tsd-signature tsd-kind-icon">canceled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of CancelableEvent.canceled</p>
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/879a94a/src/api/events/room/GameStart.ts#L6">src/api/events/room/GameStart.ts:6</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="eventname-1" class="tsd-anchor"></a>
 					<h3>event<wbr>Name</h3>
 					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.gamestart&quot;</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
+						<p>Implementation of CancelableEvent.eventName</p>
+						<p>Inherited from SkeldjsRoomGameStartEvent.eventName</p>
 						<ul>
 							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/room/GameStart.d.ts:10</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="room" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> room</h3>
-					<div class="tsd-signature tsd-kind-icon">room<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RoomType</span></div>
+					<div class="tsd-signature tsd-kind-icon">room<span class="tsd-signature-symbol">:</span> <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></div>
 					<aside class="tsd-sources">
-						<p>Implementation of RoomEvent.room</p>
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/events/room/GameStart.d.ts:8</li>
-						</ul>
+						<p>Inherited from SkeldjsRoomGameStartEvent.room</p>
 					</aside>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<wbr>Game<wbr>Start<wbr>Event&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="roomgamestartevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomGameStartEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cancel" class="tsd-anchor"></a>
+					<h3>cancel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides BasicEvent.constructor</p>
+								<p>Implementation of CancelableEvent.cancel</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/events/room/GameStart.d.ts:10</li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/879a94a/src/api/events/room/GameStart.ts#L16">src/api/events/room/GameStart.ts:16</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-type-parameters-title">Type parameters</h4>
-							<ul class="tsd-type-parameters">
-								<li>
-									<h4>RoomType<span class="tsd-signature-symbol">: </span><a href="hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
-								</li>
-							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<wbr>Game<wbr>Start<wbr>Event<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="roomgamestartevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomGameStartEvent</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides SkeldjsRoomGameStartEvent.constructor</p>
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/879a94a/src/api/events/room/GameStart.ts#L6">src/api/events/room/GameStart.ts:6</a></li>
+								</ul>
+							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>room: <span class="tsd-signature-type">RoomType</span></h5>
+									<h5>room: <a href="room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="roomgamestartevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomGameStartEvent</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="roomgamestartevent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomGameStartEvent</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -217,13 +233,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
@@ -258,19 +277,25 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class tsd-has-type-parameter tsd-is-external">
+					<li class="current tsd-kind-class">
 						<a href="roomgamestartevent.html" class="tsd-kind-icon">Room<wbr>Game<wbr>Start<wbr>Event</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
 								<a href="roomgamestartevent.html#eventname" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="roomgamestartevent.html#cancel" class="tsd-kind-icon">cancel</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="roomgamestartevent.html#canceled" class="tsd-kind-icon">canceled</a>
+							</li>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 								<a href="roomgamestartevent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="roomgamestartevent.html#eventname-1" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="roomgamestartevent.html#room" class="tsd-kind-icon">room</a>
 							</li>
 						</ul>

@@ -130,7 +130,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="autoopendoor.html#id" class="tsd-kind-icon">id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="autoopendoor.html#doorid" class="tsd-kind-icon">door<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="autoopendoor.html#isopen" class="tsd-kind-icon">is<wbr>Open</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="autoopendoor.html#timer" class="tsd-kind-icon">timer</a></li>
 							</ul>
@@ -788,7 +788,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Auto<wbr>Open<wbr>Door&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>system<span class="tsd-signature-symbol">: </span><a href="autodoorssystem.html" class="tsd-signature-type" data-tsd-kind="Class">AutoDoorsSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, isOpen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="autoopendoor.html" class="tsd-signature-type" data-tsd-kind="Class">AutoOpenDoor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Auto<wbr>Open<wbr>Door&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>system<span class="tsd-signature-symbol">: </span><a href="autodoorssystem.html" class="tsd-signature-type" data-tsd-kind="Class">AutoDoorsSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span>, doorId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, isOpen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="autoopendoor.html" class="tsd-signature-type" data-tsd-kind="Class">AutoOpenDoor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -810,7 +810,7 @@
 									<h5>system: <a href="autodoorssystem.html" class="tsd-signature-type" data-tsd-kind="Class">AutoDoorsSystem</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
-									<h5>id: <span class="tsd-signature-type">number</span></h5>
+									<h5>doorId: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
 									<h5>isOpen: <span class="tsd-signature-type">boolean</span></h5>
@@ -824,11 +824,11 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-					<a name="id" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> id</h3>
-					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="doorid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> door<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">door<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides <a href="door.html">Door</a>.<a href="door.html#id">id</a></p>
+						<p>Overrides <a href="door.html">Door</a>.<a href="door.html#doorid">doorId</a></p>
 						<ul>
 							<li>Defined in node_modules/@skeldjs/core/dist/lib/misc/AutoOpenDoor.d.ts:11</li>
 						</ul>
@@ -882,13 +882,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
@@ -941,6 +944,9 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-overwrite tsd-is-external">
 								<a href="autoopendoor.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+								<a href="autoopendoor.html#doorid" class="tsd-kind-icon">door<wbr>Id</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="autoopendoor.html#emit" class="tsd-kind-icon">emit</a>
 							</li>
@@ -949,9 +955,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="autoopendoor.html#getlisteners" class="tsd-kind-icon">get<wbr>Listeners</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-								<a href="autoopendoor.html#id" class="tsd-kind-icon">id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="autoopendoor.html#isopen" class="tsd-kind-icon">is<wbr>Open</a>

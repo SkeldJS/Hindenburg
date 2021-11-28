@@ -1,0 +1,230 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Chat Commands | @skeldjs/hindenburg</title>
+	<meta name="description" content="Documentation for @skeldjs/hindenburg">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../../index.html" class="title">@skeldjs/hindenburg</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../../modules.html">Globals</a>
+				</li>
+				<li>
+					<a href="Creating a Plugin.html">Plugins</a>
+				</li>
+				<li>
+					<a href="Chat Commands.html">Chat Commands</a>
+				</li>
+			</ul>
+			<h1>Chat Commands</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p>A great and easy way to allow players to communicate with your plugin is through the use of <a href="../Information/Chat%20Commands.md">Chat Commands</a>.</p>
+				<p>Hindenburg provides a simple, quick way to register your own custom chat commands in your plugins.</p>
+				<p>Similar to most things in Hindenburg, there&#39;s a special <a href="../../modules.html#chatcommand"><code>@ChatCommand</code></a> decorator you can use, for example:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">ChatCommand</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;add &lt;first&gt; &lt;second&gt;&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;Add two numbers together&quot;</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onAddCommand</span><span style="color: #000000">(</span><span style="color: #001080">ctx</span><span style="color: #000000">: </span><span style="color: #001080">ChatCommandContext</span><span style="color: #000000">, </span><span style="color: #001080">args</span><span style="color: #000000">: </span><span style="color: #001080">any</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">first</span><span style="color: #000000"> = </span><span style="color: #795E26">parseFloat</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">first</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">second</span><span style="color: #000000"> = </span><span style="color: #795E26">parseFloat</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">second</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #795E26">isNaN</span><span style="color: #000000">(</span><span style="color: #001080">first</span><span style="color: #000000">) || </span><span style="color: #795E26">isNaN</span><span style="color: #000000">(</span><span style="color: #001080">second</span><span style="color: #000000">))</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Expected a number for &#039;first&#039; and &#039;second&#039;&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">result</span><span style="color: #000000"> = </span><span style="color: #001080">first</span><span style="color: #000000"> + </span><span style="color: #001080">second</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #001080">first</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; + &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">second</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; = &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">result</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p><img src="https://user-images.githubusercontent.com/60631511/143774107-36468587-b1a6-4523-bca7-17cd07c77a52.png" alt="image"></p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/143774137-a97f8a30-8635-4b56-a425-b11e382c6266.png" alt="image"></p>
+				<a href="#the-decorator" id="the-decorator" style="color: inherit; text-decoration: none;">
+					<h3>The Decorator</h3>
+				</a>
+				<p>The first argument you can pass into the decorator describes the syntax of the command. The word before the first space is the name of the command, or the trigger. Anything after the first word act as parameters that players can pass into the command, parameters surrounded by <code>&lt;&gt;</code> means that the parameter is <em>required</em>, and parameters surrounded by <code>[]</code> means that the parameter is <em>optional</em>.</p>
+				<p>If the last argument name ends with <code>...</code> it will select the remaining text that the player passed in. (The <code>...</code> doesn&#39;t count towards the argument name).</p>
+				<p>For example:
+				<code>setname &lt;name...&gt;</code> would select anything from:</p>
+				<ul>
+					<li><code>/setname jesus christ</code> - where <code>{ name: &quot;jesus christ&quot; }</code></li>
+					<li><code>/setname the 1975</code> - where <code>{ name: &quot;the 1975&quot; }</code></li>
+				</ul>
+				<p>But wouldn&#39;t accept:</p>
+				<ul>
+					<li><code>/setname</code></li>
+				</ul>
+				<p>This is similar to the <a href="https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax">Command Description Syntax</a> for CLI commands.</p>
+				<p>The second argument is a short, one-sentence summary of the command.</p>
+				<a href="#the-callback" id="the-callback" style="color: inherit; text-decoration: none;">
+					<h3>The Callback</h3>
+				</a>
+				<p>The body of the decorator, or the method that it&#39;s attached to, is called when someone uses the command in question.</p>
+				<p>The <a href="../../classes/chatcommandcontext.html"><code>ctx</code></a> argument allows you to reply to the message as the server, acting simply as a wrapper for <a href="../../classes/room.html#sendchat">Room.sendChat</a>. It also provides information about the player that sent the message calling the command, and the room that it came from.</p>
+				<p>The <code>args</code> argument is an object containing any arguments that the player passed into the command, mapped by the parameter name as described in <a href="#the-decorator">the decorator</a>. The arguments will <em>always</em> be strings, so you must parse it yourself.</p>
+				<blockquote>
+					<p>Note that the parameter name doesn&#39;t include the surrounding <code>&lt;&gt;</code>s or <code>[]</code>s, or the <code>...</code> if it exists.</p>
+				</blockquote>
+				<a href="#on-simplicity" id="on-simplicity" style="color: inherit; text-decoration: none;">
+					<h3>On Simplicity</h3>
+				</a>
+				<p>Note that Hindenburg does not support typical CLI features such as flags (<code>-p</code>) or switches (<code>/p</code>) or options (<code>--port</code>). This is entirely to keep chat commands as simple as possible.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="label pp-nav pp-group">
+						<span>Getting <wbr>Started</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Installation.html">Installation</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Environment Variables.html">Environment <wbr>Variables</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Configuration.html">Configuration</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Installing Plugins.html">Installing <wbr>Plugins</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Plugins</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Information</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Interactive CLI.html">Interactive CLI</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Message Ordering.html">Message <wbr>Ordering</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Plugins.html">Plugins</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Reactor Support.html">Reactor <wbr>Support</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
+					</li>
+					<li class=" ">
+						<a href="../../modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
+</body>
+</html>

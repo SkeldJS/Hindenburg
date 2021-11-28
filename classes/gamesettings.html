@@ -75,12 +75,6 @@
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel">
-				<h3>Implements</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a></li>
-				</ul>
-			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -116,6 +110,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="gamesettings.html#numemergencies" class="tsd-kind-icon">num<wbr>Emergencies</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="gamesettings.html#numimpostors" class="tsd-kind-icon">num<wbr>Impostors</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="gamesettings.html#playerspeed" class="tsd-kind-icon">player<wbr>Speed</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="gamesettings.html#rolesettings" class="tsd-kind-icon">role<wbr>Settings</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="gamesettings.html#shorttasks" class="tsd-kind-icon">short<wbr>Tasks</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="gamesettings.html#taskbarupdates" class="tsd-kind-icon">taskbar<wbr>Updates</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="gamesettings.html#version" class="tsd-kind-icon">version</a></li>
@@ -144,7 +139,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:53</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:91</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -161,19 +156,19 @@
 					<a name="isvalid" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> is<wbr>Valid</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Valid<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:28</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:65</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>options: <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></h5>
+									<h5>settings: <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -184,13 +179,13 @@
 					<a name="deserialize-1" class="tsd-anchor"></a>
 					<h3>Deserialize</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">Deserialize<span class="tsd-signature-symbol">(</span>reader<span class="tsd-signature-symbol">: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></li>
+						<li class="tsd-signature tsd-kind-icon">Deserialize<span class="tsd-signature-symbol">(</span>reader<span class="tsd-signature-symbol">: </span><a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:54</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:92</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -199,7 +194,7 @@
 									<h5>reader: <a href="hazelreader.html" class="tsd-signature-type" data-tsd-kind="Class">HazelReader</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -213,7 +208,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:55</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:93</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -236,7 +231,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:56</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:94</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></h4>
@@ -247,19 +242,19 @@
 					<a name="patch" class="tsd-anchor"></a>
 					<h3>patch</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:52</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:90</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>options: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>settings: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -274,9 +269,8 @@
 					<h3>anonymous<wbr>Votes</h3>
 					<div class="tsd-signature tsd-kind-icon">anonymous<wbr>Votes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#anonymousvotes">anonymousVotes</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:49</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:86</li>
 						</ul>
 					</aside>
 				</section>
@@ -285,9 +279,8 @@
 					<h3>common<wbr>Tasks</h3>
 					<div class="tsd-signature tsd-kind-icon">common<wbr>Tasks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#commontasks">commonTasks</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:37</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:74</li>
 						</ul>
 					</aside>
 				</section>
@@ -296,9 +289,8 @@
 					<h3>confirm<wbr>Ejects</h3>
 					<div class="tsd-signature tsd-kind-icon">confirm<wbr>Ejects<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#confirmejects">confirmEjects</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:47</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:84</li>
 						</ul>
 					</aside>
 				</section>
@@ -307,9 +299,8 @@
 					<h3>crewmate<wbr>Vision</h3>
 					<div class="tsd-signature tsd-kind-icon">crewmate<wbr>Vision<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#crewmatevision">crewmateVision</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:34</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:71</li>
 						</ul>
 					</aside>
 				</section>
@@ -318,9 +309,8 @@
 					<h3>discussion<wbr>Time</h3>
 					<div class="tsd-signature tsd-kind-icon">discussion<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#discussiontime">discussionTime</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:43</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:80</li>
 						</ul>
 					</aside>
 				</section>
@@ -329,9 +319,8 @@
 					<h3>emergency<wbr>Cooldown</h3>
 					<div class="tsd-signature tsd-kind-icon">emergency<wbr>Cooldown<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#emergencycooldown">emergencyCooldown</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:46</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:83</li>
 						</ul>
 					</aside>
 				</section>
@@ -340,9 +329,8 @@
 					<h3>impostor<wbr>Vision</h3>
 					<div class="tsd-signature tsd-kind-icon">impostor<wbr>Vision<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#impostorvision">impostorVision</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:35</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:72</li>
 						</ul>
 					</aside>
 				</section>
@@ -351,9 +339,8 @@
 					<h3>is<wbr>Defaults</h3>
 					<div class="tsd-signature tsd-kind-icon">is<wbr>Defaults<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#isdefaults">isDefaults</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:45</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:82</li>
 						</ul>
 					</aside>
 				</section>
@@ -362,9 +349,8 @@
 					<h3>keywords</h3>
 					<div class="tsd-signature tsd-kind-icon">keywords<span class="tsd-signature-symbol">:</span> <a href="../enums/gamekeyword.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameKeyword</a></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#keywords">keywords</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:31</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:68</li>
 						</ul>
 					</aside>
 				</section>
@@ -373,9 +359,8 @@
 					<h3>kill<wbr>Cooldown</h3>
 					<div class="tsd-signature tsd-kind-icon">kill<wbr>Cooldown<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#killcooldown">killCooldown</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:36</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:73</li>
 						</ul>
 					</aside>
 				</section>
@@ -384,9 +369,8 @@
 					<h3>kill<wbr>Distance</h3>
 					<div class="tsd-signature tsd-kind-icon">kill<wbr>Distance<span class="tsd-signature-symbol">:</span> <a href="../enums/killdistance.html" class="tsd-signature-type" data-tsd-kind="Enumeration">KillDistance</a></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#killdistance">killDistance</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:42</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:79</li>
 						</ul>
 					</aside>
 				</section>
@@ -395,9 +379,8 @@
 					<h3>long<wbr>Tasks</h3>
 					<div class="tsd-signature tsd-kind-icon">long<wbr>Tasks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#longtasks">longTasks</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:38</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:75</li>
 						</ul>
 					</aside>
 				</section>
@@ -406,9 +389,8 @@
 					<h3>map</h3>
 					<div class="tsd-signature tsd-kind-icon">map<span class="tsd-signature-symbol">:</span> <a href="../enums/gamemap.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameMap</a></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#map">map</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:32</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:69</li>
 						</ul>
 					</aside>
 				</section>
@@ -417,9 +399,8 @@
 					<h3>max<wbr>Players</h3>
 					<div class="tsd-signature tsd-kind-icon">max<wbr>Players<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#maxplayers">maxPlayers</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:30</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:67</li>
 						</ul>
 					</aside>
 				</section>
@@ -428,9 +409,8 @@
 					<h3>num<wbr>Emergencies</h3>
 					<div class="tsd-signature tsd-kind-icon">num<wbr>Emergencies<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#numemergencies">numEmergencies</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:40</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:77</li>
 						</ul>
 					</aside>
 				</section>
@@ -439,9 +419,8 @@
 					<h3>num<wbr>Impostors</h3>
 					<div class="tsd-signature tsd-kind-icon">num<wbr>Impostors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#numimpostors">numImpostors</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:41</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:78</li>
 						</ul>
 					</aside>
 				</section>
@@ -450,9 +429,18 @@
 					<h3>player<wbr>Speed</h3>
 					<div class="tsd-signature tsd-kind-icon">player<wbr>Speed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#playerspeed">playerSpeed</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:33</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:70</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="rolesettings" class="tsd-anchor"></a>
+					<h3>role<wbr>Settings</h3>
+					<div class="tsd-signature tsd-kind-icon">role<wbr>Settings<span class="tsd-signature-symbol">:</span> <a href="rolesettings.html" class="tsd-signature-type" data-tsd-kind="Class">RoleSettings</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:88</li>
 						</ul>
 					</aside>
 				</section>
@@ -461,9 +449,8 @@
 					<h3>short<wbr>Tasks</h3>
 					<div class="tsd-signature tsd-kind-icon">short<wbr>Tasks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#shorttasks">shortTasks</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:39</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:76</li>
 						</ul>
 					</aside>
 				</section>
@@ -472,9 +459,8 @@
 					<h3>taskbar<wbr>Updates</h3>
 					<div class="tsd-signature tsd-kind-icon">taskbar<wbr>Updates<span class="tsd-signature-symbol">:</span> <a href="../enums/taskbarupdate.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TaskBarUpdate</a></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#taskbarupdates">taskbarUpdates</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:50</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:87</li>
 						</ul>
 					</aside>
 				</section>
@@ -483,9 +469,8 @@
 					<h3>version</h3>
 					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#version">version</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:29</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:66</li>
 						</ul>
 					</aside>
 				</section>
@@ -494,9 +479,8 @@
 					<h3>visual<wbr>Tasks</h3>
 					<div class="tsd-signature tsd-kind-icon">visual<wbr>Tasks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#visualtasks">visualTasks</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:48</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:85</li>
 						</ul>
 					</aside>
 				</section>
@@ -505,9 +489,8 @@
 					<h3>voting<wbr>Time</h3>
 					<div class="tsd-signature tsd-kind-icon">voting<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/allgamesettings.html">AllGameSettings</a>.<a href="../interfaces/allgamesettings.html#votingtime">votingTime</a></p>
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:44</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:81</li>
 						</ul>
 					</aside>
 				</section>
@@ -518,19 +501,19 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Game<wbr>Settings<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Game<wbr>Settings<span class="tsd-signature-symbol">(</span>settings<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>anonymousVotes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>commonTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>confirmEjects<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>crewmateVision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>discussionTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>emergencyCooldown<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>impostorVision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>isDefaults<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>keywords<span class="tsd-signature-symbol">: </span><a href="../enums/gamekeyword.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameKeyword</a><span class="tsd-signature-symbol">; </span>killCooldown<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>killDistance<span class="tsd-signature-symbol">: </span><a href="../enums/killdistance.html" class="tsd-signature-type" data-tsd-kind="Enumeration">KillDistance</a><span class="tsd-signature-symbol">; </span>longTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>map<span class="tsd-signature-symbol">: </span><a href="../enums/gamemap.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameMap</a><span class="tsd-signature-symbol">; </span>maxPlayers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numEmergencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numImpostors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>playerSpeed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>roleSettings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">{ roleChances: Partial&lt;{ 0?: Partial&lt;{ maxPlayers: number; chance: number; }&gt; | undefined; 1?: Partial&lt;{ maxPlayers: number; chance: number; }&gt; | undefined; 2?: Partial&lt;{ maxPlayers: number; chance: number; }&gt; | undefined; 3?: Partial&lt;...&gt; | undefined; 4?: Partial&lt;...&gt; | undefined; 5?: Partial&lt;...&gt; | undefined; }&gt;; ...</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>shortTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>taskbarUpdates<span class="tsd-signature-symbol">: </span><a href="../enums/taskbarupdate.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TaskBarUpdate</a><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>visualTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>votingTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:50</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/misc/GameSettings.d.ts:88</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/allgamesettings.html" class="tsd-signature-type" data-tsd-kind="Interface">AllGameSettings</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> settings: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>anonymousVotes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>commonTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>confirmEjects<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>crewmateVision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>discussionTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>emergencyCooldown<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>impostorVision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>isDefaults<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>keywords<span class="tsd-signature-symbol">: </span><a href="../enums/gamekeyword.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameKeyword</a><span class="tsd-signature-symbol">; </span>killCooldown<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>killDistance<span class="tsd-signature-symbol">: </span><a href="../enums/killdistance.html" class="tsd-signature-type" data-tsd-kind="Enumeration">KillDistance</a><span class="tsd-signature-symbol">; </span>longTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>map<span class="tsd-signature-symbol">: </span><a href="../enums/gamemap.html" class="tsd-signature-type" data-tsd-kind="Enumeration">GameMap</a><span class="tsd-signature-symbol">; </span>maxPlayers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numEmergencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numImpostors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>playerSpeed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>roleSettings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">{ roleChances: Partial&lt;{ 0?: Partial&lt;{ maxPlayers: number; chance: number; }&gt; | undefined; 1?: Partial&lt;{ maxPlayers: number; chance: number; }&gt; | undefined; 2?: Partial&lt;{ maxPlayers: number; chance: number; }&gt; | undefined; 3?: Partial&lt;...&gt; | undefined; 4?: Partial&lt;...&gt; | undefined; 5?: Partial&lt;...&gt; | undefined; }&gt;; ...</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>shortTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>taskbarUpdates<span class="tsd-signature-symbol">: </span><a href="../enums/taskbarupdate.html" class="tsd-signature-type" data-tsd-kind="Enumeration">TaskBarUpdate</a><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>visualTasks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>votingTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="gamesettings.html" class="tsd-signature-type" data-tsd-kind="Class">GameSettings</a></h4>
@@ -564,13 +547,16 @@
 						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
@@ -679,6 +665,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="gamesettings.html#playerspeed" class="tsd-kind-icon">player<wbr>Speed</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="gamesettings.html#rolesettings" class="tsd-kind-icon">role<wbr>Settings</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="gamesettings.html#shorttasks" class="tsd-kind-icon">short<wbr>Tasks</a>

@@ -2,7 +2,7 @@ One of the most central components to writing a plugin for Hindenburg is the abi
 
 Any events attached to a room are unattached if the plugin is unloaded.
 
-As with every other Hindenburg plugin design decisions; you can attach event listeners with the `@EventListener()` decorator.
+As with every other Hindenburg plugin design decisions; you can attach event listeners with the {@link EventListener | `@EventListener`} decorator.
 
 For example:
 ```ts
@@ -18,16 +18,18 @@ export default class extends RoomPlugin {
 
 > You can access every symbol, `EventListener`, `PlayerSetColorEvent` and `Color` via the `@skeldjs/hindenburg` package.
 
-Many (not all) events will allow you to cancel what would normally happen, or allow you to revert any changes that the event made. Most events also allow you to change data, for example the [`room.selectimpostors`](https://skeld.js.org/classes/core.RoomSelectImpostorsEvent.html) event allows you to modify the impostors that will be set when the game starts.
+Many (not all) events will allow you to cancel what would normally happen, or allow you to revert any changes that the event made. Most events also allow you to change data, for example the [`room.assignroles`](https://skeld.js.org/classes/core.RoomAssignRolesEvent.html) event allows you to modify the roles that will be assigned to players when the game starts.
 
 Some events will also wait for any asynchronous tasks to complete.
 
 > Be careful what you do in certain events. The [`room.fixedupdate`](https://skeld.js.org/classes/core.RoomFixedUpdateEvent.html) event, for example, can significantly slow down your server if handlers for this event take too long.
 
+As stated above as being a central component to Hindenburg, it's important to remember that if you're using a room plugin, only events emitted from _that_ room will be listened to.
+
 ## TypeScript
 If you're working in TypeScript, due to a [long-standing issue](https://github.com/Microsoft/TypeScript/issues/4881), you must specify the type of the event, making it slightly more verbose, i.e. `ev: PlayerSendChatEvent<Room>`.
 
-However, you can also use this to your advantage, as you can omit the event name entirely from the `@EventListener()` decorator, thanks to TypeScript's ability to emit type metadata for decorators. For example, you could instead do:
+However, Hindenburg allows you to use this to your advantage, as you can omit the event name entirely from the `@EventListener()` decorator, thanks to TypeScript's ability to emit type metadata for decorators. For example, you could instead do:
 ```ts
 @EventListener()
 onPlayerSetColor(ev: PlayerSetColorEvent<Room>) {

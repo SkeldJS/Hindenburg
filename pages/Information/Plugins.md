@@ -8,4 +8,4 @@ Installing, configuring and using plugins should be a breeze, and for a [good ma
 ### Creating your own plugins
 [While some programming knowledge is required](https://www.typescriptlang.org/), creating plugins should be as straight-forward as possible, {@page Creating a Plugin | providing good templates}, a great development experience with a an [easy-to-understand API](https://skeld.js.org) and {@link Development Environment | stress-free environment}, as well as {@link Publishing Plugins | an easy way to publish and distribute plugins}.
 
-[Check out the page on creating plugins for more information](/Plugins/Creating%20A%20Plugin).
+[Check out the page on creating plugins for more information](../Plugins/Creating%20A%20Plugin).

@@ -302,15 +302,15 @@ export interface ServerPlayerOptions {
     /**
      * The hat of the player for a message sent by the server in game chat
      */
-    hatId?: string;
+    hat?: string;
     /**
      * The skin of the player for a message sent by the server in game chat
      */
-    skinId?: string;
+    skin?: string;
     /**
      * The visor of the player for a message sent by the server in game chat
      */
-    visorId?: string;
+    visor?: string;
 }
 
 export interface HindenburgConfig {

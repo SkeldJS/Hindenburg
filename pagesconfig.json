@@ -29,16 +29,20 @@
           "source": "./pages/Plugins/Creating a Plugin.md"
         },
         {
-          "title": "Event Listeners",
-          "source": "./pages/Plugins/Event Listeners.md"
+          "title": "Worker and Room Plugins",
+          "source": "./pages/Plugins/Worker and Room Plugins.md"
         },
         {
           "title": "Lifecycle Methods",
           "source": "./pages/Plugins/Lifecycle Methods.md"
         },
         {
-          "title": "Worker and Room Plugins",
-          "source": "./pages/Plugins/Worker and Room Plugins.md"
+          "title": "Event Listeners",
+          "source": "./pages/Plugins/Event Listeners.md"
+        },
+        {
+          "title": "Chat Commands",
+          "source": "./pages/Plugins/Chat Commands.md"
         }
       ]
     },

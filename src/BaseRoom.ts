@@ -1543,9 +1543,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             targets: undefined,
             name: this.config.serverPlayer.name || "<color=yellow>[Server]</color>",
             color:  colorMap[this.config.serverPlayer.color || "Yellow"],
-            hatId: this.config.serverPlayer.hatId || Hat.NoHat,
-            skinId: this.config.serverPlayer.skinId || Skin.None,
-            visorId: this.config.serverPlayer.visorId || Visor.EmptyVisor,
+            hatId: this.config.serverPlayer.hat || Hat.NoHat,
+            skinId: this.config.serverPlayer.skin || Skin.None,
+            visorId: this.config.serverPlayer.visor || Visor.EmptyVisor,
             ...options
         };
 

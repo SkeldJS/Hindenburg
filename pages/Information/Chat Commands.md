@@ -1,33 +1,13 @@
-Hindenburg has native support for simple chat commands for players to use to communicate with plugins. It comes with a premade help command (that can be disabled with the config). You can even configure how a message from the server appears in the chat.
+Chat commands allow players to run simple commands in the chat (similar to those from Minecraft) to communicate with plugins. This gives plugins a lot of flexibility without having to make a client mod.
 
-```json
-{
-  "rooms": {
-    "serverPlayer": {
-      "name": "<color=blue>[Hindenburg]</color>",
-      "color": "Blue",
-      "hat": "Horns",
-      "skin": "Archaeologist"
-    }
-  }
-}
-```
+For example, players could switch gamemodes with commands with the following command:
 
-![image](https://user-images.githubusercontent.com/60631511/137989850-c7261d79-f1b4-47c1-bea6-078d7d59bc1d.png)
+![image](https://user-images.githubusercontent.com/60631511/143772589-e7cad6cb-b528-4b03-9f61-69465f9ed15f.png)
 
-```json
-{
-  "rooms": {
-    "serverPlayer": {
-      "name": "<color=black>pog server</color>",
-      "color": "White",
-      "hat": "SafariHat",
-      "skin": "Archaeologist"
-    }
-  }
-}
-```
-![image](https://user-images.githubusercontent.com/60631511/137990195-7848819b-0967-4e66-a25a-24a375bd6bd1.png)
+In Hindenburg, chat commands are designed to be as simple to use as possible, so players don't have a hard time using them.
+
+Hindenburg also has a built-in `/help` command:
+![image](https://user-images.githubusercontent.com/60631511/143772648-ed5e25b9-5420-47aa-9cbb-4af6bcee62ac.png)
 
 ### Chat Commands and Plugins
-Hindenburg provides a great and simple API for registering chat commands as a plugin, [check out the guide on registering custom chat commands for more information](/Plugins/Chat%20Commands).
+Hindenburg provides a great and simple API for registering chat commands as a plugin, [check out the guide on registering custom chat commands for more information](../Plugins/Chat%20Commands).

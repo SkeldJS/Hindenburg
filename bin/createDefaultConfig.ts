@@ -60,9 +60,9 @@ export function createDefaultConfig(): HindenburgConfig {
             serverPlayer: {
                 name: "<color=yellow>[Server]</color>",
                 color: "Yellow",
-                hatId: Hat.NoHat,
-                skinId: Skin.None,
-                visorId: Visor.EmptyVisor
+                hat: Hat.NoHat,
+                skin: Skin.None,
+                visor: Visor.EmptyVisor
             },
             createTimeout: 10
         }

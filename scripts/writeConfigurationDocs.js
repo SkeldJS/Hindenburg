@@ -44,7 +44,7 @@ Hindenburg will look for a config.json in the current working directory, or if t
 \`HINDENBURG_CONFIGS\` environment variable is set to an absolute filename of the config.json \
 to use, check out the [Environment Variables](./Environment%20Variables) page for more information.
 
-\n\n# Configuration Values\n`;
+# Configuration Values\n`;
 
 /**
  * @param {any} value

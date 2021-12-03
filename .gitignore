@@ -160,3 +160,5 @@ docs
 
 # Ignore for webstorm
 /.idea
+
+/pages/Getting Started/Configuration.md

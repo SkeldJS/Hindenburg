@@ -30,7 +30,15 @@ async function buildHindenburg(logger: Logger) {
     }
 }
 
+function getCodeFriendlyPluginName(pluginName: string) {
+    return pluginName
+        .substring(9)
+        .replace(/(-|^)./g, x => (x[0] === "-" ? x[1] : x[0]).toUpperCase()) + "Plugin";
+}
+
 function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, pluginType: "room"|"worker") {
+    const codeFriendlyName = getCodeFriendlyPluginName(pluginName);
+
     return `${isTypescript ? "import" : "const" } {
     HindenburgPlugin,
     ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"},
@@ -38,7 +46,7 @@ function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, plugi
 } ${isTypescript ? "from " : "= require("}"@skeldjs/hindenburg"${isTypescript ? "" : ")"};
 
 @HindenburgPlugin("${pluginName}", "1.0.0", "none")
-export default class extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {
+export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {
     @EventListener("player.setname")
     onPlayerSetName(ev${isTypescript ? ": PlayerSetNameEvent<Room>" : ""}) {
         ev.room.sendChat("Hello, world!");
@@ -102,6 +110,15 @@ async function runCreatePlugin() {
         return;
     }
 
+    const pluginName = argvPluginName.startsWith("hbplugin-")
+        ? argvPluginName
+        : "hbplugin-" + argvPluginName;
+
+    if (!/^[a-z-]+$/.test(pluginName)) {
+        logger.error("Plugin name must contain only lowercase a-z and hyphens (-)");
+        return;
+    }
+
     const pluginsDirectory = await choosePluginsDirectory();
 
     try {
@@ -116,9 +133,7 @@ async function runCreatePlugin() {
         return;
     }
 
-    const pluginName = argvPluginName.startsWith("hbplugin-")
-        ? argvPluginName
-        : "hbplugin-" + argvPluginName;
+    const codeFriendlyName = getCodeFriendlyPluginName(pluginName);
 
     const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
 
@@ -165,6 +180,32 @@ async function runCreatePlugin() {
         ],
         initial: 1
     }) as { pluginType: "room"|"worker" };
+
+    const fetchingAuthorDetails = new Spinner("Fetching author details.. %s").start();
+    let author: { name: string; email: string }|undefined = undefined;
+    try {
+        const gitConfigUsername = await runCommandInDir(process.cwd(), "git config user.name");
+        const gitConfigEmail = await runCommandInDir(process.cwd(), "git config user.email");
+
+        fetchingAuthorDetails.success();
+
+        const { setAuthor } = await prompts({
+            type: "confirm",
+            name: "setAuthor",
+            message: `Set author to ${gitConfigUsername.trim()} <${gitConfigEmail.trim()}>?`,
+            initial: true
+        });
+
+        if (setAuthor) {
+            author = {
+                name: gitConfigUsername.trim(),
+                email: gitConfigEmail.trim()
+            };
+        }
+    } catch (e) {
+        fetchingAuthorDetails.fail();
+        logger.warn("Couldn't get any details, nevermind.");
+    }
 
     const buildSucceeded = !useTypescript || await buildHindenburg(logger);
 
@@ -243,8 +284,8 @@ async function runCreatePlugin() {
                 logger.warn("Couldn't create .gitignore: %s", (e as any).code || e);
             }
         } catch (e) {
-            logger.warn("Failed to create git repository, moving on anyway");
             gitSpinner.fail();
+            logger.warn("Failed to create git repository, moving on anyway");
         }
     }
 
@@ -299,11 +340,27 @@ async function runCreatePlugin() {
                 );
             }
 
+            packageJson.version = "1.0.0";
+            packageJson.description = "My cool Hindenburg plugin";
+            packageJson.keywords = [ "hindenburg", "plugin", "among us" ];
+            packageJson.license = "GPL-3.0-only";
+            packageJson.author = author;
+            packageJson.files = [ "dist" ];
             packageJson.main = "./dist/index.js";
             packageJson.scripts = {
                 build: "tsc --project ./",
-                watch: "tsc --watch --project ./"
+                watch: "tsc --watch --project ./",
+                prepack: "yarn build",
+                publish: "yarn npm publish --access public"
             };
+            packageJson.engines = {
+                node: ">=14"
+            };
+
+            if (useTypescript) {
+                packageJson.types = packageJson.typings = "./index";
+            }
+
             const devDependencies = packageJson.devDependencies; // dumb thing to make it the last key in the package.json
             delete packageJson.devDependencies;
             packageJson.devDependencies = devDependencies;
@@ -344,10 +401,24 @@ async function runCreatePlugin() {
         return;
     }
 
-    const entryPointSpinner = new Spinner("Creating entrypoint file.. %s").start();
+    const entryPointSpinner = new Spinner("Creating entrypoint files.. %s").start();
     try {
+        await fs.mkdir(path.resolve(pluginDirectory, "src"));
         await fs.writeFile(
             path.resolve(pluginDirectory, useTypescript ? "index.ts" : "index.js"),
+            `import { ${codeFriendlyName} } from "./src/plugin";
+
+export * from "./src";
+export default ${codeFriendlyName};`,
+            "utf8"
+        );
+        await fs.writeFile(
+            path.resolve(pluginDirectory, "src", useTypescript ? "index.ts" : "index.js"),
+            "export * from \"./plugin\";",
+            "utf8"
+        );
+        await fs.writeFile(
+            path.resolve(pluginDirectory, "src", useTypescript ? "plugin.ts" : "plugin.js"),
             createHelloWorldPlugin(pluginName, useTypescript, pluginType),
             "utf8"
         );

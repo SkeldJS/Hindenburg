@@ -125,7 +125,7 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
         for (const sig of schema.anyOf) {
             signatures.push(createProperties(nestLevel, schemaName, sig, schemaPath));
         }
-        out += "\n" + signatures.join("\n\n**OR**\n\n");
+        out += "\n" + signatures.join("\n\n_or_\n\n");
     } else {
         const description = createSchemaDescription(schema);
         out += "\n" + description;
@@ -137,7 +137,7 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
         const entries = Object.entries(schema.properties);
         for (const [ propertyName, propertyDetails ] of entries) {
             const propertyPath = schemaPath + "." + schemaName;
-            out += "#".repeat(nestLevel) + " `" + propertyPath + "." + propertyName + "`";
+            out += "#".repeat(nestLevel) + " **" + propertyPath + "." + propertyName + "**";
             out += createProperties(nestLevel + 1, propertyName, propertyDetails, propertyPath);
         }
     }
@@ -147,7 +147,7 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
         for (const [ propertyPattern, propertyDetails ] of entries) {
             const propertyName = propertyPattern === ".+" ? "*" : propertyPattern;
             const propertyPath = schemaPath + "." + schemaName;
-            out += "#".repeat(nestLevel) + " `" + propertyPath + "." + propertyName + "`";
+            out += "#".repeat(nestLevel) + " **" + propertyPath + "." + propertyName + "**";
             out += createProperties(nestLevel + 1, propertyName, propertyDetails, propertyPath);
         }
     }
@@ -156,12 +156,12 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
         if (Array.isArray(schema.items)) {
             for (const propertyDetails of schema.items) {
                 const propertyPath = schemaPath + "." + schemaName;
-                out += "#".repeat(nestLevel) + " `" + propertyPath + "[]`";
+                out += "#".repeat(nestLevel) + " **" + propertyPath + "[]**";
                 out += createProperties(nestLevel + 1, "[]", propertyDetails, propertyPath);
             }
         } else {
             const propertyPath = schemaPath + "." + schemaName;
-            out += "#".repeat(nestLevel) + " `" + propertyPath + "[]`";
+            out += "#".repeat(nestLevel) + " **" + propertyPath + "[]**";
             out += createProperties(nestLevel + 1, "[]", schema.items, propertyPath);
         }
     }
@@ -171,8 +171,8 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
 
 const entries = Object.entries(configSchema.properties);
 for (const [ propertyName, propertyDetails ] of entries) {
-    baseDocs += "#".repeat(1) + " `" + "config." + propertyName + "`";
-    baseDocs += createProperties(2, propertyName, propertyDetails, "config");
+    baseDocs += "##".repeat(1) + " " + "config." + propertyName + "";
+    baseDocs += createProperties(3, propertyName, propertyDetails, "config");
 }
 
 (async () => {

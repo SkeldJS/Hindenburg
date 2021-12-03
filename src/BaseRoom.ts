@@ -933,8 +933,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             this.spawnNecessaryObjects();
         }
 
-        await player.emit(new PlayerJoinEvent(this, player));
-
         return player;
     }
 

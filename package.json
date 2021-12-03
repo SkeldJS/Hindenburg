@@ -14,7 +14,7 @@
     "publish": "yarn npm publish --access public",
     "start": "node ./dist/bin/worker",
     "dev": "ts-node ./bin/worker",
-    "docs": "typedoc src/index.ts --out docs"
+    "docs": "node scripts/writeConfigurationDocs.js && typedoc src/index.ts --out docs"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",

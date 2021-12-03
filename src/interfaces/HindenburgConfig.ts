@@ -1,6 +1,38 @@
 import { AllGameSettings } from "@skeldjs/protocol";
 import { HostableOptions } from "..";
 
+export interface PluginConfig {
+    /**
+     * Whether to load all plugins in the plugin directory.
+     * @default true
+     */
+    loadDirectory: boolean;
+    [key: string]: boolean|Record<string, unknown>;
+}
+
+export interface SocketConfig {
+    /**
+     * The port to listen on.
+     * @default 22023
+     */
+    port: number;
+    /**
+     * Whether or not to broadcast gamedata messages that don't get handled by the server.
+     * @default false
+     */
+    broadcastUnknownGamedata: boolean;
+    /**
+     * Whether to order reliable packets received from clients.
+     * @default false
+     */
+    messageOrdering: boolean;
+    /**
+     * The IP address of this node, set to `auto` for it to get auto-discovered.
+     * @default "auto"
+     */
+    ip: string;
+}
+
 export interface AnticheatPenalty {
     /**
      * The action that should be applied on this user for breaking this rule.
@@ -53,38 +85,6 @@ export interface AnticheatRuleConfig {
     rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
 }
 
-export interface PluginConfig {
-    /**
-     * Whether to load all plugins in the plugin directory.
-     * @default true
-     */
-    loadDirectory: boolean;
-    [key: string]: boolean|Record<string, unknown>;
-}
-
-export interface SocketConfig {
-    /**
-     * The port to listen on.
-     * @default 22023
-     */
-    port: number;
-    /**
-     * Whether or not to broadcast gamedata messages that don't get handled by the server.
-     * @default false
-     */
-    broadcastUnknownGamedata: boolean;
-    /**
-     * Whether to order reliable packets received from clients.
-     * @default false
-     */
-    messageOrdering: boolean;
-    /**
-     * The IP address of this node, set to `auto` for it to get auto-discovered.
-     * @default "auto"
-     */
-    ip: string;
-}
-
 export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"language";
 export type RoomFormatOptions = "players"|"map";
 export type PlayerFormatOptions = "id"|"ping"|"ishost";
@@ -92,6 +92,7 @@ export type PlayerFormatOptions = "id"|"ping"|"ishost";
 export interface LoggingConfig {
     /**
      * Whether to hide sensitive information from logging, such as ip addresses.
+     * @default false
      */
     hideSensitiveInfo: boolean;
     /**
@@ -144,7 +145,7 @@ export interface LoggingConfig {
          * // => ABCDEF
          * ```
          *
-         * @default ["players", "map", "saah"]
+         * @default ["players", "map", "issaah"]
          */
         format?: RoomFormatOptions[]
     };
@@ -247,52 +248,10 @@ export interface ChatCommandConfig {
     helpCommand: boolean;
 }
 
-export interface RoomsConfig extends HostableOptions {
-    /**
-     * Whether or not to make sure players have the same chat mode as the host
-     * before joining.
-     * @default false
-     */
-    checkChatMode: boolean;
-    /**
-     * Whether to allow players to use chat commands.
-     * @default true
-     */
-    chatCommands: boolean|ChatCommandConfig;
-    /**
-     * Options regarding room plugins.
-     */
-    plugins: PluginConfig;
-    /**
-     * The type of game code to generate for rooms, "v1" for a 4-letter code and
-     * "v2" for a 6-letter code.
-     * @default "v2"
-     */
-    gameCodes: "v1" | "v2";
-    /**
-     * Enforce certain settings, preventing the host from changing them.
-     */
-    enforceSettings: Partial<AllGameSettings>;
-    /**
-     * Whether the server should act as the host of the room. (experimental)
-     * @default false
-     */
-    serverAsHost: boolean;
-    /**
-     * Default appearance for a message sent by the server in game chat
-     */
-    serverPlayer: ServerPlayerOptions;
-    /**
-     * The timeout in seconds to wait for a player joins before considering the
-     * room empty and destroying it.
-     * @default 10
-     */
-    createTimeout: number;
-}
-
 export interface ServerPlayerOptions {
     /**
      * The name of the player for a message sent by the server in game chat
+     * @default "<color=yellow>[Server]</color>"
      */
     name?: string;
     /**
@@ -313,10 +272,53 @@ export interface ServerPlayerOptions {
     visor?: string;
 }
 
+export interface RoomsConfig extends HostableOptions {
+    /**
+     * Whether or not to make sure players have the same chat mode as the host
+     * before joining.
+     * @default false
+     */
+    checkChatMode: boolean;
+    /**
+     * Whether to allow players to use chat commands.
+     * @default true
+     */
+    chatCommands: boolean|ChatCommandConfig;
+    /**
+     * The type of game code to generate for rooms, "v1" for a 4-letter code and
+     * "v2" for a 6-letter code.
+     * @default "v2"
+     */
+    gameCodes: "v1" | "v2";
+    /**
+     * Enforce certain settings, preventing the host from changing them.
+     */
+    enforceSettings: Partial<AllGameSettings>;
+    /**
+     * Options regarding room plugins.
+     */
+    plugins: PluginConfig;
+    /**
+     * Whether the server should act as the host of the room. (experimental)
+     * @default false
+     */
+    serverAsHost: boolean;
+    /**
+     * Default appearance for a message sent by the server in game chat
+     */
+    serverPlayer: ServerPlayerOptions;
+    /**
+     * The timeout in seconds to wait for a player joins before considering the
+     * room empty and destroying it.
+     * @default 10
+     */
+    createTimeout: number;
+}
+
 export interface HindenburgConfig {
     /**
      * An array of game versions that Hindenburg will accept.
-     * @default ["2021.6.30"]
+     * @default ["2021.11.9"]
      */
     versions: string[];
     /**

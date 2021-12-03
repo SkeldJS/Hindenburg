@@ -6,12 +6,13 @@ The main 2 supported editors are [VSCode](https://code.visualstudio.com/) and [J
 ### Create plugin template
 Hindenburg can quickly generate a plugin template with the `yarn plugins create` command, and gives you some simple configuration questions:
 
-![gif](https://user-images.githubusercontent.com/60631511/137995085-1be604c0-b384-4031-b972-f41b5bad97fa.gif)
+![plugin template creation gif](https://user-images.githubusercontent.com/60631511/144479766-bb8ff4fc-e922-4c00-93b5-364ab219beab.gif)
+
 
 > You can change where plugins are created with the {@page Environment Variables | `HINDENBURG_PLUGINS`} environment variable.
 
 #### [TypeScript](https://typescriptlang.org)
-It is highly recommended to use TypeScript in your plugins. Both skeldjs and Hindenburg are built with TypeScript in mind, and while it is possible to use JavaScript, you will not have nearly the same developer experience with the types and information that Typescript can provide you.
+It's highly recommended to use TypeScript in your plugins. Both skeldjs and Hindenburg are built with TypeScript in mind, and while it is possible to use JavaScript, you will not have nearly the same developer experience with the types and information that Typescript can provide you.
 
 #### [Yarn](https://yarnpkg.com)
 Not as necessary as TypeScript, but is generally recommended just because "it's better than npm". It's helpful to have a consistent package manager across similar projects, therefore it's probably best to use yarn to remain consistent with Hindenburg.

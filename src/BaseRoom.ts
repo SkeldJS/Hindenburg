@@ -345,11 +345,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtLogFormat(
-            this.worker.config.logging.rooms?.format || ["players", "map", "saah"],
+            this.worker.config.logging.rooms?.format || ["players", "map", "issaah"],
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",
                 map: logMaps[this.settings.map],
-                saah: this.config.serverAsHost ? "SaaH" : undefined
+                issaah: this.config.serverAsHost ? "SaaH" : undefined
             }
         );
 
@@ -1542,7 +1542,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             side: MessageSide.Left,
             targets: undefined,
             name: this.config.serverPlayer.name || "<color=yellow>[Server]</color>",
-            color:  colorMap[this.config.serverPlayer.color || "Yellow"],
+            color: colorMap[this.config.serverPlayer.color || "Yellow"],
             hatId: this.config.serverPlayer.hat || Hat.NoHat,
             skinId: this.config.serverPlayer.skin || Skin.None,
             visorId: this.config.serverPlayer.visor || Visor.EmptyVisor,

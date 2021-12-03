@@ -7,6 +7,7 @@ For example, players could switch gamemodes with commands with the following com
 In Hindenburg, chat commands are designed to be as simple to use as possible, so players don't have a hard time using them.
 
 Hindenburg also has a built-in `/help` command:
+
 ![image](https://user-images.githubusercontent.com/60631511/143772648-ed5e25b9-5420-47aa-9cbb-4af6bcee62ac.png)
 
 ### Chat Commands and Plugins

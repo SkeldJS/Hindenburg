@@ -52,7 +52,6 @@ export class ModdedHelloPacket extends BaseRootPacket {
         const chatMode = reader.uint8();
         const platform = reader.read(PlatformSpecificData);
 
-        console.log(reader);
         reader.int32();
 
         if (reader.left) {

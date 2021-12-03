@@ -19,7 +19,7 @@ based on features, and to help you make your choice:
 ||||
 | **Extra Features** |  |  |
 | [Server-as-a-Host](./Server-as-a-Host.html) | ✔️ | ❌ |
-| Multiple hosts | 🚧 | ❌ |
+| Multiple hosts | ✔️ | ❌ |
 | Multiple plugin directories | ✔️ | ✔️ |
 | [Chat commands](./Chat%20Commands.html) | ✔️ | 🧩 |
 | [Interactive CLI](./Interactive%20CLI.html) | ✔️ | 🚧 |
@@ -38,7 +38,7 @@ based on features, and to help you make your choice:
 | **Plugins** |  |  |
 | [Interactive plugin template creation](../Plugins/Creating%20a%20Plugin.html) | ✔️ | 🚧 |
 | [Hookable & cancelable events](../Plugins/Event%20Listeners.html) | ✔️ | ✔️ |
-| [Custom end game critera](../Plugins/End%20Game%20Critera.html) | ✔️ | 🚧 |
+| [Custom end game intents](../Plugins/End%20Game%20Intents.html) | ✔️ | 🚧 |
 | [Global plugins](../Plugins/Global%20and%20Room%20Plugins.html) | ✔️ | ✔️ |
 | [Per-room plugins](../Plugins/Global%20and%20Room%20Plugins.html) | ✔️ | ❌ |
 | [Custom component support](../Plugins/Custom%20Components.html) | ✔️ | 🚧 |

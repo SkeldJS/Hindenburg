@@ -481,7 +481,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("setsaah <room code> <on/off>", "Change whether a room is in SaaH mode.")
-            .alias("saah")
+            .alias("issaah")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
@@ -1700,7 +1700,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         const roomHost = ev.alteredRoom.host;
         if (ev.alteredRoom.config.checkChatMode && roomHost) {
             const hostConnection = ev.alteredRoom.connections.get(roomHost.clientId);
-            console.log(hostConnection?.chatMode, ev.client.chatMode);
             if (hostConnection && hostConnection.chatMode !== ev.client.chatMode) {
                 if (hostConnection.chatMode === QuickChatMode.FreeChat) {
                     this.logger.warn("%s attempted to join %s with the wrong chat mode (the room was on free-chat only)",

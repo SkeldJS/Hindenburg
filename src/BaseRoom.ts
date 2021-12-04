@@ -87,7 +87,8 @@ import {
     CommandCallError,
     ChatCommandContext,
     RoomPlugin,
-    ChatCommandHandler
+    ChatCommandHandler,
+    WorkerPlugin
 } from "./handlers";
 
 import { fmtCode } from "./util/fmtCode";
@@ -200,7 +201,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * acting hosts back.
      */
     actingHostWaitingFor: PlayerData|undefined;
-
+    /**
+     * All plugins loaded and scoped to the worker when this room was created, mapped by plugin id to worker plugin object.
+     */
+    workerPlugins: Map<string, WorkerPlugin>;
     /**
      * All plugins loaded and scoped to the room, mapped by plugin id to room plugin object.
      */
@@ -257,6 +261,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.state = GameState.NotStarted;
         this.actingHostWaitingFor = undefined;
 
+        this.workerPlugins = new Map;
         this.loadedPlugins = new Map;
         this.reactorRpcHandlers = new Map;
         this.reactorRpcs = new Map;

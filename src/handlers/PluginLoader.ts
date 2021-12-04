@@ -206,7 +206,7 @@ export class Plugin {
      * @example
      * ```ts
      * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
-     * export default class extends WorkerPlugin {
+     * export class MyPlugin extends WorkerPlugin {
      *   async onPluginLoad() {
      *     const res = await fetch("https://icanhazip.com/");
      *     const ip = await res.text();
@@ -229,7 +229,7 @@ export class Plugin {
      * @example
      * ```ts
      * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
-     * export default class extends WorkerPlugin {
+     * export class MyPlugin extends WorkerPlugin {
      *   async onPluginUnload() {
      *     this.logger.info("Closing socket..");
      *     await this.socket.close();
@@ -298,7 +298,7 @@ export class RoomPlugin extends Plugin {
      * @example
      * ```ts
      * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
-     * export default class extends RoomPlugin {
+     * export class MyPlugin extends RoomPlugin {
      *
      * }
      * ```
@@ -322,7 +322,7 @@ export class WorkerPlugin extends Plugin {
      * @example
      * ```ts
      * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
-     * export default class extends WorkerPlugin {
+     * export class MyPlugin extends WorkerPlugin {
      *
      * }
      * ```
@@ -785,7 +785,7 @@ export class PluginLoader {
     private applyChatCommands(room: Room) {
         room.chatCommandHandler.registeredCommands.clear();
         room.chatCommandHandler.registerHelpCommand();
-        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+        for (const [ , loadedPlugin ] of room.workerPlugins) {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin);
             for (const chatCommand of pluginChatCommands) {
                 room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler.bind(loadedPlugin));
@@ -812,7 +812,7 @@ export class PluginLoader {
 
     private applyReactorRpcHandlers(room: Room) {
         room.reactorRpcHandlers.clear();
-        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+        for (const [ , loadedPlugin ] of room.workerPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
                 this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
             }
@@ -838,7 +838,7 @@ export class PluginLoader {
             [SpawnType.Airship, [ AirshipStatus ]]
         ]);
 
-        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+        for (const [ , loadedPlugin ] of room.workerPlugins) {
             for (const registeredPrefab of loadedPlugin.registeredPrefabs) {
                 room.registerPrefab(registeredPrefab.spawnType, registeredPrefab.components);
             }
@@ -967,15 +967,16 @@ export class PluginLoader {
             : new (pluginCtr as unknown as typeof RoomPlugin)(room!, defaultConfig);
 
         const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
+        const registeredPrefabs = getPluginRegisteredPrefabs(pluginCtr);
 
-        for (const reactorRpcHandler of reactorRpcHandlers) {
-            initPlugin.loadedReactorRpcHandlers.push(reactorRpcHandler);
-        }
+        initPlugin.loadedReactorRpcHandlers = [...reactorRpcHandlers];
+        initPlugin.registeredPrefabs = [...registeredPrefabs];
 
         if (isRoomPlugin && room) {
             room.loadedPlugins.set(pluginCtr.meta.id, initPlugin as RoomPlugin);
             this.applyChatCommands(room);
             this.applyReactorRpcHandlers(room);
+            this.applyRegisteredPrefabs(room);
 
             room.logger.info("Loaded plugin: %s", initPlugin);
         }
@@ -984,7 +985,6 @@ export class PluginLoader {
             const cliCommands = getPluginCliCommands(initPlugin);
             const messageHandlers = getPluginMessageHandlers(initPlugin);
             const registeredMessages = getPluginRegisteredMessages(pluginCtr);
-            const registeredPrefabs = getPluginRegisteredPrefabs(pluginCtr);
 
             for (const commandInfo of cliCommands) {
                 const command = this.worker.vorpal.command(commandInfo.command.usage, commandInfo.command.description);
@@ -1011,7 +1011,6 @@ export class PluginLoader {
             }
 
             initPlugin.loadedRegisteredMessages = [...registeredMessages];
-            initPlugin.registeredPrefabs = [...registeredPrefabs];
 
             this.worker.loadedPlugins.set(pluginCtr.meta.id, initPlugin as WorkerPlugin);
 

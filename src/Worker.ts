@@ -1650,6 +1650,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         const createdRoom = new Room(this, copyConfiguration, options);
         await createdRoom.setCode(code);
+        createdRoom.workerPlugins = new Map(this.loadedPlugins.entries());
         await this.pluginLoader.loadAllRoomPlugins(createdRoom);
         this.rooms.set(code, createdRoom);
 

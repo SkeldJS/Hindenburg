@@ -71,12 +71,11 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>One of the most central components to writing a plugin for Hindenburg is the ability to listen for events from rooms (or the server itself if you&#39;re writing a Worker plugin), and the ability to write Room plugins heavily depends on the ability to write plugins for a specific room, and listen for events on that room <strong>only</strong>.</p>
-				<p>Any events attached to a room are unattached if the plugin is unloaded.</p>
+				<p>One of the most central components to writing a plugin for Hindenburg is the ability to listen for specific events from rooms or from the worker.</p>
 				<p>As with every other Hindenburg plugin design decisions; you can attach event listeners with the <a href="../../modules.html#eventlistener"><code>@EventListener</code></a> decorator.</p>
 				<p>For example:</p>
 				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
-<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    @</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.setcolor&quot;</span><span style="color: #000000">)</span>
 <span style="color: #000000">    </span><span style="color: #795E26">onPlayerSetColor</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #267F99">PlayerSetColorEvent</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Room</span><span style="color: #000000">&gt;) {</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">info</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Player %s set their color to %s&quot;</span><span style="color: #000000">,</span>
@@ -92,7 +91,7 @@
 				<blockquote>
 					<p>Be careful what you do in certain events. The <a href="https://skeld.js.org/classes/core.RoomFixedUpdateEvent.html"><code>room.fixedupdate</code></a> event, for example, can significantly slow down your server if handlers for this event take too long.</p>
 				</blockquote>
-				<p>As stated above as being a central component to Hindenburg, it&#39;s important to remember that if you&#39;re using a room plugin, only events emitted from <em>that</em> room will be listened to.</p>
+				<p>If you&#39;re writing a room plugin, only events emitted from <em>that</em> room will be listened to. Events attached to rooms or to the worker will be detached if your plugin is unloaded.</p>
 				<a href="#typescript" id="typescript" style="color: inherit; text-decoration: none;">
 					<h2>TypeScript</h2>
 				</a>

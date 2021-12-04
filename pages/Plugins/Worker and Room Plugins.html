@@ -71,55 +71,42 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>There are 2 types of plugins that you can install or write for Hindenburg:</p>
-				<a href="#room-plugins" id="room-plugins" style="color: inherit; text-decoration: none;">
-					<h3>Room Plugins</h3>
+				<a href="#global-plugins" id="global-plugins" style="color: inherit; text-decoration: none;">
+					<h2>Global Plugins</h2>
 				</a>
-				<p>Room plugins attach directly to a room, and are instantiated separately for each, you can access the room directly from the plugin. They are more limited, however, and don&#39;t support some features that worker plugins do.</p>
-				<p>Room plugins can be useful for gamemodes which can be loaded by a global plugin depending on what gamemode the player wants. They generally just simplify working with rooms directly and are also faster as it is a single property access to access the room that the plugin is attached to.</p>
-				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-gamemode&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
-<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
-<span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">room</span><span style="color: #000000">: </span><span style="color: #267F99">Room</span><span style="color: #000000">,</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">config</span><span style="color: #000000">: </span><span style="color: #267F99">any</span>
-<span style="color: #000000">    ) {</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">super</span><span style="color: #000000">(</span><span style="color: #001080">room</span><span style="color: #000000">, </span><span style="color: #001080">config</span><span style="color: #000000">);</span>
-<span style="color: #000000">    }</span>
-
-<span style="color: #000000">    @</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.setcolor&quot;</span><span style="color: #000000">)</span>
-<span style="color: #000000">    </span><span style="color: #795E26">onPlayerSetColor</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #267F99">PlayerSetColorEvent</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Room</span><span style="color: #000000">&gt;) {</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">info</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Player %s set their color to %s&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">            </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #001080">Color</span><span style="color: #000000">[</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">newColor</span><span style="color: #000000">]);</span>
-<span style="color: #000000">    }</span>
-<span style="color: #000000">}</span>
-</code></pre>
-				<blockquote>
-					<p>Room plugins extend the <code>RoomPlugin</code> class.</p>
-				</blockquote>
-				<a href="#worker-plugins" id="worker-plugins" style="color: inherit; text-decoration: none;">
-					<h3>Worker Plugins</h3>
-				</a>
-				<p>Worker plugins attach to the entire server, and listen to not only events from every room on the server, but also special events on the worker.</p>
-				<p>Worker plugins can really be used for anything else.</p>
-				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-logger&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
-<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
+				<p>Global plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that transcend individual rooms, as well as listen for events emitted from all rooms.</p>
+				<p>You can create a global plugin by extending the <a href="../../classes/workerplugin.html">WorkerPlugin</a> class exported by <code>@skeldjs/hindenburg</code>, for example:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">worker</span><span style="color: #000000">: </span><span style="color: #267F99">Worker</span><span style="color: #000000">,</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">config</span><span style="color: #000000">: </span><span style="color: #267F99">any</span>
 <span style="color: #000000">    ) {</span>
 <span style="color: #000000">        </span><span style="color: #0000FF">super</span><span style="color: #000000">(</span><span style="color: #001080">worker</span><span style="color: #000000">, </span><span style="color: #001080">config</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
-
-<span style="color: #000000">    @</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.setcolor&quot;</span><span style="color: #000000">)</span>
-<span style="color: #000000">    </span><span style="color: #795E26">onPlayerSetColor</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #267F99">PlayerSetColorEvent</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Room</span><span style="color: #000000">&gt;) {</span>
-<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">logger</span><span style="color: #000000">.</span><span style="color: #795E26">info</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Player %s set their color to %s&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">            </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">player</span><span style="color: #000000">, </span><span style="color: #001080">Color</span><span style="color: #000000">[</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">newColor</span><span style="color: #000000">]);</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>Notice how worker plugins accept a <a href="../../classes/worker.html">Worker</a> object as a parameter to their constructor, while room plugins accept a <a href="../../classes/room.html">Room</a> object.</p>
+				<p>There also are some things that worker plugins allow you to do that room plugins do not, such as creating <a href="./CLI%20Commands">custom CLI commands</a> and listening and registering <a href="./Protocol%20Messages">custom protocol messages</a>.</p>
+				<p>Also, any events, chat commands or reactor rpc handlers created on global/worker plugins will be applied to <em>every room created</em> after the plugin is loaded, and will remain after the plugin has been unloaded, although they will no longer be applied to any new rooms.</p>
+				<a href="#room-plugins" id="room-plugins" style="color: inherit; text-decoration: none;">
+					<h2>Room Plugins</h2>
+				</a>
+				<p>Room plugins are plugins that are loaded on specific rooms, being properly scoped and only recieving data from the rooms that they&#39;re scoped to.</p>
+				<p>The use of room plugins can be very powerful, for instance you could mix and match gamemodes or features for specific rooms.</p>
+				<p>Room plugins can be created by extending the <a href="../../classes/roomplugin.html">RoomPlugin</a> class exported by Hindenburg, for example:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">room</span><span style="color: #000000">: </span><span style="color: #267F99">Room</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">config</span><span style="color: #000000">: </span><span style="color: #267F99">any</span>
+<span style="color: #000000">    ) {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">super</span><span style="color: #000000">(</span><span style="color: #001080">room</span><span style="color: #000000">, </span><span style="color: #001080">config</span><span style="color: #000000">);</span>
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-				<blockquote>
-					<p>Worker plugins extend the <code>WorkerPlugin</code> class.</p>
-				</blockquote>
+				<p>This time, the constructor accepts a <a href="../../classes/room.html">Room</a> object as its first parameter.</p>
+				<p>Room plugins are instantiated for each room, meaning you can store data on the plugin, ensured that it won&#39;t be used by multiple plugins at once.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

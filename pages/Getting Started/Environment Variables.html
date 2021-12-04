@@ -71,6 +71,48 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
+				<p>There are a few environment variables that Hindenburg makes use of that you can use, for example to automate setting up a server in production.</p>
+				<a href="#setting-environment-variables" id="setting-environment-variables" style="color: inherit; text-decoration: none;">
+					<h3>Setting Environment Variables</h3>
+				</a>
+				<p>If you&#39;re unsure how to set environment variables in your terminal, check out <a href="https://www.minitool.com/news/environment-variables-windows-10-005.html">this guide for windows machines</a>, or <a href="https://phoenixnap.com/kb/linux-set-environment-variable#ftoc-heading-9">this guide if you&#39;re on linux</a></p>
+				<a href="#hindenburg_config" id="hindenburg_config" style="color: inherit; text-decoration: none;">
+					<h3><code>HINDENBURG_CONFIG</code></h3>
+				</a>
+				<p>You can set the <code>HINDENBURG_CONFIG</code> variable to the location of a <code>config.json</code> file in the system to tell hindenburg where to look for configuration for the server.</p>
+				<blockquote>
+					<p>Note that the location has to be <strong>absolute</strong>, meaning that it must begin with either <code>Drive:/</code> on windows or <code>/</code> on linux, and be the complete path to the file.</p>
+				</blockquote>
+				<blockquote>
+					<p>Check out the <a href="Configuration.html">Configuration</a> page for information on configuring Hindenburg</p>
+				</blockquote>
+				<p>For example, if you downloaded a <code>config.json</code> into your downloads directory, you could set <code>HINDENBURG_CONFIG</code> to <code>C:/Users/essma/Downloads/config.json</code> and Hindenburg would use that.</p>
+				<p>On Windows:</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144691905-6af9bb0e-53d1-4e50-ac9e-72406ac73d33.png" alt="image"></p>
+				<p>On Linux (WSL2):</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144691372-44e34c72-69b0-4289-915f-1e12f759fac2.png" alt="image"></p>
+				<a href="#hindenburg_plugins" id="hindenburg_plugins" style="color: inherit; text-decoration: none;">
+					<h3><code>HINDENBURG_PLUGINS</code></h3>
+				</a>
+				<p>The <code>HINDENBURG_PLUGINS</code> allows you to specify where Hindenburg should look for plugins to load, with <strong>absolute</strong> paths to each location separated by commas (<code>,</code>).</p>
+				<p>For example, you might want to use someone else&#39;s plugin folder that you downloaded as well as your plugins in your hindenburg directory, so you might set <code>HINDENBURG_PLUGINS</code> to:
+				<code>C:/Users/essma/Downloads/my-hindenburg-plugins,C:/Users/essma/Documents/Hindenburg/plugins</code></p>
+				<blockquote>
+					<p>Notice how the two directories are separated by commas (<code>,</code>).</p>
+				</blockquote>
+				<p>On Windows:</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144691936-b73582bd-0c34-4451-8f30-cf48ae5cc3d1.png" alt="image"></p>
+				<p>On Linux (WSL2):</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144691992-bb446c6b-83e0-4187-b99d-7a32e598a788.png" alt="image"></p>
+				<a href="#hindenburg_cli_args" id="hindenburg_cli_args" style="color: inherit; text-decoration: none;">
+					<h3><code>HINDENBURG_CLI_ARGS</code></h3>
+				</a>
+				<p>This environment variable very simply allows you to pass extra cli arguments into Hindenburg that you don&#39;t specify with <code>yarn start</code> or <code>yarn dev</code>.</p>
+				<p>For example, if you wanted to change the port without changing the command to be run, you could set <code>HINDENBURG_CLI_ARGS</code> to <code>--socket.port 22123</code>.</p>
+				<p>On Windows:</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144692048-57915458-c4b7-4fe4-9bf2-feb16c988089.png" alt="image"></p>
+				<p>On Linux (WSL2):</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144692313-e5db0b48-b9eb-4089-9f89-cada1fa724f6.png" alt="image"></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

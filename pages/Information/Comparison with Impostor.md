@@ -27,7 +27,6 @@ based on features, and to help you make your choice:
 | Server broadcast | ✔️ | 🧩 |
 ||||
 | **Configuration Options** |  |  |
-| Accepted game versions config | ✔️ | ✔️ |
 | Per-room config | ✔️ | ❌ |
 | Game code config | ✔️ | ✔️ |
 | Chat command config | ✔️ |  |

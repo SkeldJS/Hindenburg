@@ -317,11 +317,6 @@ export interface RoomsConfig extends HostableOptions {
 
 export interface HindenburgConfig {
     /**
-     * An array of game versions that Hindenburg will accept.
-     * @default ["2021.11.9"]
-     */
-    versions: string[];
-    /**
      * The name of the cluster that this node belongs to.
      * @default "Capybara"
      */

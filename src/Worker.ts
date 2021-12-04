@@ -119,10 +119,9 @@ export type WorkerEvents = RoomEvents
         WorkerGetGameListEvent
     ]>;
 
-export class Worker extends EventEmitter<WorkerEvents> {
-    config: HindenburgConfig; // todo: maybe create a config class? could handle things like checking if a version is valid
-    validVersions: number[];
+export const HINDENBURG_LATEST_ACCEPTED_VERSIONS = [ new VersionInfo(2021, 11, 9, 0) ];
 
+export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * Logger for this server.
      */
@@ -186,13 +185,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
         /**
          * The global configuration for Hindenburg.
          */
-        config: HindenburgConfig,
+        public config: HindenburgConfig,
         pluginDirectories: string[]
     ) {
         super();
-
-        this.config = config;
-        this.validVersions = this.config.versions.map(version => VersionInfo.from(version).encode());
 
         this.vorpal = new vorpal;
 
@@ -834,7 +830,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 sender.numMods = message.modCount!;
             }
 
-            if (!this.validVersions.includes(sender.clientVersion.encode())) {
+            let flag = true;
+            for (const version of HINDENBURG_LATEST_ACCEPTED_VERSIONS) {
+                if (version.encode() === sender.clientVersion.encode()) {
+                    flag = false;
+                }
+            }
+
+            if (flag) {
                 this.logger.warn("%s connected with invalid client version: %s",
                     sender, sender.clientVersion.toString());
                 sender.disconnect(DisconnectReason.IncorrectVersion);
@@ -1374,7 +1377,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         }
 
-        this.validVersions = this.config.versions.map(version => VersionInfo.from(version).encode());
         recursiveAssign(this.config, newConfig, { removeKeys: true });
     }
 

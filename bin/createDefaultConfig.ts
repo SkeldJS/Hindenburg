@@ -3,7 +3,6 @@ import { HindenburgConfig } from "../src";
 
 export function createDefaultConfig(): HindenburgConfig {
     return {
-        versions: ["2021.11.9"],
         clusterName: "Capybara",
         nodeId: 0,
         checkForUpdates: true,

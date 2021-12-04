@@ -1,15 +1,5 @@
 {
   "properties": {
-    "versions": {
-      "type": "array",
-      "description": "An array of game versions that Hindenburg will accept.",
-      "items": [
-        {
-          "type": "string"
-        }
-      ],
-      "default": ["2021.11.9"]
-    },
     "clusterName": {
       "type": "string",
       "description": "The name of the cluster that this node belongs to.",
@@ -352,9 +342,6 @@
           "type": "object",
           "description": "Enforce certain settings, preventing the host from changing them.",
           "properties": {
-            "versions": {
-              "type": "number"
-            },
             "maxPlayers": {
               "type": "number"
             },

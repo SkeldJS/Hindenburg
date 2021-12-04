@@ -145,7 +145,7 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
     if (schema.patternProperties) {
         const entries = Object.entries(schema.patternProperties);
         for (const [ propertyPattern, propertyDetails ] of entries) {
-            const propertyName = propertyPattern === ".+" ? "*" : propertyPattern;
+            const propertyName = propertyPattern === ".+" ? "\\*" : propertyPattern;
             const propertyPath = schemaPath + "." + schemaName;
             out += "#".repeat(nestLevel) + " **" + propertyPath + "." + propertyName + "**";
             out += createProperties(nestLevel + 1, propertyName, propertyDetails, propertyPath);

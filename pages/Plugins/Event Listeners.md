@@ -1,13 +1,11 @@
-One of the most central components to writing a plugin for Hindenburg is the ability to listen for events from rooms (or the server itself if you're writing a Worker plugin), and the ability to write Room plugins heavily depends on the ability to write plugins for a specific room, and listen for events on that room **only**.
-
-Any events attached to a room are unattached if the plugin is unloaded.
+One of the most central components to writing a plugin for Hindenburg is the ability to listen for specific events from rooms or from the worker.
 
 As with every other Hindenburg plugin design decisions; you can attach event listeners with the {@link EventListener | `@EventListener`} decorator.
 
 For example:
 ```ts
 @HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
-export default class extends RoomPlugin {
+export class MyPlugin extends RoomPlugin {
     @EventListener("player.setcolor")
     onPlayerSetColor(ev: PlayerSetColorEvent<Room>) {
         this.logger.info("Player %s set their color to %s",
@@ -24,7 +22,7 @@ Some events will also wait for any asynchronous tasks to complete.
 
 > Be careful what you do in certain events. The [`room.fixedupdate`](https://skeld.js.org/classes/core.RoomFixedUpdateEvent.html) event, for example, can significantly slow down your server if handlers for this event take too long.
 
-As stated above as being a central component to Hindenburg, it's important to remember that if you're using a room plugin, only events emitted from _that_ room will be listened to.
+If you're writing a room plugin, only events emitted from _that_ room will be listened to. Events attached to rooms or to the worker will be detached if your plugin is unloaded.
 
 ## TypeScript
 If you're working in TypeScript, due to a [long-standing issue](https://github.com/Microsoft/TypeScript/issues/4881), you must specify the type of the event, making it slightly more verbose, i.e. `ev: PlayerSendChatEvent<Room>`.

@@ -1,51 +1,43 @@
-There are 2 types of plugins that you can install or write for Hindenburg:
+## Global Plugins
+Global plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that transcend individual rooms, as well as listen for events emitted from all rooms.
 
-### Room Plugins
-Room plugins attach directly to a room, and are instantiated separately for each, you can access the room directly from the plugin. They are more limited, however, and don't support some features that worker plugins do.
-
-Room plugins can be useful for gamemodes which can be loaded by a global plugin depending on what gamemode the player wants. They generally just simplify working with rooms directly and are also faster as it is a single property access to access the room that the plugin is attached to.
-
+You can create a global plugin by extending the {@link WorkerPlugin} class exported by `@skeldjs/hindenburg`, for example:
 ```ts
-@HindenburgPlugin("hbplugin-some-gamemode", "1.0.0", "none")
-export default class extends RoomPlugin {
-    constructor(
-        public readonly room: Room,
-        public readonly config: any
-    ) {
-        super(room, config);
-    }
-
-    @EventListener("player.setcolor")
-    onPlayerSetColor(ev: PlayerSetColorEvent<Room>) {
-        this.logger.info("Player %s set their color to %s",
-            ev.player, Color[ev.newColor]);
-    }
-}
-```
-
-> Room plugins extend the `RoomPlugin` class.
-
-### Worker Plugins
-Worker plugins attach to the entire server, and listen to not only events from every room on the server, but also special events on the worker.
-
-Worker plugins can really be used for anything else.
-
-```ts
-@HindenburgPlugin("hbplugin-some-logger", "1.0.0", "none")
-export default class extends WorkerPlugin {
+@HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
+export class MyPlugin extends WorkerPlugin {
     constructor(
         public readonly worker: Worker,
         public readonly config: any
     ) {
         super(worker, config);
     }
+}
+```
 
-    @EventListener("player.setcolor")
-    onPlayerSetColor(ev: PlayerSetColorEvent<Room>) {
-        this.logger.info("Player %s set their color to %s",
-            ev.player, Color[ev.newColor]);
+Notice how worker plugins accept a {@link Worker} object as a parameter to their constructor, while room plugins accept a {@link Room} object.
+
+There also are some things that worker plugins allow you to do that room plugins do not, such as creating [custom CLI commands](./CLI%20Commands) and listening and registering [custom protocol messages](./Protocol%20Messages).
+
+Also, any events, chat commands or reactor rpc handlers created on global/worker plugins will be applied to _every room created_ after the plugin is loaded, and will remain after the plugin has been unloaded, although they will no longer be applied to any new rooms.
+
+## Room Plugins
+Room plugins are plugins that are loaded on specific rooms, being properly scoped and only recieving data from the rooms that they're scoped to.
+
+The use of room plugins can be very powerful, for instance you could mix and match gamemodes or features for specific rooms.
+
+Room plugins can be created by extending the {@link RoomPlugin} class exported by Hindenburg, for example:
+```ts
+@HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
+export class MyPlugin extends RoomPlugin {
+    constructor(
+        public readonly room: Room,
+        public readonly config: any
+    ) {
+        super(room, config);
     }
 }
 ```
 
-> Worker plugins extend the `WorkerPlugin` class.
+This time, the constructor accepts a {@link Room} object as its first parameter.
+
+Room plugins are instantiated for each room, meaning you can store data on the plugin, ensured that it won't be used by multiple plugins at once.

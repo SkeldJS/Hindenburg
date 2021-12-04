@@ -1,6 +1,6 @@
 You can publish your plugins either directly to the [NPM](https://npmjs.com) package registry, or you can just upload your source to GitHub to require server owners to install your plugin directly and manually.
 
-> If you're looking to _install_ plugins, check out the page on [Installing Plugins](../Getting%20Started/Installing%20Plugins).
+> If you're looking to _install_ plugins, check out the page on [Installing Plugins](../Getting%20Started/Installing%20Plugins.html).
 
 ### Publishing to NPM
 If you want to publish to NPM, make sure the plugin's package name begins with `hbplugin-` to make it identifiable and searchable. You can use the following command to publish it via yarn:

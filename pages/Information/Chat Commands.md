@@ -11,4 +11,4 @@ Hindenburg also has a built-in `/help` command:
 ![image](https://user-images.githubusercontent.com/60631511/143772648-ed5e25b9-5420-47aa-9cbb-4af6bcee62ac.png)
 
 ### Chat Commands and Plugins
-Hindenburg provides a great and simple API for registering chat commands as a plugin, [check out the guide on registering custom chat commands for more information](../Plugins/Chat%20Commands).
+Hindenburg provides a great and simple API for registering chat commands as a plugin, [check out the guide on registering custom chat commands for more information](../Plugins/Chat%20Commands.html).

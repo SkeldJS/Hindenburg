@@ -31,7 +31,7 @@ Very simply, this method is called when your plugin is first loaded and all even
 
 ```ts
 @HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
-export default class extends WorkerPlugin {
+export class MyPlugin extends WorkerPlugin {
     async onPluginLoad() {
 
     }
@@ -45,7 +45,7 @@ Also rather simply, this method is called when your plugin is about to be unload
 
 ```ts
 @HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
-export default class extends WorkerPlugin {
+export class MyPlugin extends WorkerPlugin {
     onPluginUnload() {
 
     }
@@ -59,7 +59,7 @@ Useful for verifying the config, or modifying your plugin based on the new confi
 
 ```ts
 @HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
-export default class extends WorkerPlugin {
+export class MyPlugin extends WorkerPlugin {
     onConfigUpdate(oldConfig: any, newConfig: any) {
 
     }

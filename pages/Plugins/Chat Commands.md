@@ -1,4 +1,4 @@
-A great and easy way to allow players to communicate with your plugin is through the use of [Chat Commands](../Information/Chat%20Commands.md).
+A great and easy way to allow players to communicate with your plugin is through the use of [Chat Commands](../Information/Chat%20Commands.html).
 
 Hindenburg provides a simple, quick way to register your own custom chat commands in your plugins.
 

@@ -12,7 +12,7 @@ import pluginGitignore from "./resources/plugin-gitignore";
 import { Logger } from "../src/logger";
 import { runCommandInDir } from "./util/runCommandInDir";
 import { Spinner } from "./util/Spinner";
-import { PluginLoader } from "../src/handlers";
+import { PluginLoader, Plugin } from "../src/handlers";
 
 const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
 const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
@@ -150,12 +150,27 @@ async function runCreatePlugin() {
         initial: true
     });
 
-    const { useYarn } = await prompts({
-        type: "confirm",
-        name: "useYarn",
-        message: "Use yarn (recommended)?",
-        initial: true
-    });
+    const { packageManager } = await prompts({
+        type: "select",
+        name: "packageManager",
+        message: "Package manager",
+        choices: [
+            {
+                title: "Yarn (recommended)",
+                value: "yarn"
+            },
+            {
+                title: "NPM",
+                value: "npm"
+            },
+            {
+                title: "PNPM",
+                value: "pnpm"
+            }
+        ],
+        initial: 0
+    }) as { packageManager: "yarn"|"npm"|"pnpm" };
+
 
     const { createGit } = await prompts({
         type: "confirm",
@@ -219,7 +234,7 @@ async function runCreatePlugin() {
     }
     creatingDirectorySpinner.success();
 
-    if (useYarn) {
+    if (packageManager === "yarn") {
         const yarnSpinner = new Spinner("Initialising yarn.. %s").start();
         try {
             await runCommandInDir(pluginDirectory, "yarn init -y");
@@ -238,6 +253,7 @@ async function runCreatePlugin() {
             } catch (e) {
                 deleteSpinner.fail();
             }
+            console.log(e);
             return;
         }
 
@@ -250,7 +266,7 @@ async function runCreatePlugin() {
             updateYarnSpinner.fail();
             logger.warn("Failed to update yarn, nevermind");
         }
-    } else {
+    } else if (packageManager === "npm") {
         const yarnSpinner = new Spinner("Initialising npm.. %s").start();
         try {
             await runCommandInDir(pluginDirectory, "npm init -y");
@@ -268,6 +284,28 @@ async function runCreatePlugin() {
             } catch (e) {
                 deleteSpinner.fail();
             }
+            console.log(e);
+            return;
+        }
+    } else if (packageManager === "pnpm") {
+        const yarnSpinner = new Spinner("Initialising pnpm.. %s").start();
+        try {
+            await runCommandInDir(pluginDirectory, "pnpm init -y");
+            yarnSpinner.success();
+        } catch (e) {
+            yarnSpinner.fail();
+            logger.error("Failed to initialise pnpm");
+            const deleteSpinner = new Spinner("Deleting directory.. %s").start();
+            try {
+                await runCommandInDir(
+                    pluginsDirectory,
+                    "yarn exec rm -r " + pluginDirectory
+                );
+                deleteSpinner.success();
+            } catch (e) {
+                deleteSpinner.fail();
+            }
+            console.log(e);
             return;
         }
     }
@@ -291,16 +329,22 @@ async function runCreatePlugin() {
 
     const dependenciesSpinner = new Spinner("Installing dependencies.. %s").start();
     try {
-        if (useYarn) {
+        if (packageManager === "yarn") {
             await runCommandInDir(
                 pluginDirectory,
                 "yarn add --dev @skeldjs/hindenburg@link:../.."
                     + (useTypescript ? " typescript" : "")
             );
-        } else {
+        } else if (packageManager === "npm") {
             await runCommandInDir(
                 pluginDirectory,
                 "npm install --save-dev @skeldjs/hindenburg@file:../.."
+                    + (useTypescript ? " typescript" : "")
+            );
+        } else if (packageManager === "pnpm") {
+            await runCommandInDir(
+                pluginDirectory,
+                "pnpm install --save-dev @skeldjs/hindenburg@file:../.."
                     + (useTypescript ? " typescript" : "")
             );
         }
@@ -319,6 +363,7 @@ async function runCreatePlugin() {
         } catch (e) {
             deleteSpinner.fail();
         }
+        console.log(e);
         return;
     }
 
@@ -328,17 +373,18 @@ async function runCreatePlugin() {
         const packageJson = JSON.parse(await fs.readFile(packageJsonFile, "utf8"));
 
         if (useTypescript) {
-            if (useYarn) {
-                await runCommandInDir(
-                    pluginDirectory,
-                    "yarn tsc --init --outDir ./dist --experimentalDecorators --emitDecoratorMetadata --sourceMap --declaration --allowJs --target es2017"
-                );
-            } else {
-                await runCommandInDir(
-                    pluginDirectory,
-                    "npx tsc --init --outDir ./dist --experimentalDecorators --emitDecoratorMetadata --sourceMap --declaration --allowJs --target es2017"
-                );
-            }
+            const prefix = packageManager === "yarn"
+                ? "yarn"
+                : packageManager === "npm"
+                    ? "npx"
+                    : packageManager === "pnpm"
+                        ? "pnpm exec"
+                        : "yarn";
+
+            await runCommandInDir(
+                pluginDirectory,
+                prefix + " tsc --init --outDir ./dist --experimentalDecorators --emitDecoratorMetadata --sourceMap --declaration --allowJs --target es2017"
+            );
 
             packageJson.version = "1.0.0";
             packageJson.description = "My cool Hindenburg plugin";
@@ -348,11 +394,19 @@ async function runCreatePlugin() {
             packageJson.files = [ "dist" ];
             packageJson.main = "./dist/index.js";
             packageJson.scripts = {
-                build: "tsc --project ./",
-                watch: "tsc --watch --project ./",
-                prepack: "yarn build",
                 publish: "yarn npm publish --access public"
             };
+            if (useTypescript) {
+                packageJson.scripts.build = "tsc --project ./";
+                packageJson.scripts.watch = "tsc --watch --project ./";
+                if (packageManager === "yarn") {
+                    packageJson.scripts.prepack = "yarn build";
+                } else if (packageManager === "npm") {
+                    packageJson.scripts.prepack = "npm run build";
+                } else if (packageManager === "pnpm") {
+                    packageJson.scripts.prepack = "pnpm run build";
+                }
+            }
             packageJson.engines = {
                 node: ">=14"
             };
@@ -398,6 +452,7 @@ async function runCreatePlugin() {
         } catch (e) {
             deleteSpinner.fail();
         }
+        console.log(e);
         return;
     }
 
@@ -436,15 +491,19 @@ export default ${codeFriendlyName};`,
         } catch (e) {
             deleteSpinner.fail();
         }
+        console.log(e);
+        return;
     }
 
     if (useTypescript && buildSucceeded) {
         const buildingSpinner = new Spinner("Building plugin.. %s").start();
         try {
-            if (useYarn) {
+            if (packageManager === "yarn") {
                 await runCommandInDir(pluginDirectory, "yarn build");
-            } else {
+            } else if (packageManager === "npm") {
                 await runCommandInDir(pluginDirectory, "npm run build");
+            } else if (packageManager === "pnpm") {
+                await runCommandInDir(pluginDirectory, "pnpm run build");
             }
             buildingSpinner.success();
         } catch (e) {
@@ -455,6 +514,64 @@ export default ${codeFriendlyName};`,
     }
 
     logger.info("Successfully created plugin!");
+}
+
+async function verifyInstalledPlugin(logger: Logger, pluginsDirectory: string, packageInfoJson: any, packageFilename: string) {
+    const verifySpinner = new Spinner("Verifying installed plugin.. %s").start();
+    try {
+        const packageLocation = resolveFrom(pluginsDirectory, packageFilename);
+        const { default: importedPlugin } = await import(packageLocation) as { default: Plugin };
+
+        if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
+            verifySpinner.fail();
+            logger.error("Installed package was not a hindenburg plugin");
+            return false;
+        }
+
+        verifySpinner.success();
+
+        const configSpinner = new Spinner("Creating config entry for plugin.. %s").start();
+        const defaultConfig = importedPlugin.meta.defaultConfig;
+
+        try {
+            const configData = await fs.readFile(configFile, "utf8");
+            const configJson = JSON.parse(configData);
+
+            if (!configJson.plugins)
+                configJson.plugins = {};
+
+            configJson.plugins[importedPlugin.meta.id] = defaultConfig;
+
+            await fs.writeFile(
+                configFile,
+                JSON.stringify(configJson, undefined, 4),
+                "utf8"
+            );
+
+            configSpinner.success();
+        } catch (e) {
+            configSpinner.fail();
+            const err = e as { code: string };
+            if (!err.code || err.code !== "ENOENT") {
+                if (err.code) {
+                    logger.error("Could not open config file: %s", err.code);
+                } else {
+                    logger.error("Could not open config file: %s", err);
+                }
+            }
+        }
+
+        logger.info("Installed plugin: %s", chalk.green(importedPlugin.meta.id) + chalk.gray("@v" + importedPlugin.meta.version));
+    } catch (e) {
+        if (verifySpinner.isSpinning()) {
+            verifySpinner.fail();
+            logger.error("Failed to verify plugin: %s", (e as any).message || e);
+            return false;
+        }
+        throw e;
+    }
+
+    return true;
 }
 
 async function runInstallPlugin() {
@@ -511,74 +628,181 @@ async function runInstallPlugin() {
         return;
     }
 
-    const verifySpinner = new Spinner("Verifying installed plugin.. %s").start();
-    const packageLocation = resolveFrom(pluginsDirectory, packageInfoJson.name);
-    try {
-        const { default: importedPlugin } = await import(packageLocation);
+    if (!await verifyInstalledPlugin(logger, pluginsDirectory, packageInfoJson, packageInfoJson.name)) {
+        const uninstallSpinner = new Spinner("Uninstalling invalid plugin.. %s");
+        try {
+            await runCommandInDir(pluginsDirectory, "yarn remove " + packageInfoJson.name);
+            uninstallSpinner.success();
+        } catch (e) {
+            uninstallSpinner.fail();
+            console.error("Failed to uninstall package, run either 'yarn plugins uninstall \"" + packageInfoJson + "\"', or enter the directory manually and run 'yarn remove \"" + packageInfoJson.name + "\"'");
+        }
+    }
+}
 
-        if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
-            verifySpinner.fail();
-            logger.error("Installed package was not a hindenburg plugin");
-            const uninstallSpinner = new Spinner("Uninstalling.. %s");
-            try {
-                await runCommandInDir(pluginsDirectory, "yarn remove " + packageInfoJson.name);
-                uninstallSpinner.success();
-            } catch (e) {
-                uninstallSpinner.fail();
-                console.error("Failed to uninstall package, run either 'yarn plugins uninstall\"" + packageInfoJson + "\"', or enter the directory manually and run 'yarn remove \"" + packageInfoJson.name + "\"'");
-            }
+async function runImportPlugin() {
+    const logger = new Logger;
+
+    const argvPluginRepo = process.argv[3];
+
+    if (!argvPluginRepo) {
+        logger.error("Expected plugin repo URL as an argument, usage: `yarn plugins import <plugiun repo>`.");
+        return;
+    }
+
+    const pluginsDirectory = await choosePluginsDirectory();
+
+    try {
+        const stat = await fs.stat(pluginsDirectory);
+
+        if (!stat.isDirectory()) {
+            logger.error("Plugins directory found but was not a directory, please delete the file and run 'yarn setup'");
             return;
         }
+    } catch (e) {
+        logger.error("Plugins directory not found or inaccessible, please run 'yarn setup'");
+        return;
+    }
 
-        verifySpinner.success();
+    let pluginDirectoryName = path.basename(argvPluginRepo).split(".")[0];
 
-        const configSpinner = new Spinner("Creating config entry for plugin.. %s").start();
-        const defaultConfig = importedPlugin.meta.defaultConfig;
+    const cloningPlugin = new Spinner("Cloning plugin.. %s").start();
+    try {
+        const stdout = await runCommandInDir(pluginsDirectory, "git clone \"" + argvPluginRepo + "\"");
+        const matchClonedDirectory = stdout.match(/Cloning into '(.+)'.../);
+        if (matchClonedDirectory) {
+            pluginDirectoryName = matchClonedDirectory[1];
+        }
+        cloningPlugin.success();
+    } catch (e) {
+        cloningPlugin.fail();
+        if ((e as any).toString().includes("already exists and is not an empty directory")) {
+            logger.error("Plugin repo '%s' already installed", argvPluginRepo);
+            return;
+        }
+        logger.error("Plugin repo '%s' does not exist or is inaccessible", argvPluginRepo);
+        return;
+    }
 
+    const pluginDirectory = path.resolve(pluginsDirectory, pluginDirectoryName);
+
+    const findingPackageManager = new Spinner("Finding package manager.. %s").start();
+    let packageManager: "yarn"|"npm"|"pnpm";
+    try {
+        await fs.stat(path.resolve(pluginDirectory, "yarn.lock"));
+        packageManager = "yarn";
+        findingPackageManager.success();
+    } catch (e) {
         try {
-            const configData = await fs.readFile(configFile, "utf8");
-            const configJson = JSON.parse(configData);
-
-            if (!configJson.plugins)
-                configJson.plugins = {};
-
-            configJson.plugins[importedPlugin.meta.id] = defaultConfig;
-
-            await fs.writeFile(
-                configFile,
-                JSON.stringify(configJson, undefined, 4),
-                "utf8"
-            );
-
-            configSpinner.success();
+            await fs.stat(path.resolve(pluginDirectory, "package-lock.json"));
+            packageManager = "npm";
+            findingPackageManager.success();
         } catch (e) {
-            configSpinner.fail();
-            const err = e as { code: string };
-            if (!err.code || err.code !== "ENOENT") {
-                if (err.code) {
-                    logger.error("Could not open config file: %s", err.code);
-                } else {
-                    logger.error("Could not open config file: %s", err);
+            try {
+                await fs.stat(path.resolve(pluginDirectory, "pnpm-lock.yaml"));
+                packageManager = "pnpm";
+                findingPackageManager.success();
+            } catch (e) {
+                findingPackageManager.fail();
+                packageManager = "yarn";
+                logger.error("Failed to find package manager, using yarn by default..");
+            }
+        }
+    }
+
+    logger.info("Using package manager: '%s'", packageManager);
+
+    const installingDependencies = new Spinner("Installing dependencies.. %s").start();
+    try {
+        if (packageManager === "yarn") {
+            await runCommandInDir(pluginDirectory, "yarn");
+        } else if (packageManager === "npm") {
+            await runCommandInDir(pluginDirectory, "npm install");
+        } else if (packageManager === "pnpm") {
+            await runCommandInDir(pluginDirectory, "pnpm install");
+        }
+        installingDependencies.success();
+    } catch (e) {
+        installingDependencies.fail();
+        logger.error("Failed to install dependencies");
+        const deleteSpinner = new Spinner("Deleting directory.. %s").start();
+        try {
+            await runCommandInDir(
+                pluginsDirectory,
+                "yarn exec rm -r " + pluginDirectory
+            );
+            deleteSpinner.success();
+        } catch (e) {
+            deleteSpinner.fail();
+        }
+        if (packageManager === "yarn") {
+            logger.info("You might not have yarn installed, check out https://yarnpkg.com/getting-started/install for installation instructions");
+        } else if (packageManager === "pnpm") {
+            logger.info("You might not have pnpm installed, check out https://pnpm.io/installation for installation instructions");
+        } else {
+            console.log(e);
+        }
+        return;
+    }
+
+    let packageJson;
+    const fetchingScripts = new Spinner("Fetching scripts.. %s").start();
+    try {
+        const packageJsonFile = path.resolve(pluginDirectory, "package.json");
+        packageJson = JSON.parse(await fs.readFile(packageJsonFile, "utf8"));
+        fetchingScripts.success();
+        if (packageJson.scripts) {
+            if (packageJson.scripts.build) {
+                const buildingPlugin = new Spinner("Building plugin.. %s").start();
+                try {
+                    if (packageManager === "yarn") {
+                        await runCommandInDir(pluginDirectory, "yarn build");
+                    } else if (packageManager === "npm") {
+                        await runCommandInDir(pluginDirectory, "npm run build");
+                    } else if (packageManager === "pnpm") {
+                        await runCommandInDir(pluginDirectory, "pnpm run build");
+                    }
+                    buildingPlugin.success();
+                } catch (e) {
+                    buildingPlugin.fail();
+                    if (packageManager === "yarn") {
+                        logger.error("Failed to build plugin, this must be done manually by running 'yarn build' in the installed plugin directory");
+                    } else if (packageManager === "npm") {
+                        logger.error("Failed to build plugin, this must be done manually by running 'npm run build' in the installed plugin directory");
+                    } else if (packageManager === "pnpm") {
+                        logger.error("Failed to build plugin, this must be done manually by running 'pnpm run build' in the installed plugin directory");
+                    }
                 }
             }
         }
-
-        logger.info("Installed plugin: %s", chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version));
     } catch (e) {
-        if (verifySpinner.isSpinning()) {
-            verifySpinner.fail();
-            logger.error("Failed to verify plugin: %s", (e as any).message || e);
-            const uninstallSpinner = new Spinner("Uninstalling.. %s");
-            try {
-                await runCommandInDir(pluginsDirectory, "yarn remove " + packageInfoJson.name);
-                uninstallSpinner.success();
-            } catch (e) {
-                uninstallSpinner.fail();
-                console.error("Failed to uninstall package, run either 'yarn plugins uninstall\"" + packageInfoJson + "\"', or enter the directory yourself and use 'yarn remove \"" + packageInfoJson.name + "\"'");
-            }
-            return;
+        fetchingScripts.fail();
+        logger.error("Failed to fetch scripts");
+        const deleteSpinner = new Spinner("Deleting directory.. %s").start();
+        try {
+            await runCommandInDir(
+                pluginsDirectory,
+                "yarn exec rm -r " + pluginDirectory
+            );
+            deleteSpinner.success();
+        } catch (e) {
+            deleteSpinner.fail();
         }
-        throw e;
+        console.log(e);
+        return;
+    }
+
+    if (!await verifyInstalledPlugin(logger, pluginsDirectory, packageJson, "./" + pluginDirectoryName)) {
+        const deleteSpinner = new Spinner("Deleting directory.. %s").start();
+        try {
+            await runCommandInDir(
+                pluginsDirectory,
+                "yarn exec rm -r " + pluginDirectory
+            );
+            deleteSpinner.success();
+        } catch (e) {
+            deleteSpinner.fail();
+        }
     }
 }
 
@@ -616,7 +840,7 @@ async function runUninstallPlugin() {
     try {
         resolveFrom(pluginsDirectory, pluginName);
     } catch (e) {
-        resolvingPlugin.success();
+        resolvingPlugin.fail();
         logger.error("Plugin with name '%s' not installed or inaccessible", pluginName);
         return;
     }
@@ -803,6 +1027,9 @@ async function runList() {
     case "install":
         await runInstallPlugin();
         break;
+    case "import":
+        await runImportPlugin();
+        break;
     case "uninstall":
         await runUninstallPlugin();
         break;
@@ -814,11 +1041,12 @@ async function runList() {
         break;
     default:
         console.log("Usage: yarn plugins <action>");
-        console.log("       yarn plugins init [ts] <plugin name> " + chalk.gray("# initialise a new plugin"));
-        console.log("       yarn plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
-        console.log("       yarn plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
-        console.log("       yarn plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
-        console.log("       yarn plugins list                    " + chalk.gray("# list all installed plugins"));
+        console.log("       yarn plugins init [ts] <plugin name>" + chalk.gray("# initialise a new plugin"));
+        console.log("       yarn plugins install   <plugin name>" + chalk.gray("# install a plugin from the npm registry"));
+        console.log("       yarn plugins import    <plugin repo>" + chalk.gray("# import a plugin from a git repository"));
+        console.log("       yarn plugins uninstall <plugin name>" + chalk.gray("# remove a plugin installed via npm"));
+        console.log("       yarn plugins info      <plugin name>" + chalk.gray("# get information about a plugin"));
+        console.log("       yarn plugins list                   " + chalk.gray("# list all installed plugins"));
         console.error("Expected 'action' to be one of 'install', 'uninstall', 'list', or 'create'.");
         break;
     }

@@ -71,6 +71,49 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
+				<p>Installing plugins is very simple with Hindenburg; you can either install straight from <a href="https://npmjs.com">NPM</a>, or manually install one via a git repository or dropping in a folder.</p>
+				<a href="#via-npm" id="via-npm" style="color: inherit; text-decoration: none;">
+					<h2>Via NPM</h2>
+				</a>
+				<p>If you want to install a plugin that is published on the <a href="https://npmjs.com">NPM</a> registry, installing it is as simple as the following command:</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn plugins install hbplugin-&lt;plugin name&gt;</span>
+</code></pre>
+				<p>For example, you could run <code>yarn plugins install hbplugin-ban-textfile</code>.</p>
+				<blockquote>
+					<p>If you need to install a specific version of the plugin, add a <code>@&lt;version&gt;</code> at the end of the plugin name, for example <code>hbplugin-ban-textfile@1.0.0</code>.</p>
+				</blockquote>
+				<p><img src="https://i.imgur.com/eSx2K45.gif" alt="plugin install example gif"></p>
+				<blockquote>
+					<p>If you want to change where your plugins install to, see the <a href="./Environment%20Variables#hindenburg-plugins"><code>HINDENBURG_PLUGINS</code></a> environment variable.</p>
+				</blockquote>
+				<p>Uninstalling a plugin that you installed from NPM is as simple as:</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn plugins uninstall hbplugin-ban-textfile</span>
+</code></pre>
+				<p><img src="https://i.imgur.com/5ZUhmaf.gif" alt=""></p>
+				<a href="#git-repository" id="git-repository" style="color: inherit; text-decoration: none;">
+					<h2>Git Repository</h2>
+				</a>
+				<p>Hindenburg has a built-in utility to install a plugin from a git repository such as one from <a href="https://github.com">Github</a>:</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn plugins import hbplugin-&lt;plugin name&gt;</span>
+</code></pre>
+				<p>This will handle cloning the plugin, installing dependencies with the correct package manager, building and verifying it for you.</p>
+				<p><img src="https://i.imgur.com/NQB7aaO.gif" alt=""></p>
+				<a href="#manual-install" id="manual-install" style="color: inherit; text-decoration: none;">
+					<h2>Manual Install</h2>
+				</a>
+				<p>You can also simply drop plugins into any of your plugin folders and Hindenburg will automatically recognise it as a plugin and attempt to load it.</p>
+				<p><strong>Step 1</strong>: Navigate to your plugins directory with the <code>cd</code> command, e.g. <code>cd C:/Users/essma/Documents/Projects/AmongUsProjects/Hindenburg/plugins</code>.</p>
+				<p>If you want to install from a git repository, such as one on <a href="https://github.com">Github</a>, you can simply use the <code>git clone</code> command to clone the plugin into your plugins directory For example, <code>git clone https://github.com/SkeldJS/hbplugin-ban-textfile</code>.</p>
+				<p><strong>Step 2</strong>: <code>cd</code> into your plugin with <code>cd &lt;repo name&gt;</code>, for example <code>cd hbplugin-ban-textfile</code></p>
+				<p><strong>Step 3</strong>: <code>yarn</code>, <code>npm</code> or <code>pnpm</code> to install dependencies</p>
+				<p><strong>Step 4</strong>: <code>yarn build</code>, <code>npm run build</code> or <code>pnpm run build</code> to build the plugin if necessary.</p>
+				<p>Hindenburg will now recognise the plugin and attempt to load it.</p>
+				<a href="#notes-on-a-conditional-form" id="notes-on-a-conditional-form" style="color: inherit; text-decoration: none;">
+					<h3>Notes on a Conditional Form</h3>
+				</a>
+				<p>Note that if the plugin is written in <a href="https://typescriptlang.org">TypeScript</a>, you will have to build the plugin manually.</p>
+				<p>Navigate to the directory of the installed plugin with the <code>cd</code> command, e.g. <code>cd C:/Users/essma/Documents/Projects/AmongUsProjects/Hindenburg/plugins/hbplugin-ban-textfile</code></p>
+				<p>Build the plugin with <code>yarn build</code>, <code>npm run build</code> or <code>pnpm run build</code> depending on the package manager used.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -153,6 +196,11 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
@@ -161,10 +209,6 @@
 				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

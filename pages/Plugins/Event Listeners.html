@@ -72,7 +72,7 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<p>One of the most central components to writing a plugin for Hindenburg is the ability to listen for specific events from rooms or from the worker.</p>
-				<p>As with every other Hindenburg plugin design decisions; you can attach event listeners with the <a href="../../modules.html#eventlistener"><code>@EventListener</code></a> decorator.</p>
+				<p>As with every other Hindenburg plugin design decisions; you can attach event listeners with the <a href="../../modules.html#EventListener"><code>@EventListener</code></a> decorator.</p>
 				<p>For example:</p>
 				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
@@ -112,28 +112,28 @@
 					<h3>Clients</h3>
 				</a>
 				<ul>
-					<li><a href="../../classes/clientbanevent.html"><code>client.ban</code></a></li>
-					<li><a href="../../classes/clientbroadcastevent.html"><code>client.broadcast</code></a></li>
-					<li><a href="../../classes/clientconnectevent.html"><code>client.connect</code></a></li>
+					<li><a href="../../classes/ClientBanEvent.html"><code>client.ban</code></a></li>
+					<li><a href="../../classes/ClientBroadcastEvent.html"><code>client.broadcast</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>client.connect</code></a></li>
 				</ul>
 				<a href="#rooms" id="rooms" style="color: inherit; text-decoration: none;">
 					<h3>Rooms</h3>
 				</a>
 				<ul>
-					<li><a href="../../classes/clientconnectevent.html"><code>room.beforecreate</code></a></li>
-					<li><a href="../../classes/clientconnectevent.html"><code>room.beforedestroy</code></a></li>
-					<li><a href="../../classes/clientconnectevent.html"><code>room.create</code></a></li>
-					<li><a href="../../classes/clientconnectevent.html"><code>room.destroy</code></a></li>
-					<li><a href="../../classes/clientconnectevent.html"><code>room.gameend</code></a></li>
-					<li><a href="../../classes/clientconnectevent.html"><code>room.gamestart</code></a></li>
-					<li><a href="../../classes/clientconnectevent.html"><code>room.selecthost</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>room.beforecreate</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>room.beforedestroy</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>room.create</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>room.destroy</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>room.gameend</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>room.gamestart</code></a></li>
+					<li><a href="../../classes/ClientConnectEvent.html"><code>room.selecthost</code></a></li>
 				</ul>
 				<a href="#worker" id="worker" style="color: inherit; text-decoration: none;">
 					<h3>Worker</h3>
 				</a>
 				<ul>
-					<li><a href="../../classes/workerbeforejoinevent.html"><code>worker.beforejoin</code></a></li>
-					<li><a href="../../classes/workergetgamelistevent.html"><code>worker.getgamelist</code></a></li>
+					<li><a href="../../classes/WorkerBeforeJoinEvent.html"><code>worker.beforejoin</code></a></li>
+					<li><a href="../../classes/WorkerGetGameListEvent.html"><code>worker.getgamelist</code></a></li>
 				</ul>
 			</div>
 		</div>
@@ -217,6 +217,11 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
@@ -225,10 +230,6 @@
 				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

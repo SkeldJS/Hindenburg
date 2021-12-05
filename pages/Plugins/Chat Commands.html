@@ -73,7 +73,7 @@
 			<div class="tsd-panel tsd-typography">
 				<p>A great and easy way to allow players to communicate with your plugin is through the use of <a href="../Information/Chat%20Commands.html">Chat Commands</a>.</p>
 				<p>Hindenburg provides a simple, quick way to register your own custom chat commands in your plugins.</p>
-				<p>Similar to most things in Hindenburg, there&#39;s a special <a href="../../modules.html#chatcommand"><code>@ChatCommand</code></a> decorator you can use, for example:</p>
+				<p>Similar to most things in Hindenburg, there&#39;s a special <a href="../../modules.html#ChatCommand"><code>@ChatCommand</code></a> decorator you can use, for example:</p>
 				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">ChatCommand</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;add &lt;first&gt; &lt;second&gt;&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;Add two numbers together&quot;</span><span style="color: #000000">)</span>
 <span style="color: #795E26">onAddCommand</span><span style="color: #000000">(</span><span style="color: #001080">ctx</span><span style="color: #000000">: </span><span style="color: #001080">ChatCommandContext</span><span style="color: #000000">, </span><span style="color: #001080">args</span><span style="color: #000000">: </span><span style="color: #001080">any</span><span style="color: #000000">) {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">first</span><span style="color: #000000"> = </span><span style="color: #795E26">parseFloat</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">.</span><span style="color: #001080">first</span><span style="color: #000000">);</span>
@@ -109,7 +109,7 @@
 					<h3>The Callback</h3>
 				</a>
 				<p>The body of the decorator, or the method that it&#39;s attached to, is called when someone uses the command in question.</p>
-				<p>The <a href="../../classes/chatcommandcontext.html"><code>ctx</code></a> argument allows you to reply to the message as the server, acting simply as a wrapper for <a href="../../classes/room.html#sendchat">Room.sendChat</a>. It also provides information about the player that sent the message calling the command, and the room that it came from.</p>
+				<p>The <a href="../../classes/ChatCommandContext.html"><code>ctx</code></a> argument allows you to reply to the message as the server, acting simply as a wrapper for <a href="../../classes/Room.html#sendChat">Room.sendChat</a>. It also provides information about the player that sent the message calling the command, and the room that it came from.</p>
 				<p>The <code>args</code> argument is an object containing any arguments that the player passed into the command, mapped by the parameter name as described in <a href="#the-decorator">the decorator</a>. The arguments will <em>always</em> be strings, so you must parse it yourself.</p>
 				<blockquote>
 					<p>Note that the parameter name doesn&#39;t include the surrounding <code>&lt;&gt;</code>s or <code>[]</code>s, or the <code>...</code> if it exists.</p>
@@ -200,6 +200,11 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
@@ -208,10 +213,6 @@
 				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

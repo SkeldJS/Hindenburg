@@ -75,7 +75,7 @@
 					<h2>Global Plugins</h2>
 				</a>
 				<p>Global plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that transcend individual rooms, as well as listen for events emitted from all rooms.</p>
-				<p>You can create a global plugin by extending the <a href="../../classes/workerplugin.html">WorkerPlugin</a> class exported by <code>@skeldjs/hindenburg</code>, for example:</p>
+				<p>You can create a global plugin by extending the <a href="../../classes/WorkerPlugin.html">WorkerPlugin</a> class exported by <code>@skeldjs/hindenburg</code>, for example:</p>
 				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span>
@@ -86,7 +86,7 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-				<p>Notice how worker plugins accept a <a href="../../classes/worker.html">Worker</a> object as a parameter to their constructor, while room plugins accept a <a href="../../classes/room.html">Room</a> object.</p>
+				<p>Notice how worker plugins accept a <a href="../../classes/Worker.html">Worker</a> object as a parameter to their constructor, while room plugins accept a <a href="../../classes/Room.html">Room</a> object.</p>
 				<p>There also are some things that worker plugins allow you to do that room plugins do not, such as creating <a href="./CLI%20Commands">custom CLI commands</a> and listening and registering <a href="./Protocol%20Messages">custom protocol messages</a>.</p>
 				<p>Also, any events, chat commands or reactor rpc handlers created on global/worker plugins will be applied to <em>every room created</em> after the plugin is loaded, and will remain after the plugin has been unloaded, although they will no longer be applied to any new rooms.</p>
 				<a href="#room-plugins" id="room-plugins" style="color: inherit; text-decoration: none;">
@@ -94,7 +94,7 @@
 				</a>
 				<p>Room plugins are plugins that are loaded on specific rooms, being properly scoped and only recieving data from the rooms that they&#39;re scoped to.</p>
 				<p>The use of room plugins can be very powerful, for instance you could mix and match gamemodes or features for specific rooms.</p>
-				<p>Room plugins can be created by extending the <a href="../../classes/roomplugin.html">RoomPlugin</a> class exported by Hindenburg, for example:</p>
+				<p>Room plugins can be created by extending the <a href="../../classes/RoomPlugin.html">RoomPlugin</a> class exported by Hindenburg, for example:</p>
 				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span>
@@ -105,7 +105,7 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-				<p>This time, the constructor accepts a <a href="../../classes/room.html">Room</a> object as its first parameter.</p>
+				<p>This time, the constructor accepts a <a href="../../classes/Room.html">Room</a> object as its first parameter.</p>
 				<p>Room plugins are instantiated for each room, meaning you can store data on the plugin, ensured that it won&#39;t be used by multiple plugins at once.</p>
 			</div>
 		</div>
@@ -189,6 +189,11 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
@@ -197,10 +202,6 @@
 				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

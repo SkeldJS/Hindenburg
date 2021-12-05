@@ -75,7 +75,21 @@
 				<a href="#setting-environment-variables" id="setting-environment-variables" style="color: inherit; text-decoration: none;">
 					<h3>Setting Environment Variables</h3>
 				</a>
-				<p>If you&#39;re unsure how to set environment variables in your terminal, check out <a href="https://www.minitool.com/news/environment-variables-windows-10-005.html">this guide for windows machines</a>, or <a href="https://phoenixnap.com/kb/linux-set-environment-variable#ftoc-heading-9">this guide if you&#39;re on linux</a></p>
+				<p>If you&#39;re unsure how to set environment variables in your terminal, check out , or</p>
+				<a href="#on-windows" id="on-windows" style="color: inherit; text-decoration: none;">
+					<h4>On Windows</h4>
+				</a>
+				<p>There are 2 ways you can set environment variables on Windows:</p>
+				<ul>
+					<li>Follow <a href="https://www.minitool.com/news/environment-variables-windows-10-005.html">this guide</a> to set environment variables via the system settings</li>
+					<li>Or, prefix every command you run with <code>npx cross-env VARIABLE=VALUE</code>, for example:</li>
+				</ul>
+				<pre><code class="language-sh"><span style="color: #000000">npx cross-env HINDENBURG_PLUGINS=</span><span style="color: #A31515">&quot;C:/Users/essma/Downloads/my-hindenburg-plugins,C:/Users/essma/Documents/Hindenburg/plugins&quot;</span><span style="color: #000000"> yarn start</span>
+</code></pre>
+				<a href="#on-linux" id="on-linux" style="color: inherit; text-decoration: none;">
+					<h3>On Linux</h3>
+				</a>
+				<p>Follow <a href="https://phoenixnap.com/kb/linux-set-environment-variable#ftoc-heading-9">this guide</a> to learn how to set environment variables on Linux.</p>
 				<a href="#hindenburg_config" id="hindenburg_config" style="color: inherit; text-decoration: none;">
 					<h3><code>HINDENBURG_CONFIG</code></h3>
 				</a>

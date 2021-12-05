@@ -1,5 +1,60 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.0": {
+    "version": "1.0.0",
+    "contributors": ["edward"],
+    "date": "2021-12-05",
+    "notes": [
+      {
+        "description": "Update to 2021.11.9",
+        "commits": [
+          "991ae517a786678c14145318ee162639810490fd",
+          "e96ba5b7d6791e54fcb7feee62b65eaee17515b0",
+          "d1437a84e45f82f125c61bdaf68572e6db121459"
+        ]
+      },
+      {
+        "description": "Update plugin creation script",
+        "commits": ["a5a9d9a460fc38301b6ad24947ac0df58d30d95b"]
+      },
+      {
+        "description": "Add worker .env file",
+        "commits": ["87dffffff83952096581c52f5a49f4173a416172"]
+      },
+      {
+        "description": "Add plugin sorting",
+        "commits": ["0d57ae8110bcfa7a97c7cf3ee03d12022a17a82b"]
+      },
+      {
+        "description": "Add plugin import from git repository",
+        "commits": ["7a738cac71db709e2087bb818b71f071c4887a23"]
+      },
+      {
+        "description": "Add game end intent to RoomGameEndEvent",
+        "commits": ["866e0b6105c3270e8eb89fe57cda167f34a4c046"]
+      },
+      {
+        "description": "Add 'extend config' configuration",
+        "commits": ["a0503e75b29684b9c9c1878e9eecf71183797445"]
+      },
+      {
+        "description": "Keep worker plugins on room after unload",
+        "commits": ["ed4ea57b4fe9ad14fde11910e007222130d83335"]
+      },
+      {
+        "description": "Remove versions config",
+        "commits": ["9a42b34d2bad0ea380197b53edf966e986692cc4"]
+      },
+      {
+        "description": "Fix player join emitting twice",
+        "commits": ["b6354c4ab2c74c26ce648001989ef23530e5540f"]
+      },
+      {
+        "description": "Fix translations",
+        "commits": ["38f72b515887394ea7438876b37e193d5b8e906a"]
+      }
+    ]
+  },
   "1.0.0-beta.43": {
     "version": "1.0.0-beta.43",
     "contributors": ["edward"],

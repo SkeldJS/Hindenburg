@@ -88,7 +88,7 @@ yarn build
 ### Advanced Start
 if you're looking to host a Hindenburg server full-time and want to make sure that your server never goes down if Hindenburg ever crashes ([it would not be the first time](https://en.wikipedia.org/wiki/Hindenburg_disaster)), you can use a process manager like `pm2` to ensure your server restarts if it goes down.
 
-If you're hosting multiple Hindenburg server nodes and want a way to balance connection load between them, check out the official [load balancer](https://github.com/SkeldJS/Hindenburg-Loadbalancer).
+If you're hosting multiple Hindenburg server nodes and want a way to balance connection load between them, check out the official [load balancer](https://github.com/SkeldJS/HindenburgLoadbalancer).
 
 ## Docker Setup
 Alternatively, you can use [Docker](https://docker.com) to run your Hindenburg server.

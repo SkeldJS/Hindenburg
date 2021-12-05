@@ -44,6 +44,38 @@ Hindenburg will look for a config.json in the current working directory, or if t
 \`HINDENBURG_CONFIGS\` environment variable is set to an absolute filename of the config.json \
 to use, check out the [Environment Variables](./Environment%20Variables) page for more information.
 
+## CLI Arguments
+Hindenburg also accepts configuration values as CLI arguments to the start command, either \`yarn dev\` \
+or \`yarn start\`.
+
+You can use any of the config keys below preceded with two dashes (\`--\`) to change the config \
+at runtime.
+
+For eaxmple, you could start Hindenburg with:
+\`\`\`sh
+yarn start --socket.port 22023 --reactor.mods["daemon.unify"].optional false
+\`\`\`
+
+_This is equivalent to the following \`config.json\`_
+\`\`\`json
+{
+    "socket": {
+        "port": 22023
+    },
+    "reactor": {
+        "mods": {
+            "daemon.unify": {
+                "optional": false
+            }
+        }
+    }
+}
+\`\`\`
+
+Some configuration keys with a wildcard, such as \`reactor.mods.*\` require a special accessing syntax. \
+As seen in the example, this is simply \`["key"]\`, where the key is instead separated by square brackets \
+and quotation marks. You should also omit the period (\`.\`) preceding it.
+
 # Configuration Values\n`;
 
 /**
@@ -105,7 +137,7 @@ function createSchemaDescription(schema) {
 
     if (schema.enum) {
         outParts.push("Any of the following: "
-            + schema.enum.sort().map(val => "**" + val + "**").join(", "));
+            + schema.enum.sort().map(val => "`" + formatValue(val) + "`").join(", "));
     }
 
     return outParts.join("\n\n");
@@ -136,7 +168,7 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
     if (schema.properties) {
         const entries = Object.entries(schema.properties);
         for (const [ propertyName, propertyDetails ] of entries) {
-            const propertyPath = schemaPath + "." + schemaName;
+            const propertyPath = (schemaPath ? schemaPath + "." : "") + schemaName;
             out += "#".repeat(nestLevel) + " **" + propertyPath + "." + propertyName + "**";
             out += createProperties(nestLevel + 1, propertyName, propertyDetails, propertyPath);
         }
@@ -146,7 +178,7 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
         const entries = Object.entries(schema.patternProperties);
         for (const [ propertyPattern, propertyDetails ] of entries) {
             const propertyName = propertyPattern === ".+" ? "\\*" : propertyPattern;
-            const propertyPath = schemaPath + "." + schemaName;
+            const propertyPath = (schemaPath ? schemaPath + "." : "") + schemaName;
             out += "#".repeat(nestLevel) + " **" + propertyPath + "." + propertyName + "**";
             out += createProperties(nestLevel + 1, propertyName, propertyDetails, propertyPath);
         }
@@ -155,12 +187,12 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
     if (schema.items) {
         if (Array.isArray(schema.items)) {
             for (const propertyDetails of schema.items) {
-                const propertyPath = schemaPath + "." + schemaName;
+                const propertyPath = (schemaPath ? schemaPath + "." : "") + schemaName;
                 out += "#".repeat(nestLevel) + " **" + propertyPath + "[]**";
                 out += createProperties(nestLevel + 1, "[]", propertyDetails, propertyPath);
             }
         } else {
-            const propertyPath = schemaPath + "." + schemaName;
+            const propertyPath = (schemaPath ? schemaPath + "." : "") + schemaName;
             out += "#".repeat(nestLevel) + " **" + propertyPath + "[]**";
             out += createProperties(nestLevel + 1, "[]", schema.items, propertyPath);
         }
@@ -171,8 +203,8 @@ function createProperties(nestLevel, schemaName, schema, schemaPath) {
 
 const entries = Object.entries(configSchema.properties);
 for (const [ propertyName, propertyDetails ] of entries) {
-    baseDocs += "##".repeat(1) + " " + "config." + propertyName + "";
-    baseDocs += createProperties(3, propertyName, propertyDetails, "config");
+    baseDocs += "##".repeat(1) + " " + propertyName + "";
+    baseDocs += createProperties(3, propertyName, propertyDetails, "");
 }
 
 (async () => {

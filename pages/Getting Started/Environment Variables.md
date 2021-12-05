@@ -6,6 +6,8 @@ If you're unsure how to set environment variables in your terminal, check out [t
 ### `HINDENBURG_CONFIG`
 You can set the `HINDENBURG_CONFIG` variable to the location of a `config.json` file in the system to tell hindenburg where to look for configuration for the server.
 
+> By default, Hindenburg will look for your `config.json` in the **current working directory**, i.e. where you have your terminal opened.
+
 > Note that the location has to be **absolute**, meaning that it must begin with either `Drive:/` on windows or `/` on linux, and be the complete path to the file.
 
 > Check out the {@page Configuration} page for information on configuring Hindenburg
@@ -22,6 +24,8 @@ On Linux (WSL2):
 
 ### `HINDENBURG_PLUGINS`
 The `HINDENBURG_PLUGINS` allows you to specify where Hindenburg should look for plugins to load, with **absolute** paths to each location separated by commas (`,`).
+
+> By default, Hindenburg will look for a `/plugins` directory in the **current working directory**, i.e. where you have your terminal opened.
 
 For example, you might want to use someone else's plugin folder that you downloaded as well as your plugins in your hindenburg directory, so you might set `HINDENBURG_PLUGINS` to:
 `C:/Users/essma/Downloads/my-hindenburg-plugins,C:/Users/essma/Documents/Hindenburg/plugins`

@@ -1,5 +1,16 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.1": {
+    "version": "1.0.1",
+    "contributors": ["edward"],
+    "date": "2021-12-05",
+    "notes": [
+      {
+        "description": "Fix TOU/any bad reactor packets",
+        "commits": ["1b4b5a3e0b6753209b58d1ad242ac1e502e27099"]
+      }
+    ]
+  },
   "1.0.0": {
     "version": "1.0.0",
     "contributors": ["edward"],

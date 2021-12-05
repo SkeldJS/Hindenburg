@@ -49,6 +49,7 @@ import {
     ModPluginSide,
     ReactorHandshakeMessage,
     ReactorMessage,
+    ReactorMessageTag,
     ReactorMod,
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
@@ -1534,13 +1535,26 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             )
                         );
 
-                        if (parsedReliable.nonce < cachedConnection.nextExpectedNonce - 1) {
+                        /**
+                         * Patches a bug with reactor whereby the nonce sent for the mod declaration is 0,
+                         * this fixes TOU as well.
+                         */
+                        const isBadReactor = parsedReliable.messageTag === SendOption.Reliable
+                            && parsedReliable.nonce === 0
+                            && (parsedReliable as ReliablePacket)
+                                .children.every(child => {
+                                    return child instanceof ReactorMessage
+                                        && child.children[0].messageTag === ReactorMessageTag.ModDeclaration;
+                                });
+
+                        if (!isBadReactor && parsedReliable.nonce < cachedConnection.nextExpectedNonce - 1) {
+                            console.log(parsedReliable);
                             this.logger.warn("%s is behind (got %s, last nonce was %s)",
                                 cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce - 1);
                             return;
                         }
 
-                        if (parsedReliable.nonce !== cachedConnection.nextExpectedNonce && this.config.socket.messageOrdering) {
+                        if (!isBadReactor && parsedReliable.nonce !== cachedConnection.nextExpectedNonce && this.config.socket.messageOrdering) {
                             this.logger.warn("%s holding packet with nonce %s, expected %s",
                                 cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce);
 
@@ -1551,7 +1565,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             return;
                         }
 
-                        cachedConnection.nextExpectedNonce++;
+                        if (!isBadReactor) {
+                            cachedConnection.nextExpectedNonce++;
+                        }
                     }
 
                     await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {

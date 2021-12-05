@@ -25,13 +25,34 @@ type DeepPartial<T> = {
     [K in keyof T]?: DeepPartial<T[K]>|undefined
 };
 
-const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
-async function resolveConfig(logger: Logger): Promise<DeepPartial<HindenburgConfig>> {
+const configFilename = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
+async function resolveConfig(logger: Logger, configFilename: string, performSetup: boolean): Promise<DeepPartial<HindenburgConfig>> {
     try {
-        return JSON.parse(await fs.readFile(configFile, "utf8"));
+        const configJson: DeepPartial<HindenburgConfig> = JSON.parse(await fs.readFile(configFilename, "utf8"));
+
+        if (configJson.extends) {
+            const extendedFrom: DeepPartial<HindenburgConfig> = {};
+
+            if (Array.isArray(configJson.extends)) {
+                for (const extendedFilename of configJson.extends) {
+                    if (extendedFilename) {
+                        const resolvedExtended = await resolveConfig(logger, path.resolve(path.dirname(configFilename), extendedFilename), false);
+                        recursiveAssign(extendedFrom, resolvedExtended);
+                    }
+                }
+            } else {
+                const resolvedExtended = await resolveConfig(logger, path.resolve(path.dirname(configFilename), configJson.extends), false);
+                recursiveAssign(extendedFrom, resolvedExtended);
+            }
+
+            recursiveAssign(extendedFrom, configJson);
+            return extendedFrom;
+        }
+
+        return configJson;
     } catch (e) {
         const err = e as { code: string };
-        if (err.code === "ENOENT") {
+        if (err.code === "ENOENT" && performSetup) {
             logger.warn("No config file found; performing first-time setup accepting all defaults..");
             return (await (await import("./_setup")).default(true)) as DeepPartial<HindenburgConfig>;
         }
@@ -70,14 +91,21 @@ function applyCommandLineArgs(config: HindenburgConfig) {
 
     for (let i = 0; i < argv.length; i++) {
         if (argv[i].startsWith("--")) {
-            const configPath = argv[i].substr(2);
+            const configPath = argv[i].substring(2);
             const cmdValue = argv[i + 1];
 
             if (!cmdValue) {
                 continue;
             }
 
-            const configValue = JSON.parse(cmdValue);
+            const configValue = cmdValue === "false"
+                ? false
+                : cmdValue === "true"
+                    ? true
+                    : cmdValue.startsWith("[")
+                        ? JSON.parse(cmdValue)
+                        : Number(cmdValue)
+                        || cmdValue;
 
             const pathParts = [];
             let acc = "";
@@ -283,7 +311,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     const internalIp = await getInternalIp();
 
     const workerConfig = createDefaultConfig();
-    const resolvedConfig = await resolveConfig(logger);
+    const resolvedConfig = await resolveConfig(logger, configFilename, true);
     recursiveAssign(workerConfig, resolvedConfig || {});
     applyCommandLineArgs(workerConfig);
     const externalIp = await fetchExternalIp(logger);
@@ -318,7 +346,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
         await worker.pluginLoader.loadAllWorkerPlugins();
     }
 
-    const configWatch = chokidar.watch(configFile, {
+    const configWatch = chokidar.watch(configFilename, {
         persistent: false
     });
 
@@ -326,7 +354,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
         worker.logger.info("Config file updated, reloading..");
         try {
             const workerConfig = createDefaultConfig();
-            const updatedConfig = JSON.parse(await fs.readFile(configFile, "utf8"));
+            const updatedConfig = JSON.parse(await fs.readFile(configFilename, "utf8"));
             recursiveAssign(workerConfig, updatedConfig || {});
             applyCommandLineArgs(workerConfig);
             if (workerConfig.socket.ip === "auto") {

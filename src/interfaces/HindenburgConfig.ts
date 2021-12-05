@@ -317,6 +317,10 @@ export interface RoomsConfig extends HostableOptions {
 
 export interface HindenburgConfig {
     /**
+     * Relative or absolute path to other Hindenburg config(s) to base this one off, to extend all values from.
+     */
+    extends: string|string[];
+    /**
      * The name of the cluster that this node belongs to.
      * @default "Capybara"
      */

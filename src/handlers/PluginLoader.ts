@@ -545,7 +545,8 @@ export class PluginLoader {
             } catch (e) {
                 if ((e as any).code !== undefined) {
                     if ((e as any).code === "ENOENT") {
-                        this.worker.logger.warn("No package.json in plugin directory '%s'", chalk.grey(pluginDirectory));
+                        this.worker.logger.warn("No package.json in plugin directory '%s', maybe try running 'yarn setup'?", chalk.grey(pluginDirectory));
+                        continue;
                     }
 
                     this.worker.logger.warn("Could not open package.json at '%s': %s", chalk.grey(pluginDirectory), (e as any).code);

@@ -1,7 +1,20 @@
 There are a few environment variables that Hindenburg makes use of that you can use, for example to automate setting up a server in production.
 
 ### Setting Environment Variables
-If you're unsure how to set environment variables in your terminal, check out [this guide for windows machines](https://www.minitool.com/news/environment-variables-windows-10-005.html), or [this guide if you're on linux](https://phoenixnap.com/kb/linux-set-environment-variable#ftoc-heading-9)
+If you're unsure how to set environment variables in your terminal, check out , or
+
+#### On Windows
+There are 2 ways you can set environment variables on Windows:
+
+* Follow [this guide](https://www.minitool.com/news/environment-variables-windows-10-005.html) to set environment variables via the system settings
+* Or, prefix every command you run with `npx cross-env VARIABLE=VALUE`, for example:
+
+```sh
+npx cross-env HINDENBURG_PLUGINS="C:/Users/essma/Downloads/my-hindenburg-plugins,C:/Users/essma/Documents/Hindenburg/plugins" yarn start
+```
+
+### On Linux
+Follow [this guide](https://phoenixnap.com/kb/linux-set-environment-variable#ftoc-heading-9) to learn how to set environment variables on Linux.
 
 ### `HINDENBURG_CONFIG`
 You can set the `HINDENBURG_CONFIG` variable to the location of a `config.json` file in the system to tell hindenburg where to look for configuration for the server.

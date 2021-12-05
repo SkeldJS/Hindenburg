@@ -350,7 +350,7 @@
               "enum": [
                 "All",
                 "Other",
-                "Spanish (Latin America)",
+                "SpanishAmericas",
                 "Korean",
                 "Russian",
                 "Portuguese",
@@ -360,7 +360,7 @@
                 "English",
                 "Japanese",
                 "Spanish",
-                "Portuguese Brazil",
+                "PortugueseBrazil",
                 "Dutch",
                 "French",
                 "German",

@@ -1,5 +1,16 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.2": {
+    "version": "1.0.2",
+    "contributors": ["edward"],
+    "date": "2021-12-06",
+    "notes": [
+      {
+        "description": "Fix game listings",
+        "commits": ["f8c2f0eae828b912955474ad70c96d0bba28534a"]
+      }
+    ]
+  },
   "1.0.1": {
     "version": "1.0.1",
     "contributors": ["edward"],

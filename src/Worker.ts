@@ -12,7 +12,8 @@ import {
     KillDistance,
     GameMap,
     SendOption,
-    QuickChatMode
+    QuickChatMode,
+    Platform
 } from "@skeldjs/constant";
 
 import {
@@ -31,6 +32,7 @@ import {
     MessageDirection,
     PacketDecoder,
     PingPacket,
+    PlatformSpecificData,
     ReliablePacket,
     RpcMessage,
     StartGameMessage
@@ -1275,7 +1277,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         roomAge,
                         room.settings.map,
                         room.settings.numImpostors,
-                        room.settings.maxPlayers
+                        room.settings.maxPlayers,
+                        room.host?.platform || new PlatformSpecificData(
+                            Platform.Unknown,
+                            "UNKNOWN"
+                        )
                     );
 
                     returnList.push(gameListing);
@@ -1548,7 +1554,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                 });
 
                         if (!isBadReactor && parsedReliable.nonce < cachedConnection.nextExpectedNonce - 1) {
-                            console.log(parsedReliable);
                             this.logger.warn("%s is behind (got %s, last nonce was %s)",
                                 cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce - 1);
                             return;

@@ -987,92 +987,32 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
                 this.state = GameState.NotStarted;
 
-                if (this.config.serverAsHost) {
-                    const promises = [];
-                    for (const [ clientId, connection ] of this.connections) {
-                        if (connection === joiningClient) {
-                            continue;
-                        }
-
-                        promises.push(connection.sendPacket(
-                            new ReliablePacket(
-                                connection.getNextNonce(),
-                                [
-                                    new JoinGameMessage(
-                                        this.code,
-                                        joiningClient.clientId,
-                                        this.actingHostsEnabled
-                                            ? this.actingHostIds.has(clientId)
-                                                ? clientId
-                                                : SpecialClientId.Server
-                                            : SpecialClientId.Server,
-                                        joiningClient.username,
-                                        joiningClient.platform,
-                                        joiningClient.playerLevel
-                                    )
-                                ]
-                            )
-                        ));
-                    }
-                    await Promise.all(promises);
-                } else {
-                    await this.broadcastMessages([], [
-                        new JoinGameMessage(
-                            this.code,
-                            joiningClient.clientId,
-                            this.hostId,
-                            joiningClient.username,
-                            joiningClient.platform,
-                            joiningClient.playerLevel
-                        )
-                    ], undefined, [ joiningClient ]);
-                }
+                await this.broadcastMessages([], [
+                    new JoinGameMessage(
+                        this.code,
+                        joiningClient.clientId,
+                        this.hostId,
+                        joiningClient.username,
+                        joiningClient.platform,
+                        joiningClient.playerLevel
+                    )
+                ], undefined, [ joiningClient ]);
 
                 await this._joinOtherClients();
             } else {
                 this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
-                if (this.config.serverAsHost) {
-                    const promises = [];
-                    for (const [ clientId, connection ] of this.connections) {
-                        if (connection === joiningClient) {
-                            continue;
-                        }
-
-                        promises.push(connection.sendPacket(
-                            new ReliablePacket(
-                                connection.getNextNonce(),
-                                [
-                                    new JoinGameMessage(
-                                        this.code,
-                                        joiningClient.clientId,
-                                        this.actingHostsEnabled
-                                            ? this.actingHostIds.has(clientId)
-                                                ? clientId
-                                                : SpecialClientId.Server
-                                            : SpecialClientId.Server,
-                                        joiningClient.username,
-                                        joiningClient.platform,
-                                        joiningClient.playerLevel
-                                    )
-                                ]
-                            )
-                        ));
-                    }
-                    await Promise.all(promises);
-                } else {
-                    await this.broadcastMessages([], [
-                        new JoinGameMessage(
-                            this.code,
-                            joiningClient.clientId,
-                            this.hostId,
-                            joiningClient.username,
-                            joiningClient.platform,
-                            joiningClient.playerLevel
-                        )
-                    ], undefined, [ joiningClient ]);
-                }
+                await this.broadcastMessages([], [
+                    new JoinGameMessage(
+                        this.code,
+                        joiningClient.clientId,
+                        this.hostId,
+                        joiningClient.username,
+                        joiningClient.platform,
+                        joiningClient.playerLevel
+                    )
+                ], undefined, [ joiningClient ]);
 
                 await joiningClient.sendPacket(
                     new ReliablePacket(

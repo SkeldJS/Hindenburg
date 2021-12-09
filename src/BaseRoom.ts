@@ -1210,10 +1210,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                             .reduce<PlayerJoinData[]>((prev, cur) => {
                                                 if (cur !== client) {
                                                     prev.push(new PlayerJoinData(
-                                                        client.clientId,
-                                                        client.username,
-                                                        client.platform,
-                                                        client.playerLevel
+                                                        cur.clientId,
+                                                        cur.username,
+                                                        cur.platform,
+                                                        cur.playerLevel
                                                     ));
                                                 }
                                                 return prev;

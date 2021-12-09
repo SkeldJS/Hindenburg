@@ -945,9 +945,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         if (this.connections.get(joiningClient.clientId))
             return;
 
-        if (this.players.has(joiningClient.clientId))
-            return;
-
         const joinData = new PlayerJoinData(
             joiningClient.clientId,
             joiningClient.username,

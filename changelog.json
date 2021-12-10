@@ -1,5 +1,16 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.4": {
+    "version": "1.0.4",
+    "contributors": ["edward"],
+    "date": "2021-12-10",
+    "notes": [
+      {
+        "description": "Fix role settings",
+        "commits": ["c4e2b277d98e0a938c71e3e2ba317a140a39360c"]
+      }
+    ]
+  },
   "1.0.3": {
     "version": "1.0.3",
     "contributors": ["edward"],

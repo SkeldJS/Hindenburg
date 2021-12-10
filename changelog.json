@@ -1,5 +1,24 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.3": {
+    "version": "1.0.3",
+    "contributors": ["edward"],
+    "date": "2021-12-09",
+    "notes": [
+      {
+        "description": "Update skeldjs to fix isImpostor",
+        "commits": ["b5d83712a283b5bf8aacae72f2e6c8de3daf69c4"]
+      },
+      {
+        "description": "Fix joining back after game end",
+        "commits": ["1b69be93d8a602887a5d16cf3d4ef141301e9f08", "f167c31b9157e1056b9eeb278a957595b95444ad"]
+      },
+      {
+        "description": "Update skeldjs to fix fortegreen players",
+        "commits": ["78ae52363a710d1ef6095b22d0412007b96df1c3"]
+      }
+    ]
+  },
   "1.0.2": {
     "version": "1.0.2",
     "contributors": ["edward"],

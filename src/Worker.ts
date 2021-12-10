@@ -543,6 +543,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 if (args.options.acting) {
+                    if (room.hostId === playerConnection.clientId) {
+                        this.logger.error("%s is already the host.", playerConnection);
+                        return;
+                    }
+
                     if (room.actingHostIds.has(playerConnection.clientId)) {
                         this.logger.error("%s is already an acting host.", playerConnection);
                         return;
@@ -987,7 +992,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.decoder.on(JoinGameMessage, async (message, direction, { sender }) => {
             if (
                 sender.room &&
-                sender.room.state !== GameState.Ended &&
+                sender.room.gameState !== GameState.Ended &&
                 sender.room.code !== message.code // extra checks so you can join back the same game
             )
                 return;
@@ -1715,7 +1720,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             return connection.joinError(DisconnectReason.GameFull);
         }
 
-        if (ev.alteredRoom.state === GameState.Started) {
+        if (ev.alteredRoom.gameState === GameState.Started) {
             this.logger.warn("%s attempted to join %s but the game had already started",
                 connection, foundRoom);
             return connection.joinError(DisconnectReason.GameStarted);

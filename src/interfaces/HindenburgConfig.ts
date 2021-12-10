@@ -315,6 +315,48 @@ export interface RoomsConfig extends HostableOptions {
     createTimeout: number;
 }
 
+export interface MovementOptimisations {
+    /**
+     * Whether or not to re-use the buffer to send to every client, instead of
+     * re-constructing the packet each time.
+     * @default true
+     */
+    reuseBuffer: boolean;
+    /**
+     * How often to actually broadcast movement packets from a single player,
+     * should be a very low number, between 1 and 3, where 1 is the most frequent
+     * (every packet is broadcasted) and 3 is the least frequent.
+     * @default 1
+     */
+    updateRate: number;
+    /**
+     * Whether or not to check whether or not the player receiving each movement
+     * packet is in the vision of the player that moved, so-as to only send movement
+     * packets to those who can see it.
+     * @default false
+     */
+    visionChecks: boolean;
+    /**
+     * Whether or not to check whether the sender and the reciever are dead so as to not
+     * send movement packets from alive players to dead players.
+     * @default true
+     */
+    deadChecks: boolean;
+}
+
+export interface OptimisationsConfig {
+    /**
+     * Options regarding movement packets, since they are the most frequent and
+     * most likely to put a lot of strain on the server.
+     */
+    movement: MovementOptimisations;
+    /**
+     * Whether or not to completely disable the perspective API for Hindenburg.
+     * @default false
+     */
+    disablePerspectives: boolean;
+}
+
 export interface HindenburgConfig {
     /**
      * Relative or absolute path to other Hindenburg config(s) to base this one off, to extend all values from.
@@ -377,4 +419,9 @@ export interface HindenburgConfig {
      * Configuration for rooms, such as enabling/disabling features
      */
     rooms: RoomsConfig;
+    /**
+     * Options regarding different optimisations that Hindenburg can use to perform
+     * better in high-load scenarios.
+     */
+    optimisations: OptimisationsConfig
 }

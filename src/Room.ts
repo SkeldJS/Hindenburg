@@ -80,6 +80,10 @@ export class Room extends BaseRoom {
         incomingFilters: PresetFilter[] = [],
         outgoingFilters: PresetFilter[] = incomingFilters
     ): Perspective {
+        if (this.worker.config.optimisations.disablePerspectives) {
+            throw new Error("Perspectives are disabled, set 'optimisations.disablePerspectives' to false to re-enable perspectives");
+        }
+
         if (!Array.isArray(players)) {
             return this.createPerspective([ players ], incomingFilters, outgoingFilters);
         }
@@ -122,6 +126,10 @@ export class Room extends BaseRoom {
      * @param reliable Whether these messages should be sent reliably (i.e. movement packets would be unreliable.
      */
     async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
+        if (this.worker.config.optimisations.disablePerspectives) {
+            return;
+        }
+
         const player = connection.getPlayer();
 
         if (!player)

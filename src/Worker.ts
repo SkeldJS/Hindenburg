@@ -13,13 +13,15 @@ import {
     GameMap,
     SendOption,
     QuickChatMode,
-    Platform
+    Platform,
+    GameDataMessageTag
 } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
     AlterGameMessage,
     BaseRootPacket,
+    DataMessage,
     DisconnectPacket,
     EndGameMessage,
     GameDataToMessage,
@@ -55,6 +57,8 @@ import {
     ReactorMod,
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
+
+import { CustomNetworkTransform, Networkable } from "@skeldjs/core";
 
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
@@ -93,7 +97,6 @@ import {
 } from "./packets";
 
 import i18n from "./i18n";
-import { Networkable } from "@skeldjs/core";
 import { Logger } from "./logger";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
@@ -614,6 +617,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (this.config.optimisations.disablePerspectives) {
+                    this.logger.warn("Perspectives are disabled");
+                    return;
+                }
+
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
                     ? 0x20
@@ -784,16 +792,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         if (this.connections.delete(connection.remoteInfo.address + ":" + connection.remoteInfo.port)) {
             this.logger.info("Remove %s", connection);
         }
-    }
-
-    protected _sendPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
-        return new Promise((resolve, reject) => {
-            this.socket.send(buffer, remote.port, remote.address, (err, bytes) => {
-                if (err) return reject(err);
-
-                resolve(bytes);
-            });
-        });
     }
 
     registerMessages() {
@@ -1121,6 +1119,17 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (child.canceled)
                     continue;
 
+                if (!reliable && child.messageTag === GameDataMessageTag.Data) {
+                    const dataMessage = child as DataMessage;
+                    if (dataMessage.data.byteLength === 10) {
+                        const component = sender.room?.netobjects.get(dataMessage.netId);
+                        if (component instanceof CustomNetworkTransform) {
+                            await sender.room?.broadcastMovement(component, dataMessage.data);
+                            continue;
+                        }
+                    }
+                }
+
                 notCanceled.push(child);
             }
 
@@ -1338,7 +1347,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const sent = connection.sentPackets[i];
                 if (!sent.acked) {
                     if (dateNow - sent.sentAt > 1500) {
-                        this._sendPacket(connection.remoteInfo, sent.buffer);
+                        this.sendRawPacket(connection.remoteInfo, sent.buffer);
                         sent.sentAt = dateNow;
                     }
                 }
@@ -1458,6 +1467,16 @@ export class Worker extends EventEmitter<WorkerEvents> {
         return true;
     }
 
+    sendRawPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
+        return new Promise((resolve, reject) => {
+            this.socket.send(buffer, remote.port, remote.address, (err, bytes) => {
+                if (err) return reject(err);
+
+                resolve(bytes);
+            });
+        });
+    }
+
     /**
      * Serialize and reliable or unreliably send a packet to a client.
      *
@@ -1502,9 +1521,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 )
             );
             connection.sentPackets.splice(8);
-            await this._sendPacket(connection.remoteInfo, writer.buffer);
+            await this.sendRawPacket(connection.remoteInfo, writer.buffer);
         } else {
-            await this._sendPacket(connection.remoteInfo, writer.buffer);
+            await this.sendRawPacket(connection.remoteInfo, writer.buffer);
         }
     }
 

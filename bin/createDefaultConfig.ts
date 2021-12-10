@@ -64,6 +64,15 @@ export function createDefaultConfig(): HindenburgConfig {
                 visor: Visor.EmptyVisor
             },
             createTimeout: 10
+        },
+        optimisations: {
+            movement: {
+                reuseBuffer: true,
+                updateRate: 1,
+                visionChecks: false,
+                deadChecks: true
+            },
+            disablePerspectives: false
         }
     };
 }

@@ -45,6 +45,7 @@ import {
 } from "@skeldjs/protocol";
 
 import {
+    CustomNetworkTransform,
     EndGameIntent,
     HostableEvents,
     Networkable,
@@ -57,7 +58,7 @@ import {
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
-import { Code2Int, HazelWriter, sleep } from "@skeldjs/util";
+import { Code2Int, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
 import { SkeldjsStateManager } from "@skeldjs/state";
 
 
@@ -146,6 +147,8 @@ export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
     RoomGameStartEvent,
     RoomSelectHostEvent
 ]>;
+
+const _movementTick = Symbol("_movementTick");
 
 export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     /**
@@ -651,6 +654,85 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         await Promise.all(promises);
     }
 
+    async broadcastMovement(
+        component: CustomNetworkTransform,
+        data: Buffer
+    ) {
+        const sender = component.player;
+        const movementPacket = new UnreliablePacket(
+            [
+                new GameDataMessage(
+                    this.code,
+                    [
+                        new DataMessage(
+                            component.netId,
+                            data
+                        )
+                    ]
+                )
+            ]
+        );
+
+        if (this.worker.config.optimisations.movement.updateRate) {
+            const velx = data.readUInt16LE(6);
+            const vely = data.readUInt16LE(8);
+            const velocity = new Vector2(Vector2.lerp(velx / 65535), Vector2.lerp(vely / 65535));
+            const magnitude = Vector2.null.dist(velocity);
+
+            if (magnitude > 0.5) {
+                let movementTick = (sender as any)[_movementTick] || 0;
+                movementTick++;
+                (sender as any)[_movementTick] = movementTick;
+
+                if (movementTick % 2 !== 0) {
+                    return;
+                }
+            }
+        }
+
+        const writer = this.worker.config.optimisations.movement.reuseBuffer
+            ? HazelWriter.alloc(22)
+                .write(movementPacket, MessageDirection.Clientbound, this.decoder)
+            : undefined;
+
+        const promises = [];
+
+        for (const [ clientId, player ] of this.players) {
+            const connection = this.connections.get(clientId);
+
+            if (!connection || !player.transform)
+                continue;
+
+            if (this.worker.config.optimisations.movement.visionChecks) {
+                const dist = component.position.dist(player.transform.position);
+
+                if (dist >= 7) // todo: ignore this check if the player is near the admin table
+                    continue;
+            }
+
+            if (this.worker.config.optimisations.movement.deadChecks && !sender.playerInfo?.isDead && player.playerInfo?.isDead)
+                continue;
+
+            if (writer) {
+                promises.push(
+                    this.worker.sendRawPacket(
+                        connection.remoteInfo,
+                        writer.buffer
+                    )
+                );
+            } else {
+                promises.push(
+                    this.worker.sendPacket(
+                        connection,
+                        movementPacket
+                    )
+                );
+            }
+        }
+
+        await Promise.all(promises);
+    }
+
     async broadcast(
         gamedata: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],
@@ -661,55 +743,57 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const includeConnections = this.getConnections(include);
         const excludedConnections = this.getConnections(exclude);
 
-        for (let i = 0; i < this.activePerspectives.length; i++) {
-            const activePerspective = this.activePerspectives[i];
+        if (!this.worker.config.optimisations.disablePerspectives) {
+            for (let i = 0; i < this.activePerspectives.length; i++) {
+                const activePerspective = this.activePerspectives[i];
 
-            const gamedataNotCanceled = [];
-            const payloadsNotCanceled = [];
-            for (let i = 0; i < gamedata.length; i++) {
-                const child = gamedata[i];
+                const gamedataNotCanceled = [];
+                const payloadsNotCanceled = [];
+                for (let i = 0; i < gamedata.length; i++) {
+                    const child = gamedata[i];
 
-                (child as any)._canceled = false; // child._canceled is private
-                await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
+                    (child as any)._canceled = false; // child._canceled is private
+                    await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
-                if (child.canceled) {
-                    (child as any)._canceled = false;
-                    continue;
+                    if (child.canceled) {
+                        (child as any)._canceled = false;
+                        continue;
+                    }
+
+                    await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                    if (child.canceled) {
+                        (child as any)._canceled = false;
+                        continue;
+                    }
+
+                    gamedataNotCanceled.push(child);
                 }
 
-                await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+                for (let i = 0; i < payloads.length; i++) {
+                    const child = payloads[i];
 
-                if (child.canceled) {
-                    (child as any)._canceled = false;
-                    continue;
+                    (child as any)._canceled = false; // child._canceled is private
+                    await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                    if (child.canceled) {
+                        (child as any)._canceled = false;
+                        continue;
+                    }
+
+                    await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                    if (child.canceled) {
+                        (child as any)._canceled = false;
+                        continue;
+                    }
+
+                    payloadsNotCanceled.push(child);
                 }
 
-                gamedataNotCanceled.push(child);
-            }
-
-            for (let i = 0; i < payloads.length; i++) {
-                const child = payloads[i];
-
-                (child as any)._canceled = false; // child._canceled is private
-                await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                if (child.canceled) {
-                    (child as any)._canceled = false;
-                    continue;
+                if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
+                    return this.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable);
                 }
-
-                await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                if (child.canceled) {
-                    (child as any)._canceled = false;
-                    continue;
-                }
-
-                payloadsNotCanceled.push(child);
-            }
-
-            if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
-                return this.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable);
             }
         }
 

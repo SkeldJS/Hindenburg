@@ -1047,18 +1047,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 const reactorRpc = player.room.reactorRpcs.get(`${senderMod.modId}:${reactorRpcMessage.customRpc.messageTag}`);
 
-                if (!reactorRpc) {
-                    this.logger.warn("Got unhandled reactor rpc message from %s for mod %s with message tag %s",
-                        sender, senderMod.modId, reactorRpcMessage.customRpc.messageTag);
-
-                    return;
-                }
-
-                const rpcHandlers = player.room.reactorRpcHandlers.get(reactorRpc);
-                if (rpcHandlers) {
-                    for (let i = 0; i < rpcHandlers.length; i++) {
-                        const handler = rpcHandlers[i];
-                        handler(component, reactorRpcMessage.customRpc);
+                if (reactorRpc) {
+                    const rpcHandlers = player.room.reactorRpcHandlers.get(reactorRpc);
+                    if (rpcHandlers) {
+                        for (let i = 0; i < rpcHandlers.length; i++) {
+                            const handler = rpcHandlers[i];
+                            handler(component, reactorRpcMessage.customRpc);
+                        }
                     }
                 }
 

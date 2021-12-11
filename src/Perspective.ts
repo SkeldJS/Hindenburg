@@ -534,7 +534,7 @@ export class Perspective extends BaseRoom {
         for (let i = 0; i < filters.length; i++) {
             const filter = filters[i];
             if (filter === PresetFilter.GameDataUpdates) {
-                decoder.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
+                decoder.on([ SetNameMessage, SetColorMessage, SetSkinMessage, SetPetMessage, SetHatMessage, SetVisorMessage, SetNameplateMessage ], message => {
                     message.cancel();
                 });
             } else if (filter === PresetFilter.PositionUpdates) {
@@ -543,6 +543,9 @@ export class Perspective extends BaseRoom {
                 });
 
                 decoder.on([ DataMessage ], message => {
+                    if (message.data.byteLength !== 10)
+                        return;
+
                     const netobject = perspective.netobjects.get(message.netId);
 
                     if (netobject instanceof CustomNetworkTransform) {

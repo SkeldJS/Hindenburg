@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PluginRegisteredRpcHandlerInfo | @skeldjs/hindenburg</title>
+	<title>MovementOptimisations | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="PluginRegisteredRpcHandlerInfo.html">PluginRegisteredRpcHandlerInfo</a>
+					<a href="MovementOptimisations.html">MovementOptimisations</a>
 				</li>
 			</ul>
-			<h1>Interface PluginRegisteredRpcHandlerInfo</h1>
+			<h1>Interface MovementOptimisations</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">PluginRegisteredRpcHandlerInfo</span>
+						<span class="target">MovementOptimisations</span>
 					</li>
 				</ul>
 			</section>
@@ -80,60 +80,104 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="PluginRegisteredRpcHandlerInfo.html#handler" class="tsd-kind-icon">handler</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginRegisteredRpcHandlerInfo.html#reactorRpc" class="tsd-kind-icon">reactor<wbr>Rpc</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="MovementOptimisations.html#deadChecks" class="tsd-kind-icon">dead<wbr>Checks</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="MovementOptimisations.html#reuseBuffer" class="tsd-kind-icon">reuse<wbr>Buffer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="MovementOptimisations.html#updateRate" class="tsd-kind-icon">update<wbr>Rate</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="MovementOptimisations.html#visionChecks" class="tsd-kind-icon">vision<wbr>Checks</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="handler" class="tsd-anchor"></a>
-					<h3>handler</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">(</span>component<span class="tsd-signature-symbol">: </span><a href="../classes/Networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#NetworkableEvents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../classes/Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, rpc<span class="tsd-signature-symbol">: </span><a href="../classes/BaseReactorRpcMessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/92b0fb5/src/api/hooks/ReactorRpcHandler.ts#L19">src/api/hooks/ReactorRpcHandler.ts:19</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>component: <a href="../classes/Networkable.html" class="tsd-signature-type" data-tsd-kind="Class">Networkable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><a href="../modules.html#NetworkableEvents" class="tsd-signature-type" data-tsd-kind="Type alias">NetworkableEvents</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../classes/Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-								<li>
-									<h5>rpc: <a href="../classes/BaseReactorRpcMessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="reactorRpc" class="tsd-anchor"></a>
-					<h3>reactor<wbr>Rpc</h3>
-					<div class="tsd-signature tsd-kind-icon">reactor<wbr>Rpc<span class="tsd-signature-symbol">:</span> <a href="../modules.html#ReactorRpcConstructor" class="tsd-signature-type" data-tsd-kind="Type alias">ReactorRpcConstructor</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/BaseReactorRpcMessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="deadChecks" class="tsd-anchor"></a>
+					<h3>dead<wbr>Checks</h3>
+					<div class="tsd-signature tsd-kind-icon">dead<wbr>Checks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/92b0fb5/src/api/hooks/ReactorRpcHandler.ts#L20">src/api/hooks/ReactorRpcHandler.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/92b0fb5/src/interfaces/HindenburgConfig.ts#L344">src/interfaces/HindenburgConfig.ts:344</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether or not to check whether the sender and the reciever are dead so as to not
+							send movement packets from alive players to dead players.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>true</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="reuseBuffer" class="tsd-anchor"></a>
+					<h3>reuse<wbr>Buffer</h3>
+					<div class="tsd-signature tsd-kind-icon">reuse<wbr>Buffer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/92b0fb5/src/interfaces/HindenburgConfig.ts#L324">src/interfaces/HindenburgConfig.ts:324</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether or not to re-use the buffer to send to every client, instead of
+							re-constructing the packet each time.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>true</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="updateRate" class="tsd-anchor"></a>
+					<h3>update<wbr>Rate</h3>
+					<div class="tsd-signature tsd-kind-icon">update<wbr>Rate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/92b0fb5/src/interfaces/HindenburgConfig.ts#L331">src/interfaces/HindenburgConfig.ts:331</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>How often to actually broadcast movement packets from a single player,
+								should be a very low number, between 1 and 3, where 1 is the most frequent
+							(every packet is broadcasted) and 3 is the least frequent.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>1</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="visionChecks" class="tsd-anchor"></a>
+					<h3>vision<wbr>Checks</h3>
+					<div class="tsd-signature tsd-kind-icon">vision<wbr>Checks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/92b0fb5/src/interfaces/HindenburgConfig.ts#L338">src/interfaces/HindenburgConfig.ts:338</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Whether or not to check whether or not the player receiving each movement
+								packet is in the vision of the player that moved, so-as to only send movement
+							packets to those who can see it.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>false</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -207,13 +251,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="PluginRegisteredRpcHandlerInfo.html" class="tsd-kind-icon">Plugin<wbr>Registered<wbr>Rpc<wbr>Handler<wbr>Info</a>
+						<a href="MovementOptimisations.html" class="tsd-kind-icon">Movement<wbr>Optimisations</a>
 						<ul>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="PluginRegisteredRpcHandlerInfo.html#handler" class="tsd-kind-icon">handler</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="MovementOptimisations.html#deadChecks" class="tsd-kind-icon">dead<wbr>Checks</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="PluginRegisteredRpcHandlerInfo.html#reactorRpc" class="tsd-kind-icon">reactor<wbr>Rpc</a>
+								<a href="MovementOptimisations.html#reuseBuffer" class="tsd-kind-icon">reuse<wbr>Buffer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="MovementOptimisations.html#updateRate" class="tsd-kind-icon">update<wbr>Rate</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="MovementOptimisations.html#visionChecks" class="tsd-kind-icon">vision<wbr>Checks</a>
 							</li>
 						</ul>
 					</li>

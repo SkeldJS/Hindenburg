@@ -558,6 +558,42 @@
 				<p>The timeout in seconds to wait for a player joins before considering the room empty and destroying it.</p>
 				<p><strong>Type</strong>: number</p>
 				<p><strong>Default</strong>: <code>10</code></p>
+				<a href="#optimizations" id="optimizations" style="color: inherit; text-decoration: none;">
+					<h2>optimizations</h2>
+				</a>
+				<p><strong>Type</strong>: object</p>
+				<a href="#optimizationsmovement" id="optimizationsmovement" style="color: inherit; text-decoration: none;">
+					<h3><strong>optimizations.movement</strong></h3>
+				</a>
+				<p><strong>Type</strong>: object</p>
+				<a href="#optimizationsmovementreusebuffer" id="optimizationsmovementreusebuffer" style="color: inherit; text-decoration: none;">
+					<h4><strong>optimizations.movement.reuseBuffer</strong></h4>
+				</a>
+				<p>Whether or not to re-use the buffer to send to every client, instead of re-constructing the packet each time.</p>
+				<p><strong>Type</strong>: boolean</p>
+				<p><strong>Default</strong>: <code>true</code></p>
+				<a href="#optimizationsmovementupdaterate" id="optimizationsmovementupdaterate" style="color: inherit; text-decoration: none;">
+					<h4><strong>optimizations.movement.updateRate</strong></h4>
+				</a>
+				<p>How often to actually broadcast movement packets from a single player, should be a very low number, between 1 and 3, where 1 is the most frequent (every packet is broadcasted) and 3 is the least frequent.</p>
+				<p><strong>Type</strong>: number</p>
+				<p><strong>Default</strong>: <code>1</code></p>
+				<a href="#optimizationsmovementvisionchecks" id="optimizationsmovementvisionchecks" style="color: inherit; text-decoration: none;">
+					<h4><strong>optimizations.movement.visionChecks</strong></h4>
+				</a>
+				<p>Whether or not to check whether or not the player receiving each movement packet is in the vision of the player that moved, so-as to only send movement packets to those who can see it.</p>
+				<p><strong>Type</strong>: boolean</p>
+				<a href="#optimizationsmovementdeadchecks" id="optimizationsmovementdeadchecks" style="color: inherit; text-decoration: none;">
+					<h4><strong>optimizations.movement.deadChecks</strong></h4>
+				</a>
+				<p>Whether or not to check whether the sender and the reciever are dead so as to not send movement packets from alive players to dead players.</p>
+				<p><strong>Type</strong>: boolean</p>
+				<p><strong>Default</strong>: <code>true</code></p>
+				<a href="#optimizationsdisableperspectives" id="optimizationsdisableperspectives" style="color: inherit; text-decoration: none;">
+					<h3><strong>optimizations.disablePerspectives</strong></h3>
+				</a>
+				<p>Whether or not to completely disable the perspective API for Hindenburg.</p>
+				<p><strong>Type</strong>: boolean</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

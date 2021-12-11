@@ -673,7 +673,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             ]
         );
 
-        if (this.worker.config.optimisations.movement.updateRate) {
+        if (this.worker.config.optimizations.movement.updateRate > 1) {
             const velx = data.readUInt16LE(6);
             const vely = data.readUInt16LE(8);
             const velocity = new Vector2(Vector2.lerp(velx / 65535), Vector2.lerp(vely / 65535));
@@ -684,14 +684,15 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 movementTick++;
                 (sender as any)[_movementTick] = movementTick;
 
-                if (movementTick % 2 !== 0) {
+                if (movementTick % this.worker.config.optimizations.movement.updateRate !== 0) {
                     return;
                 }
             }
         }
 
-        const writer = this.worker.config.optimisations.movement.reuseBuffer
+        const writer = this.worker.config.optimizations.movement.reuseBuffer
             ? HazelWriter.alloc(22)
+                .uint8(0)
                 .write(movementPacket, MessageDirection.Clientbound, this.decoder)
             : undefined;
 
@@ -700,17 +701,17 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         for (const [ clientId, player ] of this.players) {
             const connection = this.connections.get(clientId);
 
-            if (!connection || !player.transform)
+            if (player === sender || !connection)
                 continue;
 
-            if (this.worker.config.optimisations.movement.visionChecks) {
+            if (player.transform && this.worker.config.optimizations.movement.visionChecks) {
                 const dist = component.position.dist(player.transform.position);
 
                 if (dist >= 7) // todo: ignore this check if the player is near the admin table
                     continue;
             }
 
-            if (this.worker.config.optimisations.movement.deadChecks && !sender.playerInfo?.isDead && player.playerInfo?.isDead)
+            if (this.worker.config.optimizations.movement.deadChecks && !sender.playerInfo?.isDead && player.playerInfo?.isDead)
                 continue;
 
             if (writer) {
@@ -743,7 +744,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         const includeConnections = this.getConnections(include);
         const excludedConnections = this.getConnections(exclude);
 
-        if (!this.worker.config.optimisations.disablePerspectives) {
+        if (!this.worker.config.optimizations.disablePerspectives) {
             for (let i = 0; i < this.activePerspectives.length; i++) {
                 const activePerspective = this.activePerspectives[i];
 

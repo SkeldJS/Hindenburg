@@ -1,5 +1,24 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.5": {
+    "version": "1.0.5",
+    "contributors": ["edward"],
+    "date": "2021-12-11",
+    "notes": [
+      {
+        "description": "Update GameData preset filter",
+        "commits": ["92b0fb530b0ed6a8561eb32f074f2ad0c62063aa"]
+      },
+      {
+        "description": "Add optimisation strategies configuration",
+        "commits": ["ee5e55e984bfee08cde98a7d0655f2c58abe349c"]
+      },
+      {
+        "description": "Update handling of unregistered reactor rpcs to broadcast them",
+        "commits": ["81944633faceecad4116865ba2f34b7fa2c88020"]
+      }
+    ]
+  },
   "1.0.4": {
     "version": "1.0.4",
     "contributors": ["edward"],

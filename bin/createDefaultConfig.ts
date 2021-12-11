@@ -65,7 +65,7 @@ export function createDefaultConfig(): HindenburgConfig {
             },
             createTimeout: 10
         },
-        optimisations: {
+        optimizations: {
             movement: {
                 reuseBuffer: true,
                 updateRate: 1,

@@ -617,7 +617,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
-                if (this.config.optimisations.disablePerspectives) {
+                if (this.config.optimizations.disablePerspectives) {
                     this.logger.warn("Perspectives are disabled");
                     return;
                 }

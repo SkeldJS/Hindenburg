@@ -270,7 +270,7 @@ export class Connection {
      * ```
      */
     getPlayer() {
-        if (!this.worker.config.optimisations.disablePerspectives) {
+        if (!this.worker.config.optimizations.disablePerspectives) {
             const playerPerspective = this.room?.playerPerspectives.get(this.clientId);
             if (playerPerspective) {
                 return playerPerspective.players.get(this.clientId);

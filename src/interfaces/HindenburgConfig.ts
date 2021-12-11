@@ -315,7 +315,7 @@ export interface RoomsConfig extends HostableOptions {
     createTimeout: number;
 }
 
-export interface MovementOptimisations {
+export interface MovementOptimizations {
     /**
      * Whether or not to re-use the buffer to send to every client, instead of
      * re-constructing the packet each time.
@@ -344,12 +344,12 @@ export interface MovementOptimisations {
     deadChecks: boolean;
 }
 
-export interface OptimisationsConfig {
+export interface OptimizationsConfig {
     /**
      * Options regarding movement packets, since they are the most frequent and
      * most likely to put a lot of strain on the server.
      */
-    movement: MovementOptimisations;
+    movement: MovementOptimizations;
     /**
      * Whether or not to completely disable the perspective API for Hindenburg.
      * @default false
@@ -423,5 +423,5 @@ export interface HindenburgConfig {
      * Options regarding different optimisations that Hindenburg can use to perform
      * better in high-load scenarios.
      */
-    optimisations: OptimisationsConfig
+    optimizations: OptimizationsConfig
 }

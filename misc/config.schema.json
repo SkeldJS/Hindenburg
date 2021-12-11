@@ -978,6 +978,40 @@
           "default": 10
         }
       }
+    },
+    "optimizations": {
+      "type": "object",
+      "properties": {
+        "movement": {
+          "type": "object",
+          "properties": {
+            "reuseBuffer": {
+              "type": "boolean",
+              "description": "Whether or not to re-use the buffer to send to every client, instead of re-constructing the packet each time.",
+              "default": true
+            },
+            "updateRate": {
+              "type": "number",
+              "description": "How often to actually broadcast movement packets from a single player, should be a very low number, between 1 and 3, where 1 is the most frequent (every packet is broadcasted) and 3 is the least frequent.",
+              "default": 1
+            },
+            "visionChecks": {
+              "type": "boolean",
+              "description": "Whether or not to check whether or not the player receiving each movement packet is in the vision of the player that moved, so-as to only send movement packets to those who can see it.",
+              "default": false
+            },
+            "deadChecks": {
+              "type": "boolean",
+              "description": "Whether or not to check whether the sender and the reciever are dead so as to not send movement packets from alive players to dead players.",
+              "default": true
+            }
+          }
+        },
+        "disablePerspectives": {
+          "type": "boolean",
+          "description": "Whether or not to completely disable the perspective API for Hindenburg."
+        }
+      }
     }
   }
 }

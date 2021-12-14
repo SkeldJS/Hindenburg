@@ -54,6 +54,8 @@ export class ModdedHelloPacket extends BaseRootPacket {
 
         reader.int32();
 
+        reader.jump(1); // todo: figure out what this means
+
         if (reader.left) {
             const protocolversion = reader.uint8();
             const modcount = reader.packed();

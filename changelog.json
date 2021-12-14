@@ -1,5 +1,16 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.7": {
+    "version": "1.0.7",
+    "contributors": ["edward"],
+    "date": "2021-12-14",
+    "notes": [
+      {
+        "description": "Update for 2021.12.14",
+        "commits": ["f3c94939a53e4fc502894cfdcec9eb7e459773e0"]
+      }
+    ]
+  },
   "1.0.6": {
     "version": "1.0.6",
     "contributors": ["edward"],

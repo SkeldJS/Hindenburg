@@ -1,5 +1,20 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.8": {
+    "version": "1.0.8",
+    "contributors": ["edward"],
+    "date": "2022-01-03",
+    "notes": [
+      {
+        "description": "Add and emit worker.loadplugin and worker.importplugin",
+        "commits": ["91635964586e7b30e0975d27d6a32f32277a058d", "d92e0776c9edd5f92d93ad6aac433d8206878228"]
+      },
+      {
+        "description": "Fix logic for sending movement packets with deadChecks",
+        "commits": ["44885e2f5afd78997dd638bc57c9e48d10ee3dea"]
+      }
+    ]
+  },
   "1.0.7": {
     "version": "1.0.7",
     "contributors": ["edward"],

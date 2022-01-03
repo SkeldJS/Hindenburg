@@ -711,7 +711,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                     continue;
             }
 
-            if (this.worker.config.optimizations.movement.deadChecks && !sender.playerInfo?.isDead && player.playerInfo?.isDead)
+            if (this.worker.config.optimizations.movement.deadChecks && sender.playerInfo?.isDead && !player.playerInfo?.isDead)
                 continue;
 
             if (writer) {

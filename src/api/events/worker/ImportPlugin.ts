@@ -1,10 +1,10 @@
-import { RevertableEvent } from "@skeldjs/events";
+import { CancelableEvent } from "@skeldjs/events";
 import { PluginLoader, RoomPlugin, WorkerPlugin } from "../../../handlers";
 
 /**
  * Emitted when a plugin is imported to be loaded.
  */
-export class WorkerImportPluginEvent extends RevertableEvent {
+export class WorkerImportPluginEvent extends CancelableEvent {
     static eventName = "worker.importplugin" as const;
     eventName = "worker.importplugin" as const;
 
@@ -14,7 +14,7 @@ export class WorkerImportPluginEvent extends RevertableEvent {
         /**
          * The path that is being imported to be loaded.
          */
-        public readonly pathName: string,
+        public readonly pluginPath: string,
         /**
          * The plugin that has been loaded.
          */

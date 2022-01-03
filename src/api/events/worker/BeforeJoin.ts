@@ -5,14 +5,14 @@ import { Room } from "../../../Room";
 /**
  * Emitted before a player successfully or unsuccessfully joins a room on the
  * server.
- * 
+ *
  * This event allows you to redirect the player to another game, or to completely
  * prevent them from joining.
- * 
+ *
  * A better event to use for when a player has successfully joined a room is
  * the [`player.join`](https://skeld.js.org/classes/core.playerjoinevent.html)
  * event.
- * 
+ *
  * @example
  * ```ts
  * .@EventListener("worker.beforejoin")

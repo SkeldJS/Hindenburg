@@ -1,6 +1,6 @@
 import { RevertableEvent } from "@skeldjs/events";
 import { Room } from "../../../Room";
-import { PluginLoader, RoomPlugin, WorkerPlugin } from "../../../handlers";
+import { RoomPlugin, WorkerPlugin } from "../../../handlers";
 
 /**
  * Emitted when a plugin is loaded into the server somewhere, either in the
@@ -9,6 +9,8 @@ import { PluginLoader, RoomPlugin, WorkerPlugin } from "../../../handlers";
  *
  * If you listen for this event in your plugin, you should probably set the `order`
  * in your {@link PluginMetadata} to `"first"`.
+ *
+ * This is called before the {@link Plugin.onPluginLoad} lifecycle method.
  */
 export class WorkerLoadPluginEvent extends RevertableEvent {
     static eventName = "worker.loadplugin" as const;
@@ -18,7 +20,7 @@ export class WorkerLoadPluginEvent extends RevertableEvent {
         /**
          * The plugin that has been loaded.
          */
-        public readonly plugin: typeof WorkerPlugin|typeof RoomPlugin,
+        public readonly plugin: WorkerPlugin|RoomPlugin,
         /**
          * The room that this plugin has been loaded into, if the plugin is a
          * {@link RoomPlugin}.
@@ -32,7 +34,7 @@ export class WorkerLoadPluginEvent extends RevertableEvent {
      * Whether or not the plugin was a room plugin, asserts the type of
      * {@link WorkerLoadPluginEvent.plugin} and {@link WorkerLoadPluginEvent.room}.
      */
-    isRoomPlugin(): this is { plugin: typeof RoomPlugin; room: Room } {
-        return PluginLoader.isRoomPlugin(this.plugin);
+    isRoomPlugin(): this is { plugin: RoomPlugin; room: Room } {
+        return this.plugin instanceof RoomPlugin;
     }
 }

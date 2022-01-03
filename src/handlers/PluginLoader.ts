@@ -26,7 +26,9 @@ import {
     MessageHandlerOptions,
     shouldPreventLoading,
     RegisteredPrefab,
-    getPluginRegisteredPrefabs
+    getPluginRegisteredPrefabs,
+    WorkerImportPluginEvent,
+    WorkerLoadPluginEvent
 } from "../api";
 
 import { recursiveClone } from "../util/recursiveClone";
@@ -766,21 +768,31 @@ export class PluginLoader {
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             return false;
 
-        const isWorkerPlugin = PluginLoader.isWorkerPlugin(pluginCtr);
-        const isRoomPlugin = PluginLoader.isRoomPlugin(pluginCtr);
+        const ev = await this.worker.emit(
+            new WorkerImportPluginEvent(
+                pluginPath,
+                pluginCtr
+            )
+        );
+
+        if (ev.canceled)
+            return false;
+
+        const isWorkerPlugin = PluginLoader.isWorkerPlugin(ev.alteredPlugin);
+        const isRoomPlugin = PluginLoader.isRoomPlugin(ev.alteredPlugin);
 
         if (!isWorkerPlugin && !isRoomPlugin)
             return false;
 
         if (isWorkerPlugin) {
-            this.workerPlugins.set(pluginCtr.meta.id, pluginCtr as unknown as typeof WorkerPlugin);
+            this.workerPlugins.set(ev.alteredPlugin.meta.id, ev.alteredPlugin);
         } else if (isRoomPlugin) {
-            this.roomPlugins.set(pluginCtr.meta.id, pluginCtr as unknown as typeof RoomPlugin);
+            this.roomPlugins.set(ev.alteredPlugin.meta.id, ev.alteredPlugin);
         }
 
-        Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, pluginCtr);
+        Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, ev.alteredPlugin);
 
-        return pluginCtr;
+        return ev.alteredPlugin;
     }
 
     private applyChatCommands(room: Room) {
@@ -1034,6 +1046,22 @@ export class PluginLoader {
                 eventName: eventListenerInfo.eventName,
                 handler: fn
             });
+        }
+
+        const ev = await this.worker.emit(
+            new WorkerLoadPluginEvent(
+                initPlugin,
+                room
+            )
+        );
+
+        if (ev.reverted) {
+            if (initPlugin instanceof RoomPlugin) {
+                this.unloadPlugin(initPlugin, room!);
+            } else {
+                this.unloadPlugin(initPlugin);
+            }
+            throw new Error("Event reverted load plugin");
         }
 
         await initPlugin.onPluginLoad();

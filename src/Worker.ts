@@ -125,7 +125,7 @@ export type WorkerEvents = RoomEvents
         WorkerGetGameListEvent
     ]>;
 
-export const HINDENBURG_LATEST_ACCEPTED_VERSIONS = [ new VersionInfo(2021, 12, 14, 0) ];
+export const hindenburgLatestAcceptedVersions = [ new VersionInfo(2021, 12, 14, 0) ];
 
 export class Worker extends EventEmitter<WorkerEvents> {
     /**
@@ -837,7 +837,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             let flag = true;
-            for (const version of HINDENBURG_LATEST_ACCEPTED_VERSIONS) {
+            for (const version of hindenburgLatestAcceptedVersions) {
                 if (version.encode() === sender.clientVersion.encode()) {
                     flag = false;
                 }

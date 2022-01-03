@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RoomBeforeDestroyEvent | @skeldjs/hindenburg</title>
+	<title>WorkerLoadPluginEvent | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="RoomBeforeDestroyEvent.html">RoomBeforeDestroyEvent</a>
+					<a href="WorkerLoadPluginEvent.html">WorkerLoadPluginEvent</a>
 				</li>
 			</ul>
-			<h1>Class RoomBeforeDestroyEvent</h1>
+			<h1>Class WorkerLoadPluginEvent</h1>
 		</div>
 	</div>
 </header>
@@ -70,20 +70,23 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Emitted just before a room is destroyed.</p>
+						<p>Emitted when a plugin is loaded into the server somewhere, either in the
+							worker itself globally, or in a specific room. Use <a href="WorkerLoadPluginEvent.html#isRoomPlugin">WorkerLoadPluginEvent.isRoomPlugin</a>
+						to find out programmatically what kind of plugin has been loaded.</p>
 					</div>
-					<p>See <a href="RoomDestroyEvent.html">RoomDestroyEvent</a> to guarantee that the room has been destroyed
-					and cannot be brought back.</p>
+					<p>If you listen for this event in your plugin, you should probably set the <code>order</code>
+					in your <a href="../interfaces/PluginMetadata.html">PluginMetadata</a> to <code>&quot;first&quot;</code>.</p>
+					<p>This is called before the <a href="Plugin.html#onPluginLoad">Plugin.onPluginLoad</a> lifecycle method.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">CancelableEvent</span>
+						<span class="tsd-signature-type">RevertableEvent</span>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">RoomBeforeDestroyEvent</span>
+								<span class="target">WorkerLoadPluginEvent</span>
 							</li>
 						</ul>
 					</li>
@@ -96,23 +99,24 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="RoomBeforeDestroyEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="RoomBeforeDestroyEvent.html#canceled" class="tsd-kind-icon">canceled</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="RoomBeforeDestroyEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="RoomBeforeDestroyEvent.html#reason" class="tsd-kind-icon">reason</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="RoomBeforeDestroyEvent.html#room" class="tsd-kind-icon">room</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-inherited tsd-is-external">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="RoomBeforeDestroyEvent.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="WorkerLoadPluginEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="WorkerLoadPluginEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="WorkerLoadPluginEvent.html#plugin" class="tsd-kind-icon">plugin</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="WorkerLoadPluginEvent.html#reverted" class="tsd-kind-icon">reverted</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="WorkerLoadPluginEvent.html#room" class="tsd-kind-icon">room</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="RoomBeforeDestroyEvent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="WorkerLoadPluginEvent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="WorkerLoadPluginEvent.html#isRoomPlugin" class="tsd-kind-icon">is<wbr>Room<wbr>Plugin</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="WorkerLoadPluginEvent.html#revert" class="tsd-kind-icon">revert</a></li>
 							</ul>
 						</section>
 					</div>
@@ -123,70 +127,49 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
 					<a name="eventName" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.beforedestroy&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;worker.loadplugin&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides CancelableEvent.eventName</p>
+						<p>Overrides RevertableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/14f1e18/src/api/events/room/BeforeDestroy.ts#L12">src/api/events/room/BeforeDestroy.ts:12</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-					<a name="canceled" class="tsd-anchor"></a>
-					<h3>canceled</h3>
-					<div class="tsd-signature tsd-kind-icon">canceled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from CancelableEvent.canceled</p>
-						<ul>
-							<li>Defined in node_modules/@skeldjs/events/dist/lib/CancelableEvent.d.ts:3</li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/14f1e18/src/api/events/worker/LoadPlugin.ts#L16">src/api/events/worker/LoadPlugin.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
 					<a name="eventName-1" class="tsd-anchor"></a>
 					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.beforedestroy&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;worker.loadplugin&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides CancelableEvent.eventName</p>
+						<p>Overrides RevertableEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/14f1e18/src/api/events/room/BeforeDestroy.ts#L13">src/api/events/room/BeforeDestroy.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/14f1e18/src/api/events/worker/LoadPlugin.ts#L17">src/api/events/worker/LoadPlugin.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="reason" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> reason</h3>
-					<div class="tsd-signature tsd-kind-icon">reason<span class="tsd-signature-symbol">:</span> <a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></div>
+					<a name="plugin" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> plugin</h3>
+					<div class="tsd-signature tsd-kind-icon">plugin<span class="tsd-signature-symbol">:</span> <a href="WorkerPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol"> | </span><a href="RoomPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a></div>
 					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+					<a name="reverted" class="tsd-anchor"></a>
+					<h3>reverted</h3>
+					<div class="tsd-signature tsd-kind-icon">reverted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from RevertableEvent.reverted</p>
+						<ul>
+							<li>Defined in node_modules/@skeldjs/events/dist/lib/RevertableEvent.d.ts:3</li>
+						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="room" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> room</h3>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> room</h3>
 					<div class="tsd-signature tsd-kind-icon">room<span class="tsd-signature-symbol">:</span> <a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></div>
 					<aside class="tsd-sources">
 					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-external">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-					<a name="cancel" class="tsd-anchor"></a>
-					<h3>cancel</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Inherited from CancelableEvent.cancel</p>
-								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/CancelableEvent.d.ts:5</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -195,26 +178,70 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<wbr>Before<wbr>Destroy<wbr>Event<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="RoomBeforeDestroyEvent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomBeforeDestroyEvent</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Worker<wbr>Load<wbr>Plugin<wbr>Event<span class="tsd-signature-symbol">(</span>plugin<span class="tsd-signature-symbol">: </span><a href="WorkerPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol"> | </span><a href="RoomPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a>, room<span class="tsd-signature-symbol">?: </span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="WorkerLoadPluginEvent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerLoadPluginEvent</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides CancelableEvent.constructor</p>
+								<p>Overrides RevertableEvent.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/14f1e18/src/api/events/room/BeforeDestroy.ts#L15">src/api/events/room/BeforeDestroy.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/14f1e18/src/api/events/worker/LoadPlugin.ts#L19">src/api/events/worker/LoadPlugin.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>room: <a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
+									<h5>plugin: <a href="WorkerPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a><span class="tsd-signature-symbol"> | </span><a href="RoomPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a></h5>
 								</li>
 								<li>
-									<h5>reason: <a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> room: <a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="RoomBeforeDestroyEvent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomBeforeDestroyEvent</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="WorkerLoadPluginEvent.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerLoadPluginEvent</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="isRoomPlugin" class="tsd-anchor"></a>
+					<h3>is<wbr>Room<wbr>Plugin</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Room<wbr>Plugin<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{ </span>plugin<span class="tsd-signature-symbol">: </span><a href="RoomPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol">; </span>room<span class="tsd-signature-symbol">: </span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol"> }</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/14f1e18/src/api/events/worker/LoadPlugin.ts#L37">src/api/events/worker/LoadPlugin.ts:37</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether or not the plugin was a room plugin, asserts the type of
+									<a href="WorkerLoadPluginEvent.html#plugin">WorkerLoadPluginEvent.plugin</a> and <a href="WorkerLoadPluginEvent.html#room">WorkerLoadPluginEvent.room</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span><span class="tsd-signature-symbol"> is </span><span class="tsd-signature-symbol">{ </span>plugin<span class="tsd-signature-symbol">: </span><a href="RoomPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol">; </span>room<span class="tsd-signature-symbol">: </span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol"> }</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+					<a name="revert" class="tsd-anchor"></a>
+					<h3>revert</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">revert<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from RevertableEvent.revert</p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/RevertableEvent.d.ts:5</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -290,28 +317,31 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="RoomBeforeDestroyEvent.html" class="tsd-kind-icon">Room<wbr>Before<wbr>Destroy<wbr>Event</a>
+						<a href="WorkerLoadPluginEvent.html" class="tsd-kind-icon">Worker<wbr>Load<wbr>Plugin<wbr>Event</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-								<a href="RoomBeforeDestroyEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="RoomBeforeDestroyEvent.html#cancel" class="tsd-kind-icon">cancel</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-								<a href="RoomBeforeDestroyEvent.html#canceled" class="tsd-kind-icon">canceled</a>
+								<a href="WorkerLoadPluginEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="RoomBeforeDestroyEvent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="WorkerLoadPluginEvent.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-								<a href="RoomBeforeDestroyEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a>
+								<a href="WorkerLoadPluginEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="WorkerLoadPluginEvent.html#isRoomPlugin" class="tsd-kind-icon">is<wbr>Room<wbr>Plugin</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="RoomBeforeDestroyEvent.html#reason" class="tsd-kind-icon">reason</a>
+								<a href="WorkerLoadPluginEvent.html#plugin" class="tsd-kind-icon">plugin</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="WorkerLoadPluginEvent.html#revert" class="tsd-kind-icon">revert</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
+								<a href="WorkerLoadPluginEvent.html#reverted" class="tsd-kind-icon">reverted</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="RoomBeforeDestroyEvent.html#room" class="tsd-kind-icon">room</a>
+								<a href="WorkerLoadPluginEvent.html#room" class="tsd-kind-icon">room</a>
 							</li>
 						</ul>
 					</li>

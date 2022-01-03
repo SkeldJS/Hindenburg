@@ -1,7 +1,7 @@
 import { BaseRpcMessage, MessageDirection, PacketDecoder } from "@skeldjs/protocol";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 
-import { BaseReactorRpcMessage } from "../api";
+import { BaseReactorRpcMessage } from "../api/BaseReactorRpcMessage";
 
 export class UnknownReactorRpcMessage extends BaseReactorRpcMessage {
     constructor(

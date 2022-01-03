@@ -58,3 +58,5 @@ Hindenburg also adds a few more events, and modifies some skeldjs ones:
 ### Worker
 * {@link WorkerBeforeJoinEvent | `worker.beforejoin`}
 * {@link WorkerGetGameListEvent | `worker.getgamelist`}
+* {@link WorkerImportPluginEvent | `worker.importplugin`}
+* {@link WorkerLoadPluginEvent | `worker.loadplugin`}

@@ -53,7 +53,6 @@ export class ModdedHelloPacket extends BaseRootPacket {
         const platform = reader.read(PlatformSpecificData);
 
         reader.int32();
-
         reader.jump(1); // todo: figure out what this means
 
         if (reader.left) {

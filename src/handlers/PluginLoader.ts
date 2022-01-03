@@ -748,7 +748,7 @@ export class PluginLoader {
      * if (!pluginCtr) {
      *   console.log("Failed to load my plugin!");
      *   return;
-     * }
+     * }x
      * ```
      */
     async importPlugin(pluginPath: string): Promise<typeof WorkerPlugin|typeof RoomPlugin|false> {
@@ -964,8 +964,8 @@ export class PluginLoader {
         }
 
         const initPlugin = isWorkerPlugin
-            ? new (pluginCtr as unknown as typeof WorkerPlugin)(this.worker, defaultConfig)
-            : new (pluginCtr as unknown as typeof RoomPlugin)(room!, defaultConfig);
+            ? new pluginCtr(this.worker, defaultConfig)
+            : new pluginCtr(room!, defaultConfig);
 
         const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
         const registeredPrefabs = getPluginRegisteredPrefabs(pluginCtr);

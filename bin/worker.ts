@@ -303,6 +303,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     } catch (e) {
         versionSpinner.fail();
         logger.error("Failed to check for updates, nevermind");
+        logger.error("Error: %s", e as Error);
     }
 }
 

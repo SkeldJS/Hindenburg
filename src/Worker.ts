@@ -35,6 +35,7 @@ import {
     PacketDecoder,
     PingPacket,
     PlatformSpecificData,
+    QueryPlatformIdsMessage,
     ReliablePacket,
     RpcMessage,
     StartGameMessage
@@ -1006,6 +1007,26 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
 
             await this.attemptJoin(sender, message.code);
+        });
+
+        this.decoder.on(QueryPlatformIdsMessage, async (message, direction, { sender }) => {
+            const room = this.rooms.get(message.gameCode);
+            const playersPlatformSpecificData: PlatformSpecificData[] = [];
+
+            if (room) {
+                room.players.forEach(player => {
+                    playersPlatformSpecificData.push(player.platform);
+                });
+            }
+
+            await sender.sendPacket(
+                new ReliablePacket(
+                    sender.getNextNonce(),
+                    [
+                        new QueryPlatformIdsMessage(message.gameCode, playersPlatformSpecificData)
+                    ]
+                )
+            );
         });
 
         this.decoder.on(RpcMessage, async (message, direction, { sender }) => {

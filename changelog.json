@@ -1,5 +1,28 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.9": {
+    "version": "1.0.9",
+    "contributors": ["edward", "ILikePlayingGames"],
+    "date": "2022-02-20",
+    "notes": [
+      {
+        "description": "Update yarn and skeldjs",
+        "commits": ["c4f195d73e9b48b3f3f224a47ed3b62d56986f9c"]
+      },
+      {
+        "description": "Add support for QueryPlatformIdsMessage packet introduced in v2021.11.9",
+        "commits": ["8eba93740653fcfa86113b16ee2219b4d5e0c720"]
+      },
+      {
+        "description": "Update launch.json to run dev script",
+        "commits": ["a1df1e2ff369b488d42db1c70cc3bbd9cdae5284"]
+      },
+      {
+        "description": "Log check for updates error",
+        "commits": ["f9d211cda2098a5fb5d1f945fc079e9258f6f0fa"]
+      }
+    ]
+  },
   "1.0.8": {
     "version": "1.0.8",
     "contributors": ["edward"],

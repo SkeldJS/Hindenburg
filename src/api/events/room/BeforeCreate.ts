@@ -15,7 +15,7 @@ import { Connection } from "../../../Connection";
  * onWorkerBeforeCreate(ev: WorkerBeforeCreateEvent) {
  *   if (ev.client.mods.size > 0) {
  *     ev.cancel();
- *     return ev.client.joinError("You cannot create a room with Reactor enabled!!!");
+ *     return ev.client.disconnect("You cannot create a room with Reactor enabled!!!");
  *   }
  * }
  * ```

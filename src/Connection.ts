@@ -9,7 +9,6 @@ import { VersionInfo } from "@skeldjs/util";
 import {
     BaseRootPacket,
     DisconnectPacket,
-    JoinGameMessage,
     PlatformSpecificData,
     ReliablePacket,
     RemoveGameMessage
@@ -428,54 +427,6 @@ export class Connection {
                 messageJoined
             )
         );
-    }
-
-    /**
-     * Emit an error that occurred while the client attempted to create or join
-     * a room.
-     *
-     * Note that this does not disconnect the client, see {@link Connection.disconnect}.
-     * @param reason The error that the client encountered while creating or
-     * joining their room. Set to a string to use a custom message.
-     * @param message If the reason is custom, a custom message for the error
-     * that the client encountered.
-     * @example
-     * ```ts
-     * // A room that the client tried to join is full.
-     * await client.joinError(DisconnectReason.GameFull);
-     *
-     * // A room that the client tried to join is already full.
-     * await client.joinError(DisconectReason.GameStarted);
-     *
-     * // A custom reason for why the client could not join.
-     * await client.joinError("Alas, thou art barred from entering said establishment.")
-     * ```
-     */
-    async joinError(reason: string | DisconnectReason | Record<string, string> = DisconnectReason.Error, ...message: string[]): Promise<void> {
-        if (typeof reason === "object") {
-            const formatted = this.fgetLocale(reason, ...message);
-            if (!formatted)
-                return this.disconnect(DisconnectReason.Error);
-
-            return this.disconnect(DisconnectReason.Custom, formatted);
-        }
-
-        if (typeof reason === "string") {
-            return this.joinError(DisconnectReason.Custom, reason);
-        }
-
-        const messageJoined = message.join(" ");
-        await this.sendPacket(
-            new ReliablePacket(
-                this.getNextNonce(),
-                [
-                    new JoinGameMessage(reason, messageJoined)
-                ]
-            )
-        );
-
-        this.worker.logger.info("%s join error: %s (%s)",
-            this, reason, (messageJoined || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
     }
 
     /**

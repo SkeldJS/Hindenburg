@@ -1740,7 +1740,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.logger.info("%s attempted to join %s but there was no room with that code",
                 connection, fmtCode(code));
 
-            return connection.joinError(DisconnectReason.GameNotFound);
+            return connection.disconnect(DisconnectReason.GameNotFound);
         }
 
         if (ev.alteredRoom.bannedAddresses.has(connection.remoteInfo.address)) {
@@ -1752,13 +1752,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
         if (ev.alteredRoom.connections.size >= ev.alteredRoom.settings.maxPlayers) {
             this.logger.warn("%s attempted to join %s but it was full",
                 connection, foundRoom);
-            return connection.joinError(DisconnectReason.GameFull);
+            return connection.disconnect(DisconnectReason.GameFull);
         }
 
         if (ev.alteredRoom.gameState === GameState.Started) {
             this.logger.warn("%s attempted to join %s but the game had already started",
                 connection, foundRoom);
-            return connection.joinError(DisconnectReason.GameStarted);
+            return connection.disconnect(DisconnectReason.GameStarted);
         }
 
         const roomHost = ev.alteredRoom.host;
@@ -1768,11 +1768,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (hostConnection.chatMode === QuickChatMode.FreeChat) {
                     this.logger.warn("%s attempted to join %s with the wrong chat mode (the room was on free-chat only)",
                         ev.client, ev.alteredRoom);
-                    return connection.joinError(i18n.invalid_quick_chat_mode_free_chat);
+                    return connection.disconnect(i18n.invalid_quick_chat_mode_free_chat);
                 } else if (hostConnection.chatMode === QuickChatMode.QuickChat) {
                     this.logger.warn("%s attempted to join %s with the wrong chat mode (the room was on quick-chat only)",
                         ev.client, ev.alteredRoom);
-                    return connection.joinError(i18n.invalid_quick_chat_mode_quick_chat);
+                    return connection.disconnect(i18n.invalid_quick_chat_mode_quick_chat);
                 }
             }
         }
@@ -1784,11 +1784,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const hostConnection = ev.alteredRoom.connections.get(roomHost.clientId);
             if (hostConnection) {
                 if (hostConnection.usingReactor && !connection.usingReactor) {
-                    return connection.joinError(i18n.reactor_required_for_room);
+                    return connection.disconnect(i18n.reactor_required_for_room);
                 }
 
                 if (!hostConnection.usingReactor && connection.usingReactor) {
-                    return connection.joinError(i18n.reactor_not_enabled_for_room);
+                    return connection.disconnect(i18n.reactor_not_enabled_for_room);
                 }
 
                 for (const [ hostModId, hostMod ] of hostConnection.mods) {
@@ -1804,12 +1804,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     const clientMod = connection.mods.get(hostModId);
 
                     if (!clientMod) {
-                        return connection.joinError(i18n.missing_required_mod,
+                        return connection.disconnect(i18n.missing_required_mod,
                             hostMod.modId, hostMod.modVersion);
                     }
 
                     if (clientMod.modVersion !== hostMod.modVersion) {
-                        return connection.joinError(i18n.bad_mod_version,
+                        return connection.disconnect(i18n.bad_mod_version,
                             clientMod.modId, clientMod.modVersion, hostMod.modVersion);
                     }
                 }
@@ -1827,7 +1827,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     const hostMod = hostConnection.mods.get(clientModId);
 
                     if (!hostMod) {
-                        return connection.joinError(i18n.mod_not_recognised,
+                        return connection.disconnect(i18n.mod_not_recognised,
                             clientMod.modId);
                     }
                 }

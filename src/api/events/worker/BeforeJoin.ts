@@ -20,7 +20,7 @@ import { Room } from "../../../Room";
  *   for (const [ netId, mod ] of ev.client.mods) {
  *     if (mod.modid === "com.andruzzzhka.customserversclient") {
  *       ev.cancel();
- *       return ev.client.joinError("Do not join with custom servers client!!!");
+ *       return ev.client.disconnect("Do not join with custom servers client!!!");
  *     }
  *   }
  * }

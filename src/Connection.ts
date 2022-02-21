@@ -45,7 +45,7 @@ export class SentPacket {
     ) {}
 }
 
-const logLanguages = {
+export const logLanguages = {
     [Language.English]: "english",
     [Language.SpanishAmericas]: "spanish (latin america)",
     [Language.PortugueseBrazil]: "portuguese (brazil)",
@@ -62,6 +62,20 @@ const logLanguages = {
     [Language.ChineseSimplified]: "chinese (simplified)",
     [Language.ChineseTraditional]: "chinese (traditional)",
     [Language.Irish]: "irish"
+};
+
+export const logPlatforms = {
+    [Platform.Unknown]: "unknown platform",
+    [Platform.StandaloneEpicPC]: "epic",
+    [Platform.StandaloneSteamPC]: "steam",
+    [Platform.StandaloneMac]: "mac",
+    [Platform.StandaloneWin10]: "windows",
+    [Platform.StandaloneItch]: "itch",
+    [Platform.IPhone]: "iphone",
+    [Platform.Android]: "android",
+    [Platform.Switch]: "switch",
+    [Platform.Xbox]: "xbox",
+    [Platform.Playstation]: "playstation"
 };
 
 export const locales = {
@@ -243,6 +257,10 @@ export class Connection {
                     : this.remoteInfo.address,
                 ping: this.roundTripPing + "ms",
                 room: this.room ? fmtCode(this.room.code) : undefined,
+                mods: this.numMods + " mods",
+                level: "level " + this.playerLevel,
+                version: this.clientVersion.toString(),
+                platform: (logPlatforms as any)[this.platform.platformTag],
                 language: (logLanguages as any)[this.language]
             }
         );

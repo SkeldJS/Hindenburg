@@ -195,6 +195,10 @@
                   "ip",
                   "ping",
                   "room",
+                  "mods",
+                  "level",
+                  "version",
+                  "platform",
                   "language"
                 ]
               },
@@ -235,7 +239,11 @@
                 "enum": [
                   "id",
                   "ping",
-                  "ishost"
+                  "mods",
+                  "level",
+                  "ishost",
+                  "platform",
+                  "language"
                 ]
               },
               "uniqueItems": true,

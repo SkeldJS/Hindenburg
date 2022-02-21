@@ -95,6 +95,7 @@ import {
 import { fmtCode } from "./util/fmtCode";
 import { fmtLogFormat } from "./util/fmtLogFormat";
 import { Logger } from "./logger";
+import { logLanguages, logPlatforms } from ".";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: PlayerData<BaseRoom>) {
@@ -108,7 +109,11 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
             {
                 id: this.clientId,
                 ping: connection?.roundTripPing,
-                ishost: isHost ? "host" : isActingHost ? "acting host" : undefined
+                mods: connection ? connection.numMods + " mod" + (connection.numMods === 1 ? "" : "s") : undefined,
+                level: connection ? "level " + connection.playerLevel : undefined,
+                ishost: isHost ? "host" : isActingHost ? "acting host" : undefined,
+                platform: connection ? (logPlatforms as any)[connection.platform.platformTag] : undefined,
+                language: connection ? (logLanguages as any)[connection.language] : undefined
             }
         );
 

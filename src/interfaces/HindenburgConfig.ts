@@ -85,9 +85,9 @@ export interface AnticheatRuleConfig {
     rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
 }
 
-export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"language";
-export type RoomFormatOptions = "players"|"map";
-export type PlayerFormatOptions = "id"|"ping"|"ishost";
+export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"mods"|"level"|"version"|"platform"|"language";
+export type RoomFormatOptions = "players"|"map"|"issaah";
+export type PlayerFormatOptions = "id"|"ping"|"mods"|"level"|"ishost"|"platform"|"language";
 
 export interface LoggingConfig {
     /**

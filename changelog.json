@@ -1,5 +1,20 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.10": {
+    "version": "1.0.10",
+    "contributors": ["edward"],
+    "date": "2022-02-21",
+    "notes": [
+      {
+        "description": "Add more logging options",
+        "commits": ["9b46e0786af013f86e755d0710a8d8069aed6276"]
+      },
+      {
+        "description": "Remove deprecated joinError for disconnect",
+        "commits": ["9fe89aa9b9c7407ef20c45831b1ef4f4ae1920cf"]
+      }
+    ]
+  },
   "1.0.9": {
     "version": "1.0.9",
     "contributors": ["edward", "ILikePlayingGames"],

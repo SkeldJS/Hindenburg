@@ -1281,6 +1281,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.decoder.on(GetGameListMessage, async (message, direction, { sender }) => {
             const returnList: GameListing[] = [];
+            const listingIp = sender.remoteInfo.address !== "127.0.0.1" ? this.config.socket.ip : "127.0.0.1";
+
             for (const [ gameCode, room ] of this.rooms) {
                 if (gameCode === 0x20 /* local game */) {
                     continue;
@@ -1300,7 +1302,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 ) {
                     const gameListing = new GameListing(
                         room.code,
-                        this.config.socket.ip,
+                        listingIp,
                         this.config.socket.port,
                         room.roomName,
                         room.players.size,

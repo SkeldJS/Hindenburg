@@ -319,6 +319,10 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     if (workerConfig.socket.ip === "auto") {
         workerConfig.socket.ip = externalIp;
     }
+    if ("broadcastUnknownGameData" in workerConfig.socket) {
+        workerConfig.socket.acceptUnknownGameData = (workerConfig as any).broadcastUnknownGameData;
+        logger.warn("Deprecation: 'socket.broadcastUnknownGameData' has been renamed to 'socket.acceptUnknownGameData' to better reflect its purpose");
+    }
 
     if (workerConfig.checkForUpdates) {
         await checkForUpdates(logger, workerConfig.autoUpdate);

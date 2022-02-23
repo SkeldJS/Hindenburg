@@ -20,7 +20,7 @@ export interface SocketConfig {
      * Whether or not to broadcast gamedata messages that don't get handled by the server.
      * @default false
      */
-    broadcastUnknownGamedata: boolean;
+    acceptUnknownGameData: boolean;
     /**
      * Whether to order reliable packets received from clients.
      * @default false

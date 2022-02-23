@@ -24,6 +24,7 @@ import {
     DataMessage,
     DisconnectPacket,
     EndGameMessage,
+    GameDataMessage,
     GameDataToMessage,
     GameListing,
     GameSettings,
@@ -32,13 +33,16 @@ import {
     JoinGameMessage,
     KickPlayerMessage,
     MessageDirection,
+    NormalPacket,
     PacketDecoder,
     PingPacket,
     PlatformSpecificData,
     QueryPlatformIdsMessage,
     ReliablePacket,
     RpcMessage,
-    StartGameMessage
+    StartGameMessage,
+    UnknownGameDataMessage,
+    UnknownRootMessage
 } from "@skeldjs/protocol";
 
 import {
@@ -92,8 +96,6 @@ import { PluginLoader, WorkerPlugin } from "./handlers";
 
 import {
     ReactorRpcMessage,
-    GameDataMessage,
-    UnknownGameDataMessage,
     ReactorPluginDeclarationMessage
 } from "./packets";
 
@@ -215,7 +217,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.connections = new Map;
         this.rooms = new Map;
 
-        this.decoder = new PacketDecoder;
+        this.decoder = new PacketDecoder({
+            useDtlsLayout: false,
+            writeUnknownGameData: true,
+            writeUnknownRootMessages: true
+        });
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
         this.vorpal
@@ -1126,7 +1132,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     continue;
 
                 // don't broadcast it if it's unknown
-                if (!this.config.socket.broadcastUnknownGamedata && child instanceof UnknownGameDataMessage) {
+                if (!this.config.socket.acceptUnknownGameData && child instanceof UnknownGameDataMessage) {
                     continue;
                 }
 
@@ -1582,6 +1588,19 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                 []
                             )
                         );
+
+                        const isNormal = parsedReliable.messageTag === SendOption.Unreliable ||
+                            parsedReliable.messageTag === SendOption.Reliable;
+                        if (isNormal) {
+                            const parsedNormal = parsedPacket as NormalPacket;
+                            for (let i = 0; i < parsedNormal.children.length; i++) {
+                                const child = parsedNormal.children[i];
+                                if (child instanceof UnknownRootMessage) {
+                                    this.logger.warn("%s sent an unknown root message with tag %s",
+                                        cachedConnection, child.messageTag, child.bytes.toString("hex"));
+                                }
+                            }
+                        }
 
                         /**
                          * Patches a bug with reactor whereby the nonce sent for the mod declaration is 0,

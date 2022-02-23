@@ -11,7 +11,7 @@ export function createDefaultConfig(): HindenburgConfig {
         defaultLanguage: "en",
         socket: {
             port: 22023,
-            broadcastUnknownGamedata: false,
+            acceptUnknownGameData: false,
             messageOrdering: false,
             ip: "auto"
         },

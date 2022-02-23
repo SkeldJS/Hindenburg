@@ -32,6 +32,7 @@ import {
     JoinGameMessage,
     KickPlayerMessage,
     MessageDirection,
+    NormalPacket,
     PacketDecoder,
     PingPacket,
     PlatformSpecificData,
@@ -1580,6 +1581,18 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                 []
                             )
                         );
+
+                        const isNormal = parsedReliable.messageTag === SendOption.Unreliable ||
+                            parsedReliable.messageTag === SendOption.Reliable;
+
+                        if (isNormal) {
+                            const parsedNormal = parsedPacket as NormalPacket;
+
+                            if (parsedNormal.children.length === 0) {
+                                this.logger.warn("%s sent an unknown normal packet with nonce %s (%s)",
+                                    cachedConnection, parsedReliable.nonce, buffer.toString("hex"));
+                            }
+                        }
 
                         /**
                          * Patches a bug with reactor whereby the nonce sent for the mod declaration is 0,

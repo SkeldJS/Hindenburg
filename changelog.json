@@ -1,5 +1,16 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.11": {
+    "version": "1.0.11",
+    "contributors": ["edward"],
+    "date": "2022-02-24",
+    "notes": [
+      {
+        "description": "Update for among us 2022.1.10",
+        "commits": ["2e11a55b86243fc7698b13f180e4a312c2874fab"]
+      }
+    ]
+  },
   "1.0.10": {
     "version": "1.0.10",
     "contributors": ["edward"],

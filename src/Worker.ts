@@ -128,7 +128,7 @@ export type WorkerEvents = RoomEvents
         WorkerGetGameListEvent
     ]>;
 
-export const hindenburgLatestAcceptedVersions = [ new VersionInfo(2021, 12, 14, 0) ];
+export const hindenburgLatestAcceptedVersions = [ new VersionInfo(2021, 12, 14, 0), new VersionInfo(2022, 1, 10, 0) ];
 
 export class Worker extends EventEmitter<WorkerEvents> {
     /**

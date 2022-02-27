@@ -13,7 +13,8 @@ export function createDefaultConfig(): HindenburgConfig {
             port: 22023,
             acceptUnknownGameData: false,
             messageOrdering: false,
-            ip: "auto"
+            ip: "auto",
+            useDtlsLayout: false
         },
         plugins: {
             loadDirectory: true

@@ -87,6 +87,11 @@
           "type": "string",
           "description": "The IP address of this node, set to `auto` for it to get auto-discovered.",
           "default": "auto"
+        },
+        "useDtlsLayout": {
+          "type": "boolean",
+          "description": "Whether or not to use the DTLS transport layout when listening for Hello packets.",
+          "default": false
         }
       }
     },

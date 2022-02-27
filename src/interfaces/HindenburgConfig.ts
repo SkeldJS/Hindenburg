@@ -31,6 +31,11 @@ export interface SocketConfig {
      * @default "auto"
      */
     ip: string;
+    /**
+     * Whether or not to use the DTLS transport layout when listening for Hello packets.
+     * @default false
+     */
+    useDtlsLayout: boolean;
 }
 
 export interface AnticheatPenalty {

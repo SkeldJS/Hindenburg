@@ -218,7 +218,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.rooms = new Map;
 
         this.decoder = new PacketDecoder({
-            useDtlsLayout: false,
+            useDtlsLayout: config.socket.useDtlsLayout,
             writeUnknownGameData: true,
             writeUnknownRootMessages: true
         });

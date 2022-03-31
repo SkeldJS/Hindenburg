@@ -101,6 +101,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#clientId" class="tsd-kind-icon">client<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#code" class="tsd-kind-icon">code</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#error" class="tsd-kind-icon">error</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#friendCode" class="tsd-kind-icon">friend<wbr>Code</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#hostId" class="tsd-kind-icon">host<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#message" class="tsd-kind-icon">message</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="JoinGameMessage.html#messageTag-1" class="tsd-kind-icon">message<wbr>Tag</a></li>
@@ -108,6 +109,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#platform" class="tsd-kind-icon">platform</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#playerLevel" class="tsd-kind-icon">player<wbr>Level</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#playerName" class="tsd-kind-icon">player<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="JoinGameMessage.html#userId" class="tsd-kind-icon">user<wbr>Id</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
@@ -138,7 +140,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRootMessage.html">BaseRootMessage</a>.<a href="BaseRootMessage.html#Deserialize">Deserialize</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:20</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:22</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -165,7 +167,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRootMessage.html">BaseRootMessage</a>.<a href="BaseRootMessage.html#Serialize">Serialize</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:21</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:23</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -210,7 +212,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRootMessage.html">BaseRootMessage</a>.<a href="BaseRootMessage.html#clone">clone</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:22</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:24</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="JoinGameMessage.html" class="tsd-signature-type" data-tsd-kind="Class">JoinGameMessage</a></h4>
@@ -268,7 +270,17 @@
 					<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:15</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:17</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="friendCode" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> friend<wbr>Code</h3>
+					<div class="tsd-signature tsd-kind-icon">friend<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:16</li>
 						</ul>
 					</aside>
 				</section>
@@ -288,7 +300,7 @@
 					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:16</li>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:18</li>
 						</ul>
 					</aside>
 				</section>
@@ -344,6 +356,16 @@
 						</ul>
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="userId" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> user<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">user<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:15</li>
+						</ul>
+					</aside>
+				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Accessors</h2>
@@ -373,14 +395,14 @@
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 						<li class="tsd-signature tsd-kind-icon">new <wbr>Join<wbr>Game<wbr>Message<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="JoinGameMessage.html" class="tsd-signature-type" data-tsd-kind="Class">JoinGameMessage</a></li>
 						<li class="tsd-signature tsd-kind-icon">new <wbr>Join<wbr>Game<wbr>Message<span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="JoinGameMessage.html" class="tsd-signature-type" data-tsd-kind="Class">JoinGameMessage</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Join<wbr>Game<wbr>Message<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span>, clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, hostId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, playerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, platform<span class="tsd-signature-symbol">: </span><a href="PlatformSpecificData.html" class="tsd-signature-type" data-tsd-kind="Class">PlatformSpecificData</a>, playerLevel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="JoinGameMessage.html" class="tsd-signature-type" data-tsd-kind="Class">JoinGameMessage</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Join<wbr>Game<wbr>Message<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span>, clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, hostId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, playerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, platform<span class="tsd-signature-symbol">: </span><a href="PlatformSpecificData.html" class="tsd-signature-type" data-tsd-kind="Class">PlatformSpecificData</a>, playerLevel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, friendCode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="JoinGameMessage.html" class="tsd-signature-type" data-tsd-kind="Class">JoinGameMessage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRootMessage.html">BaseRootMessage</a>.<a href="BaseRootMessage.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:17</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:19</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -395,7 +417,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BaseRootMessage.constructor</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:18</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:20</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -413,7 +435,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BaseRootMessage.constructor</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:19</li>
+									<li>Defined in node_modules/@skeldjs/protocol/dist/lib/packets/root/JoinGame.d.ts:21</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -435,6 +457,12 @@
 								</li>
 								<li>
 									<h5>playerLevel: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>userId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>friendCode: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="JoinGameMessage.html" class="tsd-signature-type" data-tsd-kind="Class">JoinGameMessage</a></h4>
@@ -549,6 +577,9 @@
 								<a href="JoinGameMessage.html#error" class="tsd-kind-icon">error</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="JoinGameMessage.html#friendCode" class="tsd-kind-icon">friend<wbr>Code</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="JoinGameMessage.html#hostId" class="tsd-kind-icon">host<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
@@ -568,6 +599,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="JoinGameMessage.html#playerName" class="tsd-kind-icon">player<wbr>Name</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="JoinGameMessage.html#userId" class="tsd-kind-icon">user<wbr>Id</a>
 							</li>
 						</ul>
 					</li>

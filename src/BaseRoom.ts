@@ -838,7 +838,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 hostId,
                 "TEMP",
                 new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
-                0
+                0,
+                "",
+                ""
             ),
             new RemovePlayerMessage(
                 this.code,
@@ -1076,7 +1078,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         this.hostId,
                         joiningClient.username,
                         joiningClient.platform,
-                        joiningClient.playerLevel
+                        joiningClient.playerLevel,
+                        "",
+                        ""
                     )
                 ], undefined, [ joiningClient ]);
 
@@ -1092,7 +1096,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                         this.hostId,
                         joiningClient.username,
                         joiningClient.platform,
-                        joiningClient.playerLevel
+                        joiningClient.playerLevel,
+                        "",
+                        ""
                     )
                 ], undefined, [ joiningClient ]);
 
@@ -1154,7 +1160,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                 this.hostId,
                                 joiningClient.username,
                                 joiningClient.platform,
-                                joiningClient.playerLevel
+                                joiningClient.playerLevel,
+                                "",
+                                ""
                             )
                         ]
                     )

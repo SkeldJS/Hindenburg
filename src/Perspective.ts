@@ -732,7 +732,9 @@ export class Perspective extends BaseRoom {
                             this.parentRoom.hostId,
                             "TEMP",
                             new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
-                            0
+                            0,
+                            "",
+                            ""
                         )
                     );
                     payloads.push(
@@ -767,7 +769,9 @@ export class Perspective extends BaseRoom {
                                 this.parentRoom.hostId,
                                 player.username,
                                 player.platform,
-                                player.playerLevel
+                                player.playerLevel,
+                                "",
+                                ""
                             )
                         );
                     }

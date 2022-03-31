@@ -1,5 +1,16 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.0.13": {
+    "version": "1.0.13",
+    "contributors": ["edward"],
+    "date": "2022-03-31",
+    "notes": [
+      {
+        "description": "Update skeldjs and update for 2022.3.29",
+        "commits": ["91d9ef491f9f32e63dfbf5f2dfba5ca4d5f8a318"]
+      }
+    ]
+  },
   "1.0.12": {
     "version": "1.0.12",
     "contributors": ["edward"],

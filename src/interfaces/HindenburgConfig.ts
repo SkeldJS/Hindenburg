@@ -398,6 +398,10 @@ export interface HindenburgConfig {
      */
     defaultLanguage: string;
     /**
+     * Accepted game versions that clients can connect with.
+     */
+    acceptedVersions: string[];
+    /**
      * Options regarding the socket that the server listens on.
      */
     socket: SocketConfig;

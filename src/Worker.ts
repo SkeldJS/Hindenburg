@@ -128,8 +128,6 @@ export type WorkerEvents = RoomEvents
         WorkerGetGameListEvent
     ]>;
 
-export const hindenburgLatestAcceptedVersions = [ new VersionInfo(2021, 12, 14, 0), new VersionInfo(2022, 1, 10, 0), new VersionInfo(2022, 2, 2, 0) ];
-
 export class Worker extends EventEmitter<WorkerEvents> {
     /**
      * Logger for this server.
@@ -182,6 +180,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
     pingInterval: NodeJS.Timeout;
 
+    protected acceptedVersions: number[];
+
     constructor(
         /**
          * The name of the cluster that this node is apart of.
@@ -216,6 +216,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.lastClientId = 0;
         this.connections = new Map;
         this.rooms = new Map;
+
+        this.acceptedVersions = config.acceptedVersions.map(x => VersionInfo.from(x).encode());
 
         this.decoder = new PacketDecoder({
             useDtlsLayout: config.socket.useDtlsLayout,
@@ -843,14 +845,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 sender.numMods = message.modCount!;
             }
 
-            let flag = true;
-            for (const version of hindenburgLatestAcceptedVersions) {
-                if (version.encode() === sender.clientVersion.encode()) {
-                    flag = false;
-                }
-            }
-
-            if (flag) {
+            const clientVersion = sender.clientVersion.encode();
+            if (this.acceptedVersions.indexOf(clientVersion) === -1) {
                 this.logger.warn("%s connected with invalid client version: %s",
                     sender, sender.clientVersion.toString());
                 sender.disconnect(DisconnectReason.IncorrectVersion);
@@ -1091,24 +1087,24 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     }
                 }
 
-                for (const [ , receiveClient ] of sender.room!.connections) {
-                    if (receiveClient === sender)
+                for (const [ , receiverClient ] of sender.room!.connections) {
+                    if (receiverClient === sender)
                         continue;
 
-                    const receiverMods = receiveClient.mods.get(senderMod.modId);
+                    const receiverMod = receiverClient.mods.get(senderMod.modId);
 
-                    if (!receiverMods)
+                    if (!receiverMod)
                         continue;
 
                     sender.room!.broadcastMessages([
                         new RpcMessage(
                             message.netId,
                             new ReactorRpcMessage(
-                                receiverMods.netId,
+                                receiverMod.netId,
                                 reactorRpcMessage.customRpc
                             )
                         )
-                    ], undefined, [ receiveClient ]);
+                    ], undefined, [ receiverClient ]);
                 }
             }
         });

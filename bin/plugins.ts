@@ -612,6 +612,9 @@ async function runInstallPlugin() {
 
     const packageInfoJson = await getPackageInfo(pluginsDirectory, pluginName, logger);
 
+    if (!packageInfoJson)
+        return;
+
     let installingText = "Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version);
     if (packageInfoJson.maintainers[0]) {
         installingText += " by " + packageInfoJson.maintainers[0].name;

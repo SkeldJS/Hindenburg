@@ -64,6 +64,14 @@
       ],
       "default": "en"
     },
+    "acceptedVersions": {
+      "type": "array",
+      "description": "Accepted game versions that clients can connect with.",
+      "items": {
+        "type": "string",
+        "pattern": "^\\d{4}\\.\\d{1,2}\\.\\d{1,2}(\\.\\d+)?[sei]?$"
+      }
+    },
     "socket": {
       "type": "object",
       "description": "Options regarding the socket that the server listens on.",

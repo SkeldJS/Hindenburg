@@ -249,7 +249,6 @@ __metadata:
     "@skeldjs/state": ^2.15.19
     "@skeldjs/text": ^2.15.19
     "@skeldjs/util": ^2.15.19
-    "@types/cli-spinner": ^0.2.1
     "@types/minimatch": ^3.0.5
     "@types/node": ^15.12.2
     "@types/prompts": ^2.0.14
@@ -363,15 +362,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cli-spinner@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@types/cli-spinner@npm:0.2.1"
-  dependencies:
-    "@types/node": "*"
-  checksum: 9398ec51319bc4196770dff7aa80c9f837fe5072561bebda414450ca90747df67b3f696dbe0314f99bc21fa3ab0e72a1198fb6553433ac02b9306f5d99415a72
-  languageName: node
-  linkType: hard
-
 "@types/json-schema@npm:^7.0.9":
   version: 7.0.9
   resolution: "@types/json-schema@npm:7.0.9"
@@ -383,13 +373,6 @@ __metadata:
   version: 3.0.5
   resolution: "@types/minimatch@npm:3.0.5"
   checksum: c41d136f67231c3131cf1d4ca0b06687f4a322918a3a5adddc87ce90ed9dbd175a3610adee36b106ae68c0b92c637c35e02b58c8a56c424f71d30993ea220b92
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:*":
-  version: 16.11.11
-  resolution: "@types/node@npm:16.11.11"
-  checksum: 1c472bd63f23ca0e4effc96e6e0c693b83b027f613a1f41b6d1bd7791f65ce171a351e0a5c92575cb59e84ad0a930875397bfbbb91a7c925ddbbb558f7461af8
   languageName: node
   linkType: hard
 

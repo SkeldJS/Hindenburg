@@ -17,7 +17,6 @@
     "docs": "node scripts/writeConfigurationDocs.js && typedoc src/index.ts --out docs"
   },
   "devDependencies": {
-    "@types/cli-spinner": "^0.2.1",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^15.12.2",
     "@types/prompts": "^2.0.14",

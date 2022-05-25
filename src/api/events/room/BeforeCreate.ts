@@ -1,6 +1,6 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { GameSettings } from "@skeldjs/protocol";
-import { Code2Int } from "@skeldjs/util";
+import { GameCode } from "@skeldjs/util";
 import { Connection } from "../../../server";
 
 /**
@@ -58,7 +58,7 @@ export class RoomBeforeCreateEvent extends CancelableEvent {
      */
     setCode(roomCode: number | string) {
         if (typeof roomCode === "string") {
-            this.setCode(Code2Int(roomCode));
+            this.setCode(GameCode.convertStringToInt(roomCode));
             return;
         }
 

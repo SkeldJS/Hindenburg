@@ -58,7 +58,7 @@ import {
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
-import { Code2Int, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
+import { GameCode, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
 import { SkeldjsStateManager } from "@skeldjs/state";
 
 import {
@@ -806,7 +806,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
     async setCode(code: number|string): Promise<void> {
         if (typeof code === "string") {
-            return this.setCode(Code2Int(code));
+            return this.setCode(GameCode.convertStringToInt(code));
         }
 
         if (this.code) {
@@ -1031,7 +1031,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             joiningClient.clientId,
             joiningClient.username,
             joiningClient.platform,
-            joiningClient.playerLevel
+            joiningClient.playerLevel,
+            "", // todo: combine worker with matchmaker
+            ""
         );
 
         const joiningPlayer = await this.handleJoin(joinData) || this.players.get(joiningClient.clientId);
@@ -1133,7 +1135,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                 client.clientId,
                                 client.username,
                                 client.platform,
-                                client.playerLevel
+                                client.playerLevel,
+                                "",
+                                ""
                             ))
                     ),
                     new AlterGameMessage(
@@ -1301,7 +1305,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                                                         cur.clientId,
                                                         cur.username,
                                                         cur.platform,
-                                                        cur.playerLevel
+                                                        cur.playerLevel,
+                                                        "",
+                                                        ""
                                                     ));
                                                 }
                                                 return prev;

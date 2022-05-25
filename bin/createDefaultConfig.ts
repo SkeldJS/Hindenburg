@@ -10,6 +10,9 @@ export function createDefaultConfig(): HindenburgConfig {
         exitConfirmation: true,
         defaultLanguage: "en",
         acceptedVersions: [ "2021.12.14.0", "2022.1.10.0", "2022.2.2.0" ],
+        matchmaker: {
+            port: 80
+        },
         socket: {
             port: 22023,
             acceptUnknownGameData: false,

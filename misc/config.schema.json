@@ -72,6 +72,17 @@
         "pattern": "^\\d{4}\\.\\d{1,2}\\.\\d{1,2}(\\.\\d+)?[sei]?$"
       }
     },
+    "matchmaker": {
+      "type": "object",
+      "description": "Configuration for the included Hindenburg http matchmaker.",
+      "properties": {
+        "port": {
+          "type": "number",
+          "description": "The port that the matchmaker should listen on.",
+          "default": 80
+        }
+      }
+    },
     "socket": {
       "type": "object",
       "description": "Options regarding the socket that the server listens on.",

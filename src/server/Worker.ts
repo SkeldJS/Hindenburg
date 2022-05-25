@@ -46,11 +46,8 @@ import {
 } from "@skeldjs/protocol";
 
 import {
-    Code2Int,
+    GameCode,
     HazelWriter,
-    Int2Code,
-    V1Gen,
-    V2Gen,
     VersionInfo
 } from "@skeldjs/util";
 
@@ -101,6 +98,7 @@ import {
 
 import i18n from "../i18n";
 import { Logger } from "../logger";
+import { Matchmaker } from "../matchmaker";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -151,6 +149,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * The UDP socket that all clients connect to.
      */
     socket: dgram.Socket;
+
+    /**
+     * The Http matchmaker for the server, if enabled, see {@link HindenburgConfig.matchmaker}.
+     */
+    matchmaker?: Matchmaker;
 
     /**
      * All client connections connected to this server, mapped by their address:port,
@@ -213,6 +216,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.socket = dgram.createSocket("udp4");
         this.socket.on("message", this.handleMessage.bind(this));
 
+        if (this.config.matchmaker)
+            this.matchmaker = new Matchmaker(this);
+
         this.lastClientId = 0;
         this.connections = new Map;
         this.rooms = new Map;
@@ -242,7 +248,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const roomName = args["room code"]?.toUpperCase();
                 const codeId = roomName && (roomName === "LOCAL"
                     ? 0x20
-                    : Code2Int(roomName));
+                    : GameCode.convertStringToInt(roomName));
 
                 let num_disconnected = 0;
 
@@ -290,7 +296,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 const codeId = roomName === "LOCAL"
                     ? 0x20
-                    : Code2Int(roomName);
+                    : GameCode.convertStringToInt(roomName);
 
                 const room = this.rooms.get(codeId);
 
@@ -339,7 +345,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : "";
 
                 const extendable = roomName
-                    ? this.rooms.get(Code2Int(roomName))
+                    ? this.rooms.get(GameCode.convertStringToInt(roomName))
                     : this;
 
                 if (!extendable) {
@@ -372,7 +378,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : "";
 
                 const extendable = roomName
-                    ? this.rooms.get(Code2Int(roomName))
+                    ? this.rooms.get(GameCode.convertStringToInt(roomName))
                     : this;
 
                 if (!extendable) {
@@ -422,7 +428,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : "";
 
                 const extendable = roomName
-                    ? this.rooms.get(Code2Int(roomName))
+                    ? this.rooms.get(GameCode.convertStringToInt(roomName))
                     : this;
 
                 if (!extendable)
@@ -434,7 +440,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 if (roomName) {
-                    const room = this.rooms.get(Code2Int(roomName));
+                    const room = this.rooms.get(GameCode.convertStringToInt(roomName));
 
                     if (!room) {
                         this.logger.warn("Couldn't find a room with code: %s", roomName);
@@ -502,7 +508,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
                     ? 0x20
-                    : Code2Int(roomName);
+                    : GameCode.convertStringToInt(roomName);
 
                 const room = this.rooms.get(codeId);
 
@@ -532,7 +538,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
                     ? 0x20
-                    : Code2Int(roomName);
+                    : GameCode.convertStringToInt(roomName);
 
                 const room = this.rooms.get(codeId);
                 const clientId = parseInt(args["client id"]);
@@ -601,7 +607,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
                     ? 0x20
-                    : Code2Int(roomName);
+                    : GameCode.convertStringToInt(roomName);
 
                 const room = this.rooms.get(codeId);
 
@@ -634,7 +640,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
                     ? 0x20
-                    : Code2Int(roomName);
+                    : GameCode.convertStringToInt(roomName);
 
                 const room = this.rooms.get(codeId);
 
@@ -660,7 +666,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const roomName = args["room code"].toUpperCase();
                 const codeId = roomName === "LOCAL"
                     ? 0x20
-                    : Code2Int(roomName);
+                    : GameCode.convertStringToInt(roomName);
 
                 const room = this.rooms.get(codeId);
 
@@ -698,7 +704,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .action(async args => {
                 const message = args.message.join(" ");
                 const roomCode = args.options.room
-                    ? Code2Int(args.options.room.toUpperCase?.())
+                    ? GameCode.convertStringToInt(args.options.room.toUpperCase?.())
                     : 0;
 
                 const foundRoom = this.rooms.get(roomCode);
@@ -752,6 +758,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     listen(port: number) {
         return new Promise<void>(resolve => {
             this.socket.bind(port);
+            this.matchmaker?.listen();
 
             this.socket.once("listening", () => {
                 resolve();
@@ -815,6 +822,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
         );
     }
 
+    isVersionAccepted(version: VersionInfo|number): boolean {
+        if (typeof version !== "number") {
+            return this.isVersionAccepted(version.encode());
+        }
+
+        return this.acceptedVersions.indexOf(version) !== -1;
+    }
+
     registerPacketHandlers() {
         this.decoder.listeners.clear();
 
@@ -845,8 +860,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 sender.numMods = message.modCount!;
             }
 
-            const clientVersion = sender.clientVersion.encode();
-            if (this.acceptedVersions.indexOf(clientVersion) === -1) {
+            if (!this.isVersionAccepted(sender.clientVersion)) {
                 this.logger.warn("%s connected with invalid client version: %s",
                     sender, sender.clientVersion.toString());
                 sender.disconnect(DisconnectReason.IncorrectVersion);
@@ -1388,6 +1402,25 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.listen(newConfig.socket.port);
         }
 
+        if (newConfig.matchmaker) {
+            if (this.matchmaker) {
+                if ((typeof newConfig.matchmaker === "boolean" && this.config.socket.port !== 80) ||
+                    (typeof newConfig.matchmaker === "object" && newConfig.matchmaker.port !== this.config.socket.port)
+                ) {
+                    this.matchmaker.destroy();
+                    this.matchmaker = undefined;
+                    this.matchmaker = new Matchmaker(this);
+                    this.matchmaker.listen();
+                }
+            } else {
+                this.matchmaker = new Matchmaker(this);
+                this.matchmaker.listen();
+            }
+        } else if (!newConfig.matchmaker && this.matchmaker) {
+            this.matchmaker.destroy();
+            this.matchmaker = undefined;
+        }
+
         if (newConfig.plugins) {
             const pluginKeys = Object.keys(newConfig.plugins);
             for (let i = 0; i < pluginKeys.length; i++) {
@@ -1704,9 +1737,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
             throw new RangeError("Expected to generate a 4 or 6 digit room code.");
         }
 
-        let roomCode = len === 4 ? V1Gen() : V2Gen();
+        let roomCode = len === 4 ? GameCode.generateV1() : GameCode.generateV2();
         while (this.rooms.get(roomCode))
-            roomCode = len === 4 ? V1Gen() : V2Gen();
+            roomCode = len === 4 ? GameCode.generateV1() : GameCode.generateV2();
 
         return roomCode;
     }
@@ -1720,7 +1753,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      */
     async createRoom(code: number, options: GameSettings) {
         if (this.rooms.has(code))
-            throw new Error("A room with code '" + Int2Code(code) + "' already exists.");
+            throw new Error("A room with code '" + GameCode.convertIntToString(code) + "' already exists.");
 
         const copyConfiguration: RoomsConfig = {
             ...this.config.rooms

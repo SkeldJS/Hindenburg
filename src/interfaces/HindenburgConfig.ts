@@ -1,5 +1,5 @@
 import { AllGameSettings } from "@skeldjs/protocol";
-import { HostableOptions } from "..";
+import { HostableOptions } from "@skeldjs/core";
 
 export interface PluginConfig {
     /**
@@ -8,6 +8,14 @@ export interface PluginConfig {
      */
     loadDirectory: boolean;
     [key: string]: boolean|Record<string, unknown>;
+}
+
+export interface MatchmakerConfig {
+    /**
+     * The port that the matchmaker should listen on.
+     * @default 80
+     */
+    port: number;
 }
 
 export interface SocketConfig {
@@ -401,6 +409,10 @@ export interface HindenburgConfig {
      * Accepted game versions that clients can connect with.
      */
     acceptedVersions: string[];
+    /**
+     * Configuration for the included Hindenburg http matchmaker.
+     */
+    matchmaker: boolean|MatchmakerConfig;
     /**
      * Options regarding the socket that the server listens on.
      */

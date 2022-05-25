@@ -50,7 +50,6 @@ export class ModdedHelloPacket extends BaseRootPacket {
         }
         const language = reader.uint32();
         const chatMode = reader.uint8();
-        console.log(reader.buffer.toString("utf8"));
         const platform = reader.read(PlatformSpecificData);
 
         reader.int32();

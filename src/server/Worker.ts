@@ -67,14 +67,14 @@ import { CustomNetworkTransform, Networkable } from "@skeldjs/core";
 
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
-import { recursiveAssign } from "./util/recursiveAssign";
-import { recursiveCompare } from "./util/recursiveCompare";
-import { recursiveClone } from "./util/recursiveClone";
-import { fmtCode } from "./util/fmtCode";
-import { chunkArr } from "./util/chunkArr";
+import { recursiveAssign } from "../util/recursiveAssign";
+import { recursiveCompare } from "../util/recursiveCompare";
+import { recursiveClone } from "../util/recursiveClone";
+import { fmtCode } from "../util/fmtCode";
+import { chunkArr } from "../util/chunkArr";
 
-import { HindenburgConfig, RoomsConfig, MessageSide } from "./interfaces";
-import { ModdedHelloPacket } from "./packets/ModdedHelloPacket";
+import { HindenburgConfig, RoomsConfig, MessageSide } from "../interfaces";
+import { ModdedHelloPacket } from "../packets/ModdedHelloPacket";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
 import { Room } from "./Room";
@@ -90,17 +90,17 @@ import {
     WorkerBeforeJoinEvent,
     WorkerGetGameListEvent,
     BaseReactorRpcMessage
-} from "./api";
+} from "../api";
 
-import { PluginLoader, WorkerPlugin } from "./handlers";
+import { PluginLoader, WorkerPlugin } from "../handlers";
 
 import {
     ReactorRpcMessage,
     ReactorPluginDeclarationMessage
-} from "./packets";
+} from "../packets";
 
-import i18n from "./i18n";
-import { Logger } from "./logger";
+import i18n from "../i18n";
+import { Logger } from "../logger";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -739,7 +739,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         const pingInterval = 2000;
         this.pingInterval = setInterval(() => {
-            this.doPings();
+            this.pollClientReliability();
         }, pingInterval);
 
         this.registerMessages();
@@ -1351,7 +1351,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
     }
 
-    async doPings() {
+    async pollClientReliability() {
         const promises = [];
         const dateNow = Date.now();
         for (const [ , connection ] of this.connections) {

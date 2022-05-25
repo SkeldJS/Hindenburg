@@ -1,7 +1,7 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { GameSettings } from "@skeldjs/protocol";
 import { Code2Int } from "@skeldjs/util";
-import { Connection } from "../../../Connection";
+import { Connection } from "../../../server";
 
 /**
  * Emitted before a player successfully or unsuccessfully creates a room.

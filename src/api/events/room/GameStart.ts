@@ -1,6 +1,6 @@
 import { RoomGameStartEvent as SkeldjsRoomGameStartEvent } from "@skeldjs/core";
 import { CancelableEvent } from "@skeldjs/events";
-import { Room } from "../../../Room";
+import { Room } from "../../../server";
 
 export class RoomGameStartEvent extends SkeldjsRoomGameStartEvent implements CancelableEvent {
     canceled: boolean;

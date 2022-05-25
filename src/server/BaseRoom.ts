@@ -61,11 +61,6 @@ import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 import { Code2Int, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
 import { SkeldjsStateManager } from "@skeldjs/state";
 
-
-import { Connection } from "./Connection";
-import { Worker } from "./Worker";
-import { Perspective, PresetFilter } from "./Perspective";
-
 import {
     BaseReactorRpcMessage,
     ClientLeaveEvent,
@@ -76,13 +71,13 @@ import {
     RoomGameEndEvent,
     RoomGameStartEvent,
     RoomSelectHostEvent
-} from "./api";
+} from "../api";
 
 import {
     SendChatOptions,
     MessageSide,
     RoomsConfig
-} from "./interfaces";
+} from "../interfaces";
 
 import {
     CommandCallError,
@@ -90,12 +85,15 @@ import {
     RoomPlugin,
     ChatCommandHandler,
     WorkerPlugin
-} from "./handlers";
+} from "../handlers";
 
-import { fmtCode } from "./util/fmtCode";
-import { fmtLogFormat } from "./util/fmtLogFormat";
-import { Logger } from "./logger";
-import { logLanguages, logPlatforms } from ".";
+import { fmtCode } from "../util/fmtCode";
+import { fmtLogFormat } from "../util/fmtLogFormat";
+import { Logger } from "../logger";
+
+import { Connection, logLanguages, logPlatforms } from "./Connection";
+import { Worker } from "./Worker";
+import { Perspective, PresetFilter } from "./Perspective";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: PlayerData<BaseRoom>) {
@@ -1579,7 +1577,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             ...options
         };
 
-        // Super dumb way of doing the same thing for a single player if specified, or all players if one isn't specified
         const promises = [];
         if (defaultOptions.targets) {
             for (const player of defaultOptions.targets) {

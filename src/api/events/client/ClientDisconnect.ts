@@ -1,7 +1,7 @@
 import { DisconnectReason } from "@skeldjs/constant";
 import { BasicEvent } from "@skeldjs/events";
 
-import { Connection } from "../../../Connection";
+import { Connection } from "../../../server";
 import { ClientEvent } from "./ClientEvent";
 
 /**

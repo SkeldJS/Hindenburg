@@ -75,14 +75,14 @@ import {
 
 import { HazelWriter, Vector2 } from "@skeldjs/util";
 
+import { chunkArr } from "../util/chunkArr";
+import { MasketDecoder } from "../util/MasketDecoder";
+import { fmtCode } from "../util/fmtCode";
+
+import { Logger } from "../logger";
+
 import { Worker } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
-
-import { chunkArr } from "./util/chunkArr";
-import { MasketDecoder } from "./util/MasketDecoder";
-import { fmtCode } from "./util/fmtCode";
-
-import { Logger } from "./logger";
 
 export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
 

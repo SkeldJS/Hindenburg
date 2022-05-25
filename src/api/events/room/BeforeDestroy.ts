@@ -1,10 +1,10 @@
 import { DisconnectReason } from "@skeldjs/constant";
 import { CancelableEvent } from "@skeldjs/events";
-import { Room } from "../../../Room";
+import { Room } from "../../../server";
 
 /**
  * Emitted just before a room is destroyed.
- * 
+ *
  * See {@link RoomDestroyEvent} to guarantee that the room has been destroyed
  * and cannot be brought back.
  */

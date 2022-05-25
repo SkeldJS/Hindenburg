@@ -1,9 +1,9 @@
 import { BasicEvent } from "@skeldjs/events";
-import { Room } from "../../../Room";
+import { Room } from "../../../server";
 
 /**
  * Emitted after a room has successfully been created.
- * 
+ *
  * See {@link RoomBeforeCreateEvent} for a hookable create event.
  */
 export class RoomCreateEvent extends BasicEvent {

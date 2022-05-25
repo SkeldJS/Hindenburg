@@ -1,6 +1,5 @@
 import { CancelableEvent } from "@skeldjs/events";
-import { Connection } from "../../../Connection";
-import { Room } from "../../../Room";
+import { Connection, Room } from "../../../server";
 
 /**
  * Emitted when the room selects the next host in the room.

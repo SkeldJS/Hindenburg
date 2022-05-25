@@ -1,9 +1,9 @@
 import { BasicEvent } from "@skeldjs/events";
-import { Room } from "../../../Room";
+import { Room } from "../../../server";
 
 /**
  * Emitted after a room has been destroyed.
- * 
+ *
  * See {@link RoomBeforeDestroyEvent} for a hookable destroy event.
  */
 export class RoomDestroyEvent extends BasicEvent {

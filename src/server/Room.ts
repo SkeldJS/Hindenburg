@@ -5,15 +5,15 @@ import {
     MessageDirection
 } from "@skeldjs/protocol";
 
-import { RoomsConfig } from "./interfaces";
+import { RoomsConfig } from "../interfaces";
 
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
 import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
 import { Connection } from "./Connection";
-import { Logger } from "./logger";
+import { Logger } from "../logger";
 import chalk from "chalk";
-import { fmtCode } from "./util/fmtCode";
+import { fmtCode } from "../util/fmtCode";
 
 export class Room extends BaseRoom {
     /**
@@ -111,7 +111,7 @@ export class Room extends BaseRoom {
             this.playerPerspectives.set(players[i].clientId, perspective);
         }
 
-        this.logger.info("Created perspective: %s ", perspective);
+        this.logger.info("Created perspective: %s", perspective);
 
         return perspective;
     }

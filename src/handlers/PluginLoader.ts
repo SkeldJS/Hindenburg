@@ -27,9 +27,7 @@ import {
     VoteBanSystem
 } from "@skeldjs/core";
 
-import { Worker, WorkerEvents } from "../Worker";
-import { RoomEvents } from "../BaseRoom";
-import { Room } from "../Room";
+import { RoomEvents, Room, Worker, WorkerEvents } from "../server";
 
 import {
     getPluginChatCommands,

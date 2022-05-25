@@ -1,7 +1,6 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { BaseGameDataMessage, BaseRootMessage } from "@skeldjs/protocol";
-import { Room } from "../../../Room";
-import { Connection } from "../../../Connection";
+import { Connection, Room } from "../../../server";
 import { ClientEvent } from "./ClientEvent";
 
 export class ClientBroadcastEvent extends CancelableEvent implements ClientEvent {
@@ -27,7 +26,7 @@ export class ClientBroadcastEvent extends CancelableEvent implements ClientEvent
     get alteredGameData() {
         return this._alteredGameData;
     }
-    
+
     setGameData(gamedata: BaseGameDataMessage[]) {
         this._alteredGameData = gamedata;
     }

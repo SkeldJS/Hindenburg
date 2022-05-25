@@ -14,13 +14,12 @@ import {
     RemoveGameMessage
 } from "@skeldjs/protocol";
 
-import { ClientDisconnectEvent } from "./api";
+import { ClientDisconnectEvent, ClientLeaveEvent } from "../api";
+import { fmtCode } from "../util/fmtCode";
+import { fmtLogFormat } from "../util/fmtLogFormat";
 
 import { Worker } from "./Worker";
 import { Room } from "./Room";
-import { fmtCode } from "./util/fmtCode";
-import { fmtLogFormat } from "./util/fmtLogFormat";
-import { ClientLeaveEvent } from "./api/events/client/ClientLeave";
 
 export class ClientMod {
     constructor(

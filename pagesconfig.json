@@ -29,6 +29,10 @@
           "source": "./pages/Plugins/Creating a Plugin.md"
         },
         {
+          "title": "Compatible Versions",
+          "source": "./pages/Plugins/Compatible Versions.md"
+        },
+        {
           "title": "Worker and Room Plugins",
           "source": "./pages/Plugins/Worker and Room Plugins.md"
         },

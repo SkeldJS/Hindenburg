@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Chat Commands | @skeldjs/hindenburg</title>
+	<title>Compatible Versions | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -57,13 +57,13 @@
 					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Chat Commands.html">Information</a>
+					<a href="Creating a Plugin.html">Plugins</a>
 				</li>
 				<li>
-					<a href="Chat Commands.html">Chat Commands</a>
+					<a href="Compatible Versions.html">Compatible Versions</a>
 				</li>
 			</ul>
-			<h1>Chat Commands</h1>
+			<h1>Compatible Versions</h1>
 		</div>
 	</div>
 </header>
@@ -71,16 +71,38 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>Chat commands allow players to run simple commands in the chat (similar to those from Minecraft) to communicate with plugins. This gives plugins a lot of flexibility without having to make a client mod.</p>
-				<p>For example, players could switch gamemodes with commands with the following command:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/143772589-e7cad6cb-b528-4b03-9f61-69465f9ed15f.png" alt="image"></p>
-				<p>In Hindenburg, chat commands are designed to be as simple to use as possible, so players don&#39;t have a hard time using them.</p>
-				<p>Hindenburg also has a built-in <code>/help</code> command:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/143772648-ed5e25b9-5420-47aa-9cbb-4af6bcee62ac.png" alt="image"></p>
-				<a href="#chat-commands-and-plugins" id="chat-commands-and-plugins" style="color: inherit; text-decoration: none;">
-					<h3>Chat Commands and Plugins</h3>
-				</a>
-				<p>Hindenburg provides a great and simple API for registering chat commands as a plugin, <a href="../Plugins/Chat%20Commands.html">check out the guide on registering custom chat commands for more information</a>.</p>
+				<p>You can set which versions of Hindenburg that your plugin is compatible with in your plugin&#39;s <code>package.json</code>:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;engines&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;node&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;&gt;=14&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;hindenburg&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;1.1.*&quot;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<blockquote>
+					<p>Note that this is <em>not</em> the same syntax used in the <code>&quot;node&quot;</code> entry above. Instead, it will accept a <a href="https://en.wikipedia.org/wiki/Glob_(programming)">glob pattern</a>.</p>
+				</blockquote>
+				<p>This allows you to specify exactly which versions of Hindenburg will work with your plugin.</p>
+				<p>By default, if you&#39;re using the <a href="Creating a Plugin.html">template creator</a> script, this will be set to whichever version of Hindenburg you&#39;re currently running with the last segment (the <a href="https://semver.org/">patch</a> version) replaced with a wildcard <code>*</code>. This runs under the assumption that Hindenburg&#39;s API should remainly relatively stable throughout each patch, whereas it might change more drastically between each minor update.</p>
+				<p>If you know <em>exactly</em> which versions of Hindenburg your plugin supports, you can get creative with the glob pattern:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;engines&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;node&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;&gt;=14&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;hindenburg&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;1.@(1|2).*&quot;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<blockquote>
+					<p>Check out this <a href="https://www.linuxjournal.com/content/bash-extended-globbing">extended glob syntax guide</a> for more information on how to write a glob pattern.</p>
+				</blockquote>
+				<p>However, if you wish to accept <em>all</em> versions of Hindenburg, or you&#39;re lazy at maintaining your plugins, then you can either remove <code>&quot;hindenburg&quot;</code> from the <code>engines</code> object, or, replace the version with a wildcard <code>*</code>:</p>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;engines&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;node&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;&gt;=14&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;hindenburg&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;*&quot;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -105,46 +127,46 @@
 						<span>Plugins</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
+						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Compatible Versions.html">Compatible <wbr>Versions</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Compatible Versions.html">Compatible <wbr>Versions</a>
+						<a href="Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+						<a href="Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Event Listeners.html">Event <wbr>Listeners</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
 					</li>
-					<li class="current pp-nav pp-page">
-						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+					<li class=" pp-nav pp-page">
+						<a href="../Information/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+						<a href="../Information/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Interactive CLI.html">Interactive CLI</a>
+						<a href="../Information/Interactive CLI.html">Interactive CLI</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Message Ordering.html">Message <wbr>Ordering</a>
+						<a href="../Information/Message Ordering.html">Message <wbr>Ordering</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Plugins.html">Plugins</a>
+						<a href="../Information/Plugins.html">Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Reactor Support.html">Reactor <wbr>Support</a>
+						<a href="../Information/Reactor Support.html">Reactor <wbr>Support</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+						<a href="../Information/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

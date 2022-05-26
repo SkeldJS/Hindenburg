@@ -80,6 +80,13 @@ async function getPackageInfo(pluginsDirectory: string, packageName: string, log
     }
 }
 
+async function getHindenburgVersion(): Promise<string> {
+    const packageJsonText = await fs.readFile(path.resolve(__dirname, "../package.json"), "utf8");
+    const packageJson = JSON.parse(packageJsonText);
+
+    return packageJson.version;
+}
+
 async function choosePluginsDirectory() {
     if (pluginsDirectories.length === 1) {
         return pluginsDirectories[0];
@@ -333,19 +340,19 @@ async function runCreatePlugin() {
             await runCommandInDir(
                 pluginDirectory,
                 "yarn add --dev @skeldjs/hindenburg@link:../.."
-                    + (useTypescript ? " typescript" : "")
+                    + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "npm") {
             await runCommandInDir(
                 pluginDirectory,
                 "npm install --save-dev @skeldjs/hindenburg@file:../.."
-                    + (useTypescript ? " typescript" : "")
+                    + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "pnpm") {
             await runCommandInDir(
                 pluginDirectory,
                 "pnpm install --save-dev @skeldjs/hindenburg@file:../.."
-                    + (useTypescript ? " typescript" : "")
+                    + (useTypescript ? " typescript@latest" : "")
             );
         }
 
@@ -407,8 +414,10 @@ async function runCreatePlugin() {
                     packageJson.scripts.prepack = "pnpm run build";
                 }
             }
+            const hindenburgVersion = await getHindenburgVersion();
             packageJson.engines = {
-                node: ">=14"
+                node: ">=14",
+                hindenburg: hindenburgVersion.split(".").slice(0, -1).join(".") + ".*"
             };
 
             if (useTypescript) {

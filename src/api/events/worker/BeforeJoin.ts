@@ -1,5 +1,5 @@
 import { CancelableEvent } from "@skeldjs/events";
-import { Connection, Room } from "../../../server";
+import { Connection, Room } from "../../../worker";
 
 /**
  * Emitted before a player successfully or unsuccessfully joins a room on the

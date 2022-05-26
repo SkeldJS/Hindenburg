@@ -1,5 +1,5 @@
 import { Deserializable, GetSerialized } from "@skeldjs/protocol";
-import { PacketContext } from "../../server";
+import { PacketContext } from "../../worker";
 import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers/PluginLoader";
 
 const hindenburgMessageHandlersKey = Symbol("hindenburg:message");

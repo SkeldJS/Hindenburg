@@ -1,5 +1,5 @@
 import { RevertableEvent } from "@skeldjs/events";
-import { Room } from "../../../server";
+import { Room } from "../../../worker";
 import { RoomPlugin, WorkerPlugin } from "../../../handlers";
 
 /**

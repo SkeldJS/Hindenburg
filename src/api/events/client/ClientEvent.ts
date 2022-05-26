@@ -1,4 +1,4 @@
-import { Connection } from "../../../server";
+import { Connection } from "../../../worker";
 
 export interface ClientEvent {
     client: Connection;

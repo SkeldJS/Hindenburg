@@ -127,6 +127,8 @@ export type WorkerEvents = RoomEvents
     ]>;
 
 export class Worker extends EventEmitter<WorkerEvents> {
+    static serverVersion = "1.1.0";
+
     /**
      * Logger for this server.
      */

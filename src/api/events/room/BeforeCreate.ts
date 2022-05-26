@@ -1,7 +1,7 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { GameSettings } from "@skeldjs/protocol";
 import { GameCode } from "@skeldjs/util";
-import { Connection } from "../../../server";
+import { Connection } from "../../../worker";
 
 /**
  * Emitted before a player successfully or unsuccessfully creates a room.

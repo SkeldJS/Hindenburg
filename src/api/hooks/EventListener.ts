@@ -1,6 +1,6 @@
 import { BasicEvent } from "@skeldjs/events";
 import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers";
-import { WorkerEvents } from "../../server";
+import { WorkerEvents } from "../../worker";
 
 const hindenburgEventListenersKey = Symbol("hindenburg:events");
 

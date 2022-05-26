@@ -8,9 +8,5 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-[{*.json,.travis.yml}]
-indent_style = space
-indent_size = 2
-
 [*.txt]
 insert_final_newline = false

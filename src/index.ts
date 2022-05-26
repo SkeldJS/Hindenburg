@@ -4,7 +4,7 @@ export * from "./interfaces";
 export * from "./logger";
 export * from "./packets";
 
-export * from "./server";
+export * from "./worker";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore typescript doesn't let you re-export

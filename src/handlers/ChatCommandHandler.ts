@@ -4,7 +4,7 @@ import { PlayerData } from "@skeldjs/core";
 
 import { MessageSide } from "../interfaces";
 
-import { Room } from "../server";
+import { Room } from "../worker";
 
 function betterSplitOnSpaces(input: string) {
     let collector = "";

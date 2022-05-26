@@ -6,6 +6,7 @@ import fs from "fs/promises";
 import vorpal from "vorpal";
 import resolvePkg from "resolve-pkg";
 import chalk from "chalk";
+import minimatch from "minimatch";
 
 import { Deserializable, RpcMessage } from "@skeldjs/protocol";
 import {
@@ -27,7 +28,7 @@ import {
     VoteBanSystem
 } from "@skeldjs/core";
 
-import { RoomEvents, Room, Worker, WorkerEvents } from "../server";
+import { RoomEvents, Room, Worker, WorkerEvents } from "../worker";
 
 import {
     getPluginChatCommands,
@@ -562,7 +563,7 @@ export class PluginLoader {
             } catch (e) {
                 if ((e as any).code !== undefined) {
                     if ((e as any).code === "ENOENT") {
-                        this.worker.logger.warn("No package.json in plugin directory '%s', maybe try running 'yarn setup'?", chalk.grey(pluginDirectory));
+                        this.worker.logger.warn("No package.json in plugin directory '%s' - try running 'yarn setup'", chalk.grey(pluginDirectory));
                         continue;
                     }
 
@@ -584,16 +585,12 @@ export class PluginLoader {
             try {
                 const pluginCtr = await this.importPlugin(pluginPath);
 
-                if (!pluginCtr) {
-                    this.worker.logger.warn("Did not load plugin at '%s', as it was not a hindenburg plugin",
-                        pluginPath);
+                if (!pluginCtr)
                     continue;
-                }
 
                 importedPlugins.set(pluginCtr.meta.id, pluginCtr);
-            } catch (e) {
-                this.worker.logger.warn("Could not import plugin '%s': %s", path.basename(pluginPath), e);
-                throw e;
+            } catch (e: any) {
+                this.worker.logger.warn("Couldn't import plugin '%s': %s", path.basename(pluginPath), e.message || e);
             }
         }
 
@@ -665,18 +662,7 @@ export class PluginLoader {
         return true;
     }
 
-    /**
-     * Load all imported worker plugins into the worker, checking {@link PluginLoader.isEnabled}.
-     * @example
-     * ```ts
-     * await this.worker.pluginLoader.loadAllWorkerPlugins();
-     * ```
-     */
-    async loadAllWorkerPlugins() {
-        const pluginCtrs = [];
-        for (const [ , importedPlugin ] of this.workerPlugins) {
-            pluginCtrs.push(importedPlugin);
-        }
+    protected sortPlguins(pluginCtrs: (typeof WorkerPlugin|typeof RoomPlugin)[]) {
         pluginCtrs.sort((a, b) => {
             // first = -1
             // last = 1
@@ -699,6 +685,20 @@ export class PluginLoader {
 
             return 0;
         });
+    }
+    /**
+     * Load all imported worker plugins into the worker, checking {@link PluginLoader.isEnabled}.
+     * @example
+     * ```ts
+     * await this.worker.pluginLoader.loadAllWorkerPlugins();
+     * ```
+     */
+    async loadAllWorkerPlugins() {
+        const pluginCtrs = [];
+        for (const [ , importedPlugin ] of this.workerPlugins) {
+            pluginCtrs.push(importedPlugin);
+        }
+        this.sortPlguins(pluginCtrs);
         for (let i = 0; i < pluginCtrs.length; i++) {
             const importedPlugin = pluginCtrs[i];
             if (this.isEnabled(importedPlugin)) {
@@ -719,28 +719,7 @@ export class PluginLoader {
         for (const [ , importedPlugin ] of this.roomPlugins) {
             pluginCtrs.push(importedPlugin);
         }
-        pluginCtrs.sort((a, b) => {
-            // first = -1
-            // last = 1
-            // none = 0
-            // sort from lowest to highest
-            const aInteger = a.meta.order === "first" ? -1 :
-                a.meta.order === "last" ? 1 :
-                    a.meta.order === "none" ? 0 : a.meta.order;
-
-            const bInteger = b.meta.order === "first" ? -1 :
-                b.meta.order === "last" ? 1 :
-                    b.meta.order === "none" ? 0 : b.meta.order;
-
-            if (bInteger < aInteger) {
-                return 1;
-            }
-            if (aInteger < bInteger) {
-                return -1;
-            }
-
-            return 0;
-        });
+        this.sortPlguins(pluginCtrs);
         for (let i = 0; i < pluginCtrs.length; i++) {
             const importedPlugin = pluginCtrs[i];
             if (this.isEnabled(importedPlugin, room)) {
@@ -750,6 +729,23 @@ export class PluginLoader {
         this.applyChatCommands(room);
         this.applyReactorRpcHandlers(room);
         this.applyRegisteredPrefabs(room);
+    }
+
+    async getPluginPackageJson(pluginPath: string): Promise<any> {
+        try {
+            const packageJsonText = await fs.readFile(path.resolve(pluginPath, "package.json"), "utf8");
+            try {
+                return JSON.parse(packageJsonText);
+            } catch (e) {
+                throw new Error("Couldn't parse package.json, it must be invalid");
+            }
+        } catch (e: any) {
+            if (e && e.code === "ENOENT") {
+                return undefined;
+            }
+
+            throw e;
+        }
     }
 
     /**
@@ -773,15 +769,20 @@ export class PluginLoader {
             throw new Error("Expected an absolute path to a plugin but got a relative one.");
         }
 
+        const packageJson = await this.getPluginPackageJson(pluginPath);
+        if (packageJson && packageJson.engines && packageJson.engines.hindenburg)
+            if (!minimatch(Worker.serverVersion, packageJson.engines.hindenburg))
+                throw new Error("Built for an incompatible version of hindenburg");
+
         try {
             delete require.cache[require.resolve(pluginPath)];
         } catch (e) { // require.resolve will error if the module is not found
-            return false;
+            throw new Error("The path didn't exist or wasn't a javascript module");
         }
         const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
-            return false;
+            throw new Error("The imported module wasn't a Hindenburg plugin");
 
         const ev = await this.worker.emit(
             new WorkerImportPluginEvent(
@@ -797,7 +798,7 @@ export class PluginLoader {
         const isRoomPlugin = PluginLoader.isRoomPlugin(ev.alteredPlugin);
 
         if (!isWorkerPlugin && !isRoomPlugin)
-            return false;
+            throw new Error("The imported module wasn't a worker or room plugin");
 
         if (isWorkerPlugin) {
             this.workerPlugins.set(ev.alteredPlugin.meta.id, ev.alteredPlugin);

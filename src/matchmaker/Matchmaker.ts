@@ -3,7 +3,7 @@ import polka from "polka";
 import { Platform } from "@skeldjs/constant";
 import { json } from "../util/jsonBodyParser";
 import { Logger } from "../logger";
-import { Worker } from "../server";
+import { Worker } from "../worker";
 
 // This mmtoken will be invalid instantly because:
 // The ClientVersion is set to 0 and the expires at is set to Jan 1st 1970

@@ -1,5 +1,5 @@
 import { BasicEvent } from "@skeldjs/events";
-import { Room } from "../../../server";
+import { Room } from "../../../worker";
 
 /**
  * Emitted after a room has successfully been created.

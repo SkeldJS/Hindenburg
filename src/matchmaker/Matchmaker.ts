@@ -31,6 +31,29 @@ export interface GameListingJson {
     HostPlatformName: string;
 }
 
+enum AmongUsLanguage {
+    All,
+    Other,
+    SpanisLA,
+    Korean,
+    Russian,
+    Portuguese,
+    Arabic,
+    Filipino,
+    Polish,
+    English,
+    Japanese,
+    SpanishEU,
+    Brazilian,
+    Dutch,
+    French,
+    German,
+    Italian,
+    ChineseSimplified,
+    ChineseTraditional,
+    Irish
+}
+
 export class Matchmaker {
     httpServer?: polka.Polka;
     logger: Logger;
@@ -89,8 +112,8 @@ export class Matchmaker {
             const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
 
             res.status(200).json({
-                ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                port: this.worker.config.socket.port
+                Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
+                Port: this.worker.config.socket.port
             });
         });
 
@@ -98,8 +121,8 @@ export class Matchmaker {
             const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
 
             res.status(200).json({
-                ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                port: this.worker.config.socket.port
+                Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
+                Port: this.worker.config.socket.port
             });
         });
 
@@ -115,13 +138,14 @@ export class Matchmaker {
                     continue;
                 }
 
-                if (room.privacy === "private") continue;
+                if (room.privacy === "private")
+                    continue;
 
                 const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
                 const numImpostors = parseInt(req.query.numImpostors as string);
 
                 if (
-                    room.settings.keywords === parseInt(req.query.lang as string) &&
+                    room.settings.keywords === (AmongUsLanguage[req.query.lang as unknown as number] as unknown as number) &&
                     (parseInt(req.query.mapId as string) & (1 << room.settings.map)) !== 0 &&
                     (
                         room.settings.numImpostors === numImpostors ||

@@ -1,5 +1,24 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.1.1": {
+    "version": "1.1.1",
+    "contributors": ["edward"],
+    "date": "2022-05-26",
+    "notes": [
+      {
+        "description": "Fix find game endpoint",
+        "commits": ["10b87ac4803c240a06aba01d1984865a95f2d6ad"]
+      },
+      {
+        "description": "Update gitignore, fix typescript plugin not appearing",
+        "commits": ["290fedd3b2588222f5fae619a97dac64875dc3d4"]
+      },
+      {
+        "description": "Add API version enforce support",
+        "commits": ["630d092b140d7f6d6c9ef1d5c85840d53798ff9e"]
+      }
+    ]
+  },
   "1.1.0": {
     "version": "1.1.0",
     "contributors": ["edward"],

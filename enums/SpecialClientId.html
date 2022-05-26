@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SocketConfig | @skeldjs/hindenburg</title>
+	<title>SpecialClientId | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,142 +57,62 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="SocketConfig.html">SocketConfig</a>
+					<a href="SpecialClientId.html">SpecialClientId</a>
 				</li>
 			</ul>
-			<h1>Interface SocketConfig</h1>
+			<h1>Enumeration SpecialClientId</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">SocketConfig</span>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="SocketConfig.html#acceptUnknownGameData" class="tsd-kind-icon">accept<wbr>Unknown<wbr>Game<wbr>Data</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="SocketConfig.html#ip" class="tsd-kind-icon">ip</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="SocketConfig.html#messageOrdering" class="tsd-kind-icon">message<wbr>Ordering</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="SocketConfig.html#port" class="tsd-kind-icon">port</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="SocketConfig.html#useDtlsLayout" class="tsd-kind-icon">use<wbr>Dtls<wbr>Layout</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="SpecialClientId.html#Temp" class="tsd-kind-icon">Temp</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="SpecialClientId.html#Server" class="tsd-kind-icon">Server</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="SpecialClientId.html#Nil" class="tsd-kind-icon">Nil</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="acceptUnknownGameData" class="tsd-anchor"></a>
-					<h3>accept<wbr>Unknown<wbr>Game<wbr>Data</h3>
-					<div class="tsd-signature tsd-kind-icon">accept<wbr>Unknown<wbr>Game<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<h2>Enumeration members</h2>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="Temp" class="tsd-anchor"></a>
+					<h3>Temp</h3>
+					<div class="tsd-signature tsd-kind-icon">Temp<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2147483645</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/interfaces/HindenburgConfig.ts#L31">src/interfaces/HindenburgConfig.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/worker/BaseRoom.ts#L132">src/worker/BaseRoom.ts:132</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether or not to broadcast gamedata messages that don&#39;t get handled by the server.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>false</p>
-							</dd>
-						</dl>
-					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="ip" class="tsd-anchor"></a>
-					<h3>ip</h3>
-					<div class="tsd-signature tsd-kind-icon">ip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="Server" class="tsd-anchor"></a>
+					<h3>Server</h3>
+					<div class="tsd-signature tsd-kind-icon">Server<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2147483646</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/interfaces/HindenburgConfig.ts#L41">src/interfaces/HindenburgConfig.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/worker/BaseRoom.ts#L131">src/worker/BaseRoom.ts:131</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The IP address of this node, set to <code>auto</code> for it to get auto-discovered.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>&quot;auto&quot;</p>
-							</dd>
-						</dl>
-					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="messageOrdering" class="tsd-anchor"></a>
-					<h3>message<wbr>Ordering</h3>
-					<div class="tsd-signature tsd-kind-icon">message<wbr>Ordering<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="Nil" class="tsd-anchor"></a>
+					<h3>Nil</h3>
+					<div class="tsd-signature tsd-kind-icon">Nil<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = 2147483647</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/interfaces/HindenburgConfig.ts#L36">src/interfaces/HindenburgConfig.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/worker/BaseRoom.ts#L130">src/worker/BaseRoom.ts:130</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether to order reliable packets received from clients.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>false</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="port" class="tsd-anchor"></a>
-					<h3>port</h3>
-					<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/interfaces/HindenburgConfig.ts#L26">src/interfaces/HindenburgConfig.ts:26</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The port to listen on.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>22023</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="useDtlsLayout" class="tsd-anchor"></a>
-					<h3>use<wbr>Dtls<wbr>Layout</h3>
-					<div class="tsd-signature tsd-kind-icon">use<wbr>Dtls<wbr>Layout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/10b87ac/src/interfaces/HindenburgConfig.ts#L46">src/interfaces/HindenburgConfig.ts:46</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Whether or not to use the DTLS transport layout when listening for Hello packets.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>false</p>
-							</dd>
-						</dl>
-					</div>
 				</section>
 			</section>
 		</div>
@@ -265,23 +185,17 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="SocketConfig.html" class="tsd-kind-icon">Socket<wbr>Config</a>
+					<li class="current tsd-kind-enum">
+						<a href="SpecialClientId.html" class="tsd-kind-icon">Special<wbr>Client<wbr>Id</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="SocketConfig.html#acceptUnknownGameData" class="tsd-kind-icon">accept<wbr>Unknown<wbr>Game<wbr>Data</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="SpecialClientId.html#Temp" class="tsd-kind-icon">Temp</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="SocketConfig.html#ip" class="tsd-kind-icon">ip</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="SpecialClientId.html#Server" class="tsd-kind-icon">Server</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="SocketConfig.html#messageOrdering" class="tsd-kind-icon">message<wbr>Ordering</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="SocketConfig.html#port" class="tsd-kind-icon">port</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="SocketConfig.html#useDtlsLayout" class="tsd-kind-icon">use<wbr>Dtls<wbr>Layout</a>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="SpecialClientId.html#Nil" class="tsd-kind-icon">Nil</a>
 							</li>
 						</ul>
 					</li>

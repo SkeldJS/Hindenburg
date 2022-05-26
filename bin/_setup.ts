@@ -197,6 +197,15 @@ export default (async (useDefault: boolean) => {
             logger.error("Failed to create config.json: %s", (e as { code: string }).code || e);
         }
 
+        const configSchemaSpinner = new Spinner("Creating config schema.. %s");
+        try {
+            await createSchema();
+            configSchemaSpinner.success();
+        } catch (e) {
+            configSchemaSpinner.fail();
+            logger.error("Failed to create config.schema.json: %s", (e as { code: string }).code || e);
+        }
+
         return defaultConfig;
     }
 

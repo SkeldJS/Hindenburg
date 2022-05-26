@@ -7,7 +7,7 @@ const configSchema = require("../misc/config.schema.json");
  * @typedef JsonSchema
  * @property {string?} id
  * @property {JsonSchema?} $schema
- * @property {string?}
+ * @property {string?} $extends
  * @property {string?} description
  * @property {any?} default
  * @property {number?} multipleOf

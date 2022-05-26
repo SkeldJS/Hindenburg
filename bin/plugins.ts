@@ -13,6 +13,7 @@ import { Logger } from "../src/logger";
 import { runCommandInDir } from "./util/runCommandInDir";
 import { Spinner } from "./util/Spinner";
 import { PluginLoader, Plugin } from "../src/handlers";
+import createSchema from "./createSchema";
 
 const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
 const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
@@ -463,6 +464,15 @@ async function runCreatePlugin() {
         }
         console.log(e);
         return;
+    }
+
+    const schemaSpinner = new Spinner("Creating config schema.. %s").start();
+    try {
+        await fs.writeFile(path.resolve(pluginDirectory, "config.schema.json"), "{}", "utf8");
+        schemaSpinner.success();
+    } catch (e) {
+        schemaSpinner.fail();
+        logger.warn("Failed to create config schema, moving on anyway");
     }
 
     const entryPointSpinner = new Spinner("Creating entrypoint files.. %s").start();
@@ -1061,5 +1071,14 @@ async function runList() {
         console.log("       yarn plugins list                   " + chalk.gray("# list all installed plugins"));
         console.error("Expected 'action' to be one of 'install', 'uninstall', 'list', or 'create'.");
         break;
+    }
+
+    const configSchemaSpinner = new Spinner("Updating config schema.. %s");
+    try {
+        await createSchema();
+        configSchemaSpinner.success();
+    } catch (e) {
+        configSchemaSpinner.fail();
+        logger.error("Failed to update config.schema.json: %s", (e as { code: string }).code || e);
     }
 })();

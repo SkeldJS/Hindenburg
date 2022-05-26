@@ -7,6 +7,7 @@ import { Spinner } from "./util/Spinner";
 import { runCommandInDir } from "./util/runCommandInDir";
 import { Logger } from "../src/logger";
 import { createDefaultConfig } from "./createDefaultConfig";
+import createSchema from "./createSchema";
 
 async function doesExist(path: string) {
     try {
@@ -92,7 +93,9 @@ export default (async (useDefault: boolean) => {
             configJsonData = await fs.readFile(configFile, "utf8");
 
             try {
-                JSON.parse(configJsonData as string);
+                const json = JSON.parse(configJsonData as string);
+                json.$schema = "./config.schema.json";
+                await fs.writeFile(configFile, JSON.stringify(json, undefined, 4), "utf8");
                 verifySpinner.success();
             } catch (e) {
                 verifySpinner.fail();
@@ -110,16 +113,24 @@ export default (async (useDefault: boolean) => {
     if (flag) {
         if (useDefault) {
             const defaultConfig = createDefaultConfig();
-            (defaultConfig as any)["$schema"] = "./misc/config.schema.json";
 
             const configSpinner = new Spinner("Writing config.. %s");
             try {
                 await fs.writeFile(
                     configFile,
-                    JSON.stringify(defaultConfig, undefined, 4),
+                    JSON.stringify({ $schema: "./config.schema.json", ...defaultConfig }, undefined, 4),
                     "utf8"
                 );
                 configSpinner.success();
+
+                const configSchemaSpinner = new Spinner("Creating config schema.. %s");
+                try {
+                    await createSchema();
+                    configSchemaSpinner.success();
+                } catch (e) {
+                    configSchemaSpinner.fail();
+                    logger.error("Failed to create config.schema.json: %s", (e as { code: string }).code || e);
+                }
             } catch (e) {
                 configSpinner.fail();
                 logger.error("Failed to create config.json: %s", (e as { code: string }).code || e);
@@ -177,7 +188,7 @@ export default (async (useDefault: boolean) => {
         try {
             await fs.writeFile(
                 configFile,
-                JSON.stringify({ $schema: path.relative(path.dirname(configFile), path.resolve(__dirname, "../misc/config.schema.json")), ...defaultConfig }, undefined, 4),
+                JSON.stringify({ $schema: "./config.schema.json", ...defaultConfig }, undefined, 4),
                 "utf8"
             );
             configSpinner.success();
@@ -187,5 +198,14 @@ export default (async (useDefault: boolean) => {
         }
 
         return defaultConfig;
+    }
+
+    const configSchemaSpinner = new Spinner("Creating config schema.. %s");
+    try {
+        await createSchema();
+        configSchemaSpinner.success();
+    } catch (e) {
+        configSchemaSpinner.fail();
+        logger.error("Failed to create config.schema.json: %s", (e as { code: string }).code || e);
     }
 });

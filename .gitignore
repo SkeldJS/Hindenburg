@@ -161,3 +161,4 @@ docs
 /.idea
 
 /pages/Getting Started/Configuration.md
+/config.schema.json

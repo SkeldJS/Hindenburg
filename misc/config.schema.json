@@ -120,7 +120,7 @@
       "properties": {
         "loadDirectory": {
           "type": "boolean",
-          "description": "Whether to load all plugins in the plugin directory.",
+          "description": "Whether to load all plugins found in the plugin directories.",
           "default": true
         }
       },
@@ -133,7 +133,7 @@
             },
             {
               "type": "object",
-              "description": "Enable the plugin and pass any configuration values to the plugin."
+              "description": "Enable the plugin and pass any configuration values to it."
             }
           ]
         }

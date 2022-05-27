@@ -53,6 +53,7 @@ import { recursiveAssign } from "../util/recursiveAssign";
 import { ReactorRpcMessage } from "../packets";
 import { Logger } from "../logger";
 import { fmtCode } from "../util/fmtCode";
+import { getPluginDependencies } from "../api/hooks/Dependency";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
@@ -303,6 +304,12 @@ export class Plugin {
         }
 
         await Promise.all(promises);
+    }
+
+    getDependency(pluginId: string): Plugin;
+    getDependency<K extends typeof Plugin>(plugin: K): InstanceType<K>
+    getDependency(plugin: any): Plugin {
+        throw plugin;
     }
 }
 
@@ -651,18 +658,43 @@ export class PluginLoader {
         if (shouldPreventLoading(pluginClass))
             return;
 
-        if (this.worker.config.plugins[pluginClass.meta.id] === false) {
+        if (this.worker.config.plugins[pluginClass.meta.id] === false)
             return false;
-        }
 
-        if (room && !room.config.plugins[pluginClass.meta.id] === false) {
+        if (room && !room.config.plugins[pluginClass.meta.id] === false)
             return false;
-        }
 
         return true;
     }
 
-    protected sortPlguins(pluginCtrs: (typeof WorkerPlugin|typeof RoomPlugin)[]) {
+    protected sortVisit(
+        dependents: (typeof WorkerPlugin|typeof RoomPlugin)[],
+        pluginCtrs: (typeof WorkerPlugin|typeof RoomPlugin)[],
+        tmarked: Set<string>,
+        pmarked: Set<string>,
+        node: typeof WorkerPlugin|typeof RoomPlugin
+    ) {
+        if (tmarked.has(node.meta.id) || pmarked.has(node.meta.id))
+            return false;
+
+        tmarked.add(node.meta.id);
+        for (const pluginCtr of pluginCtrs) {
+            const dependencies = getPluginDependencies(pluginCtr);
+            for (const dependency of dependencies) {
+                if (dependency.pluginId === node.meta.id) {
+                    if (!this.sortVisit(dependents, pluginCtrs, tmarked, pmarked, pluginCtr))
+                        return false;
+                    break;
+                }
+            }
+        }
+        pmarked.add(node.meta.id);
+        tmarked.delete(node.meta.id);
+        dependents.push(node);
+        return true;
+    }
+
+    protected sortPlugins(pluginCtrs: (typeof WorkerPlugin|typeof RoomPlugin)[]) {
         pluginCtrs.sort((a, b) => {
             // first = -1
             // last = 1
@@ -685,7 +717,25 @@ export class PluginLoader {
 
             return 0;
         });
+
+        const tmarked: Set<string> = new Set;
+        const pmarked: Set<string> = new Set;
+
+        const dependents: (typeof WorkerPlugin|typeof RoomPlugin)[] = [];
+
+        while (pmarked.size < pluginCtrs.length) {
+            const unmarked = pluginCtrs.find(plugin => !pmarked.has(plugin.meta.id));
+
+            if (!unmarked)
+                break;
+
+            if (!this.sortVisit(dependents, pluginCtrs, tmarked, pmarked, unmarked))
+                break;
+        }
+
+        pluginCtrs.reverse();
     }
+
     /**
      * Load all imported worker plugins into the worker, checking {@link PluginLoader.isEnabled}.
      * @example
@@ -698,7 +748,7 @@ export class PluginLoader {
         for (const [ , importedPlugin ] of this.workerPlugins) {
             pluginCtrs.push(importedPlugin);
         }
-        this.sortPlguins(pluginCtrs);
+        this.sortPlugins(pluginCtrs);
         for (let i = 0; i < pluginCtrs.length; i++) {
             const importedPlugin = pluginCtrs[i];
             if (this.isEnabled(importedPlugin)) {
@@ -719,7 +769,7 @@ export class PluginLoader {
         for (const [ , importedPlugin ] of this.roomPlugins) {
             pluginCtrs.push(importedPlugin);
         }
-        this.sortPlguins(pluginCtrs);
+        this.sortPlugins(pluginCtrs);
         for (let i = 0; i < pluginCtrs.length; i++) {
             const importedPlugin = pluginCtrs[i];
             if (this.isEnabled(importedPlugin, room)) {

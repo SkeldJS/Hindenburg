@@ -4,7 +4,7 @@ import {
     hindenburgPluginDirectory,
     Plugin,
     PluginMetadata
-} from "../handlers";
+} from "../../handlers";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin;
@@ -51,7 +51,7 @@ export function PreventLoad(target: any) {
     Reflect.defineMetadata(hindenburgPreventLoad, 1, target);
 }
 
-export function isHindenburgPlugin(object: any)  {
+export function isHindenburgPlugin(object: any): object is typeof Plugin {
     return Reflect.hasMetadata(hindenburgPluginKey, object);
 }
 

@@ -44,7 +44,7 @@ Server-As-A-Host (**SaaH**) technology gives Hindenburg complete authority over 
 
 Your players won't notice a _thing_, but in the background it gives server owners and plugins the ability to completely revamp the game, and making Hindenburg's anti-cheat much more able to detect unwanted behaviour.
 
-![configuration](https://github.com/SkeldJS/Hindenburg/raw/master/media/configuration-example.png)
+![configuration](https://github.com/SkeldJS/Hindenburg/raw/master/media/configuration.png)
 Hindenburg is completely customisable with a simple json file, giving you full
 control.
 
@@ -58,7 +58,7 @@ The config is live updating, meaning that any changes in your config are _instan
 
 It allows you to choose completely how the server behaves, even down to the exact way that clients, rooms and players are logged in the console, allowing you to see whatever information that you need.
 
-![plugins](https://github.com/SkeldJS/Hindenburg/raw/master/media/plugin-code-example.png)
+![plugins](https://github.com/SkeldJS/Hindenburg/raw/master/media/plugins.png)
 
 Leveraging the power of SkeldJS, Hindenburg has full knowledge of running games,
 giving you a sophisticated and powerful plugin API.

@@ -527,7 +527,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("sethost <room code> <client id>", "List all players in a room.")
+            .command("sethost <room code> <client id>", "Change the host(s) of a room.")
             .option("--acting, -a", "Add the host as an acting host or 'fake' host.")
             .option("--remove-acting, -r", "Remove the player as an acting or 'fake' host.")
             .alias("sh")

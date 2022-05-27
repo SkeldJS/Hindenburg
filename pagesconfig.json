@@ -29,16 +29,20 @@
           "source": "./pages/Plugins/Creating a Plugin.md"
         },
         {
+          "title": "Development Environment",
+          "source": "./pages/Plugins/Development Environment.md"
+        },
+        {
           "title": "Compatible Versions",
           "source": "./pages/Plugins/Compatible Versions.md"
         },
         {
-          "title": "Worker and Room Plugins",
-          "source": "./pages/Plugins/Worker and Room Plugins.md"
+          "title": "Publishing Plugins",
+          "source": "./pages/Plugins/Publishing Plugins.md"
         },
         {
-          "title": "Lifecycle Methods",
-          "source": "./pages/Plugins/Lifecycle Methods.md"
+          "title": "Worker and Room Plugins",
+          "source": "./pages/Plugins/Worker and Room Plugins.md"
         },
         {
           "title": "Event Listeners",
@@ -47,6 +51,10 @@
         {
           "title": "Chat Commands",
           "source": "./pages/Plugins/Chat Commands.md"
+        },
+        {
+          "title": "Lifecycle Methods",
+          "source": "./pages/Plugins/Lifecycle Methods.md"
         }
       ]
     },

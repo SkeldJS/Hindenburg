@@ -44,6 +44,8 @@ Server-As-A-Host (**SaaH**) technology gives Hindenburg complete authority over 
 
 Your players won't notice a _thing_, but in the background it gives server owners and plugins the ability to completely revamp the game, and making Hindenburg's anti-cheat much more able to detect unwanted behaviour.
 
+SaaH also has the potential to make the game more fair for all players — especially when the host has a high latency. This is because it skips asking the host to verify kills and system sabotages, and does all of the logic on the server quicker.
+
 ![configuration](https://github.com/SkeldJS/Hindenburg/raw/master/media/configuration.png)
 Hindenburg is completely customisable with a simple json file, giving you full
 control.

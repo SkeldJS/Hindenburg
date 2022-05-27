@@ -8,7 +8,6 @@ Hindenburg can quickly generate a plugin template with the `yarn plugins create`
 
 ![plugin template creation gif](https://user-images.githubusercontent.com/60631511/144479766-bb8ff4fc-e922-4c00-93b5-364ab219beab.gif)
 
-
 > You can change where plugins are created with the {@page Environment Variables | `HINDENBURG_PLUGINS`} environment variable.
 
 #### [TypeScript](https://typescriptlang.org)
@@ -24,10 +23,4 @@ Probably best to use Git if you plan on publishing your plugin, especially if yo
 Hindenburg has 2 types of plugins, Worker plugins and Room plugins. Worker plugins are global across all rooms, while Room plugins are instantiated per room and are scoped, only receiving events from that specific room.
 
 ## Development
-Developing with your plugin should be equally as smooth. You can simply open the folder of your plugin in most text editors and it should all work well.
-
-![image](https://user-images.githubusercontent.com/60631511/144727802-3adf2f70-a99d-41cd-b748-47dc791ab651.png)
-_VSCode_
-
-![image](https://user-images.githubusercontent.com/60631511/144727971-9433dcd7-4f92-4396-b789-b0707a22ed08.png)
-_WebStorm_
+See the page on {@page Development Environment} for information on developing plugins.

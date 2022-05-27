@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Creating a Plugin | @skeldjs/hindenburg</title>
+	<title>Development Environment | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -60,10 +60,10 @@
 					<a href="Creating a Plugin.html">Plugins</a>
 				</li>
 				<li>
-					<a href="Creating a Plugin.html">Creating a Plugin</a>
+					<a href="Development Environment.html">Development Environment</a>
 				</li>
 			</ul>
-			<h1>Creating a Plugin</h1>
+			<h1>Development Environment</h1>
 		</div>
 	</div>
 </header>
@@ -71,39 +71,62 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
-					<h3>Prerequisites</h3>
+				<p>Hindenburg has a great developer experience for developers, meaning you can quickly develop, test and publish plugins.</p>
+				<a href="#recommended-editors" id="recommended-editors" style="color: inherit; text-decoration: none;">
+					<h3>Recommended Editors</h3>
 				</a>
-				<p>You should generally have some knowledge of what you&#39;re doing when writing a plugin, and while you will get as much help as possible on the <a href="https://discord.gg/8ewNJYmYAU">Discord server</a>, it&#39;s unlikely that anyone will want to spoonfeed you.</p>
-				<p>The main 2 supported editors are <a href="https://code.visualstudio.com/">VSCode</a> and <a href="https://www.jetbrains.com/webstorm/">JetBrains&#39; WebStorm</a>, although any javascript editor will likely work, for example <a href="https://atom.io/">Atom</a>.</p>
-				<a href="#create-plugin-template" id="create-plugin-template" style="color: inherit; text-decoration: none;">
-					<h3>Create plugin template</h3>
-				</a>
-				<p>Hindenburg can quickly generate a plugin template with the <code>yarn plugins create</code> command, and gives you some simple configuration questions:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/144479766-bb8ff4fc-e922-4c00-93b5-364ab219beab.gif" alt="plugin template creation gif"></p>
-				<blockquote>
-					<p>You can change where plugins are created with the <a href="../Getting Started/Environment Variables.html"><code>HINDENBURG_PLUGINS</code></a> environment variable.</p>
-				</blockquote>
+				<p>The two recommended editors for development with Hindenburg are <a href="https://code.visualstudio.com/">VSCode</a> and <a href="https://www.jetbrains.com/webstorm/">WebStorm</a>. Other editors may or may not work fine, but they won&#39;t be guaranteed support.</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144727802-3adf2f70-a99d-41cd-b748-47dc791ab651.png" alt="image">
+				<em>VSCode</em></p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/144727971-9433dcd7-4f92-4396-b789-b0707a22ed08.png" alt="image">
+				<em>WebStorm</em></p>
 				<a href="#typescript" id="typescript" style="color: inherit; text-decoration: none;">
-					<h4><a href="https://typescriptlang.org">TypeScript</a></h4>
+					<h3>TypeScript</h3>
 				</a>
-				<p>It&#39;s highly recommended to use TypeScript in your plugins. Both skeldjs and Hindenburg are built with TypeScript in mind, and while it is possible to use JavaScript, you will not have nearly the same developer experience with the types and information that Typescript can provide you.</p>
-				<a href="#yarn" id="yarn" style="color: inherit; text-decoration: none;">
-					<h4><a href="https://yarnpkg.com">Yarn</a></h4>
+				<p>If you&#39;re using TypeScript for your plugin, make sure to build your plugin before any changes that you make. Hindenburg will import the built <code>/dist</code> directory for your plugin; not the TypeScript code.</p>
+				<p>If you&#39;re going to be making a lot of changes, it may be of use to open a separate temrinal session and use the <code>yarn watch</code> script to continuously check for changes and build incrementally:</p>
+				<p><img src="https://i.imgur.com/PSd6JnS.gif" alt=""></p>
+				<a href="#using-a-local-version-of-skeldjs" id="using-a-local-version-of-skeldjs" style="color: inherit; text-decoration: none;">
+					<h3>Using a Local Version of SkeldJS</h3>
 				</a>
-				<p>Not as necessary as TypeScript, but is generally recommended just because &quot;it&#39;s better than npm&quot;. It&#39;s helpful to have a consistent package manager across similar projects, therefore it&#39;s probably best to use yarn to remain consistent with Hindenburg.</p>
-				<a href="#git" id="git" style="color: inherit; text-decoration: none;">
-					<h4><a href="https://git-scm.org">Git</a></h4>
+				<p>If you&#39;re developing both Hindenburg and SkeldJS simultaneously, i.e. developing updates for SkeldJS for use in Hindenburg, you can leverage yarn&#39;s <a href="https://yarnpkg.com/features/protocols">dependency protocols</a> in order to link SkeldJS:</p>
+				<pre><code class="language-json"><span style="color: #008000">/// hindenburg/package.json</span>
+<span style="color: #000000">...</span>
+<span style="color: #A31515">&quot;dependencies&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/client&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/client&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/constant&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/constant&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/core&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/client&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/data&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/data&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/events&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/events&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/protocol&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/protocol&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/reactor&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/reactor&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/state&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/state&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/text&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/text&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/util&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/util&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #CD3131">...</span>
+</code></pre>
+				<blockquote>
+					<p>Remember not to stage your updated package.json changes before committing.</p>
+				</blockquote>
+				<p>Note that you&#39;ll have to build if you make any changes made to the SkeldJS packages.</p>
+				<a href="#plugin-hot-reloading" id="plugin-hot-reloading" style="color: inherit; text-decoration: none;">
+					<h3>Plugin Hot-Reloading</h3>
 				</a>
-				<p>Probably best to use Git if you plan on publishing your plugin, especially if you also plan on making it open source. This makes it much easier to manage, find your plugin later &amp; for users to be able to find your source code.</p>
-				<a href="#plugin-type" id="plugin-type" style="color: inherit; text-decoration: none;">
-					<h4>Plugin Type</h4>
-				</a>
-				<p>Hindenburg has 2 types of plugins, Worker plugins and Room plugins. Worker plugins are global across all rooms, while Room plugins are instantiated per room and are scoped, only receiving events from that specific room.</p>
-				<a href="#development" id="development" style="color: inherit; text-decoration: none;">
-					<h2>Development</h2>
-				</a>
-				<p>See the page on <a href="Development Environment.html">Development Environment</a> for information on developing plugins.</p>
+				<p>Hindenburg allows you to unload and load plugins, meaning that you don&#39;t have to restart your server or even re-create lobbies to test plugin changes.</p>
+				<p>Checkout the load command:</p>
+				<pre><code class="language-bat"><span style="color: #000000">Usage: load [options] &lt;plugin id&gt; [room code]</span>
+
+<span style="color: #000000">  Load a plugin into the server or into the room, importing </span><span style="color: #AF00DB">if</span><span style="color: #000000"> necessary, pass &#039;all&#039; into &#039;plugin id&#039; to load all plugins.</span>
+
+<span style="color: #000000">  Options:</span>
+
+<span style="color: #000000">    --help        output usage information</span>
+<span style="color: #000000">    --hot, -h     Whether to re-import the plugin </span><span style="color: #AF00DB">if</span><span style="color: #000000"> it&#039;s already imported</span>
+<span style="color: #000000">    --reload, -r  Whether to reload the plugin </span><span style="color: #AF00DB">if</span><span style="color: #000000"> it&#039;s already loaded</span>
+</code></pre>
+				<p>For example:</p>
+				<pre><code class="language-sh"><span style="color: #000000">load -hr hbplugin-customgamecode</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -127,10 +150,10 @@
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>
 					</li>
-					<li class="current pp-nav pp-page">
+					<li class=" pp-nav pp-page">
 						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
-					<li class=" pp-nav pp-page">
+					<li class="current pp-nav pp-page">
 						<a href="Development Environment.html">Development <wbr>Environment</a>
 					</li>
 					<li class=" pp-nav pp-page">

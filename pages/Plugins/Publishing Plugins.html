@@ -3,18 +3,18 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MedScanSystemData | @skeldjs/hindenburg</title>
+	<title>Publishing Plugins | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="../assets/css/main.css">
-	<link rel="stylesheet" href="../assets/css/pages.css">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -23,7 +23,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">@skeldjs/hindenburg</a>
+					<a href="../../index.html" class="title">@skeldjs/hindenburg</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -54,59 +54,55 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules.html">Globals</a>
+					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="MedScanSystemData.html">MedScanSystemData</a>
+					<a href="Creating a Plugin.html">Plugins</a>
+				</li>
+				<li>
+					<a href="Publishing Plugins.html">Publishing Plugins</a>
 				</li>
 			</ul>
-			<h1>Interface MedScanSystemData</h1>
+			<h1>Publishing Plugins</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">MedScanSystemData</span>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implemented by</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../classes/MedScanSystem.html" class="tsd-signature-type" data-tsd-kind="Class">MedScanSystem</a></li>
-				</ul>
-			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="MedScanSystemData.html#queue" class="tsd-kind-icon">queue</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="queue" class="tsd-anchor"></a>
-					<h3>queue</h3>
-					<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <a href="../classes/PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/MedScanSystem.d.ts:12</li>
-						</ul>
-					</aside>
-				</section>
-			</section>
+			<div class="tsd-panel tsd-typography">
+				<p>You can publish your plugins either directly to the <a href="https://npmjs.com">NPM</a> package registry, or you can just upload your source to GitHub to require server owners to install your plugin directly and manually.</p>
+				<blockquote>
+					<p>If you&#39;re looking to <em>install</em> plugins, check out the page on <a href="../Getting%20Started/Installing%20Plugins.html">Installing Plugins</a>.</p>
+				</blockquote>
+				<a href="#publishing-to-npm" id="publishing-to-npm" style="color: inherit; text-decoration: none;">
+					<h3>Publishing to NPM</h3>
+				</a>
+				<p>If you want to publish to NPM, make sure the plugin&#39;s package name begins with <code>hbplugin-</code> to make it identifiable and searchable. You can use the following command to publish it via yarn:</p>
+				<pre><code class="language-sh"><span style="color: #000000">yarn publish</span>
+</code></pre>
+				<blockquote>
+					<p>Make sure you&#39;re logged into NPM with <code>yarn npm login</code></p>
+				</blockquote>
+				<p>Make sure to only publish <em>working hindenburg plugins</em> under a <code>hbplugin-</code> namespace, as Hindenburg will otherwise refuse to load them.</p>
+				<a href="#publishing-to-github" id="publishing-to-github" style="color: inherit; text-decoration: none;">
+					<h3>Publishing to GitHub</h3>
+				</a>
+				<p>If you want to publish to GitHub, you can simply create a GitHub repo and push your changes to that.</p>
+				<blockquote>
+					<p>When creating your plugin, make sure to enable Git if you plan to publish your plugin to GitHub.</p>
+				</blockquote>
+				<blockquote>
+					<p>Stuck on this? Check out the <a href="https://docs.github.com/en/get-started/quickstart/create-a-repo">GitHub docs</a> for more information.</p>
+				</blockquote>
+				<p>You can push your changes with the following commands:</p>
+				<pre><code class="language-sh"><span style="color: #000000">git remote add origin &lt;github repo link&gt;</span>
+</code></pre>
+				<pre><code class="language-sh"><span style="color: #000000">git add </span><span style="color: #795E26">.</span>
+<span style="color: #000000">git commit -m </span><span style="color: #A31515">&quot;Some changes&quot;</span>
+<span style="color: #000000">git push origin master</span>
+</code></pre>
+			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -115,87 +111,78 @@
 						<span>Getting <wbr>Started</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Installation.html">Installation</a>
+						<a href="../Getting Started/Installation.html">Installation</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Environment Variables.html">Environment <wbr>Variables</a>
+						<a href="../Getting Started/Environment Variables.html">Environment <wbr>Variables</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Configuration.html">Configuration</a>
+						<a href="../Getting Started/Configuration.html">Configuration</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Installing Plugins.html">Installing <wbr>Plugins</a>
+						<a href="../Getting Started/Installing Plugins.html">Installing <wbr>Plugins</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
+						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Development Environment.html">Development <wbr>Environment</a>
+						<a href="Development Environment.html">Development <wbr>Environment</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Compatible Versions.html">Compatible <wbr>Versions</a>
+						<a href="Compatible Versions.html">Compatible <wbr>Versions</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Publishing Plugins.html">Publishing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Publishing Plugins.html">Publishing <wbr>Plugins</a>
+						<a href="Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Information/Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="../Information/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Information/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+						<a href="../Information/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Information/Interactive CLI.html">Interactive CLI</a>
+						<a href="../Information/Interactive CLI.html">Interactive CLI</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Information/Message Ordering.html">Message <wbr>Ordering</a>
+						<a href="../Information/Message Ordering.html">Message <wbr>Ordering</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Information/Plugins.html">Plugins</a>
+						<a href="../Information/Plugins.html">Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Information/Reactor Support.html">Reactor <wbr>Support</a>
+						<a href="../Information/Reactor Support.html">Reactor <wbr>Support</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Information/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+						<a href="../Information/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
 					</li>
 					<li class=" ">
-						<a href="../modules.html">Exports</a>
+						<a href="../../modules.html">Exports</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface tsd-is-external">
-						<a href="MedScanSystemData.html" class="tsd-kind-icon">Med<wbr>Scan<wbr>System<wbr>Data</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="MedScanSystemData.html#queue" class="tsd-kind-icon">queue</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>
@@ -231,7 +218,7 @@
 	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.json"><' + '/script>');</script>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
 </body>
 </html>

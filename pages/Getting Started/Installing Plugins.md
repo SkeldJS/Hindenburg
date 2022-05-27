@@ -24,7 +24,7 @@ yarn plugins uninstall hbplugin-ban-textfile
 ## Git Repository
 Hindenburg has a built-in utility to install a plugin from a git repository such as one from [Github](https://github.com):
 ```sh
-yarn plugins import hbplugin-<plugin name>
+yarn plugins import <git repository url>
 ```
 
 This will handle cloning the plugin, installing dependencies with the correct package manager, building and verifying it for you.

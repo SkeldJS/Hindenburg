@@ -36,14 +36,15 @@ docker run \
 > If you're looking for a full guide, check out the [installation](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Installation.html) page.
 
 ## Features
-![server-as-a-host](https://user-images.githubusercontent.com/60631511/170709691-824c36d1-9ddf-4367-99ea-fef358cb3bc6.png)
+![server as a host](https://github.com/SkeldJS/Hindenburg/raw/master/media/server-as-a-host.png)
+
 As Hindenburg is powered by SkeldJS, all client-side host logic is implemented accurately on the server.
 
 Server-As-A-Host (**SaaH**) technology gives Hindenburg complete authority over games, meaning it actively participates in gameplay — making it more than just a glorified relay network.
 
 Your players won't notice a _thing_, but in the background it gives server owners and plugins the ability to completely revamp the game, and making Hindenburg's anti-cheat much more able to detect unwanted behaviour.
 
-![configuration-example](https://user-images.githubusercontent.com/60631511/170706986-77e521b3-eb85-444b-b677-5ec626f2f694.png)
+![configuration](https://github.com/SkeldJS/Hindenburg/raw/master/media/configuration-example.png)
 Hindenburg is completely customisable with a simple json file, giving you full
 control.
 
@@ -57,7 +58,7 @@ The config is live updating, meaning that any changes in your config are _instan
 
 It allows you to choose completely how the server behaves, even down to the exact way that clients, rooms and players are logged in the console, allowing you to see whatever information that you need.
 
-![plugin-code-example](https://user-images.githubusercontent.com/60631511/170706989-7d746704-6dca-4b01-a80f-3454cca18cbf.png)
+![plugins](https://github.com/SkeldJS/Hindenburg/raw/master/media/plugin-code-example.png)
 
 Leveraging the power of SkeldJS, Hindenburg has full knowledge of running games,
 giving you a sophisticated and powerful plugin API.
@@ -78,7 +79,7 @@ Plugins can be attached either directly to the server covering all rooms and ser
 
 Plugins are great for adding first-class support for client mods to Hindenburg, even allowing you to extend Server-as-a-Host capabilities, allowing you to move your client-side logic to the server, ensuring security and source integrity.
 
-![reactor-support](https://user-images.githubusercontent.com/60631511/170715253-311a5717-c8e7-4b56-9a2e-bde51f106f5c.png)
+![reactor support](https://github.com/SkeldJS/Hindenburg/raw/master/media/reactor-support.png)
 Hindenburg has native support for clients using [Reactor](https://reactor.gg), allowing plugins to communicate directly with client-side mods and giving you the ability to leverage the full potential of the Reactor protocol.
 
 With the ability to ban, require or require specific versions of mods, you can be sure that clients are connecting to your servers with the _exact_ mods that your modpack requires.

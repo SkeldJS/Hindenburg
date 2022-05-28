@@ -43,7 +43,7 @@ Note that you'll have to build if you make any changes made to the SkeldJS packa
 ### Plugin Hot-Reloading
 Hindenburg allows you to unload and load plugins, meaning that you don't have to restart your server or even re-create lobbies to test plugin changes.
 
-Checkout the load command:
+Check out the load command:
 ```bat
 Usage: load [options] <plugin id> [room code]
 
@@ -59,5 +59,5 @@ Usage: load [options] <plugin id> [room code]
 For example:
 
 ```sh
-load -hr hbplugin-customgamecode
+load -h -r hbplugin-customgamecode
 ```

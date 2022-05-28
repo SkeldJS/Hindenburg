@@ -469,7 +469,7 @@ async function runCreatePlugin() {
     const schemaSpinner = new Spinner("Creating config schema.. %s").start();
     try {
         await fs.writeFile(path.resolve(pluginDirectory, "config.schema.json"), `{
-    "$schema": "https://json-schema.org/schema",
+    "$schema": "http://json-schema.org/schema",
     "properties": {
         
     }

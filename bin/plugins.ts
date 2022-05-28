@@ -399,7 +399,7 @@ async function runCreatePlugin() {
             packageJson.keywords = [ "hindenburg", "plugin", "among us" ];
             packageJson.license = "GPL-3.0-only";
             packageJson.author = author;
-            packageJson.files = [ "dist" ];
+            packageJson.files = [ "dist", "config.schema.json" ];
             packageJson.main = "./dist/index.js";
             packageJson.scripts = {
                 publish: "yarn npm publish --access public"

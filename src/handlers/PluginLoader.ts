@@ -56,6 +56,9 @@ import { fmtCode } from "../util/fmtCode";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
+const colours = [ "red", "blue", "green", "pink", "orange", "yellow", "black", "white", "purple", "brown", "cyan", "lime", "maroon", "rose", "banana", "gray", "tan", "coral" ];
+const roles = [ "crewmate", "impostor", "scientist", "engineer", "guardian-angel", "shapeshift" ];
+
 /**
  * Metadata about a plugin, created with {@link HindenburgPlugin}.
  */
@@ -746,6 +749,32 @@ export class PluginLoader {
     }
 
     /**
+     * Generate a random plugin ID.
+     * 
+     * Note that this will return one even if it is taken, see {@link PluginLoader.generateRandomPluginIdSafe}
+     * if you need one that is not taken.
+     * @returns A random plugin ID.
+     */
+    generateRandomPluginId() {
+        const colour = colours[Math.random() * colours.length];
+        const role = roles[Math.random() * roles.length];
+        return "hbplugin-" + colour + "-" + role;
+    }
+
+    /**
+     * Generate a random plugin ID that has not been taken by any other plugins.
+     * @returns A random plugin ID that can safely be used.
+     */
+    generateRandomPluginIdSafe() {
+        let pluginId = this.generateRandomPluginId();
+        while (this.roomPlugins.has(pluginId)) {
+            pluginId = this.generateRandomPluginId();
+        }
+
+        return pluginId;
+    }
+
+    /**
      * Import a plugin from its absolute path on the filesystem.
      * @param pluginPath The path of the plugin to import.
      * @returns The imported plugin constructor, or false if the plugin failed
@@ -783,6 +812,17 @@ export class PluginLoader {
             pluginCtr.meta.loadOrder = packageJson.loadOrder || pluginCtr.meta.loadOrder;
             pluginCtr.meta.defaultConfig = packageJson.defaultConfig || pluginCtr.meta.defaultConfig;
         }
+
+        if (!pluginCtr.meta) {
+            this.worker.logger.warn("Imported plugin had no attached metadata, assigning random id");
+            pluginCtr.meta = {
+                id: this.generateRandomPluginIdSafe(),
+                version: "1.0.0",
+                loadOrder: "none",
+                defaultConfig: {}
+            };
+        }
+
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             throw new Error("The imported module wasn't a Hindenburg plugin");
 

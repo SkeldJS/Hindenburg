@@ -15,7 +15,13 @@ export interface DeclaredPlugin {
 const hindenburgPluginKey = Symbol("hindenburg:plugin");
 const hindenburgPreventLoad = Symbol("hindenburg:preventload");
 
+let deprecationWarning = false;
 export function HindenburgPlugin(id: string, version = "1.0.0", loadOrder: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
+    if (!deprecationWarning) {
+        deprecationWarning = true;
+        console.log("Deprecation warning: @HindenburgPlugin is deprecated in favour of the package.json");
+    }
+
     if (!id) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }

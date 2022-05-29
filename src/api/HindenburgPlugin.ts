@@ -36,7 +36,6 @@ export function HindenburgPlugin(id: string, version = "1.0.0", loadOrder: "firs
 
         const hookedClass = class extends constructor {
             static meta = metadata;
-            meta = metadata;
 
             constructor(...args: any) {
                 super(...args);

@@ -205,6 +205,8 @@ export class Plugin {
          */
         public config: any
     ) {
+        this.meta = (this["constructor"] as typeof Plugin).meta; // typescript hax
+
         this.loadedChatCommands = [];
         this.loadedCliCommands = [];
         this.loadedEventListeners = [];
@@ -807,10 +809,19 @@ export class PluginLoader {
         const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
         if (packageJson) {
-            pluginCtr.meta.id = packageJson.name || pluginCtr.meta.id;
-            pluginCtr.meta.version = packageJson.version || pluginCtr.meta.version;
-            pluginCtr.meta.loadOrder = packageJson.loadOrder || pluginCtr.meta.loadOrder;
-            pluginCtr.meta.defaultConfig = packageJson.defaultConfig || pluginCtr.meta.defaultConfig;
+            if (pluginCtr.meta) {
+                pluginCtr.meta.id = packageJson.name || pluginCtr.meta.id;
+                pluginCtr.meta.version = packageJson.version || pluginCtr.meta.version;
+                pluginCtr.meta.loadOrder = packageJson.loadOrder || pluginCtr.meta.loadOrder;
+                pluginCtr.meta.defaultConfig = packageJson.defaultConfig || pluginCtr.meta.defaultConfig;
+            } else {
+                pluginCtr.meta = {
+                    id: packageJson.name,
+                    version: packageJson.version,
+                    loadOrder: packageJson.loadOrder,
+                    defaultConfig: packageJson.defaultConfig
+                }
+            }
         }
 
         if (!pluginCtr.meta) {

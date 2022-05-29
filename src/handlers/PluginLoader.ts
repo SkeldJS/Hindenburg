@@ -808,23 +808,18 @@ export class PluginLoader {
         }
         const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
-        if (packageJson) {
-            if (pluginCtr.meta) {
-                pluginCtr.meta.id = packageJson.name || pluginCtr.meta.id;
-                pluginCtr.meta.version = packageJson.version || pluginCtr.meta.version;
-                pluginCtr.meta.loadOrder = packageJson.plugin.loadOrder || pluginCtr.meta.loadOrder;
-                pluginCtr.meta.defaultConfig = packageJson.plugin.defaultConfig || pluginCtr.meta.defaultConfig;
-            } else {
-                pluginCtr.meta = {
-                    id: packageJson.name,
-                    version: packageJson.version,
-                    loadOrder: packageJson.plugin.loadOrder,
-                    defaultConfig: packageJson.plugin.defaultConfig
-                }
-            }
-        }
+        const packageJsonMeta = packageJson ? {
+            id: packageJson.name || this.generateRandomPluginIdSafe(),
+            version: packageJson.version || "1.0.0",
+            loadOrder: packageJson.plugin ? packageJson.plugin.loadOrder || "none" : "none",
+            defaultConfig: packageJson.plugin ? packageJson.plugin.defaultConfig || {} : {}
+        } : undefined;
 
-        if (!pluginCtr.meta) {
+        if (pluginCtr.meta) {
+            pluginCtr.meta = { ...packageJsonMeta, ...pluginCtr.meta };
+        } else if (packageJsonMeta) {
+            pluginCtr.meta = packageJsonMeta;
+        } else {
             this.worker.logger.warn("Imported plugin had no attached metadata, assigning random id");
             pluginCtr.meta = {
                 id: this.generateRandomPluginIdSafe(),
@@ -833,7 +828,7 @@ export class PluginLoader {
                 defaultConfig: {}
             };
         }
-
+        
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             throw new Error("The imported module wasn't a Hindenburg plugin");
 

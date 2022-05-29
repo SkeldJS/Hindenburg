@@ -97,9 +97,9 @@ export class Matchmaker {
 
             // todo: record matchmaking tokens used
             if (this.worker.config.logging.hideSensitiveInfo) {
-                this.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(req.body.Username), chalk.grey(req.body.Puid));
-            } else {
                 this.logger.info("Client %s got a matchmaker token", chalk.blue(req.body.Username));
+            } else {
+                this.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(req.body.Username), chalk.grey(req.body.Puid));
             }
 
             res.status(200).end(mmToken);

@@ -672,11 +672,11 @@ export class PluginLoader {
             // sort from lowest to highest
             const aInteger = a.meta.loadOrder === "first" ? -1 :
                 a.meta.loadOrder === "last" ? 1 :
-                    a.meta.loadOrder === "none" ? 0 : a.meta.loadOrder;
+                    a.meta.loadOrder === "none" || a.meta.loadOrder === undefined ? 0 : a.meta.loadOrder;
 
             const bInteger = b.meta.loadOrder === "first" ? -1 :
                 b.meta.loadOrder === "last" ? 1 :
-                    b.meta.loadOrder === "none" ? 0 : b.meta.loadOrder;
+                    b.meta.loadOrder === "none" || a.meta.loadOrder === undefined ? 0 : b.meta.loadOrder;
 
             if (bInteger < aInteger) {
                 return 1;
@@ -1041,7 +1041,7 @@ export class PluginLoader {
             }
         }
 
-        const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig);
+        const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig || {});
         recursiveAssign(defaultConfig, this.worker.config.plugins[pluginCtr.meta.id] || {});
 
         const isWorkerPlugin = PluginLoader.isWorkerPlugin(pluginCtr);

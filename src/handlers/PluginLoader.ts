@@ -812,14 +812,14 @@ export class PluginLoader {
             if (pluginCtr.meta) {
                 pluginCtr.meta.id = packageJson.name || pluginCtr.meta.id;
                 pluginCtr.meta.version = packageJson.version || pluginCtr.meta.version;
-                pluginCtr.meta.loadOrder = packageJson.loadOrder || pluginCtr.meta.loadOrder;
-                pluginCtr.meta.defaultConfig = packageJson.defaultConfig || pluginCtr.meta.defaultConfig;
+                pluginCtr.meta.loadOrder = packageJson.plugin.loadOrder || pluginCtr.meta.loadOrder;
+                pluginCtr.meta.defaultConfig = packageJson.plugin.defaultConfig || pluginCtr.meta.defaultConfig;
             } else {
                 pluginCtr.meta = {
                     id: packageJson.name,
                     version: packageJson.version,
-                    loadOrder: packageJson.loadOrder,
-                    defaultConfig: packageJson.defaultConfig
+                    loadOrder: packageJson.plugin.loadOrder,
+                    defaultConfig: packageJson.plugin.defaultConfig
                 }
             }
         }

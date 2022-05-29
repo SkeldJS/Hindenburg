@@ -523,7 +523,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     this.logger.error("Expected 'on' or 'off' for whether to enable SaaH on that room or not.");
                 }
 
-                room.setSaaHEnabled(args["on/off"] === "on");
+                room.setSaaHEnabled(args["on/off"] === "on", true);
             });
 
         this.vorpal

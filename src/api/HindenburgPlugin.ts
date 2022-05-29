@@ -3,7 +3,9 @@ import "reflect-metadata";
 import {
     hindenburgPluginDirectory,
     Plugin,
-    PluginMetadata
+    PluginMetadata,
+    RoomPlugin,
+    WorkerPlugin
 } from "../handlers";
 
 export interface DeclaredPlugin {
@@ -52,7 +54,14 @@ export function PreventLoad(target: any) {
 }
 
 export function isHindenburgPlugin(object: any)  {
-    return Reflect.hasMetadata(hindenburgPluginKey, object);
+    let prototype = Object.getPrototypeOf(object);
+    while (prototype !== null) {
+        if (prototype === WorkerPlugin || prototype === RoomPlugin) {
+            return true;
+        }
+        prototype = Object.getPrototypeOf(prototype);
+    }
+    return false;
 }
 
 export function shouldPreventLoading(object: any) {

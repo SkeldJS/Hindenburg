@@ -84,7 +84,7 @@ export interface PluginMetadata {
      * @example 9999999999999
      * @example -9999999999999
      */
-    order: "first"|"none"|"last"|number;
+    loadOrder: "first"|"none"|"last"|number;
     /**
      * The default configuration values for the plugin.
      * @example
@@ -133,12 +133,12 @@ async function _sendReactorRpc(this: Plugin, component: Networkable<unknown, Net
  */
 export class Plugin {
     /**
-     * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
+     * The metadata for the plugin.
      */
     static meta: PluginMetadata;
 
     /**
-     * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
+     * The metadata for the plugin.
      */
     meta!: PluginMetadata;
 
@@ -402,8 +402,7 @@ export class PluginLoader {
     }
 
     /**
-     * Check whether some object is that of a Hindenburg plugin, created with
-     * the {@link HindenburgPlugin} decorator.
+     * Check whether some object is a Hindenburg plugin.
      * @param someObject The object to check.
      * @returns Whether {@link someObject} is a Hindenburg plugin.
      *
@@ -414,7 +413,6 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoader.isHindenburgPlugin(MyPlugin)); // true
@@ -517,9 +515,8 @@ export class PluginLoader {
 
             const pluginCtr = await this.importPlugin(pluginPath);
 
-            if (!pluginCtr) {
+            if (!pluginCtr)
                 continue;
-            }
 
             return pluginCtr;
         }
@@ -668,13 +665,13 @@ export class PluginLoader {
             // last = 1
             // none = 0
             // sort from lowest to highest
-            const aInteger = a.meta.order === "first" ? -1 :
-                a.meta.order === "last" ? 1 :
-                    a.meta.order === "none" ? 0 : a.meta.order;
+            const aInteger = a.meta.loadOrder === "first" ? -1 :
+                a.meta.loadOrder === "last" ? 1 :
+                    a.meta.loadOrder === "none" ? 0 : a.meta.loadOrder;
 
-            const bInteger = b.meta.order === "first" ? -1 :
-                b.meta.order === "last" ? 1 :
-                    b.meta.order === "none" ? 0 : b.meta.order;
+            const bInteger = b.meta.loadOrder === "first" ? -1 :
+                b.meta.loadOrder === "last" ? 1 :
+                    b.meta.loadOrder === "none" ? 0 : b.meta.loadOrder;
 
             if (bInteger < aInteger) {
                 return 1;
@@ -765,9 +762,8 @@ export class PluginLoader {
      * ```
      */
     async importPlugin(pluginPath: string): Promise<typeof WorkerPlugin|typeof RoomPlugin|false> {
-        if (!path.isAbsolute(pluginPath)) {
+        if (!path.isAbsolute(pluginPath))
             throw new Error("Expected an absolute path to a plugin but got a relative one.");
-        }
 
         const packageJson = await this.getPluginPackageJson(pluginPath);
         if (packageJson && packageJson.engines && packageJson.engines.hindenburg)
@@ -781,6 +777,12 @@ export class PluginLoader {
         }
         const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
+        if (packageJson) {
+            pluginCtr.meta.id = packageJson.name || pluginCtr.meta.id;
+            pluginCtr.meta.version = packageJson.version || pluginCtr.meta.version;
+            pluginCtr.meta.loadOrder = packageJson.loadOrder || pluginCtr.meta.loadOrder;
+            pluginCtr.meta.defaultConfig = packageJson.defaultConfig || pluginCtr.meta.defaultConfig;
+        }
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             throw new Error("The imported module wasn't a Hindenburg plugin");
 

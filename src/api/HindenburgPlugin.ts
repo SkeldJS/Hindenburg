@@ -13,7 +13,7 @@ export interface DeclaredPlugin {
 const hindenburgPluginKey = Symbol("hindenburg:plugin");
 const hindenburgPreventLoad = Symbol("hindenburg:preventload");
 
-export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
+export function HindenburgPlugin(id: string, version = "1.0.0", loadOrder: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
     if (!id) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }
@@ -26,7 +26,7 @@ export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"
         id,
         version,
         defaultConfig,
-        order
+        loadOrder
     };
 
     return function<T extends DeclaredPlugin>(constructor: T) {

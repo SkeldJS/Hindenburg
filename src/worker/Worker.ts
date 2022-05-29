@@ -1450,10 +1450,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         const oldConfig = loadedPlugin.config;
 
                         const setConfig = newConfig.plugins[loadedPlugin.meta.id];
-                        const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig);
-                        if (setConfig && setConfig !== true) {
+                        const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig || {});
+                        if (setConfig && setConfig !== true)
                             recursiveAssign(pluginConfig, setConfig);
-                        }
 
                         loadedPlugin.config = pluginConfig;
                         loadedPlugin.onConfigUpdate(oldConfig, loadedPlugin.config);

@@ -8,7 +8,7 @@ import resolvePkg from "resolve-pkg";
 import chalk from "chalk";
 import minimatch from "minimatch";
 
-import { Deserializable, RpcMessage } from "@skeldjs/protocol";
+import { Deserializable, MessageDirection, RpcMessage, Serializable } from "@skeldjs/protocol";
 import {
     AirshipStatus,
     AprilShipStatus,
@@ -28,7 +28,7 @@ import {
     VoteBanSystem
 } from "@skeldjs/core";
 
-import { RoomEvents, Room, Worker, WorkerEvents } from "../worker";
+import { RoomEvents, Room, Worker, WorkerEvents, PacketContext } from "../worker";
 
 import {
     getPluginChatCommands,
@@ -897,12 +897,21 @@ export class PluginLoader {
     private applyMessageHandlers() {
         this.worker.decoder.listeners.clear();
         this.worker.registerPacketHandlers();
-
+        
         for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
                 const { messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
                 if (options.override) {
-                    this.worker.decoder.listeners.delete(`${messageCtr.messageType}:${messageCtr.messageTag}`);
+                    const key = `${messageCtr.messageType}:${messageCtr.messageTag}` as const;
+                    const listeners = this.worker.decoder.listeners.get(key) || [];
+                    this.worker.decoder.listeners.delete(key);
+
+                    this.worker.decoder.on(messageCtr, (message, direction, ctx) => {
+                        handler(message, ctx, listeners.map(x => {
+                            return (message: Serializable, ctx: PacketContext) => x(message, MessageDirection.Serverbound, ctx);
+                        }));
+                    });
+                    continue;
                 }
 
                 this.worker.decoder.on(messageCtr, (message, direction, ctx) => handler(message, ctx));

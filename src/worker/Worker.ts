@@ -1415,8 +1415,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         if (newConfig.matchmaker) {
             if (this.matchmaker) {
-                if ((typeof newConfig.matchmaker === "boolean" && this.config.socket.port !== 80) ||
-                    (typeof newConfig.matchmaker === "object" && newConfig.matchmaker.port !== this.config.socket.port)
+                // prepare thyself for the worst if statement
+                if ((typeof newConfig.matchmaker === "boolean" && (typeof this.config.matchmaker !== "boolean" && this.config.matchmaker.port !== 80)) ||
+                    (typeof newConfig.matchmaker === "object" && (typeof this.config.matchmaker === "boolean" ? (newConfig.matchmaker.port !== 80) : (newConfig.matchmaker.port !== this.config.matchmaker.port)))
                 ) {
                     this.matchmaker.destroy();
                     this.matchmaker = undefined;

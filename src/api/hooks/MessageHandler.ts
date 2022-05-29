@@ -5,20 +5,20 @@ import { Serializable } from "child_process";
 
 const hindenburgMessageHandlersKey = Symbol("hindenburg:message");
 
-export interface MessageHandlerOptions<Override = boolean> {
-    override: Override;
+export interface MessageHandlerOptions {
+    override: boolean;
 }
 
 export type MessageHandlerCallback<Packet extends Serializable> = (
     message: Packet,
     ctx: PacketContext
-) => any
+) => any;
 
 export type MessageHandlerCallbackOriginalListeners<T extends Serializable> = (
     message: T,
     ctx: PacketContext,
     originalListeners: MessageHandlerCallback<T>[]
-) => any
+) => any;
 
 export interface PluginRegisteredMessageHandlerInfo {
     messageClass: Deserializable;
@@ -26,13 +26,13 @@ export interface PluginRegisteredMessageHandlerInfo {
     handler: MessageHandlerCallback<Deserializable>;
 }
 
-export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<MessageHandlerOptions<false>>):
-(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallback<GetSerialized<T>>>) => any;
-export function MessageHandler<T extends Deserializable>(messageClass: T, options: Partial<MessageHandlerOptions<true>>):
-(target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallbackOriginalListeners<GetSerialized<T>>>) => any;
-export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options?: Partial<MessageHandlerOptions<false>>):
+export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<{ override: false }>):
     (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallback<GetSerialized<T>>>) => any;
-export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options: Partial<MessageHandlerOptions<true>>):
+export function MessageHandler<T extends Deserializable>(messageClass: T, options: Partial<{ override: true }>):
+    (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallbackOriginalListeners<GetSerialized<T>>>) => any;
+export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options?: Partial<{ override: false }>):
+    (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallback<GetSerialized<T>>>) => any;
+export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options: Partial<{ override: true }>):
     (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallbackOriginalListeners<GetSerialized<T>>>) => any;
 export function MessageHandler<T extends Deserializable>(pluginClassOrMessageClass: typeof WorkerPlugin|typeof RoomPlugin|T, messageClassOrOptions: T|Partial<MessageHandlerOptions>, _options?: Partial<MessageHandlerOptions>) {
     return function (

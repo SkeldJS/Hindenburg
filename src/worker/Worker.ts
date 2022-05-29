@@ -111,8 +111,17 @@ function formatBytes(bytes: number) {
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
+/**
+ * Basic information about a packet received from a client.
+ */
 export interface PacketContext {
+    /**
+     * The clent who sent the packet.
+     */
     sender: Connection,
+    /**
+     * Whether or not the packet was sent reliably.
+     */
     reliable: boolean;
 }
 

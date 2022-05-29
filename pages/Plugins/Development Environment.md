@@ -1,6 +1,6 @@
 Hindenburg has a great developer experience for developers, meaning you can quickly develop, test and publish plugins.
 
-### Recommended Editors
+## Recommended Editors
 The two recommended editors for development with Hindenburg are [VSCode](https://code.visualstudio.com/) and [WebStorm](https://www.jetbrains.com/webstorm/). Other editors may or may not work fine, but they won't be guaranteed support.
 
 ![image](https://user-images.githubusercontent.com/60631511/144727802-3adf2f70-a99d-41cd-b748-47dc791ab651.png)
@@ -16,7 +16,7 @@ If you're going to be making a lot of changes, it may be of use to open a separa
 
 ![](https://i.imgur.com/PSd6JnS.gif)
 
-### Using a Local Version of SkeldJS
+## Using a Local Version of SkeldJS
 If you're developing both Hindenburg and SkeldJS simultaneously, i.e. developing updates for SkeldJS for use in Hindenburg, you can leverage yarn's [dependency protocols](https://yarnpkg.com/features/protocols) in order to link SkeldJS:
 
 ```json
@@ -40,7 +40,7 @@ If you're developing both Hindenburg and SkeldJS simultaneously, i.e. developing
 
 Note that you'll have to build if you make any changes made to the SkeldJS packages.
 
-### Plugin Hot-Reloading
+## Plugin Hot-Reloading
 Hindenburg allows you to unload and load plugins, meaning that you don't have to restart your server or even re-create lobbies to test plugin changes.
 
 Check out the load command:

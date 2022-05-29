@@ -3,7 +3,7 @@ Global plugins in Hindenburg are those that are attached to the worker, allowing
 
 You can create a global plugin by extending the {@link WorkerPlugin} class exported by `@skeldjs/hindenburg`, for example:
 ```ts
-@HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
+@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
 export class MyPlugin extends WorkerPlugin {
     constructor(
         public readonly worker: Worker,
@@ -27,7 +27,7 @@ The use of room plugins can be very powerful, for instance you could mix and mat
 
 Room plugins can be created by extending the {@link RoomPlugin} class exported by Hindenburg, for example:
 ```ts
-@HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
+@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
 export class MyPlugin extends RoomPlugin {
     constructor(
         public readonly room: Room,

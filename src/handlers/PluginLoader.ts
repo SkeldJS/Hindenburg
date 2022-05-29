@@ -63,7 +63,7 @@ export interface PluginMetadata {
     /**
      * The ID of the plugin, beginning with `hbplugin-`.
      *
-     * @example "hbplugin-my-plugin"
+     * @example "hbplugin-fun-things"
      */
     id: string;
     /**
@@ -223,7 +223,7 @@ export class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginLoad() {
      *     const res = await fetch("https://icanhazip.com/");
@@ -246,7 +246,7 @@ export class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginUnload() {
      *     this.logger.info("Closing socket..");
@@ -315,7 +315,7 @@ export class RoomPlugin extends Plugin {
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends RoomPlugin {
      *
      * }
@@ -339,7 +339,7 @@ export class WorkerPlugin extends Plugin {
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends WorkerPlugin {
      *
      * }
@@ -414,7 +414,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoader.isHindenburgPlugin(MyPlugin)); // true
@@ -432,7 +432,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // false
@@ -440,7 +440,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // true
@@ -465,7 +465,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // true
@@ -473,7 +473,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // false
@@ -500,7 +500,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const pluginCtr = await this.worker.pluginLoader.importFromId("hbplugin-my-plugin");
+     * const pluginCtr = await this.worker.pluginLoader.importFromId("hbplugin-fun-things");
      *
      * if (!pluginCtr) {
      *   console.log("Failed to load my plugin.");
@@ -604,7 +604,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin)); // true
@@ -613,7 +613,7 @@ export class PluginLoader {
      * @example
      * ```ts
      * .@PreventLoad
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin)); // false
@@ -629,10 +629,10 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
-     * this.room.config.plugins["hbplugin-my-plugin"] = false;
+     * this.room.config.plugins["hbplugin-fun-things"] = false;
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin, this.room)); // true
      * ```
@@ -640,7 +640,7 @@ export class PluginLoader {
      * @example
      * ```ts
      * .@PreventLoad
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin, this.room)); // false
@@ -756,7 +756,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const pluginCtr = await this.worker.pluginLoader.importPlugin("/home/user/hindenburg/plugins/hbplugin-my-plugin");
+     * const pluginCtr = await this.worker.pluginLoader.importPlugin("/home/user/hindenburg/plugins/hbplugin-fun-things");
      *
      * if (!pluginCtr) {
      *   console.log("Failed to load my plugin!");
@@ -929,13 +929,13 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin);
      * ```
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin, this.room); // !! Attempted to load a worker plugin on a room or other non-worker object
      * ```
      *
@@ -956,13 +956,13 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin, this.room);
      * ```
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin); // !! Attempted to load a room plugin on a worker or other non-room object
      * ```
      *
@@ -1101,7 +1101,7 @@ export class PluginLoader {
      * @throws If there was an attempt to unload a plugin that isn't loaded.
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-some-plugin");
+     * this.worker.pluginLoader.unloadPlugin("hbplugin-fun-things");
      * ```
      *
      * @example
@@ -1118,7 +1118,7 @@ export class PluginLoader {
      * @throws If there was an attempt to unload a plugin that isn't loaded.
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-some-plugin");
+     * this.worker.pluginLoader.unloadPlugin("hbplugin-fun-things");
      * ```
      *
      * @example

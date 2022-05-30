@@ -1,10 +1,11 @@
 One of the most central components to writing a plugin for Hindenburg is the ability to listen for specific events from rooms or from the worker.
 
+## Attaching Listeners
 As with every other Hindenburg plugin design decisions; you can attach event listeners with the {@link EventListener | `@EventListener`} decorator.
 
 For example:
 ```ts
-@HindenburgPlugin("hbplugin-some-plugin", "1.0.0", "none")
+@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
 export class MyPlugin extends RoomPlugin {
     @EventListener("player.setcolor")
     onPlayerSetColor(ev: PlayerSetColorEvent<Room>) {

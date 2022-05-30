@@ -8,7 +8,7 @@ import resolvePkg from "resolve-pkg";
 import chalk from "chalk";
 import minimatch from "minimatch";
 
-import { Deserializable, RpcMessage } from "@skeldjs/protocol";
+import { Deserializable, MessageDirection, RpcMessage, Serializable } from "@skeldjs/protocol";
 import {
     AirshipStatus,
     AprilShipStatus,
@@ -28,7 +28,7 @@ import {
     VoteBanSystem
 } from "@skeldjs/core";
 
-import { RoomEvents, Room, Worker, WorkerEvents } from "../worker";
+import { RoomEvents, Room, Worker, WorkerEvents, PacketContext } from "../worker";
 
 import {
     getPluginChatCommands,
@@ -57,6 +57,9 @@ import { getPluginDependencies } from "../api/hooks/Dependency";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
+const colours = [ "red", "blue", "green", "pink", "orange", "yellow", "black", "white", "purple", "brown", "cyan", "lime", "maroon", "rose", "banana", "gray", "tan", "coral" ];
+const roles = [ "crewmate", "impostor", "scientist", "engineer", "guardian-angel", "shapeshift" ];
+
 /**
  * Metadata about a plugin, created with {@link HindenburgPlugin}.
  */
@@ -64,7 +67,7 @@ export interface PluginMetadata {
     /**
      * The ID of the plugin, beginning with `hbplugin-`.
      *
-     * @example "hbplugin-my-plugin"
+     * @example "hbplugin-fun-things"
      */
     id: string;
     /**
@@ -85,7 +88,7 @@ export interface PluginMetadata {
      * @example 9999999999999
      * @example -9999999999999
      */
-    order: "first"|"none"|"last"|number;
+    loadOrder: "first"|"none"|"last"|number;
     /**
      * The default configuration values for the plugin.
      * @example
@@ -134,12 +137,12 @@ async function _sendReactorRpc(this: Plugin, component: Networkable<unknown, Net
  */
 export class Plugin {
     /**
-     * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
+     * The metadata for the plugin.
      */
     static meta: PluginMetadata;
 
     /**
-     * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
+     * The metadata for the plugin.
      */
     meta!: PluginMetadata;
 
@@ -203,6 +206,8 @@ export class Plugin {
          */
         public config: any
     ) {
+        this.meta = (this["constructor"] as typeof Plugin).meta; // typescript hax
+
         this.loadedChatCommands = [];
         this.loadedCliCommands = [];
         this.loadedEventListeners = [];
@@ -224,7 +229,7 @@ export class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginLoad() {
      *     const res = await fetch("https://icanhazip.com/");
@@ -247,7 +252,7 @@ export class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginUnload() {
      *     this.logger.info("Closing socket..");
@@ -322,7 +327,7 @@ export class RoomPlugin extends Plugin {
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends RoomPlugin {
      *
      * }
@@ -346,7 +351,7 @@ export class WorkerPlugin extends Plugin {
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * export class MyPlugin extends WorkerPlugin {
      *
      * }
@@ -409,8 +414,7 @@ export class PluginLoader {
     }
 
     /**
-     * Check whether some object is that of a Hindenburg plugin, created with
-     * the {@link HindenburgPlugin} decorator.
+     * Check whether some object is a Hindenburg plugin.
      * @param someObject The object to check.
      * @returns Whether {@link someObject} is a Hindenburg plugin.
      *
@@ -421,7 +425,6 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoader.isHindenburgPlugin(MyPlugin)); // true
@@ -439,7 +442,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // false
@@ -447,7 +450,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // true
@@ -472,7 +475,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // true
@@ -480,7 +483,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // false
@@ -507,7 +510,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const pluginCtr = await this.worker.pluginLoader.importFromId("hbplugin-my-plugin");
+     * const pluginCtr = await this.worker.pluginLoader.importFromId("hbplugin-fun-things");
      *
      * if (!pluginCtr) {
      *   console.log("Failed to load my plugin.");
@@ -524,9 +527,8 @@ export class PluginLoader {
 
             const pluginCtr = await this.importPlugin(pluginPath);
 
-            if (!pluginCtr) {
+            if (!pluginCtr)
                 continue;
-            }
 
             return pluginCtr;
         }
@@ -611,7 +613,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin)); // true
@@ -620,7 +622,7 @@ export class PluginLoader {
      * @example
      * ```ts
      * .@PreventLoad
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin)); // false
@@ -636,10 +638,10 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
-     * this.room.config.plugins["hbplugin-my-plugin"] = false;
+     * this.room.config.plugins["hbplugin-fun-things"] = false;
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin, this.room)); // true
      * ```
@@ -647,7 +649,7 @@ export class PluginLoader {
      * @example
      * ```ts
      * .@PreventLoad
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoader.isEnabled(MyPlugin, this.room)); // false
@@ -700,13 +702,13 @@ export class PluginLoader {
             // last = 1
             // none = 0
             // sort from lowest to highest
-            const aInteger = a.meta.order === "first" ? -1 :
-                a.meta.order === "last" ? 1 :
-                    a.meta.order === "none" ? 0 : a.meta.order;
+            const aInteger = a.meta.loadOrder === "first" ? -1 :
+                a.meta.loadOrder === "last" ? 1 :
+                    a.meta.loadOrder === "none" || a.meta.loadOrder === undefined ? 0 : a.meta.loadOrder;
 
-            const bInteger = b.meta.order === "first" ? -1 :
-                b.meta.order === "last" ? 1 :
-                    b.meta.order === "none" ? 0 : b.meta.order;
+            const bInteger = b.meta.loadOrder === "first" ? -1 :
+                b.meta.loadOrder === "last" ? 1 :
+                    b.meta.loadOrder === "none" || a.meta.loadOrder === undefined ? 0 : b.meta.loadOrder;
 
             if (bInteger < aInteger) {
                 return 1;
@@ -799,6 +801,32 @@ export class PluginLoader {
     }
 
     /**
+     * Generate a random plugin ID.
+     * 
+     * Note that this will return one even if it is taken, see {@link PluginLoader.generateRandomPluginIdSafe}
+     * if you need one that is not taken.
+     * @returns A random plugin ID.
+     */
+    generateRandomPluginId() {
+        const colour = colours[Math.random() * colours.length];
+        const role = roles[Math.random() * roles.length];
+        return "hbplugin-" + colour + "-" + role;
+    }
+
+    /**
+     * Generate a random plugin ID that has not been taken by any other plugins.
+     * @returns A random plugin ID that can safely be used.
+     */
+    generateRandomPluginIdSafe() {
+        let pluginId = this.generateRandomPluginId();
+        while (this.roomPlugins.has(pluginId)) {
+            pluginId = this.generateRandomPluginId();
+        }
+
+        return pluginId;
+    }
+
+    /**
      * Import a plugin from its absolute path on the filesystem.
      * @param pluginPath The path of the plugin to import.
      * @returns The imported plugin constructor, or false if the plugin failed
@@ -806,7 +834,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const pluginCtr = await this.worker.pluginLoader.importPlugin("/home/user/hindenburg/plugins/hbplugin-my-plugin");
+     * const pluginCtr = await this.worker.pluginLoader.importPlugin("/home/user/hindenburg/plugins/hbplugin-fun-things");
      *
      * if (!pluginCtr) {
      *   console.log("Failed to load my plugin!");
@@ -815,9 +843,8 @@ export class PluginLoader {
      * ```
      */
     async importPlugin(pluginPath: string): Promise<typeof WorkerPlugin|typeof RoomPlugin|false> {
-        if (!path.isAbsolute(pluginPath)) {
+        if (!path.isAbsolute(pluginPath))
             throw new Error("Expected an absolute path to a plugin but got a relative one.");
-        }
 
         const packageJson = await this.getPluginPackageJson(pluginPath);
         if (packageJson && packageJson.engines && packageJson.engines.hindenburg)
@@ -831,6 +858,27 @@ export class PluginLoader {
         }
         const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
 
+        const packageJsonMeta = packageJson ? {
+            id: packageJson.name || this.generateRandomPluginIdSafe(),
+            version: packageJson.version || "1.0.0",
+            loadOrder: packageJson.plugin ? packageJson.plugin.loadOrder || "none" : "none",
+            defaultConfig: packageJson.plugin ? packageJson.plugin.defaultConfig || {} : {}
+        } : undefined;
+
+        if (pluginCtr.meta) {
+            pluginCtr.meta = { ...packageJsonMeta, ...pluginCtr.meta };
+        } else if (packageJsonMeta) {
+            pluginCtr.meta = packageJsonMeta;
+        } else {
+            this.worker.logger.warn("Imported plugin had no attached metadata, assigning random id");
+            pluginCtr.meta = {
+                id: this.generateRandomPluginIdSafe(),
+                version: "1.0.0",
+                loadOrder: "none",
+                defaultConfig: {}
+            };
+        }
+        
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             throw new Error("The imported module wasn't a Hindenburg plugin");
 
@@ -947,12 +995,21 @@ export class PluginLoader {
     private applyMessageHandlers() {
         this.worker.decoder.listeners.clear();
         this.worker.registerPacketHandlers();
-
+        
         for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
                 const { messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
                 if (options.override) {
-                    this.worker.decoder.listeners.delete(`${messageCtr.messageType}:${messageCtr.messageTag}`);
+                    const key = `${messageCtr.messageType}:${messageCtr.messageTag}` as const;
+                    const listeners = this.worker.decoder.listeners.get(key) || [];
+                    this.worker.decoder.listeners.delete(key);
+
+                    this.worker.decoder.on(messageCtr, (message, direction, ctx) => {
+                        handler(message, ctx, listeners.map(x => {
+                            return (message: Serializable, ctx: PacketContext) => x(message, MessageDirection.Serverbound, ctx);
+                        }));
+                    });
+                    continue;
                 }
 
                 this.worker.decoder.on(messageCtr, (message, direction, ctx) => handler(message, ctx));
@@ -970,13 +1027,13 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin);
      * ```
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin, this.room); // !! Attempted to load a worker plugin on a room or other non-worker object
      * ```
      *
@@ -997,13 +1054,13 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin, this.room);
      * ```
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-my-plugin");
+     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin); // !! Attempted to load a room plugin on a worker or other non-room object
      * ```
      *
@@ -1029,7 +1086,7 @@ export class PluginLoader {
             }
         }
 
-        const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig);
+        const defaultConfig = recursiveClone(pluginCtr.meta.defaultConfig || {});
         recursiveAssign(defaultConfig, this.worker.config.plugins[pluginCtr.meta.id] || {});
 
         const isWorkerPlugin = PluginLoader.isWorkerPlugin(pluginCtr);
@@ -1142,7 +1199,7 @@ export class PluginLoader {
      * @throws If there was an attempt to unload a plugin that isn't loaded.
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-some-plugin");
+     * this.worker.pluginLoader.unloadPlugin("hbplugin-fun-things");
      * ```
      *
      * @example
@@ -1159,7 +1216,7 @@ export class PluginLoader {
      * @throws If there was an attempt to unload a plugin that isn't loaded.
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-some-plugin");
+     * this.worker.pluginLoader.unloadPlugin("hbplugin-fun-things");
      * ```
      *
      * @example

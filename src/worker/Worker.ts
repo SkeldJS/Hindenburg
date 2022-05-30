@@ -111,8 +111,17 @@ function formatBytes(bytes: number) {
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
 
+/**
+ * Basic information about a packet received from a client.
+ */
 export interface PacketContext {
+    /**
+     * The clent who sent the packet.
+     */
     sender: Connection,
+    /**
+     * Whether or not the packet was sent reliably.
+     */
     reliable: boolean;
 }
 
@@ -523,11 +532,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     this.logger.error("Expected 'on' or 'off' for whether to enable SaaH on that room or not.");
                 }
 
-                room.setSaaHEnabled(args["on/off"] === "on");
+                room.setSaaHEnabled(args["on/off"] === "on", true);
             });
 
         this.vorpal
-            .command("sethost <room code> <client id>", "List all players in a room.")
+            .command("sethost <room code> <client id>", "Change the host(s) of a room.")
             .option("--acting, -a", "Add the host as an acting host or 'fake' host.")
             .option("--remove-acting, -r", "Remove the player as an acting or 'fake' host.")
             .alias("sh")
@@ -1406,8 +1415,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         if (newConfig.matchmaker) {
             if (this.matchmaker) {
-                if ((typeof newConfig.matchmaker === "boolean" && this.config.socket.port !== 80) ||
-                    (typeof newConfig.matchmaker === "object" && newConfig.matchmaker.port !== this.config.socket.port)
+                // prepare thyself for the worst if statement
+                if ((typeof newConfig.matchmaker === "boolean" && (typeof this.config.matchmaker !== "boolean" && this.config.matchmaker.port !== 80)) ||
+                    (typeof newConfig.matchmaker === "object" && (typeof this.config.matchmaker === "boolean" ? (newConfig.matchmaker.port !== 80) : (newConfig.matchmaker.port !== this.config.matchmaker.port)))
                 ) {
                     this.matchmaker.destroy();
                     this.matchmaker = undefined;
@@ -1441,10 +1451,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         const oldConfig = loadedPlugin.config;
 
                         const setConfig = newConfig.plugins[loadedPlugin.meta.id];
-                        const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig);
-                        if (setConfig && setConfig !== true) {
+                        const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig || {});
+                        if (setConfig && setConfig !== true)
                             recursiveAssign(pluginConfig, setConfig);
-                        }
 
                         loadedPlugin.config = pluginConfig;
                         loadedPlugin.onConfigUpdate(oldConfig, loadedPlugin.config);

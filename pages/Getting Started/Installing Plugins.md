@@ -24,7 +24,7 @@ yarn plugins uninstall hbplugin-ban-textfile
 ## Git Repository
 Hindenburg has a built-in utility to install a plugin from a git repository such as one from [Github](https://github.com):
 ```sh
-yarn plugins import hbplugin-<plugin name>
+yarn plugins import <git repository url>
 ```
 
 This will handle cloning the plugin, installing dependencies with the correct package manager, building and verifying it for you.
@@ -40,13 +40,13 @@ If you want to install from a git repository, such as one on [Github](https://gi
 
 **Step 2**: `cd` into your plugin with `cd <repo name>`, for example `cd hbplugin-ban-textfile`
 
-**Step 3**: `yarn`, `npm` or `pnpm` to install dependencies
+**Step 3**: `yarn`, `npm install` or `pnpm install` to install dependencies
 
 **Step 4**: `yarn build`, `npm run build` or `pnpm run build` to build the plugin if necessary.
 
 Hindenburg will now recognise the plugin and attempt to load it.
 
-### Notes on a Conditional Form
+### TypeScript Plugins
 Note that if the plugin is written in [TypeScript](https://typescriptlang.org), you will have to build the plugin manually.
 
 Navigate to the directory of the installed plugin with the `cd` command, e.g. `cd C:/Users/essma/Documents/Projects/AmongUsProjects/Hindenburg/plugins/hbplugin-ban-textfile`

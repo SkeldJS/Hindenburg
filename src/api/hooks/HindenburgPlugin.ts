@@ -3,8 +3,10 @@ import "reflect-metadata";
 import {
     hindenburgPluginDirectory,
     Plugin,
-    PluginMetadata
-} from "../../handlers";
+    PluginMetadata,
+    RoomPlugin,
+    WorkerPlugin
+} from "../handlers";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin;
@@ -13,7 +15,13 @@ export interface DeclaredPlugin {
 const hindenburgPluginKey = Symbol("hindenburg:plugin");
 const hindenburgPreventLoad = Symbol("hindenburg:preventload");
 
-export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
+let deprecationWarning = false;
+export function HindenburgPlugin(id: string, version = "1.0.0", loadOrder: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
+    if (!deprecationWarning) {
+        deprecationWarning = true;
+        console.log("Deprecation warning: @HindenburgPlugin is deprecated in favour of the package.json");
+    }
+
     if (!id) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }
@@ -26,7 +34,7 @@ export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"
         id,
         version,
         defaultConfig,
-        order
+        loadOrder
     };
 
     return function<T extends DeclaredPlugin>(constructor: T) {
@@ -34,7 +42,6 @@ export function HindenburgPlugin(id: string, version = "1.0.0", order: "first"|"
 
         const hookedClass = class extends constructor {
             static meta = metadata;
-            meta = metadata;
 
             constructor(...args: any) {
                 super(...args);
@@ -51,8 +58,15 @@ export function PreventLoad(target: any) {
     Reflect.defineMetadata(hindenburgPreventLoad, 1, target);
 }
 
-export function isHindenburgPlugin(object: any): object is typeof Plugin {
-    return Reflect.hasMetadata(hindenburgPluginKey, object);
+export function isHindenburgPlugin(object: any)  {
+    let prototype = Object.getPrototypeOf(object);
+    while (prototype !== null) {
+        if (prototype === WorkerPlugin || prototype === RoomPlugin) {
+            return true;
+        }
+        prototype = Object.getPrototypeOf(prototype);
+    }
+    return false;
 }
 
 export function shouldPreventLoading(object: any) {

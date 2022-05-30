@@ -874,6 +874,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             await player.emit(new PlayerSetHostEvent(this, player));
         }
 
+        this.logger.info("%s is now the host", player || remote);
+
         if (this.gameState === GameState.Ended && this.waitingForHost.has(remote)) {
             this.gameState = GameState.NotStarted;
             await this._joinOtherClients();
@@ -889,59 +891,89 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     /**
-     * Set whether SaaH is enabled on this room.
+     * Enable SaaH (Server-as-a-Host) on this room.
      *
-     * If enabling SaaH, it will do nothing special except tell clients that the
-     * server is now the host.
+     * Does nothing particularly special except tell clients that the server is now the host.
+     * @param saahEnabled Whether or not SaaH should be enabled.
+     * @param addActingHost Whether or not to add the current host as an acting host
+     */
+    async enableSaaH(addActingHost: boolean) {
+        if (addActingHost && this.hostId !== SpecialClientId.Server) {
+            this.actingHostIds.add(this.hostId);
+        }
+
+        this.hostId = SpecialClientId.Server;
+
+        for (const [ , connection ] of this.connections) {
+            if (this.actingHostWaitingFor === undefined && this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
+                await this.updateHost(connection.clientId, connection);
+            } else {
+                await this.updateHost(SpecialClientId.Server, connection);
+            }
+        }
+
+        this.logger.info("The server is now the host");
+    }
+
+    /**
+     * Disable SaaH (Server-as-a-Host) on this room, assigning a new host (the first acting host if available),
+     * and tell clients the new host (unless they are an acting host.).
      *
-     * If disabling SaaH, it will assign a new host (the first acting host if available),
+     * Does nothing particularly special except tell clients that the server is now the host.
+     * @param saahEnabled Whether or not SaaH should be enabled.
+     * @param addActingHost Whether or not to add the current host as an acting host
+     */
+    async disableSaaH() {
+        const connection = this.actingHostIds.size > 0
+            ? this.connections.get([...this.actingHostIds][0])
+            : [...this.connections.values()][0];
+
+        if (!connection) {
+            this.logger.warn("The server is no longer the host, but there's no acting host to take over; set a host manually with 'sethost'");
+            return;
+        }
+
+        const ev = await this.emit(new RoomSelectHostEvent(this, false, false, connection));
+
+        if (!ev.canceled) {
+            const player = ev.alteredSelected.getPlayer();
+
+            this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
+            this.actingHostIds.delete(this.hostId);
+            if (player) {
+                await player.emit(new PlayerSetHostEvent(this, player));
+            }
+
+            this.logger.info("The server is no longer the host, new host: %s", player || connection);
+
+            if (this.gameState === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
+                this.gameState = GameState.NotStarted;
+                await this._joinOtherClients();
+            }
+        }
+
+        for (const [ , connection ] of this.connections) {
+            if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
+                await this.updateHost(connection.clientId, connection);
+            } else {
+                await this.updateHost(this.hostId, connection);
+            }
+        }
+    }
+
+    /**
+     * Set whether SaaH is enabled on this room, calling either {@link BaseRoom.enableSaaH} or
+     * {@link BaseRoom.disableSaaH}.
      * and tell clients the new host (unless they are an acting host.).
      * @param saahEnabled Whether or not SaaH should be enabled.
+     * @param addActingHost Whether or not to add the current host as an acting host
      */
-    async setSaaHEnabled(saahEnabled: boolean) {
+    async setSaaHEnabled(saahEnabled: boolean, addActingHost: boolean) {
         this.config.serverAsHost = saahEnabled;
         if (saahEnabled) {
-            this.hostId = SpecialClientId.Server;
-
-            for (const [ , connection ] of this.connections) {
-                if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                    await this.updateHost(connection.clientId, connection);
-                } else {
-                    await this.updateHost(SpecialClientId.Server, connection);
-                }
-            }
+            await this.enableSaaH(addActingHost);
         } else {
-            const connection = this.actingHostIds.size > 0
-                ? this.connections.get([...this.actingHostIds][0])
-                : [...this.connections.values()][0];
-
-            if (!connection)
-                return;
-
-            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, connection));
-
-            if (!ev.canceled) {
-                const player = ev.alteredSelected.getPlayer();
-
-                this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
-                this.actingHostIds.delete(this.hostId);
-                if (player) {
-                    await player.emit(new PlayerSetHostEvent(this, player));
-                }
-
-                if (this.gameState === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
-                    this.gameState = GameState.NotStarted;
-                    await this._joinOtherClients();
-                }
-            }
-
-            for (const [ , connection ] of this.connections) {
-                if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                    await this.updateHost(connection.clientId, connection);
-                } else {
-                    await this.updateHost(this.hostId, connection);
-                }
-            }
+            await this.disableSaaH();
         }
     }
 
@@ -953,6 +985,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.actingHostIds.add(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
+        
+        this.logger.info("%s is now an acting host", connection || player);
 
         if (connection && this.actingHostWaitingFor === undefined) {
             await this.updateHost(player.clientId, connection);
@@ -967,6 +1001,8 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.actingHostIds.delete(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
+        
+        this.logger.info("%s is no longer an acting host", connection || player);
 
         if (connection) {
             await this.updateHost(SpecialClientId.Server, connection);
@@ -982,6 +1018,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * until enabled again with {@link BaseRoom.enableActingHosts}.
      */
     async disableActingHosts() {
+        if (!this.actingHostsEnabled)
+            throw new Error("Acting hosts are already disabled");
+
         for (const actingHostId of this.actingHostIds) {
             const connection = this.connections.get(actingHostId);
             if (connection) {
@@ -993,12 +1032,16 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             }
         }
         this.actingHostsEnabled = false;
+        this.logger.info("Disabled acting hosts");
     }
 
     /**
      * Enable acting hosts on the room.
      */
     async enableActingHosts() {
+        if (this.actingHostsEnabled)
+            throw new Error("Acting hosts are already enabled");
+
         for (const actingHostId of this.actingHostIds) {
             const connection = this.connections.get(actingHostId);
             if (connection) {
@@ -1006,6 +1049,20 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
             }
         }
         this.actingHostsEnabled = true;
+        this.logger.info("Enabled acting hosts");
+    }
+
+    /**
+     * Set whether or not acting hosts are enabled, calling either {@link BaseRoom.disableActingHosts}
+     * or {@link BaseRoom.enableActingHosts}.
+     * @param actingHostsEnabled Whether or not to enable acting hosts
+     */
+    async setActingHostsEnabled(actingHostsEnabled: boolean) {
+        if (actingHostsEnabled) {
+            await this.enableActingHosts();
+        } else {
+            await this.disableActingHosts();
+        }
     }
 
     async handleJoin(joinInfo: PlayerJoinData): Promise<PlayerData<this>> {

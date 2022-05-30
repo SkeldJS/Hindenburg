@@ -43,14 +43,24 @@ function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, plugi
     return `${isTypescript ? "import" : "const" } {
     HindenburgPlugin,
     ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"},
-    EventListener${isTypescript ? ",\n    PlayerSetNameEvent,\n    Room" : ""}
+    EventListener${isTypescript ? ",\n    PlayerSetNameEvent,\n    Room" + (pluginType === "worker" ? ",\n    Worker" : "") : ""}
 } ${isTypescript ? "from " : "= require("}"@skeldjs/hindenburg"${isTypescript ? "" : ")"};
 
-@HindenburgPlugin("${pluginName}", "1.0.0", "none")
 export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {
+    ${isTypescript ? "message: string\n\n    " : ""}constructor(${pluginType}${isTypescript ? ": " + (pluginType === "worker" ? "Worker" : "Room") : ""}, config${isTypescript ? ": any" : ""}) {
+        super(${pluginType}, config);
+
+        this.message = config.message;
+    }
+
+    onConfigUpdate(oldConfig${isTypescript ? ": any" : ""}, newConfig${isTypescript ? ": any" : ""}) {
+        this.message = newConfig.message;
+        this.logger.info("Updated message to '%s'!", this.message);
+    }
+
     @EventListener("player.setname")
     onPlayerSetName(ev${isTypescript ? ": PlayerSetNameEvent<Room>" : ""}) {
-        ev.room.sendChat("Hello, world!");
+        ev.room.sendChat(this.message);
     }
 }\n`.trim();
 }
@@ -393,41 +403,6 @@ async function runCreatePlugin() {
                 pluginDirectory,
                 prefix + " tsc --init --outDir ./dist --experimentalDecorators --emitDecoratorMetadata --sourceMap --declaration --allowJs --target es2017"
             );
-
-            packageJson.version = "1.0.0";
-            packageJson.description = "My cool Hindenburg plugin";
-            packageJson.keywords = [ "hindenburg", "plugin", "among us" ];
-            packageJson.license = "GPL-3.0-only";
-            packageJson.author = author;
-            packageJson.files = [ "dist" ];
-            packageJson.main = "./dist/index.js";
-            packageJson.scripts = {
-                publish: "yarn npm publish --access public"
-            };
-            if (useTypescript) {
-                packageJson.scripts.build = "tsc --project ./";
-                packageJson.scripts.watch = "tsc --watch --project ./";
-                if (packageManager === "yarn") {
-                    packageJson.scripts.prepack = "yarn build";
-                } else if (packageManager === "npm") {
-                    packageJson.scripts.prepack = "npm run build";
-                } else if (packageManager === "pnpm") {
-                    packageJson.scripts.prepack = "pnpm run build";
-                }
-            }
-            const hindenburgVersion = await getHindenburgVersion();
-            packageJson.engines = {
-                node: ">=14",
-                hindenburg: hindenburgVersion.split(".").slice(0, -1).join(".") + ".*"
-            };
-
-            if (useTypescript) {
-                packageJson.types = packageJson.typings = "./index";
-            }
-
-            const devDependencies = packageJson.devDependencies; // dumb thing to make it the last key in the package.json
-            delete packageJson.devDependencies;
-            packageJson.devDependencies = devDependencies;
         } else {
             await fs.writeFile(
                 path.resolve(pluginDirectory, "jsconfig.json"),
@@ -436,15 +411,56 @@ async function runCreatePlugin() {
                         experimentalDecorators: true,
                         emitDecoratorMetadata: true
                     }
-                }, undefined, 4),
+                }, undefined, 2),
                 "utf8"
             );
-            packageJson.main = "./index.js";
         }
+
+        packageJson.version = "1.0.0";
+        packageJson.description = "My cool Hindenburg plugin";
+        packageJson.keywords = [ "hindenburg", "plugin", "among us" ];
+        packageJson.license = "GPL-3.0-only";
+        packageJson.author = author;
+        packageJson.files = [ "dist" ];
+        packageJson.main = useTypescript ? "./dist/index.js" : "./index.js";
+        if (useTypescript) {
+            packageJson.types = "./index.ts";
+            packageJson.publishConfig = {
+                types: "./dist/index.d.ts"
+            }
+        }
+        packageJson.scripts = {
+            publish: "yarn npm publish --access public"
+        };
+        if (useTypescript) {
+            packageJson.scripts.build = "tsc --project ./";
+            packageJson.scripts.watch = "tsc --watch --project ./";
+            if (packageManager === "yarn") {
+                packageJson.scripts.prepack = "yarn build";
+            } else if (packageManager === "npm") {
+                packageJson.scripts.prepack = "npm run build";
+            } else if (packageManager === "pnpm") {
+                packageJson.scripts.prepack = "pnpm run build";
+            }
+        }
+        const hindenburgVersion = await getHindenburgVersion();
+        packageJson.engines = {
+            node: ">=14",
+            hindenburg: hindenburgVersion.split(".").slice(0, -1).join(".") + ".*"
+        };
+
+        const devDependencies = packageJson.devDependencies; // dumb thing to make it the last key in the package.json
+        delete packageJson.devDependencies;
+        packageJson.devDependencies = devDependencies;
+
+        packageJson.plugin = {
+            loadOrder: "none",
+            message: "Hello, world!"
+        };
 
         await fs.writeFile(
             packageJsonFile,
-            JSON.stringify(packageJson, undefined, 4),
+            JSON.stringify(packageJson, undefined, 2),
             "utf8"
         );
 
@@ -923,7 +939,7 @@ async function runInfo() {
     const argvPluginName = process.argv[3];
 
     if (!argvPluginName) {
-        logger.error("Expected plugin name as an argument, usage: `yarn plugins info <plugiun name>`.");
+        logger.error("Expected plugin name as an argument, usage: `yarn plugins info <plugin name>`.");
         return;
     }
 
@@ -939,7 +955,7 @@ async function runInfo() {
     let pluginType: "worker"|"room"|undefined = undefined;
     let pluginVersion = packageInfoJson.version;
 
-    const verifySpinner = new Spinner("Checking for local installation.. %s").start();
+    const localInstallation = new Spinner("Checking for local installation.. %s").start();
     for (const pluginsDirectory of pluginsDirectories) {
         try {
             const packageLocation = resolveFrom(pluginsDirectory, packageInfoJson.name);
@@ -959,7 +975,7 @@ async function runInfo() {
             break;
         } catch (e) { continue; }
     }
-    verifySpinner.success();
+    localInstallation.success();
 
     logger.info(chalk.green(packageInfoJson.name) + chalk.gray("@v" + pluginVersion));
     if (packageInfoJson.maintainers[0]) {

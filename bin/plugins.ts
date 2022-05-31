@@ -46,6 +46,7 @@ function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, plugi
     EventListener${isTypescript ? ",\n    PlayerSetNameEvent,\n    Room" + (pluginType === "worker" ? ",\n    Worker" : "") : ""}
 } ${isTypescript ? "from " : "= require("}"@skeldjs/hindenburg"${isTypescript ? "" : ")"};
 
+@HindenburgPlugin("${pluginName}")
 export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {
     ${isTypescript ? "message: string\n\n    " : ""}constructor(${pluginType}${isTypescript ? ": " + (pluginType === "worker" ? "Worker" : "Room") : ""}, config${isTypescript ? ": any" : ""}) {
         super(${pluginType}, config);
@@ -62,7 +63,7 @@ export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlug
     onPlayerSetName(ev${isTypescript ? ": PlayerSetNameEvent<Room>" : ""}) {
         ev.room.sendChat(this.message);
     }
-}\n`.trim();
+}\n`;
 }
 
 async function getPackageInfo(pluginsDirectory: string, packageName: string, logger: Logger) {

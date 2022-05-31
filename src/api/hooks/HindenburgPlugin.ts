@@ -1,12 +1,6 @@
 import "reflect-metadata";
 
-import {
-    hindenburgPluginDirectory,
-    Plugin,
-    PluginMetadata,
-    RoomPlugin,
-    WorkerPlugin
-} from "../../handlers";
+import { hindenburgPluginDirectory, Plugin, PluginMetadata } from "../../handlers";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin;
@@ -15,13 +9,7 @@ export interface DeclaredPlugin {
 const hindenburgPluginKey = Symbol("hindenburg:plugin");
 const hindenburgPreventLoad = Symbol("hindenburg:preventload");
 
-let deprecationWarning = false;
 export function HindenburgPlugin(id: string, version = "1.0.0", loadOrder: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
-    if (!deprecationWarning) {
-        deprecationWarning = true;
-        console.log("Deprecation warning: @HindenburgPlugin is deprecated in favour of the package.json");
-    }
-
     if (!id) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }
@@ -59,14 +47,7 @@ export function PreventLoad(target: any) {
 }
 
 export function isHindenburgPlugin(object: any)  {
-    let prototype = Object.getPrototypeOf(object);
-    while (prototype !== null) {
-        if (prototype === WorkerPlugin || prototype === RoomPlugin) {
-            return true;
-        }
-        prototype = Object.getPrototypeOf(prototype);
-    }
-    return false;
+    return Reflect.hasMetadata(hindenburgPluginKey, object);
 }
 
 export function shouldPreventLoading(object: any) {

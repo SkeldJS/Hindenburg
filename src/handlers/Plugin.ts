@@ -78,7 +78,7 @@ async function _sendReactorRpc(this: Plugin, component: Networkable<unknown, Net
     }
 }
 
-export type PluginInstanceType<K extends typeof Plugin> = K extends { createInstance(...args: any[]): infer X }
+export type PluginInstanceType<K extends typeof WorkerPlugin|typeof RoomPlugin> = K extends { createInstance(...args: any[]): infer X }
     ? X
     : never;
 
@@ -90,7 +90,7 @@ export type PluginInstanceType<K extends typeof Plugin> = K extends { createInst
  * Needs to be decorated with {@link HindenburgPlugin} to actually be able to
  * be imported and loaded.
  */
-export class Plugin {
+export abstract class Plugin {
     /**
      * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
      */
@@ -157,7 +157,12 @@ export class Plugin {
     /**
      * All registered spawn prefabs for the plugin, created with {@link RegisterPrefab}.
      */
-    registeredPrefabs: RegisteredPrefab[]
+    registeredPrefabs: RegisteredPrefab[];
+
+    /**
+     * 
+     */
+    dependencies: Record<string, Plugin>;
 
     protected constructor(
         /**
@@ -175,6 +180,12 @@ export class Plugin {
         this.loadedReactorRpcHandlers = [];
         this.loadedRegisteredMessages = [];
         this.registeredPrefabs = [];
+
+        this.dependencies = {};
+    }
+
+    static [Symbol.for("nodejs.util.inspect.custom")]() {
+        return chalk.green(this.meta.id) + chalk.grey("@v" + this.meta.version);
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -272,9 +283,9 @@ export class Plugin {
     }
 
     getDependency(pluginId: string): Plugin;
-    getDependency<K extends typeof Plugin>(plugin: K): PluginInstanceType<K>
+    getDependency<K extends typeof Plugin>(plugin: K): WorkerPlugin|RoomPlugin;
     getDependency(plugin: any): Plugin {
-        throw plugin;
+        throw new Error("Method not implemented");
     }
 }
 
@@ -319,6 +330,15 @@ export class RoomPlugin extends Plugin {
         this.worker = room.worker;
         this.logger = new Logger(() => `${chalk.yellow(fmtCode(this.room.code))} ${this.meta.id}`, this.worker.vorpal);
     }
+
+    getDependency(pluginId: string): RoomPlugin;
+    getDependency<K extends typeof RoomPlugin>(plugin: K): PluginInstanceType<K>
+    getDependency(plugin: typeof RoomPlugin|string): RoomPlugin {
+        if (typeof plugin !== "string")
+            return this.getDependency(plugin.meta.id);
+
+        return this.room.loadedPlugins.get(plugin)!;
+    }
 }
 
 export class WorkerPlugin extends Plugin {
@@ -355,6 +375,15 @@ export class WorkerPlugin extends Plugin {
         super(config);
 
         this.logger = new Logger(() => this.meta.id, this.worker.vorpal);
+    }
+
+    getDependency(pluginId: string): WorkerPlugin;
+    getDependency<K extends typeof WorkerPlugin>(plugin: K): PluginInstanceType<K>
+    getDependency(plugin: typeof WorkerPlugin|string): WorkerPlugin {
+        if (typeof plugin !== "string")
+            return this.getDependency(plugin.meta.id);
+
+        return this.worker.loadedPlugins.get(plugin)!;
     }
 }
 

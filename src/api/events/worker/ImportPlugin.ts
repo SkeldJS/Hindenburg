@@ -1,5 +1,5 @@
 import { CancelableEvent } from "@skeldjs/events";
-import { PluginLoader, RoomPlugin, WorkerPlugin } from "../../../handlers";
+import { PluginLoader, RoomPlugin, SomePluginCtr } from "../../../handlers";
 
 /**
  * Emitted when a plugin is imported to be loaded.
@@ -8,7 +8,7 @@ export class WorkerImportPluginEvent extends CancelableEvent {
     static eventName = "worker.importplugin" as const;
     eventName = "worker.importplugin" as const;
 
-    private _alteredPlugin: typeof WorkerPlugin|typeof RoomPlugin;
+    private _alteredPlugin: SomePluginCtr;
 
     constructor(
         /**
@@ -18,7 +18,7 @@ export class WorkerImportPluginEvent extends CancelableEvent {
         /**
          * The plugin that has been loaded.
          */
-        public readonly plugin: typeof WorkerPlugin|typeof RoomPlugin
+        public readonly plugin: SomePluginCtr
     ) {
         super();
 
@@ -44,7 +44,7 @@ export class WorkerImportPluginEvent extends CancelableEvent {
      * Change the plugin that will be imported/used.
      * @param plugin The plugin to import/use instead.
      */
-    setPlugin(plugin: typeof WorkerPlugin|typeof RoomPlugin) {
+    setPlugin(plugin: SomePluginCtr) {
         this._alteredPlugin = plugin;
     }
 }

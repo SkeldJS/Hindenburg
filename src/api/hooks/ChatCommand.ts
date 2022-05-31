@@ -1,4 +1,4 @@
-import { Plugin, ChatCommandCallback, WorkerPlugin, RoomPlugin } from "../../handlers";
+import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
 
 const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
@@ -14,7 +14,7 @@ export function ChatCommand(usage: string, description: string) :
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) => any;
-export function ChatCommand(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, usage: string, description: string) :
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description: string) :
     (
         target: any,
         propertyKey: string,

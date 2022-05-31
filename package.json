@@ -35,6 +35,7 @@
         "typescript": "^4.3.2"
     },
     "dependencies": {
+        "@schemastore/package": "^0.0.6",
         "@skeldjs/client": "^2.15.20",
         "@skeldjs/constant": "^2.15.20",
         "@skeldjs/core": "^2.15.20",

@@ -1,5 +1,5 @@
 import { Networkable, NetworkableConstructor } from "@skeldjs/core";
-import { WorkerPlugin, RoomPlugin } from "../../handlers";
+import { SomePluginCtr } from "../../handlers";
 
 const hindenburgRegisterPrefab = Symbol("hindenburg:registerprefab");
 
@@ -23,6 +23,6 @@ export function RegisterPrefab(spawnType: number, components: NetworkableConstru
     };
 }
 
-export function getPluginRegisteredPrefabs(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): RegisteredPrefab[] {
+export function getPluginRegisteredPrefabs(pluginCtr: SomePluginCtr): RegisteredPrefab[] {
     return Reflect.getMetadata(hindenburgRegisterPrefab, pluginCtr) || [];
 }

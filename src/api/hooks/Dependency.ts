@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers";
+import { Plugin, SomePluginCtr } from "../../handlers";
 import { isHindenburgPlugin } from "./HindenburgPlugin";
 
 const hindenburgDependenciesKey = Symbol("hindenburg:dependencies");
@@ -69,6 +69,6 @@ export function Dependency(plugin: string|typeof Plugin, options: Partial<Omit<P
     };
 }
 
-export function getPluginDependencies(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): PluginDependency[] {
+export function getPluginDependencies(pluginCtr: SomePluginCtr): PluginDependency[] {
     return Reflect.getMetadata(hindenburgDependenciesKey, pluginCtr) || [];
 }

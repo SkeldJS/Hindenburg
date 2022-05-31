@@ -1,5 +1,5 @@
 import { BasicEvent } from "@skeldjs/events";
-import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers";
+import { Plugin, SomePluginCtr } from "../../handlers";
 import { WorkerEvents } from "../../worker";
 
 const hindenburgEventListenersKey = Symbol("hindenburg:events");
@@ -17,7 +17,7 @@ export function EventListener<EventName extends keyof WorkerEvents>(eventName: E
             (ev: WorkerEvents[EventName]) => any
         >
     ) => any;
-export function EventListener<EventName extends keyof WorkerEvents>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, eventName: EventName) :
+export function EventListener<EventName extends keyof WorkerEvents>(pluginClass: SomePluginCtr, eventName: EventName) :
     (
         target: any,
         propertyKey: string,
@@ -33,7 +33,7 @@ export function EventListener(eventName: string) :
             (ev: any) => any
         >
     ) => any;
-export function EventListener(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, eventName: string) :
+export function EventListener(pluginClass: SomePluginCtr, eventName: string) :
     (
         target: any,
         propertyKey: string,
@@ -49,7 +49,7 @@ export function EventListener() :
             (ev: any) => any
         >
     ) => any;
-export function EventListener(pluginClass: typeof WorkerPlugin|typeof RoomPlugin) :
+export function EventListener(pluginClass: SomePluginCtr) :
     (
         target: any,
         propertyKey: string,

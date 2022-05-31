@@ -3,12 +3,11 @@ import "reflect-metadata";
 import path from "path";
 import fs from "fs/promises";
 
-import vorpal from "vorpal";
+import PackageJson from "@schemastore/package";
 import resolvePkg from "resolve-pkg";
 import chalk from "chalk";
 import minimatch from "minimatch";
 
-import { Deserializable, MessageDirection, RpcMessage, Serializable } from "@skeldjs/protocol";
 import {
     AirshipStatus,
     AprilShipStatus,
@@ -39,9 +38,7 @@ import {
     getPluginRegisteredMessages,
     isHindenburgPlugin,
     BaseReactorRpcMessage,
-    MessageHandlerOptions,
     shouldPreventLoading,
-    RegisteredPrefab,
     getPluginRegisteredPrefabs,
     WorkerImportPluginEvent,
     WorkerLoadPluginEvent
@@ -50,324 +47,24 @@ import {
 import { recursiveClone } from "../util/recursiveClone";
 import { recursiveAssign } from "../util/recursiveAssign";
 
-import { ReactorRpcMessage } from "../packets";
-import { Logger } from "../logger";
-import { fmtCode } from "../util/fmtCode";
 import { getPluginDependencies } from "../api/hooks/Dependency";
+import { SomePluginCtr } from "./Plugin";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
-const colours = [ "red", "blue", "green", "pink", "orange", "yellow", "black", "white", "purple", "brown", "cyan", "lime", "maroon", "rose", "banana", "gray", "tan", "coral" ];
-const roles = [ "crewmate", "impostor", "scientist", "engineer", "guardian-angel", "shapeshift" ];
+export interface PluginPackageJsonOptions {
 
-/**
- * Metadata about a plugin, created with {@link HindenburgPlugin}.
- */
-export interface PluginMetadata {
-    /**
-     * The ID of the plugin, beginning with `hbplugin-`.
-     *
-     * @example "hbplugin-fun-things"
-     */
-    id: string;
-    /**
-     * The version of the plugin.
-     * @example "1.0.0"
-     * @example "2.0.0-beta.1"
-     */
-    version: string;
-    /**
-     * The order that the plugin should be loaded into, where:
-     * First = -1
-     * None = 0
-     * Last = 1
-     *
-     * Or you can provide a number to provide your own priority.
-     *
-     * @example "first"
-     * @example 9999999999999
-     * @example -9999999999999
-     */
-    loadOrder: "first"|"none"|"last"|number;
-    /**
-     * The default configuration values for the plugin.
-     * @example
-     * ```json
-     * {
-     *   "redis": {
-     *     "host": "127.0.0.1",
-     *     "port": "6379",
-     *     "password": "H1nd3nburgR0cks"
-     *   }
-     * }
-     * ```
-     */
-    defaultConfig: any;
 }
 
-// this function can't be private on Plugin because HindenburgPlugin starts crying.
-async function _sendReactorRpc(this: Plugin, component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, player: PlayerData) {
-    const playerConnection = component.room.connections.get(player.clientId);
-
-    if (playerConnection) {
-        const targetMod = playerConnection.mods.get(rpc.modId);
-
-        if (!targetMod)
-            return;
-
-        await player.room.broadcast([
-            new RpcMessage(
-                component.netId,
-                new ReactorRpcMessage(
-                    targetMod.netId,
-                    rpc
-                )
-            )
-        ], undefined, [ player ]);
-    }
+export interface PluginPackageJson extends PackageJson {
+    plugin: PluginPackageJsonOptions;
 }
 
-/**
- * Represents a base plugin for Hindenburg. Should not be extended directly,
- * see {@link WorkerPlugin} and {@link RoomPlugin} to choose the scope of the
- * plugin.
- *
- * Needs to be decorated with {@link HindenburgPlugin} to actually be able to
- * be imported and loaded.
- */
-export class Plugin {
-    /**
-     * The metadata for the plugin.
-     */
-    static meta: PluginMetadata;
-
-    /**
-     * The metadata for the plugin.
-     */
-    meta!: PluginMetadata;
-
-    /**
-     * A console logger for the plugin.
-     */
-    logger!: Logger;
-
-    /**
-     * The directory of the plugin.
-     */
-    baseDirectory!: string;
-
-    /**
-     * All chat commands that were loaded into the room, created with {@link ChatCommand}.
-     */
-    loadedChatCommands: string[];
-    /**
-     * All CLI commands that were loaded into the worker, created with {@link CliCommand}.
-     */
-    loadedCliCommands: vorpal.Command[];
-    /**
-     * All event listeners that were loaded into the worker, created with {@link EventListener}.
-     */
-    loadedEventListeners: {
-        eventName: string;
-        handler: (...args: any) => any;
-    }[];
-    /**
-     * All protocol message handlers that were loaded into the worker, created with
-     * {@link MessageHandler}.
-     */
-    loadedMessageHandlers: {
-        messageCtr: Deserializable;
-        options: MessageHandlerOptions;
-        handler: (...args: any) => any;
-    }[];
-    /**
-     * All reactor rpc message handlers that were loaded into the worker, created with
-     * {@link ReactorRpcHandler}.
-     */
-    loadedReactorRpcHandlers: {
-        reactorRpc: typeof BaseReactorRpcMessage,
-        handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
-    }[];
-    /**
-     * All protocol messages that were registered into the worker, created with
-     * {@link RegisterMessage}.
-     */
-    loadedRegisteredMessages: Deserializable[];
-
-    /**
-     * All registered spawn prefabs for the plugin, created with {@link RegisterPrefab}.
-     */
-    registeredPrefabs: RegisteredPrefab[]
-
+export class ImportedPlugin {
     constructor(
-        /**
-         * The config passed into this plugin, usually by the `config.json` on the
-         * server.
-         */
-        public config: any
-    ) {
-        this.meta = (this["constructor"] as typeof Plugin).meta; // typescript hax
-
-        this.loadedChatCommands = [];
-        this.loadedCliCommands = [];
-        this.loadedEventListeners = [];
-        this.loadedMessageHandlers = [];
-        this.loadedReactorRpcHandlers = [];
-        this.loadedRegisteredMessages = [];
-        this.registeredPrefabs = [];
-    }
-
-    [Symbol.for("nodejs.util.inspect.custom")]() {
-        return chalk.green(this.meta.id) + chalk.grey("@v" + this.meta.version);
-    }
-
-    /**
-     * Asynchronous method that is called when the plugin is first loaded into
-     * the worker or a room, useful for connecting to any servers or loading
-     * large amounts of data before the plugin can actually be used, as the
-     * server will wait for it to finish.
-     *
-     * @example
-     * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
-     * export class MyPlugin extends WorkerPlugin {
-     *   async onPluginLoad() {
-     *     const res = await fetch("https://icanhazip.com/");
-     *     const ip = await res.text();
-     *
-     *     console.log("My ip is " + ip);
-     *   }
-     * }
-     * ```
-     */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onPluginLoad(): any {}
-    /**
-     * Method that is called when the plugin is unloaded from the worker or
-     * room, useful for destroying any connections to any servers, clearing up
-     * extra event listeners to prevent memory leaks, or closing any server sockets.
-     *
-     * Not called when the server shuts down, and the server also does not wait
-     * for it to finish.
-     *
-     * @example
-     * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
-     * export class MyPlugin extends WorkerPlugin {
-     *   async onPluginUnload() {
-     *     this.logger.info("Closing socket..");
-     *     await this.socket.close();
-     *     this.logger.info("Closed socket");
-     *   }
-     * }
-     * ```
-     */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onPluginUnload(): any {}
-
-    /**
-     * Method that is called when the plugin's config updates. You can use this
-     * to verify configuration, or just to do something such as switch ports or
-     * change authentication when the config changes.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-    onConfigUpdate(oldConfig: any, newConfig: any): any {}
-
-    /**
-     * Send a reactor rpc from a component to a room or to a specific player.
-     * @param component The component that the rpc should be sent from.
-     * @param rpc The reactor rpc to send.
-     * @param target Player to send
-     * @returns Returns an empty promise.
-     * @throws If the reactor rpc is invalid.
-     */
-    async sendReactorRpc(component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, targets?: PlayerData[]): Promise<void> {
-        if (!rpc.modId)
-            throw new TypeError("Bad reactor rpc: expected modId property.");
-
-        if (typeof component.room.worker.config.reactor !== "boolean") {
-            const modConfig = component.room.worker.config.reactor.mods[rpc.modId];
-            if (typeof modConfig === "object") {
-                if (modConfig.doNetworking === false) { // doNetworking can be undefined and is defaulted to true
-                    return;
-                }
-            }
-        }
-
-        const sendReactorRpc = _sendReactorRpc.bind(this);
-
-        const promises = [];
-
-        if (targets) {
-            for (const target of targets) {
-                promises.push(sendReactorRpc(component, rpc, target));
-            }
-        }
-
-        for (const [ , player ] of component.room.players) {
-            promises.push(sendReactorRpc(component, rpc, player));
-        }
-
-        await Promise.all(promises);
-    }
-
-    getDependency(pluginId: string): Plugin;
-    getDependency<K extends typeof Plugin>(plugin: K): InstanceType<K>
-    getDependency(plugin: any): Plugin {
-        throw plugin;
-    }
-}
-
-export class RoomPlugin extends Plugin {
-    /**
-     * The worker of the room that this plugin is loaded into.
-     */
-    public readonly worker: Worker;
-
-    /**
-     * @example
-     * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
-     * export class MyPlugin extends RoomPlugin {
-     *
-     * }
-     * ```
-     */
-    constructor(
-        /**
-         * The room that this plugin is loaded into.
-         */
-        public readonly room: Room,
-        public config: any
-    ) {
-        super(config);
-
-        this.worker = room.worker;
-        this.logger = new Logger(() => `${chalk.yellow(fmtCode(this.room.code))} ${this.meta.id}`, this.worker.vorpal);
-    }
-}
-
-export class WorkerPlugin extends Plugin {
-    /**
-     * @example
-     * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
-     * export class MyPlugin extends WorkerPlugin {
-     *
-     * }
-     * ```
-     */
-    constructor(
-        /**
-         * The worker that this plugin is loaded into.
-         */
-        public readonly worker: Worker,
-        public config: any
-    ) {
-        super(config);
-
-        this.logger = new Logger(() => this.meta.id, this.worker.vorpal);
-    }
+        public readonly pluginCtr: SomePluginCtr,
+        public readonly packageJson: PackageJson
+    )
 }
 
 /**
@@ -380,14 +77,9 @@ export class WorkerPlugin extends Plugin {
  */
 export class PluginLoader {
     /**
-     * All imported worker plugins ready to be loaded lobally.
+     * A map of every worker and room plugin that has been imported.
      */
-    workerPlugins: Map<string, typeof WorkerPlugin>;
-
-    /**
-     * All imported room plugins ready to be loaded onto a room.
-     */
-    roomPlugins: Map<string, typeof RoomPlugin>;
+    importedPlugins: Map<string, SomePluginCtr>;
 
     /**
      * Create a plugin loader. Note that the worker instantiates one itself, see
@@ -409,8 +101,7 @@ export class PluginLoader {
          */
         public readonly pluginDirectories: string[]
     ) {
-        this.workerPlugins = new Map;
-        this.roomPlugins = new Map;
+        this.importedPlugins = new Map;
     }
 
     /**
@@ -456,8 +147,8 @@ export class PluginLoader {
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // true
      * ```
      */
-    static isWorkerPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof WorkerPlugin {
-        let currentCtr: typeof WorkerPlugin|typeof RoomPlugin = pluginCtr;
+    static isWorkerPlugin(pluginCtr: SomePluginCtr): pluginCtr is typeof WorkerPlugin {
+        let currentCtr: SomePluginCtr = pluginCtr;
         while (currentCtr !== null) {
             currentCtr = Object.getPrototypeOf(currentCtr);
 
@@ -489,8 +180,8 @@ export class PluginLoader {
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // false
      * ```
      */
-    static isRoomPlugin(pluginCtr: typeof WorkerPlugin|typeof RoomPlugin): pluginCtr is typeof RoomPlugin {
-        let currentCtr: typeof WorkerPlugin|typeof RoomPlugin = pluginCtr;
+    static isRoomPlugin(pluginCtr: SomePluginCtr): pluginCtr is typeof RoomPlugin {
+        let currentCtr: SomePluginCtr = pluginCtr;
         while (currentCtr !== null) {
             currentCtr = Object.getPrototypeOf(currentCtr);
 
@@ -552,7 +243,7 @@ export class PluginLoader {
      * ```
      */
     async importFromDirectory() {
-        const importedPlugins: Map<string, typeof WorkerPlugin|typeof RoomPlugin> = new Map;
+        const importedPlugins: Map<string, SomePluginCtr> = new Map;
 
         const pluginPaths: string[] = [];
 
@@ -656,7 +347,7 @@ export class PluginLoader {
      * ```
      */
     isEnabled(pluginCtr: typeof RoomPlugin, room: Room): boolean;
-    isEnabled(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, room?: Room) {
+    isEnabled(pluginClass: SomePluginCtr, room?: Room) {
         if (shouldPreventLoading(pluginClass))
             return;
 
@@ -669,34 +360,54 @@ export class PluginLoader {
         return true;
     }
 
-    protected sortVisit(
-        dependents: (typeof WorkerPlugin|typeof RoomPlugin)[],
-        pluginCtrs: (typeof WorkerPlugin|typeof RoomPlugin)[],
-        tmarked: Set<string>,
-        pmarked: Set<string>,
-        node: typeof WorkerPlugin|typeof RoomPlugin
-    ) {
-        if (tmarked.has(node.meta.id) || pmarked.has(node.meta.id))
-            return false;
-
-        tmarked.add(node.meta.id);
+    /**
+     * Get all plugins that depend on this plugin.
+     * @param plugin The plugin in question.
+     * @param pluginCtrs An optional list of plugins tok find dependents in. Uses the imported plugins if not supplied.
+     * @returns All plugins in {@link pluginCtrs} that depend on {@link plugin.} 
+     */
+    getPluginDependents(plugin: SomePluginCtr, pluginCtrs: (SomePluginCtr)[] = [...this.importedPlugins.values()]) {
+        const dependents = [];
         for (const pluginCtr of pluginCtrs) {
+            if (pluginCtr === plugin)
+                continue;
+
             const dependencies = getPluginDependencies(pluginCtr);
             for (const dependency of dependencies) {
-                if (dependency.pluginId === node.meta.id) {
-                    if (!this.sortVisit(dependents, pluginCtrs, tmarked, pmarked, pluginCtr))
-                        return false;
+                if (dependency.pluginId === plugin.meta.id) {
+                    dependents.push(pluginCtr);
                     break;
                 }
             }
         }
-        pmarked.add(node.meta.id);
-        tmarked.delete(node.meta.id);
+        return dependents;
+    }
+
+    protected sortVisit(
+        dependents: (SomePluginCtr)[],
+        graph: (SomePluginCtr)[],
+        circularCheck: Set<string>,
+        marked: Set<string>,
+        node: SomePluginCtr
+    ) {
+        if (circularCheck.has(node.meta.id))
+            throw new Error("Circular dependency found");
+
+        if (marked.has(node.meta.id))
+            return false;
+
+        circularCheck.add(node.meta.id);
+        for (const dependent of this.getPluginDependents(node, dependents)) {
+            if (!this.sortVisit(dependents, graph, circularCheck, marked, dependent))
+                return false;
+        }
+        marked.add(node.meta.id);
+        circularCheck.delete(node.meta.id);
         dependents.push(node);
         return true;
     }
 
-    protected sortPlugins(pluginCtrs: (typeof WorkerPlugin|typeof RoomPlugin)[]) {
+    protected sortPlugins(pluginCtrs: (SomePluginCtr)[]) {
         pluginCtrs.sort((a, b) => {
             // first = -1
             // last = 1
@@ -720,18 +431,16 @@ export class PluginLoader {
             return 0;
         });
 
-        const tmarked: Set<string> = new Set;
-        const pmarked: Set<string> = new Set;
+        const marked: Set<string> = new Set;
 
-        const dependents: (typeof WorkerPlugin|typeof RoomPlugin)[] = [];
+        const dependents: (SomePluginCtr)[] = [];
 
-        while (pmarked.size < pluginCtrs.length) {
-            const unmarked = pluginCtrs.find(plugin => !pmarked.has(plugin.meta.id));
+        for (const pluginCtr of pluginCtrs) {
+            if (marked.has(pluginCtr.meta.id))
+                continue;
 
-            if (!unmarked)
-                break;
-
-            if (!this.sortVisit(dependents, pluginCtrs, tmarked, pmarked, unmarked))
+            const circularCheck: Set<string> = new Set;
+            if (!this.sortVisit(dependents, pluginCtrs, circularCheck, marked, pluginCtr))
                 break;
         }
 
@@ -747,7 +456,10 @@ export class PluginLoader {
      */
     async loadAllWorkerPlugins() {
         const pluginCtrs = [];
-        for (const [ , importedPlugin ] of this.workerPlugins) {
+        for (const [ , importedPlugin ] of this.importedPlugins) {
+            if (!PluginLoader.isWorkerPlugin(importedPlugin))
+                continue;
+
             pluginCtrs.push(importedPlugin);
         }
         this.sortPlugins(pluginCtrs);
@@ -768,7 +480,10 @@ export class PluginLoader {
      */
     async loadAllRoomPlugins(room: Room) {
         const pluginCtrs = [];
-        for (const [ , importedPlugin ] of this.roomPlugins) {
+        for (const [ , importedPlugin ] of this.importedPlugins) {
+            if (!PluginLoader.isRoomPlugin(importedPlugin))
+                continue;
+
             pluginCtrs.push(importedPlugin);
         }
         this.sortPlugins(pluginCtrs);
@@ -842,8 +557,8 @@ export class PluginLoader {
      * }x
      * ```
      */
-    async importPlugin(pluginPath: string): Promise<typeof WorkerPlugin|typeof RoomPlugin|false> {
-        if (!path.isAbsolute(pluginPath))
+    async importPlugin(pluginPath: string): Promise<SomePluginCtr|false> {
+        if (!path.isAbsolute(pluginPath)) {
             throw new Error("Expected an absolute path to a plugin but got a relative one.");
 
         const packageJson = await this.getPluginPackageJson(pluginPath);
@@ -856,7 +571,7 @@ export class PluginLoader {
         } catch (e) { // require.resolve will error if the module is not found
             throw new Error("The path didn't exist or wasn't a javascript module");
         }
-        const { default: pluginCtr } = await import(pluginPath) as { default: typeof WorkerPlugin|typeof RoomPlugin };
+        const { default: pluginCtr } = await import(pluginPath) as { default: SomePluginCtr };
 
         const packageJsonMeta = packageJson ? {
             id: packageJson.name || this.generateRandomPluginIdSafe(),
@@ -898,11 +613,7 @@ export class PluginLoader {
         if (!isWorkerPlugin && !isRoomPlugin)
             throw new Error("The imported module wasn't a worker or room plugin");
 
-        if (isWorkerPlugin) {
-            this.workerPlugins.set(ev.alteredPlugin.meta.id, ev.alteredPlugin);
-        } else if (isRoomPlugin) {
-            this.roomPlugins.set(ev.alteredPlugin.meta.id, ev.alteredPlugin);
-        }
+        this.importedPlugins.set(ev.alteredPlugin.meta.id, ev.alteredPlugin);
 
         Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, ev.alteredPlugin);
 
@@ -1070,11 +781,9 @@ export class PluginLoader {
      * ```
      */
     async loadPlugin(pluginCtr: string|typeof RoomPlugin, room?: Room): Promise<RoomPlugin>;
-    async loadPlugin(pluginCtr: string|typeof WorkerPlugin|typeof RoomPlugin, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
+    async loadPlugin(pluginCtr: string|SomePluginCtr, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
         if (typeof pluginCtr === "string") {
-            const _pluginCtr = room
-                ? this.roomPlugins.get(pluginCtr)
-                : this.workerPlugins.get(pluginCtr);
+            const _pluginCtr = this.importedPlugins.get(pluginCtr);
 
             if (!_pluginCtr) {
                 throw new Error("Plugin with ID '" + pluginCtr + "' not imported");

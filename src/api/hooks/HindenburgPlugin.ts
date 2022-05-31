@@ -6,7 +6,7 @@ import {
     PluginMetadata,
     RoomPlugin,
     WorkerPlugin
-} from "../handlers";
+} from "../../handlers";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin;

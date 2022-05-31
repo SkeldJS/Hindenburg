@@ -5,7 +5,7 @@ import { isHindenburgPlugin } from "./HindenburgPlugin";
 
 const hindenburgDependenciesKey = Symbol("hindenburg:dependencies");
 
-export interface PluginDependency {
+export interface PluginDependencyDeclaration {
     /**
      * The id of the plugin that a plugin depends on to function fully.
      */
@@ -43,7 +43,7 @@ export interface PluginDependency {
     /**
      * The acceptable version glob of the plugin that a plugin depends on.
      *
-     * Note: if {@link PluginDependency.optional} is enabled, the dependency
+     * Note: if {@link PluginDependencyDeclaration.optional} is enabled, the dependency
      * won't be available to the plugin (at least through the {@link Plugin.getDependency}
      * interface) if the loaded version doesn't match this version glob.
      * @default *
@@ -51,7 +51,7 @@ export interface PluginDependency {
     version: string;
 }
 
-export function Dependency(plugin: string|typeof Plugin, options: Partial<Omit<PluginDependency, "pluginId">> = {}) {
+export function Dependency(plugin: string|typeof Plugin, options: Partial<Omit<PluginDependencyDeclaration, "pluginId">> = {}) {
     if (typeof plugin !== "string" && !isHindenburgPlugin(plugin)) {
         throw new TypeError("Expected 'plugin' to be either a plugin ID or a plugin constructor.");
     }
@@ -59,7 +59,7 @@ export function Dependency(plugin: string|typeof Plugin, options: Partial<Omit<P
     const pluginId = typeof plugin === "string" ? plugin : plugin.meta.id;
 
     return function(target: any) {
-        const cachedSet: PluginDependency[]|undefined = Reflect.getMetadata(hindenburgDependenciesKey, target);
+        const cachedSet: PluginDependencyDeclaration[]|undefined = Reflect.getMetadata(hindenburgDependenciesKey, target);
         const dependencies = cachedSet || [];
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgDependenciesKey, dependencies, target);
@@ -69,6 +69,6 @@ export function Dependency(plugin: string|typeof Plugin, options: Partial<Omit<P
     };
 }
 
-export function getPluginDependencies(pluginCtr: SomePluginCtr): PluginDependency[] {
+export function getPluginDependencies(pluginCtr: SomePluginCtr): PluginDependencyDeclaration[] {
     return Reflect.getMetadata(hindenburgDependenciesKey, pluginCtr) || [];
 }

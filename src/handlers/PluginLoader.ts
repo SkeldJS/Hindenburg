@@ -53,7 +53,7 @@ export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 export interface PluginPackageJsonOptions {
     loadOrder?: "first"|"last"|"none"|number;
     defaultConfig?: any;
-    dependencies?: Record<string, Omit<PluginDependencyDeclaration, "pluginId">>;
+    dependencies?: Record<string, boolean|Partial<Omit<PluginDependencyDeclaration, "pluginId">>>;
 }
 
 export interface PluginPackageJson extends PackageJson {
@@ -436,6 +436,83 @@ export class PluginLoader {
         });
     }
 
+    async visitAndLoadWorkerPlugins(
+        graph: ImportedPlugin<typeof WorkerPlugin>[],
+        loaded: Map<ImportedPlugin<typeof WorkerPlugin>, WorkerPlugin>,
+        lazyLoadForCircular: Map<ImportedPlugin<typeof WorkerPlugin>, ImportedPlugin<typeof WorkerPlugin>[]>,
+        node: ImportedPlugin<typeof WorkerPlugin>
+    ) {
+        const alreadyLoaded = loaded.get(node);
+        if (alreadyLoaded)
+            return alreadyLoaded;
+
+        if (lazyLoadForCircular.has(node)) {
+            const nodes = [...lazyLoadForCircular];
+            let lastNode = node;
+            let currentNode: [ImportedPlugin<typeof WorkerPlugin>, ImportedPlugin<typeof WorkerPlugin>[]];
+
+            do {
+                currentNode = nodes.pop()!;
+                const dependencies = currentNode[0].getDependencies();
+                const lastNodeEdge = dependencies[lastNode.pluginCtr.meta.id];
+
+                if (typeof lastNodeEdge === "object" && lastNodeEdge.loadedBefore === false /* might be undefined & defaults to true */)
+                    break;
+
+                lastNode = currentNode[0];
+            } while (nodes.length > 0);
+
+            if (lastNode === currentNode[0]) {
+                const searchedNodes = [...lazyLoadForCircular.keys(), node];
+                throw new Error("Unsupported circular dependency: " + searchedNodes.map(node => node.pluginCtr.meta.id).join(" -> "));
+            }
+
+            currentNode[1].push(node);
+            // todo: work backwards - find a "break" in the circle with {@link PluginDependencyDeclaration}
+            throw lastNode;
+        }
+
+        lazyLoadForCircular.set(node, []);
+        const dependencies = node.getDependencies();
+        const loadedDependencies = [];
+        for (const pluginId in dependencies) {
+            if (pluginId === node.pluginCtr.meta.id)
+                throw new Error("Plugin depends on itself: " + node.pluginCtr.meta.id);
+
+            const pluginInGraph = graph.find(plugin => plugin.pluginCtr.meta.id === pluginId);
+
+            if (!pluginInGraph) {
+
+                throw new Error("Missing dependency for '" + node.pluginCtr.meta.id + "': " + pluginId);
+            }
+
+            const dependencyOptions = dependencies[pluginId];
+            if (dependencyOptions) {
+                const requiredVersion = typeof dependencyOptions === "boolean" ? "*" : dependencyOptions.version || "*";
+                if (!minimatch(pluginInGraph.pluginCtr.meta.version, requiredVersion))
+                    throw new Error(`Provided dependency but invalid version for '${node.pluginCtr.meta.id}': ${pluginId} (Needed ${requiredVersion}, got ${pluginInGraph.pluginCtr.meta.version})`);
+            }
+
+            try {
+                const loadedPlugin = await this.visitAndLoadWorkerPlugins(graph, loaded, lazyLoadForCircular, pluginInGraph);
+                if (loadedPlugin) {
+                    loadedDependencies.push(loadedPlugin);
+                }
+            } catch (e) {
+                if (e === pluginInGraph) {
+                    const idx = graph.indexOf(pluginInGraph);
+                    graph.push(graph.splice(idx, 1)[0]); // move to the end of the imported plugins array
+                } else {
+                    throw e;
+                }
+            }
+        }
+        lazyLoadForCircular.delete(node);
+        const loadedPlugin = await this.loadPlugin(node);
+        loaded.set(node, loadedPlugin);
+        return loadedPlugin;
+    }
+
     /**
      * Load all imported worker plugins into the worker, checking {@link PluginLoader.isEnabled}.
      * @example
@@ -444,18 +521,18 @@ export class PluginLoader {
      * ```
      */
     async loadAllWorkerPlugins() {
-        const pluginCtrs = [];
+        const importedPlugins = [];
         for (const [ , importedPlugin ] of this.importedPlugins) {
             if (!importedPlugin.isWorkerPlugin())
                 continue;
 
-            pluginCtrs.push(importedPlugin);
+            importedPlugins.push(importedPlugin);
         }
-        this.sortPlugins(pluginCtrs);
-        for (let i = 0; i < pluginCtrs.length; i++) {
-            const importedPlugin = pluginCtrs[i];
+        this.sortPlugins(importedPlugins);
+        const loadedPlugins: Map<ImportedPlugin<typeof WorkerPlugin>, WorkerPlugin> = new Map;
+        for (const importedPlugin of importedPlugins) {
             if (importedPlugin.isEnabled()) {
-                await this.loadPlugin(importedPlugin);
+                await this.visitAndLoadWorkerPlugins(importedPlugins, loadedPlugins, new Map, importedPlugin);
             }
         }
     }
@@ -465,7 +542,7 @@ export class PluginLoader {
      * @example
      * ```ts
      * await this.worker.pluginLoader.loadAllWorkerPlugins();
-     * ```
+     * ```7
      */
     async loadAllRoomPlugins(room: Room) {
         const pluginCtrs = [];

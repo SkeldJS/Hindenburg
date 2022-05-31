@@ -430,7 +430,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--reload, -r", "Whether to reload the plugin if it's already loaded")
             .autocomplete({
                 data: async () => {
-                    return [...this.pluginLoader.workerPlugins.keys(),...this.pluginLoader.roomPlugins.keys()];
+                    return [...this.pluginLoader.importedPlugins.keys()];
                 }
             })
             .action(async args => {
@@ -458,7 +458,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         return;
                     }
 
-                    if (!this.pluginLoader.roomPlugins.has(args["plugin id"]) || args.options.hot) {
+                    if (!this.pluginLoader.importedPlugins.has(args["plugin id"]) || args.options.hot) {
                         const didImport = await this.pluginLoader.importFromId(args["plugin id"]);
 
                         if (!didImport) {
@@ -469,7 +469,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                     this.pluginLoader.loadPlugin(args["plugin id"], room);
                 } else {
-                    if (!this.pluginLoader.workerPlugins.has(args["plugin id"]) || args.options.hot) {
+                    if (!this.pluginLoader.importedPlugins.has(args["plugin id"]) || args.options.hot) {
                         const didImport = await this.pluginLoader.importFromId(args["plugin id"]);
 
                         if (!didImport) {

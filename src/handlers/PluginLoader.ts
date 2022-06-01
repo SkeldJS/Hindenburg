@@ -63,7 +63,7 @@ export interface PluginPackageJson extends PackageJson {
 export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlugin = typeof RoomPlugin|typeof WorkerPlugin > {
     protected _cachedPackageJson?: PluginPackageJson;
     
-    static async getPluginPackageJson(pluginPath: string): Promise<any> {
+    static async getPluginPackageJson(pluginPath: string): Promise<PluginPackageJson|undefined> {
         try {
             const packageJsonText = await fs.readFile(path.resolve(pluginPath, "package.json"), "utf8");
             try {
@@ -99,24 +99,22 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlu
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             throw new Error("The imported module wasn't a Hindenburg plugin");
         
-        const packageJsonMeta = packageJson ? {
-            id: packageJson.name || pluginLoader.generateRandomPluginIdSafe(),
-            version: packageJson.version || "1.0.0",
-            loadOrder: packageJson.plugin ? packageJson.plugin.loadOrder || "none" : "none",
-            defaultConfig: packageJson.plugin ? packageJson.plugin.defaultConfig || {} : {}
-        } : undefined;
+        const packageJsonMeta = {
+            id: packageJson?.name || pluginLoader.generateRandomPluginIdSafe(),
+            version: packageJson?.version || "1.0.0",
+            loadOrder: packageJson?.plugin ? packageJson.plugin.loadOrder || "none" : "none",
+            defaultConfig: packageJson?.plugin?.defaultConfig ? packageJson.plugin.defaultConfig : {}
+        };
 
         if (pluginCtr.meta) {
-            pluginCtr.meta = { ...packageJsonMeta, ...pluginCtr.meta };
-        } else if (packageJsonMeta) {
-            pluginCtr.meta = packageJsonMeta;
-        } else {
             pluginCtr.meta = {
-                id: pluginLoader.generateRandomPluginIdSafe(),
-                version: "1.0.0",
-                loadOrder: "none",
-                defaultConfig: {}
+                id: pluginCtr.meta.id || packageJsonMeta?.id,
+                version: pluginCtr.meta.version || packageJsonMeta?.version,
+                loadOrder: pluginCtr.meta.loadOrder === undefined ? packageJsonMeta?.loadOrder : pluginCtr.meta.loadOrder,
+                defaultConfig: pluginCtr.meta.defaultConfig || packageJsonMeta?.defaultConfig
             };
+        } else {
+            pluginCtr.meta = packageJsonMeta;
         }
 
         return new ImportedPlugin(pluginLoader, pluginCtr, pluginPath, packageJson);
@@ -897,7 +895,6 @@ export class PluginLoader {
         }
 
         await initPlugin.onPluginLoad();
-
         return initPlugin;
     }
 

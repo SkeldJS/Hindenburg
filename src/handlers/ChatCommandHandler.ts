@@ -200,7 +200,7 @@ export class ChatCommandHandler {
             if (commandName && isNaN(pageArg)) {
                 const command = this.registeredCommands.get(commandName);
 
-                if (!command) {
+                if (!command || !command.accessCheck(ctx.player)) {
                     await ctx.reply("No command with name: %s", commandName);
                     return;
                 }
@@ -213,16 +213,16 @@ export class ChatCommandHandler {
             const allCommands = [...this.registeredCommands.values()];
             const availableCommands = allCommands.filter(command => command.accessCheck(ctx.player));
 
-            const maxPages = Math.ceil(this.registeredCommands.size / maxDisplay);
+            const maxPages = Math.ceil(availableCommands.length / maxDisplay);
             const displayPage = isNaN(pageArg) ? 1 : pageArg;
             const actualPage = displayPage - 1;
 
-            if (actualPage * maxDisplay >= this.registeredCommands.size || actualPage < 0) {
+            if (actualPage * maxDisplay >= availableCommands.length || actualPage < 0) {
                 await ctx.reply("There are no commands on page %s.", displayPage);
                 return;
             }
-            let outMessage = "";
 
+            let outMessage = "";
             let num = 0;
             for (
                 let i = actualPage * maxDisplay; // start on requested page
@@ -230,7 +230,7 @@ export class ChatCommandHandler {
                 i++
             ) {
                 const command = allCommands[i];
-                outMessage += "\n\n" + command.usage.toString(prefix) + " - " + command.description;
+                outMessage += "\n\n" + command.usage.toString(prefix) + " - " + (command.description || "No description.");
                 num++;
             }
 
@@ -301,10 +301,7 @@ export class ChatCommandHandler {
 
         const command = this.registeredCommands.get(commandName);
 
-        if (!command)
-            throw new CommandCallError("No command with name: " + commandName);
-
-        if (!command.accessCheck(ctx.player))
+        if (!command || !command.accessCheck(ctx.player))
             throw new CommandCallError("No command with name: " + commandName);
 
         const prefix = typeof ctx.room.config.chatCommands === "object"

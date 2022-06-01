@@ -456,7 +456,9 @@ async function runCreatePlugin() {
 
         packageJson.plugin = {
             loadOrder: "none",
-            message: "Hello, world!"
+            defaultConfig: {
+                message: "Hello, world!"
+            }
         };
 
         await fs.writeFile(

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ClientDisconnectEvent | @skeldjs/hindenburg</title>
+	<title>ChatCommandUsage | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,40 +57,22 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="ClientDisconnectEvent.html">ClientDisconnectEvent</a>
+					<a href="ChatCommandUsage.html">ChatCommandUsage</a>
 				</li>
 			</ul>
-			<h1>Class ClientDisconnectEvent</h1>
+			<h1>Class ChatCommandUsage</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Emitted when a client disconnected or is force-disconnected from the server.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">BasicEvent</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">ClientDisconnectEvent</span>
-							</li>
-						</ul>
+						<span class="target">ChatCommandUsage</span>
 					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implements</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/ClientEvent.html" class="tsd-signature-type" data-tsd-kind="Interface">ClientEvent</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -98,100 +80,101 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="ClientDisconnectEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="ClientDisconnectEvent.html#client" class="tsd-kind-icon">client</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="ClientDisconnectEvent.html#customMessage" class="tsd-kind-icon">custom<wbr>Message</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="ClientDisconnectEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="ClientDisconnectEvent.html#reason" class="tsd-kind-icon">reason</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="ChatCommandUsage.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="ClientDisconnectEvent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="ChatCommandUsage.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="ChatCommandUsage.html#params" class="tsd-kind-icon">params</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChatCommandUsage.html#toString" class="tsd-kind-icon">to<wbr>String</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-					<a name="eventName" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;client.disconnect&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
-					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/804def6/src/api/events/client/ClientDisconnect.ts#L12">src/api/events/client/ClientDisconnect.ts:12</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="client" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> client</h3>
-					<div class="tsd-signature tsd-kind-icon">client<span class="tsd-signature-symbol">:</span> <a href="Connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a></div>
-					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/ClientEvent.html">ClientEvent</a>.<a href="../interfaces/ClientEvent.html#client">client</a></p>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="customMessage" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> custom<wbr>Message</h3>
-					<div class="tsd-signature tsd-kind-icon">custom<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-					<a name="eventName-1" class="tsd-anchor"></a>
-					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;client.disconnect&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
-					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/804def6/src/api/events/client/ClientDisconnect.ts#L13">src/api/events/client/ClientDisconnect.ts:13</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="reason" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> reason</h3>
-					<div class="tsd-signature tsd-kind-icon">reason<span class="tsd-signature-symbol">:</span> <a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Client<wbr>Disconnect<wbr>Event<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><a href="Connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a>, reason<span class="tsd-signature-symbol">: </span><a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a>, customMessage<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ClientDisconnectEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientDisconnectEvent</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Chat<wbr>Command<wbr>Usage<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><a href="../interfaces/ChatCommandParameter.html" class="tsd-signature-type" data-tsd-kind="Interface">ChatCommandParameter</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ChatCommandUsage.html" class="tsd-signature-type" data-tsd-kind="Class">ChatCommandUsage</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides BasicEvent.constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/804def6/src/api/events/client/ClientDisconnect.ts#L15">src/api/events/client/ClientDisconnect.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/804def6/src/handlers/ChatCommandHandler.ts#L71">src/handlers/ChatCommandHandler.ts:71</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>client: <a href="Connection.html" class="tsd-signature-type" data-tsd-kind="Class">Connection</a></h5>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>reason: <a href="../enums/DisconnectReason.html" class="tsd-signature-type" data-tsd-kind="Enumeration">DisconnectReason</a></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> customMessage: <span class="tsd-signature-type">string</span></h5>
+									<h5>params: <a href="../interfaces/ChatCommandParameter.html" class="tsd-signature-type" data-tsd-kind="Interface">ChatCommandParameter</a><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="ClientDisconnectEvent.html" class="tsd-signature-type" data-tsd-kind="Class">ClientDisconnectEvent</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="ChatCommandUsage.html" class="tsd-signature-type" data-tsd-kind="Class">ChatCommandUsage</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="name" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="params" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> params</h3>
+					<div class="tsd-signature tsd-kind-icon">params<span class="tsd-signature-symbol">:</span> <a href="../interfaces/ChatCommandParameter.html" class="tsd-signature-type" data-tsd-kind="Interface">ChatCommandParameter</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="toString" class="tsd-anchor"></a>
+					<h3>to<wbr>String</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">to<wbr>String<span class="tsd-signature-symbol">(</span>prefix<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/804def6/src/handlers/ChatCommandHandler.ts#L77">src/handlers/ChatCommandHandler.ts:77</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a formatted usage of this command, in <a href="https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax">standard unix command-line
+									command syntax</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prefix: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;/&quot;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -276,25 +259,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="ClientDisconnectEvent.html" class="tsd-kind-icon">Client<wbr>Disconnect<wbr>Event</a>
+						<a href="ChatCommandUsage.html" class="tsd-kind-icon">Chat<wbr>Command<wbr>Usage</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-								<a href="ClientDisconnectEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="ChatCommandUsage.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="ClientDisconnectEvent.html#client" class="tsd-kind-icon">client</a>
-							</li>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="ClientDisconnectEvent.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="ChatCommandUsage.html#name" class="tsd-kind-icon">name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="ClientDisconnectEvent.html#customMessage" class="tsd-kind-icon">custom<wbr>Message</a>
+								<a href="ChatCommandUsage.html#params" class="tsd-kind-icon">params</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-								<a href="ClientDisconnectEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="ClientDisconnectEvent.html#reason" class="tsd-kind-icon">reason</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChatCommandUsage.html#toString" class="tsd-kind-icon">to<wbr>String</a>
 							</li>
 						</ul>
 					</li>

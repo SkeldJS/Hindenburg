@@ -1,10 +1,14 @@
+import { PlayerData, RoleTeamType } from "@skeldjs/core";
 import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
 
 const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
+export type AccessCheckFn = (player: PlayerData) => boolean;
+
 export interface PluginRegisteredChatCommandInfo {
     usage: string;
     description?: string;
+    accessCheck?: AccessCheckFn;
     handler: ChatCommandCallback;
 }
 
@@ -14,13 +18,19 @@ export function ChatCommand(usage: string, description?: string) :
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) => any;
-export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string) :
+export function ChatCommand(usage: string, description?: string, accessCheck?: AccessCheckFn) :
     (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) => any;
-export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage?: string, _description?: string) {
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string, accessCheck?: AccessCheckFn) :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
+    ) => any;
+export function ChatCommand(...args: any[]) {
     return function(
         target: any,
         propertyKey: string,
@@ -29,17 +39,16 @@ export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage?: string
         if (!descriptor.value)
             return;
 
-        const actualTarget = typeof pluginClassOrUsage === "string"
+        const actualTarget = typeof args[0] === "string"
             ? target
-            : pluginClassOrUsage.prototype;
+            : args.shift().prototype;
 
-        const usage = typeof pluginClassOrUsage === "string"
-            ? pluginClassOrUsage
-            : descriptionOrUsage!;
+        let [ usage, description, accessCheck ] = args;
 
-        const description = typeof pluginClassOrUsage === "string"
-            ? descriptionOrUsage
-            : _description;
+        if (typeof description === "function") {
+            accessCheck = description;
+            description = undefined;
+        }
 
         const cachedSet: PluginRegisteredChatCommandInfo[]|undefined = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
         const chatCommands = cachedSet || [];
@@ -49,7 +58,8 @@ export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage?: string
 
         chatCommands.push({
             usage,
-            description: description,
+            description,
+            accessCheck,
             handler: descriptor.value
         });
     };

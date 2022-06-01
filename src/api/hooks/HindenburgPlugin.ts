@@ -9,7 +9,7 @@ export interface DeclaredPlugin {
 const hindenburgPluginKey = Symbol("hindenburg:plugin");
 const hindenburgPreventLoad = Symbol("hindenburg:preventload");
 
-export function HindenburgPlugin(id: string, version = "1.0.0", loadOrder: "first"|"none"|"last"|number = "none", defaultConfig = {}) {
+export function HindenburgPlugin(id: string, version?: string, loadOrder?: "first"|"none"|"last"|number, defaultConfig?: any) {
     if (!id) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }
@@ -23,7 +23,7 @@ export function HindenburgPlugin(id: string, version = "1.0.0", loadOrder: "firs
         version,
         defaultConfig,
         loadOrder
-    };
+    } as PluginMetadata;
 
     return function<T extends DeclaredPlugin>(constructor: T) {
         Reflect.defineMetadata(hindenburgPluginKey, true, constructor);

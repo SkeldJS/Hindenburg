@@ -7,8 +7,8 @@ export type AccessCheckFn = (player: PlayerData) => boolean;
 
 export interface PluginRegisteredChatCommandInfo {
     usage: string;
-    description?: string;
-    accessCheck?: AccessCheckFn;
+    description: string;
+    accessCheck: AccessCheckFn;
     handler: ChatCommandCallback;
 }
 
@@ -18,13 +18,31 @@ export function ChatCommand(usage: string, description?: string) :
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) => any;
-export function ChatCommand(usage: string, description?: string, accessCheck?: AccessCheckFn) :
+export function ChatCommand(usage: string, accessCheck: AccessCheckFn) :
     (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) => any;
-export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string, accessCheck?: AccessCheckFn) :
+export function ChatCommand(usage: string, description: string, accessCheck: AccessCheckFn) :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
+    ) => any;
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string) :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
+    ) => any;
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, accessCheck?: AccessCheckFn) :
+    (
+        target: any,
+        propertyKey: string,
+        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
+    ) => any;
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description: string, accessCheck: AccessCheckFn) :
     (
         target: any,
         propertyKey: string,
@@ -58,8 +76,8 @@ export function ChatCommand(...args: any[]) {
 
         chatCommands.push({
             usage,
-            description,
-            accessCheck,
+            description: description || "",
+            accessCheck: accessCheck || (() => true),
             handler: descriptor.value
         });
     };

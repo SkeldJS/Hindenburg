@@ -1,5 +1,20 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.1.3": {
+    "version": "1.1.3",
+    "contributors": ["edward"],
+    "date": "2022-06-01",
+    "notes": [
+      {
+        "description": "Fix defaultConfig for plugins not working",
+        "commits": ["0b0a3f198cedd9c502391651f0a9a531783391fe", "804def67709b396043499469faa50366ba8c5ee9"]
+      },
+      {
+        "description": "Add chat command visibility/permission function",
+        "commits": ["33e95941b774eca30b33546ae80c4483e17fed45", "1a4fa22d1a0a6fe380e7a74e96a2e57b672ca1ea", "b2bdff0b2545925c824fbefaab3c9eaa0137a003"]
+      }
+    ]
+  },
   "1.1.2": {
     "version": "1.1.2",
     "contributors": ["edward"],

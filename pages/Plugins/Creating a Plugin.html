@@ -72,12 +72,12 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
-					<h3>Prerequisites</h3>
+					<h2>Prerequisites</h2>
 				</a>
 				<p>You should generally have some knowledge of what you&#39;re doing when writing a plugin, and while you will get as much help as possible on the <a href="https://discord.gg/8ewNJYmYAU">Discord server</a>, it&#39;s unlikely that anyone will want to spoonfeed you.</p>
 				<p>The main 2 supported editors are <a href="https://code.visualstudio.com/">VSCode</a> and <a href="https://www.jetbrains.com/webstorm/">JetBrains&#39; WebStorm</a>, although any javascript editor will likely work, for example <a href="https://atom.io/">Atom</a>.</p>
 				<a href="#create-plugin-template" id="create-plugin-template" style="color: inherit; text-decoration: none;">
-					<h3>Create plugin template</h3>
+					<h2>Create plugin template</h2>
 				</a>
 				<p>Hindenburg can quickly generate a plugin template with the <code>yarn plugins create</code> command, and gives you some simple configuration questions:</p>
 				<p><img src="https://user-images.githubusercontent.com/60631511/144479766-bb8ff4fc-e922-4c00-93b5-364ab219beab.gif" alt="plugin template creation gif"></p>
@@ -85,19 +85,22 @@
 					<p>You can change where plugins are created with the <a href="../Getting Started/Environment Variables.html"><code>HINDENBURG_PLUGINS</code></a> environment variable.</p>
 				</blockquote>
 				<a href="#typescript" id="typescript" style="color: inherit; text-decoration: none;">
-					<h4><a href="https://typescriptlang.org">TypeScript</a></h4>
+					<h3><a href="https://typescriptlang.org">TypeScript</a></h3>
 				</a>
 				<p>It&#39;s highly recommended to use TypeScript in your plugins. Both skeldjs and Hindenburg are built with TypeScript in mind, and while it is possible to use JavaScript, you will not have nearly the same developer experience with the types and information that Typescript can provide you.</p>
+				<blockquote>
+					<p>The code examples in these docs are written in TypeScript.</p>
+				</blockquote>
 				<a href="#yarn" id="yarn" style="color: inherit; text-decoration: none;">
-					<h4><a href="https://yarnpkg.com">Yarn</a></h4>
+					<h3><a href="https://yarnpkg.com">Yarn</a></h3>
 				</a>
 				<p>Not as necessary as TypeScript, but is generally recommended just because &quot;it&#39;s better than npm&quot;. It&#39;s helpful to have a consistent package manager across similar projects, therefore it&#39;s probably best to use yarn to remain consistent with Hindenburg.</p>
 				<a href="#git" id="git" style="color: inherit; text-decoration: none;">
-					<h4><a href="https://git-scm.org">Git</a></h4>
+					<h3><a href="https://git-scm.org">Git</a></h3>
 				</a>
 				<p>Probably best to use Git if you plan on publishing your plugin, especially if you also plan on making it open source. This makes it much easier to manage, find your plugin later &amp; for users to be able to find your source code.</p>
 				<a href="#plugin-type" id="plugin-type" style="color: inherit; text-decoration: none;">
-					<h4>Plugin Type</h4>
+					<h3>Plugin Type</h3>
 				</a>
 				<p>Hindenburg has 2 types of plugins, Worker plugins and Room plugins. Worker plugins are global across all rooms, while Room plugins are instantiated per room and are scoped, only receiving events from that specific room.</p>
 				<a href="#development" id="development" style="color: inherit; text-decoration: none;">

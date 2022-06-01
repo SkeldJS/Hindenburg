@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RoomCreateEvent | @skeldjs/hindenburg</title>
+	<title>PluginPackageJsonOptions | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,34 +57,21 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="RoomCreateEvent.html">RoomCreateEvent</a>
+					<a href="PluginPackageJsonOptions.html">PluginPackageJsonOptions</a>
 				</li>
 			</ul>
-			<h1>Class RoomCreateEvent</h1>
+			<h1>Interface PluginPackageJsonOptions</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Emitted after a room has successfully been created.</p>
-					</div>
-					<p>See <a href="RoomBeforeCreateEvent.html">RoomBeforeCreateEvent</a> for a hookable create event.</p>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">BasicEvent</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">RoomCreateEvent</span>
-							</li>
-						</ul>
+						<span class="target">PluginPackageJsonOptions</span>
 					</li>
 				</ul>
 			</section>
@@ -95,15 +82,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static"><a href="RoomCreateEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite"><a href="RoomCreateEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="RoomCreateEvent.html#room" class="tsd-kind-icon">room</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="RoomCreateEvent.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginPackageJsonOptions.html#defaultConfig" class="tsd-kind-icon">default<wbr>Config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginPackageJsonOptions.html#dependencies" class="tsd-kind-icon">dependencies</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginPackageJsonOptions.html#loadOrder" class="tsd-kind-icon">load<wbr>Order</a></li>
 							</ul>
 						</section>
 					</div>
@@ -111,61 +92,35 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-					<a name="eventName" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.create&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="defaultConfig" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> default<wbr>Config</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/api/events/room/Create.ts#L10">src/api/events/room/Create.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/PluginLoader.ts#L55">src/handlers/PluginLoader.ts:55</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-					<a name="eventName-1" class="tsd-anchor"></a>
-					<h3>event<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">event<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;room.create&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="dependencies" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> dependencies</h3>
+					<div class="tsd-signature tsd-kind-icon">dependencies<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="PluginDependencyDeclaration.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginDependencyDeclaration</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">&quot;pluginId&quot;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Overrides BasicEvent.eventName</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/api/events/room/Create.ts#L11">src/api/events/room/Create.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/PluginLoader.ts#L56">src/handlers/PluginLoader.ts:56</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="room" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> room</h3>
-					<div class="tsd-signature tsd-kind-icon">room<span class="tsd-signature-symbol">:</span> <a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="loadOrder" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> load<wbr>Order</h3>
+					<div class="tsd-signature tsd-kind-icon">load<wbr>Order<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;first&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;none&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;last&quot;</span></div>
 					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/PluginLoader.ts#L54">src/handlers/PluginLoader.ts:54</a></li>
+						</ul>
 					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Room<wbr>Create<wbr>Event<span class="tsd-signature-symbol">(</span>room<span class="tsd-signature-symbol">: </span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="RoomCreateEvent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomCreateEvent</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<p>Overrides BasicEvent.constructor</p>
-								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/api/events/room/Create.ts#L13">src/api/events/room/Create.ts:13</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>room: <a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="RoomCreateEvent.html" class="tsd-signature-type" data-tsd-kind="Class">RoomCreateEvent</a></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 		</div>
@@ -247,20 +202,17 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class">
-						<a href="RoomCreateEvent.html" class="tsd-kind-icon">Room<wbr>Create<wbr>Event</a>
+					<li class="current tsd-kind-interface">
+						<a href="PluginPackageJsonOptions.html" class="tsd-kind-icon">Plugin<wbr>Package<wbr>Json<wbr>Options</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-static">
-								<a href="RoomCreateEvent.html#eventName" class="tsd-kind-icon">event<wbr>Name</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="PluginPackageJsonOptions.html#defaultConfig" class="tsd-kind-icon">default<wbr>Config</a>
 							</li>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-								<a href="RoomCreateEvent.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="PluginPackageJsonOptions.html#dependencies" class="tsd-kind-icon">dependencies</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite">
-								<a href="RoomCreateEvent.html#eventName-1" class="tsd-kind-icon">event<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="RoomCreateEvent.html#room" class="tsd-kind-icon">room</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="PluginPackageJsonOptions.html#loadOrder" class="tsd-kind-icon">load<wbr>Order</a>
 							</li>
 						</ul>
 					</li>

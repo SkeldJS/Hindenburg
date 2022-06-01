@@ -84,6 +84,9 @@
 				</blockquote>
 				<p>This allows you to specify exactly which versions of Hindenburg will work with your plugin.</p>
 				<p>By default, if you&#39;re using the <a href="Creating a Plugin.html">template creator</a> script, this will be set to whichever version of Hindenburg you&#39;re currently running with the last segment (the <a href="https://semver.org/">patch</a> version) replaced with a wildcard <code>*</code>. This runs under the assumption that Hindenburg&#39;s API should remainly relatively stable throughout each patch, whereas it might change more drastically between each minor update.</p>
+				<a href="#specific-versions" id="specific-versions" style="color: inherit; text-decoration: none;">
+					<h2>Specific Versions</h2>
+				</a>
 				<p>If you know <em>exactly</em> which versions of Hindenburg your plugin supports, you can get creative with the glob pattern:</p>
 				<pre><code class="language-json"><span style="color: #000000">{</span>
 <span style="color: #000000">    </span><span style="color: #0451A5">&quot;engines&quot;</span><span style="color: #000000">: {</span>
@@ -95,7 +98,10 @@
 				<blockquote>
 					<p>Check out this <a href="https://www.linuxjournal.com/content/bash-extended-globbing">extended glob syntax guide</a> for more information on how to write a glob pattern.</p>
 				</blockquote>
-				<p>However, if you wish to accept <em>all</em> versions of Hindenburg, or you&#39;re lazy at maintaining your plugins, then you can either remove <code>&quot;hindenburg&quot;</code> from the <code>engines</code> object, or, replace the version with a wildcard <code>*</code>:</p>
+				<a href="#all-versions" id="all-versions" style="color: inherit; text-decoration: none;">
+					<h2>All Versions</h2>
+				</a>
+				<p>If you wish to accept <em>all</em> versions of Hindenburg, or you&#39;re lazy at maintaining your plugins, then you can either remove <code>&quot;hindenburg&quot;</code> from the <code>engines</code> object, or, replace the version with a wildcard <code>*</code>:</p>
 				<pre><code class="language-json"><span style="color: #000000">{</span>
 <span style="color: #000000">    </span><span style="color: #0451A5">&quot;engines&quot;</span><span style="color: #000000">: {</span>
 <span style="color: #000000">        </span><span style="color: #0451A5">&quot;node&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;&gt;=14&quot;</span><span style="color: #000000">,</span>

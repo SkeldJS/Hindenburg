@@ -71,9 +71,12 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>There are a few lifecycle methods that you can override in your plugins to listen for specific evnts.</p>
+				<p>There are a few lifecycle methods that you can override in your plugins to listen for specific events.</p>
+				<blockquote>
+					<p>If you&#39;re looking to listen for game and worker events, check out the <a href="Event Listeners.html">Event Listeners</a> guide.</p>
+				</blockquote>
 				<a href="#constructor" id="constructor" style="color: inherit; text-decoration: none;">
-					<h3><code>constructor()</code></h3>
+					<h2>Constructor</h2>
 				</a>
 				<p>Depending on whether you&#39;re writing a <a href="Worker and Room Plugins.html">worker or a room</a> plugin, the constructor may be different to override.</p>
 				<p>For example, a worker plugin constructor:</p>
@@ -93,11 +96,14 @@
 <span style="color: #000000">}</span>
 </code></pre>
 				<p>The constructor lets you assign any properties on your plugin that TypeScript or JavaScript will shout at you for being unassigned. Being non-asynchronous, you should not use it for any tasks with callbacks or that return a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>. Instead, use the <a href="#onpluginload"><code>onPluginLoad</code></a>.</p>
+				<a href="#methods" id="methods" style="color: inherit; text-decoration: none;">
+					<h2>Methods</h2>
+				</a>
 				<a href="#onpluginload" id="onpluginload" style="color: inherit; text-decoration: none;">
 					<h3><code>onPluginLoad()</code></h3>
 				</a>
 				<p>Very simply, this method is called when your plugin is first loaded and all events, commands and messages have been attached.</p>
-				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #795E26">onPluginLoad</span><span style="color: #000000">() {</span>
 
@@ -109,7 +115,7 @@
 					<h3><code>onPluginUnload()</code></h3>
 				</a>
 				<p>Also rather simply, this method is called when your plugin is about to be unloaded, although has not yet actually been unloaded from the server. Hindenburg will not wait for this to complete, but any asynchronous tasks can still run parallel.</p>
-				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #795E26">onPluginUnload</span><span style="color: #000000">() {</span>
 
@@ -121,7 +127,7 @@
 				</a>
 				<p>Called when your plugin&#39;s config in the server&#39;s <code>config.json</code> is modified, it allows you to catch when your plugin&#39;s config updates.</p>
 				<p>Useful for verifying the config, or modifying your plugin based on the new configuration.</p>
-				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-some-plugin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #795E26">onConfigUpdate</span><span style="color: #000000">(</span><span style="color: #001080">oldConfig</span><span style="color: #000000">: </span><span style="color: #267F99">any</span><span style="color: #000000">, </span><span style="color: #001080">newConfig</span><span style="color: #000000">: </span><span style="color: #267F99">any</span><span style="color: #000000">) {</span>
 

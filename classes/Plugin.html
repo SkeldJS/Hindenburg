@@ -104,6 +104,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="Plugin.html#meta" class="tsd-kind-icon">meta</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#baseDirectory" class="tsd-kind-icon">base<wbr>Directory</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#config" class="tsd-kind-icon">config</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#dependencies" class="tsd-kind-icon">dependencies</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#loadedChatCommands" class="tsd-kind-icon">loaded<wbr>Chat<wbr>Commands</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#loadedCliCommands" class="tsd-kind-icon">loaded<wbr>Cli<wbr>Commands</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#loadedEventListeners" class="tsd-kind-icon">loaded<wbr>Event<wbr>Listeners</a></li>
@@ -112,18 +113,14 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#loadedRegisteredMessages" class="tsd-kind-icon">loaded<wbr>Registered<wbr>Messages</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#logger" class="tsd-kind-icon">logger</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#meta-1" class="tsd-kind-icon">meta</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#packageJson" class="tsd-kind-icon">package<wbr>Json</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="Plugin.html#registeredPrefabs" class="tsd-kind-icon">registered<wbr>Prefabs</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="Plugin.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Plugin.html#getDependency" class="tsd-kind-icon">get<wbr>Dependency</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Plugin.html#onConfigUpdate" class="tsd-kind-icon">on<wbr>Config<wbr>Update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Plugin.html#onPluginLoad" class="tsd-kind-icon">on<wbr>Plugin<wbr>Load</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="Plugin.html#onPluginUnload" class="tsd-kind-icon">on<wbr>Plugin<wbr>Unload</a></li>
@@ -141,7 +138,7 @@
 					<div class="tsd-signature tsd-kind-icon">meta<span class="tsd-signature-symbol">:</span> <a href="../interfaces/PluginMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMetadata</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L138">src/handlers/PluginLoader.ts:138</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L97">src/handlers/Plugin.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -156,7 +153,7 @@
 					<div class="tsd-signature tsd-kind-icon">base<wbr>Directory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L153">src/handlers/PluginLoader.ts:153</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L112">src/handlers/Plugin.ts:112</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -173,12 +170,22 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="dependencies" class="tsd-anchor"></a>
+					<h3>dependencies</h3>
+					<div class="tsd-signature tsd-kind-icon">dependencies<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="Plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L165">src/handlers/Plugin.ts:165</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="loadedChatCommands" class="tsd-anchor"></a>
 					<h3>loaded<wbr>Chat<wbr>Commands</h3>
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Chat<wbr>Commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L158">src/handlers/PluginLoader.ts:158</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L122">src/handlers/Plugin.ts:122</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -193,7 +200,7 @@
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Cli<wbr>Commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Command</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L162">src/handlers/PluginLoader.ts:162</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L126">src/handlers/Plugin.ts:126</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -208,7 +215,7 @@
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Event<wbr>Listeners<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>eventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L166">src/handlers/PluginLoader.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L130">src/handlers/Plugin.ts:130</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -223,7 +230,7 @@
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Message<wbr>Handlers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>messageCtr<span class="tsd-signature-symbol">: </span><a href="../interfaces/Deserializable.html" class="tsd-signature-type" data-tsd-kind="Interface">Deserializable</a><span class="tsd-signature-symbol">; </span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/MessageHandlerOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">MessageHandlerOptions</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L174">src/handlers/PluginLoader.ts:174</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L138">src/handlers/Plugin.ts:138</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -239,7 +246,7 @@
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Reactor<wbr>Rpc<wbr>Handlers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>reactorRpc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="BaseReactorRpcMessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseReactorRpcMessage</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L183">src/handlers/PluginLoader.ts:183</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L147">src/handlers/Plugin.ts:147</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -255,7 +262,7 @@
 					<div class="tsd-signature tsd-kind-icon">loaded<wbr>Registered<wbr>Messages<span class="tsd-signature-symbol">:</span> <a href="../interfaces/Deserializable.html" class="tsd-signature-type" data-tsd-kind="Interface">Deserializable</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L191">src/handlers/PluginLoader.ts:191</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L155">src/handlers/Plugin.ts:155</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -271,7 +278,7 @@
 					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L148">src/handlers/PluginLoader.ts:148</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L107">src/handlers/Plugin.ts:107</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -286,7 +293,7 @@
 					<div class="tsd-signature tsd-kind-icon">meta<span class="tsd-signature-symbol">:</span> <a href="../interfaces/PluginMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginMetadata</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L143">src/handlers/PluginLoader.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L102">src/handlers/Plugin.ts:102</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -296,12 +303,27 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="packageJson" class="tsd-anchor"></a>
+					<h3>package<wbr>Json</h3>
+					<div class="tsd-signature tsd-kind-icon">package<wbr>Json<span class="tsd-signature-symbol">:</span> <a href="../interfaces/PluginPackageJson.html" class="tsd-signature-type" data-tsd-kind="Interface">PluginPackageJson</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L117">src/handlers/Plugin.ts:117</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The package.json associated with this plugin.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="registeredPrefabs" class="tsd-anchor"></a>
 					<h3>registered<wbr>Prefabs</h3>
 					<div class="tsd-signature tsd-kind-icon">registered<wbr>Prefabs<span class="tsd-signature-symbol">:</span> <a href="../interfaces/RegisteredPrefab.html" class="tsd-signature-type" data-tsd-kind="Interface">RegisteredPrefab</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L196">src/handlers/PluginLoader.ts:196</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L160">src/handlers/Plugin.ts:160</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -312,33 +334,51 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Plugin<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a></li>
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a name="getDependency" class="tsd-anchor"></a>
+					<h3>get<wbr>Dependency</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Dependency<span class="tsd-signature-symbol">(</span>pluginId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Dependency&lt;K&gt;<span class="tsd-signature-symbol">(</span>plugin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">K</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="RoomPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><a href="WorkerPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L198">src/handlers/PluginLoader.ts:198</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L285">src/handlers/Plugin.ts:285</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>config: <span class="tsd-signature-type">any</span></h5>
+									<h5>pluginId: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="Plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a></h4>
 						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L286">src/handlers/Plugin.ts:286</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>K<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">typeof </span><a href="Plugin.html" class="tsd-signature-type" data-tsd-kind="Class">Plugin</a></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>plugin: <span class="tsd-signature-type">K</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="RoomPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">RoomPlugin</a><span class="tsd-signature-symbol"> | </span><a href="WorkerPlugin.html" class="tsd-signature-type" data-tsd-kind="Class">WorkerPlugin</a></h4>
+						</li>
 					</ul>
 				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="onConfigUpdate" class="tsd-anchor"></a>
 					<h3>on<wbr>Config<wbr>Update</h3>
@@ -349,7 +389,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L268">src/handlers/PluginLoader.ts:268</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L245">src/handlers/Plugin.ts:245</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -382,7 +422,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L238">src/handlers/PluginLoader.ts:238</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L215">src/handlers/Plugin.ts:215</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -421,7 +461,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L260">src/handlers/PluginLoader.ts:260</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L237">src/handlers/Plugin.ts:237</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -460,7 +500,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/3a6d283/src/handlers/PluginLoader.ts#L278">src/handlers/PluginLoader.ts:278</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/235acc1/src/handlers/Plugin.ts#L255">src/handlers/Plugin.ts:255</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -588,8 +628,11 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="Plugin.html#config" class="tsd-kind-icon">config</a>
 							</li>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="Plugin.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="Plugin.html#dependencies" class="tsd-kind-icon">dependencies</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+								<a href="Plugin.html#getDependency" class="tsd-kind-icon">get<wbr>Dependency</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="Plugin.html#loadedChatCommands" class="tsd-kind-icon">loaded<wbr>Chat<wbr>Commands</a>
@@ -623,6 +666,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="Plugin.html#onPluginUnload" class="tsd-kind-icon">on<wbr>Plugin<wbr>Unload</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="Plugin.html#packageJson" class="tsd-kind-icon">package<wbr>Json</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="Plugin.html#registeredPrefabs" class="tsd-kind-icon">registered<wbr>Prefabs</a>

@@ -4,23 +4,23 @@ const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
 export interface PluginRegisteredChatCommandInfo {
     usage: string;
-    description: string;
+    description?: string;
     handler: ChatCommandCallback;
 }
 
-export function ChatCommand(usage: string, description: string) :
+export function ChatCommand(usage: string, description?: string) :
     (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) => any;
-export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description: string) :
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string) :
     (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
     ) => any;
-export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage: string, _description?: string) {
+export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage?: string, _description?: string) {
     return function(
         target: any,
         propertyKey: string,
@@ -35,7 +35,7 @@ export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage: string,
 
         const usage = typeof pluginClassOrUsage === "string"
             ? pluginClassOrUsage
-            : descriptionOrUsage;
+            : descriptionOrUsage!;
 
         const description = typeof pluginClassOrUsage === "string"
             ? descriptionOrUsage
@@ -49,7 +49,7 @@ export function ChatCommand(pluginClassOrUsage: any, descriptionOrUsage: string,
 
         chatCommands.push({
             usage,
-            description: description || "",
+            description: description,
             handler: descriptor.value
         });
     };

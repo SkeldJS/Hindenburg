@@ -129,7 +129,7 @@ export class RegisteredChatCommand {
      * Create a formatted usage of this command, in [standard unix command-line
      * command syntax](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
      */
-    createUsage(prefix: string) {
+    createUsageString(prefix: string) {
         return prefix + this.name + " " + this.params.map(param => {
             return (param.required ? "<" : "[")
                 + param.name
@@ -155,7 +155,7 @@ export class RegisteredChatCommand {
 
             if (!consume) {
                 if (param.required) {
-                    throw new CommandCallError("Usage: " + this.createUsage(prefix) + "\nMissing '" + param.name + "'\n\n" + this.description);
+                    throw new CommandCallError("Usage: " + this.createUsageString(prefix) + "\nMissing '" + param.name + "'\n\n" + (this.description || "No description."));
                 }
                 return parsed; // No more arguments are left to consume
             }
@@ -200,7 +200,7 @@ export class ChatCommandHandler {
                     return;
                 }
 
-                await ctx.reply("Usage: " + command.createUsage(prefix) + "\n\n" + command.description);
+                await ctx.reply("Usage: " + command.createUsageString(prefix) + "\n\n" + (command.description || "No description."));
                 return;
             }
 
@@ -223,7 +223,7 @@ export class ChatCommandHandler {
                 i++
             ) {
                 const command = allCommands[i];
-                outMessage += "\n\n" + command.createUsage(prefix) + " - " + command.description;
+                outMessage += "\n\n" + command.createUsageString(prefix) + " - " + command.description;
                 num++;
             }
 

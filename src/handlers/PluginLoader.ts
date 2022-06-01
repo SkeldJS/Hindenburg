@@ -436,12 +436,13 @@ export class PluginLoader {
         });
     }
 
-    async visitAndLoadWorkerPlugins(
-        graph: ImportedPlugin<typeof WorkerPlugin>[],
-        loaded: Map<ImportedPlugin<typeof WorkerPlugin>, WorkerPlugin>,
-        lazyLoadForCircular: Map<ImportedPlugin<typeof WorkerPlugin>, ImportedPlugin<typeof WorkerPlugin>[]>,
-        node: ImportedPlugin<typeof WorkerPlugin>
-    ) {
+    protected async visitAndLoadPlugin(
+        graph: ImportedPlugin[],
+        loaded: Map<ImportedPlugin, WorkerPlugin|RoomPlugin>,
+        lazyLoadForCircular: Map<ImportedPlugin, ImportedPlugin[]>,
+        node: ImportedPlugin,
+        room?: Room
+    ): Promise<WorkerPlugin|RoomPlugin> {
         const alreadyLoaded = loaded.get(node);
         if (alreadyLoaded)
             return alreadyLoaded;
@@ -449,7 +450,7 @@ export class PluginLoader {
         if (lazyLoadForCircular.has(node)) {
             const nodes = [...lazyLoadForCircular];
             let lastNode = node;
-            let currentNode: [ImportedPlugin<typeof WorkerPlugin>, ImportedPlugin<typeof WorkerPlugin>[]];
+            let currentNode: [ImportedPlugin, ImportedPlugin[]];
 
             do {
                 currentNode = nodes.pop()!;
@@ -480,13 +481,15 @@ export class PluginLoader {
                 throw new Error("Plugin depends on itself: " + node.pluginCtr.meta.id);
 
             const pluginInGraph = graph.find(plugin => plugin.pluginCtr.meta.id === pluginId);
+            const dependencyOptions = dependencies[pluginId];
 
             if (!pluginInGraph) {
+                if (typeof dependencyOptions === "object" && dependencyOptions.optional)
+                    continue;
 
                 throw new Error("Missing dependency for '" + node.pluginCtr.meta.id + "': " + pluginId);
             }
 
-            const dependencyOptions = dependencies[pluginId];
             if (dependencyOptions) {
                 const requiredVersion = typeof dependencyOptions === "boolean" ? "*" : dependencyOptions.version || "*";
                 if (!minimatch(pluginInGraph.pluginCtr.meta.version, requiredVersion))
@@ -494,7 +497,7 @@ export class PluginLoader {
             }
 
             try {
-                const loadedPlugin = await this.visitAndLoadWorkerPlugins(graph, loaded, lazyLoadForCircular, pluginInGraph);
+                const loadedPlugin = await this.visitAndLoadPlugin(graph, loaded, lazyLoadForCircular, pluginInGraph);
                 if (loadedPlugin) {
                     loadedDependencies.push(loadedPlugin);
                 }
@@ -507,8 +510,9 @@ export class PluginLoader {
                 }
             }
         }
-        lazyLoadForCircular.delete(node);
-        const loadedPlugin = await this.loadPlugin(node);
+        const loadedPlugin = node.isRoomPlugin()
+            ? await this.loadPlugin(node, room!)
+            : await this.loadPlugin(node as ImportedPlugin<typeof WorkerPlugin>);
         loaded.set(node, loadedPlugin);
         return loadedPlugin;
     }
@@ -529,10 +533,10 @@ export class PluginLoader {
             importedPlugins.push(importedPlugin);
         }
         this.sortPlugins(importedPlugins);
-        const loadedPlugins: Map<ImportedPlugin<typeof WorkerPlugin>, WorkerPlugin> = new Map;
+        const loadedPlugins: Map<ImportedPlugin, WorkerPlugin> = new Map;
         for (const importedPlugin of importedPlugins) {
             if (importedPlugin.isEnabled()) {
-                await this.visitAndLoadWorkerPlugins(importedPlugins, loadedPlugins, new Map, importedPlugin);
+                await this.visitAndLoadPlugin(importedPlugins, loadedPlugins, new Map, importedPlugin);
             }
         }
     }
@@ -545,18 +549,18 @@ export class PluginLoader {
      * ```7
      */
     async loadAllRoomPlugins(room: Room) {
-        const pluginCtrs = [];
+        const importedPlugins = [];
         for (const [ , importedPlugin ] of this.importedPlugins) {
             if (!importedPlugin.isRoomPlugin())
                 continue;
 
-            pluginCtrs.push(importedPlugin);
+            importedPlugins.push(importedPlugin);
         }
-        this.sortPlugins(pluginCtrs);
-        for (let i = 0; i < pluginCtrs.length; i++) {
-            const importedPlugin = pluginCtrs[i];
-            if (importedPlugin.isEnabled(room)) {
-                await this.loadPlugin(importedPlugin, room);
+        this.sortPlugins(importedPlugins);
+        const loadedPlugins: Map<ImportedPlugin, RoomPlugin> = new Map;
+        for (const importedPlugin of importedPlugins) {
+            if (importedPlugin.isEnabled()) {
+                await this.visitAndLoadPlugin(importedPlugins, loadedPlugins, new Map, importedPlugin, room);
             }
         }
         this.applyChatCommands(room);

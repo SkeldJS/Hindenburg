@@ -623,14 +623,14 @@ export class PluginLoader {
         for (const [ , loadedPlugin ] of room.workerPlugins) {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin);
             for (const chatCommand of pluginChatCommands) {
-                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler.bind(loadedPlugin));
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin));
             }
         }
 
         for (const [ , loadedPlugin ] of room.loadedPlugins) {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin);
             for (const chatCommand of pluginChatCommands) {
-                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.handler.bind(loadedPlugin));
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin));
             }
         }
     }

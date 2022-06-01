@@ -1,5 +1,20 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.1.2": {
+    "version": "1.1.2",
+    "contributors": ["edward"],
+    "date": "2022-06-01",
+    "notes": [
+      {
+        "description": "Add plugin dependency API & sorting",
+        "commits": ["8044e1bc27ef05825644396d78561d6a5c724749", "d40d839f534be0d08c4bdd9d78d0e9d7ad34f994", "d40d839f534be0d08c4bdd9d78d0e9d7ad34f994"]
+      },
+      {
+        "description": "Allow use of package.json to determine plugin metadata",
+        "commits": ["b520dc91c45f09ff902938a3ebccd8220249ce1b", "fffd1960a3bc8ff5bb43229c0d3f56ab78b5bd8f", "1e79f712e49959817c6104a3a8cc842199a7a2bb", "f0055b7ef50b08bc4bb9ac5ec7ab208425b94b32", "870ce7b278f5d5c417266a3e38f95c47bc618d04"]
+      }
+    ]
+  },
   "1.1.1": {
     "version": "1.1.1",
     "contributors": ["edward"],

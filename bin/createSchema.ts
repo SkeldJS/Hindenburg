@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
+import { importPlugin } from "./plugins";
 import { iteratePlugins } from "./util/iteratePlugins";
 
 const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
@@ -19,12 +20,33 @@ export default async () => {
 
     for await (const pluginDirectory of iteratePlugins()) {
         try {
-            const packageJsonText = await fs.readFile(path.resolve(pluginDirectory, "package.json"), "utf8");
-            const packageJson = JSON.parse(packageJsonText);
+            const importedPlugins = await importPlugin(pluginDirectory);
             const schemaPath = path.resolve(pluginDirectory, "config.schema.json");
-            await fs.stat(schemaPath);
-
-            configSchemaJson.properties.plugins.properties[packageJson.name] = { "$ref": schemaPath.startsWith("/") ? schemaPath : "/" + schemaPath };
+            try {
+                await fs.stat(schemaPath);
+    
+                configSchemaJson.properties.plugins.properties[importedPlugins.meta.id] = {
+                    "anyOf": [
+                        {
+                            "$ref": schemaPath.startsWith("/") ? schemaPath : "/" + schemaPath
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                };
+            } catch (e) {
+                configSchemaJson.properties.plugins.properties[importedPlugins.meta.id] = {
+                    "anyOf": [
+                        {
+                            "type": "object"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                };
+            }
         } catch (e) {
             void e;
         }

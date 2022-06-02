@@ -210,8 +210,7 @@ export class ChatCommandHandler {
             }
             
 
-            const allCommands = [...this.registeredCommands.values()];
-            const availableCommands = allCommands.filter(command => command.accessCheck(ctx.player));
+            const availableCommands = this.getAvailableCommandsForPlayer(ctx.player);
 
             const maxPages = Math.ceil(availableCommands.length / maxDisplay);
             const displayPage = isNaN(pageArg) ? 1 : pageArg;
@@ -310,5 +309,14 @@ export class ChatCommandHandler {
 
         const parsed = command.checkArguments(prefix, args);
         await command.callback(ctx, parsed);
+    }
+
+    /**
+     * Get all commands for a player that are available to them and can use.
+     * @param player The player to get available cmomands for.
+     * @returns All commands that {@link player} can use.
+     */
+    getAvailableCommandsForPlayer(player: PlayerData) {
+        return [...this.registeredCommands.values()].filter(command => command.accessCheck(player));
     }
 }

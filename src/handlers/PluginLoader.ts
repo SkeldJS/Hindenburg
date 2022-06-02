@@ -473,7 +473,6 @@ export class PluginLoader {
 
         lazyLoadForCircular.set(node, []);
         const dependencies = node.getDependencies();
-        const loadedDependencies = [];
         for (const pluginId in dependencies) {
             if (pluginId === node.pluginCtr.meta.id)
                 throw new Error("Plugin depends on itself: " + node.pluginCtr.meta.id);
@@ -496,9 +495,6 @@ export class PluginLoader {
 
             try {
                 const loadedPlugin = await this.visitAndLoadPlugin(graph, loaded, lazyLoadForCircular, pluginInGraph);
-                if (loadedPlugin) {
-                    loadedDependencies.push(loadedPlugin);
-                }
             } catch (e) {
                 if (e === pluginInGraph) {
                     const idx = graph.indexOf(pluginInGraph);

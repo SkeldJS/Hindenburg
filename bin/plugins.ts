@@ -6,13 +6,15 @@ import fs from "fs/promises";
 import chalk from "chalk";
 import prompts from "prompts";
 import resolveFrom from "resolve-from";
+import minimatch from "minimatch";
 
 import pluginGitignore from "./resources/plugin-gitignore";
 
 import { Logger } from "../src/logger";
+import { PluginLoader, PluginPackageJson, SomePluginCtr } from "../src/handlers";
+import { Worker } from "../src/worker";
 import { runCommandInDir } from "./util/runCommandInDir";
 import { Spinner } from "./util/Spinner";
-import { PluginLoader, Plugin } from "../src/handlers";
 import createSchema from "./createSchema";
 
 const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
@@ -117,6 +119,63 @@ async function choosePluginsDirectory() {
     });
 
     return pluginsDirectory;
+}
+
+async function getPluginPackageJson(pluginPath: string): Promise<PluginPackageJson|undefined> {
+    try {
+        const packageJsonText = await fs.readFile(path.resolve(pluginPath, "package.json"), "utf8");
+        try {
+            return JSON.parse(packageJsonText) as PluginPackageJson;
+        } catch (e) {
+            throw new Error("Couldn't parse package.json, it must be invalid");
+        }
+    } catch (e: any) {
+        if (e && e.code === "ENOENT") {
+            return undefined;
+        }
+
+        throw e;
+    }
+}
+
+export async function importPlugin(pluginPath: string) {
+    if (!path.isAbsolute(pluginPath))
+        throw new Error("Expected an absolute path to a plugin but got a relative one.");
+
+    const packageJson = await getPluginPackageJson(pluginPath);
+    if (packageJson && packageJson.engines && packageJson.engines.hindenburg)
+        if (!minimatch(Worker.serverVersion, packageJson.engines.hindenburg))
+            throw new Error("Built for an incompatible version of hindenburg");
+
+    try {
+        delete require.cache[require.resolve(pluginPath)];
+    } catch (e) { // require.resolve will error if the module is not found
+        throw new Error("The path didn't exist or wasn't a javascript module");
+    }
+    const { default: pluginCtr } = await import(pluginPath) as { default: SomePluginCtr };
+    
+    if (!PluginLoader.isHindenburgPlugin(pluginCtr))
+        throw new Error("The imported module wasn't a Hindenburg plugin");
+    
+    const packageJsonMeta = {
+        id: packageJson?.name || "no id",
+        version: packageJson?.version || "1.0.0",
+        loadOrder: packageJson?.plugin ? packageJson.plugin.loadOrder || "none" : "none",
+        defaultConfig: packageJson?.plugin?.defaultConfig ? packageJson.plugin.defaultConfig : {}
+    };
+
+    if (pluginCtr.meta) {
+        pluginCtr.meta = {
+            id: pluginCtr.meta.id || packageJsonMeta?.id,
+            version: pluginCtr.meta.version || packageJsonMeta?.version,
+            loadOrder: pluginCtr.meta.loadOrder === undefined ? packageJsonMeta?.loadOrder : pluginCtr.meta.loadOrder,
+            defaultConfig: pluginCtr.meta.defaultConfig || packageJsonMeta?.defaultConfig
+        };
+    } else {
+        pluginCtr.meta = packageJsonMeta;
+    }
+
+    return pluginCtr;
 }
 
 async function runCreatePlugin() {
@@ -558,7 +617,7 @@ async function verifyInstalledPlugin(logger: Logger, pluginsDirectory: string, p
     const verifySpinner = new Spinner("Verifying installed plugin.. %s").start();
     try {
         const packageLocation = resolveFrom(pluginsDirectory, packageFilename);
-        const { default: importedPlugin } = await import(packageLocation) as { default: Plugin };
+        const importedPlugin = await importPlugin(packageLocation);
 
         if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
             verifySpinner.fail();
@@ -962,10 +1021,10 @@ async function runInfo() {
     for (const pluginsDirectory of pluginsDirectories) {
         try {
             const packageLocation = resolveFrom(pluginsDirectory, packageInfoJson.name);
-            const { default: importedPlugin } = await import(packageLocation);
+            const importedPlugin = await importPlugin(packageLocation);
 
             if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
-                throw 0;
+                continue;
             }
 
             if (PluginLoader.isWorkerPlugin(importedPlugin)) {
@@ -1025,7 +1084,7 @@ async function runList() {
             continue;
         }
 
-        const resolveLocalSpinner = new Spinner("Resolving local plugins..").success();
+        const resolveLocalSpinner = new Spinner("Resolving local plugins..");
         try {
             const files = await fs.readdir(pluginsDirectory);
             for (const file of files) {
@@ -1082,13 +1141,12 @@ async function runList() {
         break;
     default:
         console.log("Usage: yarn plugins <action>");
-        console.log("       yarn plugins init [ts] <plugin name>" + chalk.gray("# initialise a new plugin"));
-        console.log("       yarn plugins install   <plugin name>" + chalk.gray("# install a plugin from the npm registry"));
-        console.log("       yarn plugins import    <plugin repo>" + chalk.gray("# import a plugin from a git repository"));
-        console.log("       yarn plugins uninstall <plugin name>" + chalk.gray("# remove a plugin installed via npm"));
-        console.log("       yarn plugins info      <plugin name>" + chalk.gray("# get information about a plugin"));
-        console.log("       yarn plugins list                   " + chalk.gray("# list all installed plugins"));
-        console.error("Expected 'action' to be one of 'install', 'uninstall', 'list', or 'create'.");
+        console.log("       yarn plugins create    <plugin name> " + chalk.gray("# initialise a new plugin"));
+        console.log("       yarn plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
+        console.log("       yarn plugins import    <plugin repo> " + chalk.gray("# import a plugin from a git repository"));
+        console.log("       yarn plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
+        console.log("       yarn plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
+        console.log("       yarn plugins list                    " + chalk.gray("# list all installed plugins"));
         break;
     }
 

@@ -88,6 +88,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChatCommandHandler.html#getAvailableCommandsForPlayer" class="tsd-kind-icon">get<wbr>Available<wbr>Commands<wbr>For<wbr>Player</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChatCommandHandler.html#parseMessage" class="tsd-kind-icon">parse<wbr>Message</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChatCommandHandler.html#registerCommand" class="tsd-kind-icon">register<wbr>Command</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="ChatCommandHandler.html#registerHelpCommand" class="tsd-kind-icon">register<wbr>Help<wbr>Command</a></li>
@@ -116,7 +117,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/21e6cf6/src/handlers/ChatCommandHandler.ts#L178">src/handlers/ChatCommandHandler.ts:178</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/98775bb/src/handlers/ChatCommandHandler.ts#L178">src/handlers/ChatCommandHandler.ts:178</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -133,6 +134,38 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getAvailableCommandsForPlayer" class="tsd-anchor"></a>
+					<h3>get<wbr>Available<wbr>Commands<wbr>For<wbr>Player</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Available<wbr>Commands<wbr>For<wbr>Player<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="RegisteredChatCommand.html" class="tsd-signature-type" data-tsd-kind="Class">RegisteredChatCommand</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/98775bb/src/handlers/ChatCommandHandler.ts#L319">src/handlers/ChatCommandHandler.ts:319</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get all commands for a player that are available to them and can use.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>player: <a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The player to get available cmomands for.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="RegisteredChatCommand.html" class="tsd-signature-type" data-tsd-kind="Class">RegisteredChatCommand</a><span class="tsd-signature-symbol">[]</span></h4>
+							<p>All commands that {@link player} can use.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="parseMessage" class="tsd-anchor"></a>
 					<h3>parse<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -142,7 +175,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/21e6cf6/src/handlers/ChatCommandHandler.ts#L295">src/handlers/ChatCommandHandler.ts:295</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/98775bb/src/handlers/ChatCommandHandler.ts#L294">src/handlers/ChatCommandHandler.ts:294</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -188,7 +221,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/21e6cf6/src/handlers/ChatCommandHandler.ts#L263">src/handlers/ChatCommandHandler.ts:263</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/98775bb/src/handlers/ChatCommandHandler.ts#L262">src/handlers/ChatCommandHandler.ts:262</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -247,7 +280,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/21e6cf6/src/handlers/ChatCommandHandler.ts#L185">src/handlers/ChatCommandHandler.ts:185</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/98775bb/src/handlers/ChatCommandHandler.ts#L185">src/handlers/ChatCommandHandler.ts:185</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -264,7 +297,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/21e6cf6/src/handlers/ChatCommandHandler.ts#L276">src/handlers/ChatCommandHandler.ts:276</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/98775bb/src/handlers/ChatCommandHandler.ts#L275">src/handlers/ChatCommandHandler.ts:275</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -296,7 +329,7 @@
 					<div class="tsd-signature tsd-kind-icon">registered<wbr>Commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="RegisteredChatCommand.html" class="tsd-signature-type" data-tsd-kind="Class">RegisteredChatCommand</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/21e6cf6/src/handlers/ChatCommandHandler.ts#L176">src/handlers/ChatCommandHandler.ts:176</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/98775bb/src/handlers/ChatCommandHandler.ts#L176">src/handlers/ChatCommandHandler.ts:176</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -392,6 +425,9 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="ChatCommandHandler.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="ChatCommandHandler.html#getAvailableCommandsForPlayer" class="tsd-kind-icon">get<wbr>Available<wbr>Commands<wbr>For<wbr>Player</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="ChatCommandHandler.html#parseMessage" class="tsd-kind-icon">parse<wbr>Message</a>

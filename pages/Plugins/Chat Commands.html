@@ -105,8 +105,8 @@
 				</ul>
 				<p>This is similar to the <a href="https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax">Command Description Syntax</a> for CLI commands.</p>
 				<p>The second argument is a short, one-sentence summary of the command.</p>
-				<a href="#the-callback" id="the-callback" style="color: inherit; text-decoration: none;">
-					<h2>The Callback</h2>
+				<a href="#method-body" id="method-body" style="color: inherit; text-decoration: none;">
+					<h2>Method Body</h2>
 				</a>
 				<p>The body of the decorator, or the method that it&#39;s attached to, is called when someone uses the command in question.</p>
 				<p>The <a href="../../classes/ChatCommandContext.html"><code>ctx</code></a> argument allows you to reply to the message as the server, acting simply as a wrapper for <a href="../../classes/Room.html#sendChat">Room.sendChat</a>. It also provides information about the player that sent the message calling the command, and the room that it came from.</p>
@@ -114,8 +114,44 @@
 				<blockquote>
 					<p>Note that the parameter name doesn&#39;t include the surrounding <code>&lt;&gt;</code>s or <code>[]</code>s, or the <code>...</code> if it exists.</p>
 				</blockquote>
-				<a href="#on-simplicity" id="on-simplicity" style="color: inherit; text-decoration: none;">
-					<h2>On Simplicity</h2>
+				<a href="#restrict-command-to-certain-players" id="restrict-command-to-certain-players" style="color: inherit; text-decoration: none;">
+					<h2>Restrict Command to Certain Players</h2>
+				</a>
+				<p>You can restrict how your command is accessed/shows up in the <code>/help</code> command listing through the use of short, simple <strong>access check</strong> functions. This is as simple as passing in a function that takes in a player that is trying to execute the command and returns a boolean (<code>true</code>/<code>false</code>),</p>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h3>Example</h3>
+				</a>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">ChatCommand</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;addhost &lt;player name...&gt;&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;Add a host to the room.&quot;</span><span style="color: #000000">, </span><span style="color: #001080">player</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">isHost</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onChat</span><span style="color: #000000">(</span><span style="color: #001080">ctx</span><span style="color: #000000">: </span><span style="color: #001080">ChatCommandContext</span><span style="color: #000000">, </span><span style="color: #001080">args</span><span style="color: #000000">: </span><span style="color: #001080">any</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">playerName</span><span style="color: #000000"> = </span><span style="color: #001080">args</span><span style="color: #000000">[</span><span style="color: #A31515">&quot;player name&quot;</span><span style="color: #000000">];</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">playerName</span><span style="color: #000000">)</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Who should I make host?&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> [ </span><span style="color: #0070C1">player</span><span style="color: #000000"> ] = </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">findPlayersWithName</span><span style="color: #000000">(</span><span style="color: #001080">args</span><span style="color: #000000">[</span><span style="color: #A31515">&quot;player name&quot;</span><span style="color: #000000">]);</span>
+
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">player</span><span style="color: #000000"> || !</span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">playerInfo</span><span style="color: #000000">)</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;No player has a name of &#039;&quot;</span><span style="color: #000000"> + </span><span style="color: #001080">args</span><span style="color: #000000">[</span><span style="color: #A31515">&quot;player name&quot;</span><span style="color: #000000">] + </span><span style="color: #A31515">&quot;&#039;&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">    </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">addActingHost</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;%s is now a host&quot;</span><span style="color: #000000">, </span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">playerInfo</span><span style="color: #000000">.</span><span style="color: #001080">defaultOutfit</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>Notice the new function passed into <code>@ChatCommand</code>: <code>player =&gt; player.isHost</code>. This will make the command only available to host players.</p>
+				<p>Here are some more functions to filter which players can use your commands:</p>
+				<ul>
+					<li><code>player =&gt; player.playerInfo?.isImpostor</code> - Only available to impostors</li>
+					<li><code>player =&gt; player.playerInfo?.isDead</code> - Only available to dead playerss</li>
+					<li><code>player =&gt; !player.playerInfo?.isDead</code> - Only available to alive players</li>
+					<li><code>player =&gt; !!player.room.meetingHud</code> - Only available during meetings</li>
+					<li><code>player =&gt; !!player.room.lobbyBehaviour</code> - Only available during the lobby (before games)</li>
+				</ul>
+				<p>Adding a filter to your command will also change how the help command shows up for each player:
+					<img src="https://user-images.githubusercontent.com/60631511/171652565-257d0c49-c90e-48c9-91f8-3a967d06cc6f.png" alt="image">
+				<em>The player on the left screen is the host of the room</em></p>
+				<p>Any player that attempts to use a command that isn&#39;t available to them, will be met with a notice that the command doesn&#39;t exist.</p>
+				<a href="#notes" id="notes" style="color: inherit; text-decoration: none;">
+					<h2>Notes</h2>
 				</a>
 				<p>Note that Hindenburg does not support typical CLI features such as flags (<code>-p</code>) or switches (<code>/p</code>) or options (<code>--port</code>). This is entirely to keep chat commands as simple as possible.</p>
 			</div>

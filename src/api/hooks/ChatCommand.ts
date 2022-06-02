@@ -3,7 +3,7 @@ import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
 
 const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
-export type AccessCheckFn = (player: PlayerData) => boolean;
+export type AccessCheckFn = (player: PlayerData) => any;
 
 export interface PluginRegisteredChatCommandInfo {
     usage: string;

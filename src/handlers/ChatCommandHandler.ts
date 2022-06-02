@@ -226,10 +226,10 @@ export class ChatCommandHandler {
             let num = 0;
             for (
                 let i = actualPage * maxDisplay; // start on requested page
-                i < allCommands.length && i < (actualPage + 1) * maxDisplay; // loop until no commands left or page ends
+                i < availableCommands.length && i < (actualPage + 1) * maxDisplay; // loop until no commands left or page ends
                 i++
             ) {
-                const command = allCommands[i];
+                const command = availableCommands[i];
                 outMessage += "\n\n" + command.usage.toString(prefix) + " - " + (command.description || "No description.");
                 num++;
             }

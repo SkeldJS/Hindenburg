@@ -20,4 +20,4 @@ If you're developing both Hindenburg and SkeldJS simultaneously, i.e. developing
 
 > Remember not to stage your updated package.json changes before committing.
 
-Note that you'll have to build if you make any changes made to the SkeldJS packages.
+Note that you'll have to build if you make any changes to the SkeldJS packages.

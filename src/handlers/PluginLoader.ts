@@ -436,17 +436,17 @@ export class PluginLoader {
 
     protected async visitAndLoadPlugin(
         graph: ImportedPlugin[],
-        loaded: Map<ImportedPlugin, WorkerPlugin|RoomPlugin>,
-        lazyLoadForCircular: Set<ImportedPlugin>,
+        visited: Map<ImportedPlugin, WorkerPlugin|RoomPlugin>,
+        tree: Set<ImportedPlugin>,
         node: ImportedPlugin,
         room?: Room
     ): Promise<WorkerPlugin|RoomPlugin> {
-        const alreadyLoaded = loaded.get(node);
+        const alreadyLoaded = visited.get(node);
         if (alreadyLoaded)
             return alreadyLoaded;
 
-        if (lazyLoadForCircular.has(node)) {
-            const nodes = [...lazyLoadForCircular];
+        if (tree.has(node)) {
+            const nodes = [...tree];
             let lastChild = node;
             let currentParent: ImportedPlugin
 
@@ -471,7 +471,7 @@ export class PluginLoader {
             // the currentNode wasn't updated, and since lastNode is set to currentNode before the
             // end of the loop, it makes more an easy check for whether or not a lazy dependency was found.
             if (lastChild === currentParent) {
-                const searchedNodes = [...lazyLoadForCircular.keys(), node];
+                const searchedNodes = [...tree.keys(), node];
                 throw new Error("Unsupported circular dependency: " + searchedNodes.map(node => node.pluginCtr.meta.id).join(" -> "));
             }
 
@@ -485,7 +485,7 @@ export class PluginLoader {
         // this is done by keeping a temporary track of all nodes that this search vein/spanning tree
         // has been through. if it comes up again later, we can know by checking whether the current node
         // is in this set. 
-        lazyLoadForCircular.add(node);
+        tree.add(node);
         const dependencies = node.getDependencies();
         for (const pluginId in dependencies) {
             if (pluginId === node.pluginCtr.meta.id) // technically this would work completely fine, but erroring anyway for bad habits
@@ -511,7 +511,7 @@ export class PluginLoader {
             }
 
             try {
-                await this.visitAndLoadPlugin(graph, loaded, lazyLoadForCircular, pluginInGraph);
+                await this.visitAndLoadPlugin(graph, visited, tree, pluginInGraph);
             } catch (e) {
                 // this is thrown above, and is the result of a lazy dependency which must be loaded
                 // after the plugin due to circular dependencies.
@@ -527,8 +527,8 @@ export class PluginLoader {
             ? await this.loadPlugin(node, room!)
             : await this.loadPlugin(node as ImportedPlugin<typeof WorkerPlugin>);
 
-        lazyLoadForCircular.delete(node);
-        loaded.set(node, loadedPlugin);
+        tree.delete(node);
+        visited.set(node, loadedPlugin);
         return loadedPlugin;
     }
 

@@ -79,6 +79,7 @@
 					<h3><code>dist/</code></h3>
 				</a>
 				<p>If your plugin is written in TypeScript, this is where your plugin code, <a href="https://firefox-source-docs.mozilla.org/devtools-user/debugger/how_to/use_a_source_map/index.html">source maps</a> and <a href="https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html">declaration files</a> go when your plugin is built into JavaScript with <code>yarn build</code>.</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/171927449-e1acad7a-d4bf-466e-814c-3933669e44a8.png" alt="image"></p>
 				<blockquote>
 					<p>While code will appear here, it is <em>not</em> for editing, see the <a href="#src"><code>/src</code> folder</a>.</p>
 				</blockquote>
@@ -86,6 +87,7 @@
 					<h3><code>node_modules/</code></h3>
 				</a>
 				<p>This folder keeps all installations of any packages your plugin has installed, including a reference to a local Hindenburg installation for development.</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/171927709-362bf7d7-4817-41e0-9d31-60dee81c41dc.png" alt="image"></p>
 				<blockquote>
 					<p>Check out <a href="https://stackoverflow.com/a/63294579">this answer</a> on StackOverflow to learn more about the <code>node_modules</code> folder.</p>
 				</blockquote>
@@ -93,17 +95,33 @@
 					<h3><code>src/</code></h3>
 				</a>
 				<p>Here your plugin code actually lives, both when writing in TypeScript and when writing in JavaScript.</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/171927809-1d0ccbba-edd0-498d-90b7-a09bebc2f703.png" alt="image"></p>
 				<blockquote>
-					<p>Note: Your <code>/src</code> directory will <em>not</em> be published to NPM.</p>
+					<p>Note: Your <code>/src</code> directory will <em>not</em> be published to NPM if you&#39;re using TypeScript.</p>
 				</blockquote>
 				<a href="#indexts" id="indexts" style="color: inherit; text-decoration: none;">
 					<h4><code>index.ts</code></h4>
 				</a>
 				<p>This file should export <em>everything</em> from <em>every</em> file in your plugin package.</p>
+				<p>For example:</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./api&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./events&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./services&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./plugin&quot;</span><span style="color: #000000">;</span>
+</code></pre>
+				<p><a href="https://github.com/edqx/MouthwashGG/blob/master/hbplugin-mouthwashgg-api/src/index.ts"><em>(file)</em></a></p>
 				<a href="#plugints" id="plugints" style="color: inherit; text-decoration: none;">
 					<h4><code>plugin.ts</code></h4>
 				</a>
 				<p>Contains the actual first point of access for your plugin.</p>
+				<p>For example:</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">HindenburgPlugin</span><span style="color: #000000">, </span><span style="color: #001080">WorkerPlugin</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;@skeldjs/hindenburg&quot;</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">)</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">FunThingsPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
+
+<span style="color: #000000">}</span>
+</code></pre>
 				<a href="#gitignore" id="gitignore" style="color: inherit; text-decoration: none;">
 					<h3><code>.gitignore</code></h3>
 				</a>
@@ -122,6 +140,15 @@
 					<h3><code>index.ts</code>/<code>index.js</code></h3>
 				</a>
 				<p>This is the entrypoint for your file, and simply exports everything from <a href="#src"><code>src/</code></a>. Specifically, it exports everything from <code>src/</code> as an object export, and <a href="#plugin.ts">your plugin</a> as a default export.</p>
+				<p>For example:</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">FunThingsPlugin</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./src/plugin&quot;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">*</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./src&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">FunThingsPlugin</span><span style="color: #000000">;</span>
+</code></pre>
+				<blockquote>
+					<p>This should <em>always</em> export your plugin as a default export.</p>
+				</blockquote>
 				<a href="#packagejson" id="packagejson" style="color: inherit; text-decoration: none;">
 					<h3><code>package.json</code></h3>
 				</a>
@@ -159,11 +186,22 @@
 					<h3><code>README.md</code></h3>
 				</a>
 				<p>You can use the README as an opportunity to write either a short or extensive documentation use for your plugin, including installation instructions and configuration explanations.</p>
+				<blockquote>
+					<p>Check out the <a href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github">GitHub docs for Markdown</a> to learn the format.</p>
+				</blockquote>
 				<a href="#tsconfigjsonjsconfigjson" id="tsconfigjsonjsconfigjson" style="color: inherit; text-decoration: none;">
 					<h3><code>tsconfig.json</code>/<code>jsconfig.json</code></h3>
 				</a>
 				<p>If you&#39;re in TypeScript, this will contain all build instructions for your plugin for TypeScript to work off of.</p>
 				<p>In both TypeScript and JavaScript, it&#39;s also used to enable features such as <a href="https://www.typescriptlang.org/docs/handbook/decorators.html">Experimental Decorators</a> and emitting run-time <a href="https://github.com/rbuckton/reflect-metadata">type information</a> which Hindenburg uses extensively.</p>
+				<p>For example, a <code>jsconfig.json</code>:</p>
+				<pre><code class="language-ts"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #A31515">&quot;compilerOptions&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;experimentalDecorators&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;emitDecoratorMetadata&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 				<blockquote>
 					<p>Check out the <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">docs on the <code>tsconfig.json</code> file</a> for more information.</p>
 				</blockquote>
@@ -171,6 +209,9 @@
 					<h3><code>yarn.lock</code>/<code>pnpm-lock.yaml</code>/<code>package-lock.json</code></h3>
 				</a>
 				<p>This is used as a <em>lock</em> for your installed packages, ensuring that anyone who subsequently installs your packages can be confident that they have the right ones, and that they aren&#39;t malicious or otherwise invalid.</p>
+				<blockquote>
+					<p>Check out the <a href="https://docs.npmjs.com/cli/v8/configuring-npm/package-lock-json">NPM docs for the <code>package-lock.json</code> file</a> for more information.</p>
+				</blockquote>
 				<a href="#recommended-editors" id="recommended-editors" style="color: inherit; text-decoration: none;">
 					<h2>Recommended Editors</h2>
 				</a>

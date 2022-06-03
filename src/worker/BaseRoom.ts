@@ -503,17 +503,49 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         }
     }
 
-    getConnections(players: PlayerData[]|undefined) {
-        return players
-            ? players
-                .reduce<Connection[]>((acc, player) => {
-                    const connection = this.connections.get(player.clientId);
-                    if (connection) {
-                        acc.push(connection);
-                    }
-                    return acc;
-                }, [])
-            : undefined;
+    /**
+     * Get all real client-server connections for a list of players. That is, connections for
+     * all players that are being controlled by a remote client/real player.
+     * 
+     * See {@link BaseRoom.getConnections} to get connections for a list of players and
+     * returned in the same order & place as the players provided, although some connections
+     * may not exist, resulting in `undefined`s.
+     * @param players The list of players to get connectiosn for.
+     * @returns All real connections for the players provided.
+     */
+    getRealConnections(players: PlayerDataResolvable[]) {
+        const connections = [];
+        for (let i = 0; i < players.length; i++) {
+            const playerResolvable = players[i];
+            const connection = this.getConnection(playerResolvable);
+            if (connection) {
+                connections.push(connection);
+            }
+        }
+        return connections;
+    }
+
+    /**
+     * Get all client-server connections for a list of players. If a player only exists ont he server,
+     * i.e. they are being controlled by a remote client/real player, their place in the list will be `undefined`.
+     * @param players The players to get connections for.
+     * @returns A list of connections for the players, in the same order.
+     */
+    getConnections(players: PlayerDataResolvable[]) {
+        return players.map(player => this.getConnection(player));
+    }
+
+    /**
+     * Get the client-server connection of a player.
+     * @returns The connection of the player, or undefined if they only exist on the server.
+     */
+    getConnection(player: PlayerDataResolvable) {
+        const clientId = this.resolvePlayerClientID(player);
+
+        if (!clientId)
+            return undefined;
+
+        return this.connections.get(clientId);
     }
 
     /**
@@ -740,12 +772,12 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     async broadcast(
         gamedata: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],
-        include?: PlayerData[],
-        exclude?: PlayerData[],
+        include?: PlayerDataResolvable[],
+        exclude?: PlayerDataResolvable[],
         reliable = true
     ) {
-        const includeConnections = this.getConnections(include);
-        const excludedConnections = this.getConnections(exclude);
+        const includeConnections = include ? this.getRealConnections(include) : undefined;
+        const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
         if (!this.worker.config.optimizations.disablePerspectives) {
             for (let i = 0; i < this.activePerspectives.length; i++) {

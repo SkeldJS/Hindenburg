@@ -38,7 +38,8 @@ import {
     MiraShipStatus,
     DisconnectReason,
     HeliSabotageSystem,
-    Platform
+    Platform,
+    PlayerDataResolvable
 } from "@skeldjs/core";
 
 import {
@@ -575,12 +576,12 @@ export class Perspective extends BaseRoom {
     async broadcast(
         gamedata: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],
-        include?: PlayerData[],
-        exclude?: PlayerData[],
+        include?: PlayerDataResolvable[],
+        exclude?: PlayerDataResolvable[],
         reliable = true
     ) {
-        const includeConnections = this.getConnections(include);
-        const excludedConnections = this.getConnections(exclude);
+        const includeConnections = include ? this.getRealConnections(include) : undefined;
+        const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
         const povNotCanceled = [];
         for (let i = 0; i < gamedata.length; i++) {

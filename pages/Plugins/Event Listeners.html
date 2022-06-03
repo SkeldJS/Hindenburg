@@ -77,7 +77,7 @@
 				</a>
 				<p>As with every other Hindenburg plugin design decisions; you can attach event listeners with the <a href="../../modules.html#EventListener"><code>@EventListener</code></a> decorator.</p>
 				<p>For example:</p>
-				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;1.0.0&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">)</span>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    @</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.setcolor&quot;</span><span style="color: #000000">)</span>
 <span style="color: #000000">    </span><span style="color: #795E26">onPlayerSetColor</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #267F99">PlayerSetColorEvent</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Room</span><span style="color: #000000">&gt;) {</span>
@@ -167,10 +167,10 @@
 						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Development Environment.html">Development <wbr>Environment</a>
+						<a href="Developing Plugins.html">Developing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Compatible Versions.html">Compatible <wbr>Versions</a>
+						<a href="Compatible Hindenburg API Versions.html">Compatible <wbr>Hindenburg API <wbr>Versions</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="Publishing Plugins.html">Publishing <wbr>Plugins</a>
@@ -178,14 +178,17 @@
 					<li class=" pp-nav pp-page">
 						<a href="Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+					</li>
 					<li class="current pp-nav pp-page">
 						<a href="Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="Receiving Protocol Messages.html">Receiving <wbr>Protocol <wbr>Messages</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>

@@ -138,14 +138,14 @@
 <span style="color: #000000">}</span>
 </code></pre>
 				<p>Notice the new function passed into <code>@ChatCommand</code>: <code>player =&gt; player.isHost</code>. This will make the command only available to host players.</p>
-				<p>Here are some more functions to filter which players can use your commands:</p>
-				<ul>
-					<li><code>player =&gt; player.playerInfo?.isImpostor</code> - Only available to impostors</li>
-					<li><code>player =&gt; player.playerInfo?.isDead</code> - Only available to dead playerss</li>
-					<li><code>player =&gt; !player.playerInfo?.isDead</code> - Only available to alive players</li>
-					<li><code>player =&gt; !!player.room.meetingHud</code> - Only available during meetings</li>
-					<li><code>player =&gt; !!player.room.lobbyBehaviour</code> - Only available during the lobby (before games)</li>
-				</ul>
+				<p>Here are some more functions to filter which players can use your commands:
+					|                  Function                 |                    Description                 |
+					|-------------------------------------------|------------------------------------------------|
+					| <code>player =&gt; player.playerInfo?.isImpostor</code> | Only available to impostors                    |
+					| <code>player =&gt; player.playerInfo?.isDead</code>     | Only available to dead players                 |
+					| <code>player =&gt; !player.playerInfo?.isDead</code>    | Only available to alive players                |
+					| <code>player =&gt; !!player.room.meetingHud</code>      | Only available during meetings                 |
+				| <code>player =&gt; !!player.room.lobbyBehaviour</code>  | Only available during the lobby (before games) |</p>
 				<p>Adding a filter to your command will also change how the help command shows up for each player:
 					<img src="https://user-images.githubusercontent.com/60631511/171652565-257d0c49-c90e-48c9-91f8-3a967d06cc6f.png" alt="image">
 				<em>The player on the left screen is the host of the room</em></p>
@@ -153,7 +153,7 @@
 				<a href="#notes" id="notes" style="color: inherit; text-decoration: none;">
 					<h2>Notes</h2>
 				</a>
-				<p>Note that Hindenburg does not support typical CLI features such as flags (<code>-p</code>) or switches (<code>/p</code>) or options (<code>--port</code>). This is entirely to keep chat commands as simple as possible.</p>
+				<p>Note that Hindenburg chat commands do not support typical CLI features such as flags (<code>-p</code>) or switches (<code>/p</code>) or options (<code>--port</code>). This is entirely to keep chat commands as simple as possible for players.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -181,10 +181,10 @@
 						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Development Environment.html">Development <wbr>Environment</a>
+						<a href="Developing Plugins.html">Developing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Compatible Versions.html">Compatible <wbr>Versions</a>
+						<a href="Compatible Hindenburg API Versions.html">Compatible <wbr>Hindenburg API <wbr>Versions</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="Publishing Plugins.html">Publishing <wbr>Plugins</a>
@@ -193,13 +193,16 @@
 						<a href="Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
+						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+					</li>
+					<li class=" pp-nav pp-page">
 						<a href="Event Listeners.html">Event <wbr>Listeners</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Receiving Protocol Messages.html">Receiving <wbr>Protocol <wbr>Messages</a>
 					</li>
 					<li class="current pp-nav pp-page">
 						<a href="Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>

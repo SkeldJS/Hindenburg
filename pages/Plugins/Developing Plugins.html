@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Development Environment | @skeldjs/hindenburg</title>
+	<title>Developing Plugins | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -60,10 +60,10 @@
 					<a href="Creating a Plugin.html">Plugins</a>
 				</li>
 				<li>
-					<a href="Development Environment.html">Development Environment</a>
+					<a href="Developing Plugins.html">Developing Plugins</a>
 				</li>
 			</ul>
-			<h1>Development Environment</h1>
+			<h1>Developing Plugins</h1>
 		</div>
 	</div>
 </header>
@@ -72,6 +72,105 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<p>Hindenburg has a great developer experience for developers, meaning you can quickly develop, test and publish plugins.</p>
+				<a href="#file-structure" id="file-structure" style="color: inherit; text-decoration: none;">
+					<h2>File Structure</h2>
+				</a>
+				<a href="#dist" id="dist" style="color: inherit; text-decoration: none;">
+					<h3><code>dist/</code></h3>
+				</a>
+				<p>If your plugin is written in TypeScript, this is where your plugin code, <a href="https://firefox-source-docs.mozilla.org/devtools-user/debugger/how_to/use_a_source_map/index.html">source maps</a> and <a href="https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html">declaration files</a> go when your plugin is built into JavaScript with <code>yarn build</code>.</p>
+				<blockquote>
+					<p>While code will appear here, it is <em>not</em> for editing, see the <a href="#src"><code>/src</code> folder</a>.</p>
+				</blockquote>
+				<a href="#node_modules" id="node_modules" style="color: inherit; text-decoration: none;">
+					<h3><code>node_modules/</code></h3>
+				</a>
+				<p>This folder keeps all installations of any packages your plugin has installed, including a reference to a local Hindenburg installation for development.</p>
+				<blockquote>
+					<p>Check out <a href="https://stackoverflow.com/a/63294579">this answer</a> on StackOverflow to learn more about the <code>node_modules</code> folder.</p>
+				</blockquote>
+				<a href="#src" id="src" style="color: inherit; text-decoration: none;">
+					<h3><code>src/</code></h3>
+				</a>
+				<p>Here your plugin code actually lives, both when writing in TypeScript and when writing in JavaScript.</p>
+				<blockquote>
+					<p>Note: Your <code>/src</code> directory will <em>not</em> be published to NPM.</p>
+				</blockquote>
+				<a href="#indexts" id="indexts" style="color: inherit; text-decoration: none;">
+					<h4><code>index.ts</code></h4>
+				</a>
+				<p>This file should export <em>everything</em> from <em>every</em> file in your plugin package.</p>
+				<a href="#plugints" id="plugints" style="color: inherit; text-decoration: none;">
+					<h4><code>plugin.ts</code></h4>
+				</a>
+				<p>Contains the actual first point of access for your plugin.</p>
+				<a href="#gitignore" id="gitignore" style="color: inherit; text-decoration: none;">
+					<h3><code>.gitignore</code></h3>
+				</a>
+				<p>If you instructed Hindenburg to create a git repository for your plugin in the template creation setup, this file makes a list of files to completely ignore when commiting changes and pushingto a remote repository.</p>
+				<blockquote>
+					<p>Check out the <a href="https://git-scm.com/docs/gitignore">Git docs on the <code>.gitignore</code> file</a> for more information.</p>
+				</blockquote>
+				<a href="#configschemajson" id="configschemajson" style="color: inherit; text-decoration: none;">
+					<h3><code>config.schema.json</code></h3>
+				</a>
+				<p>This follows standard <a href="https://json-schema.org">JSON Schema</a> syntax and you a good way to give server owners intellisense if they&#39;re writing/updating configs in a supported editor.</p>
+				<blockquote>
+					<p>Check out the <a href="https://json-schema.org/learn/getting-started-step-by-step.html">Learn JSON Schema</a> site for more information.</p>
+				</blockquote>
+				<a href="#indextsindexjs" id="indextsindexjs" style="color: inherit; text-decoration: none;">
+					<h3><code>index.ts</code>/<code>index.js</code></h3>
+				</a>
+				<p>This is the entrypoint for your file, and simply exports everything from <a href="#src"><code>src/</code></a>. Specifically, it exports everything from <code>src/</code> as an object export, and <a href="#plugin.ts">your plugin</a> as a default export.</p>
+				<a href="#packagejson" id="packagejson" style="color: inherit; text-decoration: none;">
+					<h3><code>package.json</code></h3>
+				</a>
+				<p>Mostly, this is used to define standard information for publishing your package to <a href="https://npmjs.com">NPM</a>, however it also provides Hindenburg with the location of the <a href="#entrypoint">entrypoint</a> to your plugin, as well as basic plugin information, described below.</p>
+				<blockquote>
+					<p>Your package name and package version can both be used for metadata about your plugin.</p>
+				</blockquote>
+				<blockquote>
+					<p>You don&#39;t <em>have</em> to use the <code>package.json</code> for plugin metadata, see about passing additional arguments to the <a href="../../modules.html#HindenburgPlugin"><code>@HindenburgPlugin</code></a> decorator.</p>
+				</blockquote>
+				<pre><code class="language-json"><span style="color: #000000">{</span>
+<span style="color: #000000">  </span><span style="color: #0451A5">&quot;plugin&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;loadOrder&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;none&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;defaultConfig&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">      </span><span style="color: #0451A5">&quot;message&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;Hello, world!&quot;</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#loadorder" id="loadorder" style="color: inherit; text-decoration: none;">
+					<h4><code>loadOrder</code></h4>
+				</a>
+				<p>Defines in which order your plugin should be loaded in compared to every other plugin to be loaded when the server starts.</p>
+				<blockquote>
+					<p>See the {@page Load Ordering} page for more information.</p>
+				</blockquote>
+				<a href="#defaultconfig" id="defaultconfig" style="color: inherit; text-decoration: none;">
+					<h4><code>defaultConfig</code></h4>
+				</a>
+				<p>Creates default configuration values to base server owner&#39;s configs off.</p>
+				<blockquote>
+					<p>See the <a href="../Getting Started/Configuration.html">Configuration</a> page for more information.</p>
+				</blockquote>
+				<a href="#readmemd" id="readmemd" style="color: inherit; text-decoration: none;">
+					<h3><code>README.md</code></h3>
+				</a>
+				<p>You can use the README as an opportunity to write either a short or extensive documentation use for your plugin, including installation instructions and configuration explanations.</p>
+				<a href="#tsconfigjsonjsconfigjson" id="tsconfigjsonjsconfigjson" style="color: inherit; text-decoration: none;">
+					<h3><code>tsconfig.json</code>/<code>jsconfig.json</code></h3>
+				</a>
+				<p>If you&#39;re in TypeScript, this will contain all build instructions for your plugin for TypeScript to work off of.</p>
+				<p>In both TypeScript and JavaScript, it&#39;s also used to enable features such as <a href="https://www.typescriptlang.org/docs/handbook/decorators.html">Experimental Decorators</a> and emitting run-time <a href="https://github.com/rbuckton/reflect-metadata">type information</a> which Hindenburg uses extensively.</p>
+				<blockquote>
+					<p>Check out the <a href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">docs on the <code>tsconfig.json</code> file</a> for more information.</p>
+				</blockquote>
+				<a href="#yarnlockpnpm-lockyamlpackage-lockjson" id="yarnlockpnpm-lockyamlpackage-lockjson" style="color: inherit; text-decoration: none;">
+					<h3><code>yarn.lock</code>/<code>pnpm-lock.yaml</code>/<code>package-lock.json</code></h3>
+				</a>
+				<p>This is used as a <em>lock</em> for your installed packages, ensuring that anyone who subsequently installs your packages can be confident that they have the right ones, and that they aren&#39;t malicious or otherwise invalid.</p>
 				<a href="#recommended-editors" id="recommended-editors" style="color: inherit; text-decoration: none;">
 					<h2>Recommended Editors</h2>
 				</a>
@@ -127,6 +226,15 @@
 				<p>For example:</p>
 				<pre><code class="language-sh"><span style="color: #000000">load -h -r hbplugin-customgamecode</span>
 </code></pre>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h2>Documentation</h2>
+				</a>
+				<p>For information on specific plugin features, check out the sidebar on these docs.</p>
+				<p>For information on specific API enums, interfaces, functions, constants, classes, etc., go to the <a href="https://skeldjs.github.io/Hindenburg/modules.html">Exports</a> section. The searchbar above can also help you look for functions that you need.</p>
+				<blockquote>
+					<p>Make sure you have the &quot;Inherited&quot; checkbox checked. If you&#39;re looking for Hindenburg-specific classes, make sure the &quot;Externals&quot; checkbox is unchecked.</p>
+				</blockquote>
+				<p>And for any questions or issues, feel completely free to join the <a href="https://discord.gg/8ewNJYmYAU">discord server</a>, or file an <a href="https://github.com/skeldjs/Hindenburg/issues">issue on the GitHub repo</a> - we&#39;re more than happy to help :)</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -154,10 +262,10 @@
 						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class="current pp-nav pp-page">
-						<a href="Development Environment.html">Development <wbr>Environment</a>
+						<a href="Developing Plugins.html">Developing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Compatible Versions.html">Compatible <wbr>Versions</a>
+						<a href="Compatible Hindenburg API Versions.html">Compatible <wbr>Hindenburg API <wbr>Versions</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="Publishing Plugins.html">Publishing <wbr>Plugins</a>
@@ -166,13 +274,16 @@
 						<a href="Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
+						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+					</li>
+					<li class=" pp-nav pp-page">
 						<a href="Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="Receiving Protocol Messages.html">Receiving <wbr>Protocol <wbr>Messages</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>

@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import polka from "polka";
-import { Platform } from "@skeldjs/constant";
+import { GameKeyword, Platform } from "@skeldjs/constant";
 import { json } from "../util/jsonBodyParser";
 import { Logger } from "../logger";
 import { Worker } from "../worker";
@@ -145,7 +145,7 @@ export class Matchmaker {
                 const numImpostors = parseInt(req.query.numImpostors as string);
 
                 if (
-                    room.settings.keywords === (AmongUsLanguage[req.query.lang as unknown as number] as unknown as number) &&
+                    room.settings.keywords === (GameKeyword[req.query.lang as unknown as number] as unknown as number) &&
                     (parseInt(req.query.mapId as string) & (1 << room.settings.map)) !== 0 &&
                     (
                         room.settings.numImpostors === numImpostors ||

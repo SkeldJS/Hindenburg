@@ -18,6 +18,10 @@
         {
           "title": "Installing Plugins",
           "source": "./pages/Getting Started/Installing Plugins.md"
+        },
+        {
+          "title": "Contributing",
+          "source": "./pages/Getting Started/Contributing.md"
         }
       ]
     },

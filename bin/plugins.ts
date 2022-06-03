@@ -338,7 +338,6 @@ async function runCreatePlugin() {
         const updateYarnSpinner = new Spinner("Updating yarn.. %s").start();
         try {
             await runCommandInDir(pluginDirectory, "yarn set version berry");
-            await runCommandInDir(pluginDirectory, "yarn set version 3.0.2");
             updateYarnSpinner.success();
         } catch (e) {
             updateYarnSpinner.fail();
@@ -407,22 +406,23 @@ async function runCreatePlugin() {
 
     const dependenciesSpinner = new Spinner("Installing dependencies.. %s").start();
     try {
+        const relativeHindenburg = path.relative(pluginDirectory, process.cwd()).replace(/\\/g, path.posix.sep);
         if (packageManager === "yarn") {
             await runCommandInDir(
                 pluginDirectory,
-                "yarn add --dev @skeldjs/hindenburg@link:../.."
+                "yarn add --dev @skeldjs/hindenburg@link:" + relativeHindenburg
                     + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "npm") {
             await runCommandInDir(
                 pluginDirectory,
-                "npm install --save-dev @skeldjs/hindenburg@file:../.."
+                "npm install --save-dev @skeldjs/hindenburg@file:" + relativeHindenburg
                     + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "pnpm") {
             await runCommandInDir(
                 pluginDirectory,
-                "pnpm install --save-dev @skeldjs/hindenburg@file:../.."
+                "pnpm install --save-dev @skeldjs/hindenburg@file:" + relativeHindenburg
                     + (useTypescript ? " typescript@latest" : "")
             );
         }

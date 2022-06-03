@@ -29,12 +29,12 @@
           "source": "./pages/Plugins/Creating a Plugin.md"
         },
         {
-          "title": "Development Environment",
-          "source": "./pages/Plugins/Development Environment.md"
+          "title": "Developing Plugins",
+          "source": "./pages/Plugins/Developing Plugins.md"
         },
         {
-          "title": "Compatible Versions",
-          "source": "./pages/Plugins/Compatible Versions.md"
+          "title": "Compatible Hindenburg API Versions",
+          "source": "./pages/Plugins/Compatible Hindenburg API Versions.md"
         },
         {
           "title": "Publishing Plugins",
@@ -45,16 +45,20 @@
           "source": "./pages/Plugins/Worker and Room Plugins.md"
         },
         {
+          "title": "Lifecycle Methods",
+          "source": "./pages/Plugins/Lifecycle Methods.md"
+        },
+        {
           "title": "Event Listeners",
           "source": "./pages/Plugins/Event Listeners.md"
         },
         {
-          "title": "Chat Commands",
-          "source": "./pages/Plugins/Chat Commands.md"
+          "title": "Receiving Protocol Messages",
+          "source": "./pages/Plugins/Receiving Protocol Messages.md"
         },
         {
-          "title": "Lifecycle Methods",
-          "source": "./pages/Plugins/Lifecycle Methods.md"
+          "title": "Chat Commands",
+          "source": "./pages/Plugins/Chat Commands.md"
         }
       ]
     },

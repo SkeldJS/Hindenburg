@@ -33,7 +33,7 @@ The constructor lets you assign any properties on your plugin that TypeScript or
 Very simply, this method is called when your plugin is first loaded and all events, commands and messages have been attached.
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+@HindenburgPlugin("hbplugin-fun-things")
 export class MyPlugin extends WorkerPlugin {
     async onPluginLoad() {
 
@@ -47,7 +47,7 @@ Hindenburg will wait for this method to finish if it's marked as asynchronous, s
 Also rather simply, this method is called when your plugin is about to be unloaded, although has not yet actually been unloaded from the server. Hindenburg will not wait for this to complete, but any asynchronous tasks can still run parallel.
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+@HindenburgPlugin("hbplugin-fun-things")
 export class MyPlugin extends WorkerPlugin {
     onPluginUnload() {
 
@@ -61,7 +61,7 @@ Called when your plugin's config in the server's `config.json` is modified, it a
 Useful for verifying the config, or modifying your plugin based on the new configuration.
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+@HindenburgPlugin("hbplugin-fun-things")
 export class MyPlugin extends WorkerPlugin {
     onConfigUpdate(oldConfig: any, newConfig: any) {
 

@@ -230,7 +230,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // false
@@ -238,7 +238,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // true
@@ -263,7 +263,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // true
@@ -271,7 +271,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-fun-things")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // false

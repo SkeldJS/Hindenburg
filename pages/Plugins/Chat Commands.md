@@ -73,11 +73,13 @@ onChat(ctx: ChatCommandContext, args: any) {
 Notice the new function passed into `@ChatCommand`: `player => player.isHost`. This will make the command only available to host players.
 
 Here are some more functions to filter which players can use your commands:
-- `player => player.playerInfo?.isImpostor` - Only available to impostors
-- `player => player.playerInfo?.isDead` - Only available to dead playerss
-- `player => !player.playerInfo?.isDead` - Only available to alive players
-- `player => !!player.room.meetingHud` - Only available during meetings
-- `player => !!player.room.lobbyBehaviour` - Only available during the lobby (before games)
+|                  Function                 |                    Description                 |
+|-------------------------------------------|------------------------------------------------|
+| `player => player.playerInfo?.isImpostor` | Only available to impostors                    |
+| `player => player.playerInfo?.isDead`     | Only available to dead players                 |
+| `player => !player.playerInfo?.isDead`    | Only available to alive players                |
+| `player => !!player.room.meetingHud`      | Only available during meetings                 |
+| `player => !!player.room.lobbyBehaviour`  | Only available during the lobby (before games) |
 
 Adding a filter to your command will also change how the help command shows up for each player:
 ![image](https://user-images.githubusercontent.com/60631511/171652565-257d0c49-c90e-48c9-91f8-3a967d06cc6f.png)
@@ -86,4 +88,4 @@ _The player on the left screen is the host of the room_
 Any player that attempts to use a command that isn't available to them, will be met with a notice that the command doesn't exist.
 
 ## Notes
-Note that Hindenburg does not support typical CLI features such as flags (`-p`) or switches (`/p`) or options (`--port`). This is entirely to keep chat commands as simple as possible.
+Note that Hindenburg chat commands do not support typical CLI features such as flags (`-p`) or switches (`/p`) or options (`--port`). This is entirely to keep chat commands as simple as possible for players.

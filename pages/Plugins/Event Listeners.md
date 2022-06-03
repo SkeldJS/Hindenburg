@@ -5,7 +5,7 @@ As with every other Hindenburg plugin design decisions; you can attach event lis
 
 For example:
 ```ts
-@HindenburgPlugin("hbplugin-fun-things", "1.0.0", "none")
+@HindenburgPlugin("hbplugin-fun-things")
 export class MyPlugin extends RoomPlugin {
     @EventListener("player.setcolor")
     onPlayerSetColor(ev: PlayerSetColorEvent<Room>) {

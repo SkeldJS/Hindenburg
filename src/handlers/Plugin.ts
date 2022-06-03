@@ -200,7 +200,7 @@ export abstract class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-my-plugin")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginLoad() {
      *     const res = await fetch("https://icanhazip.com/");
@@ -223,7 +223,7 @@ export abstract class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-my-plugin")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginUnload() {
      *     this.logger.info("Closing socket..");
@@ -312,7 +312,7 @@ export class RoomPlugin extends Plugin {
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-my-plugin")
      * export class MyPlugin extends RoomPlugin {
      *
      * }
@@ -359,7 +359,7 @@ export class WorkerPlugin extends Plugin {
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin", "1.0.0", "none")
+     * .@HindenburgPlugin("hbplugin-my-plugin")
      * export class MyPlugin extends WorkerPlugin {
      *
      * }

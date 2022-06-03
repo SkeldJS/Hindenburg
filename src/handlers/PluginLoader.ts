@@ -445,12 +445,13 @@ export class PluginLoader {
         if (alreadyLoaded)
             return alreadyLoaded;
 
+        // if a circular dependency is found
         if (tree.has(node)) {
-            const nodes = [...tree];
-            let lastChild = node;
-            let currentParent: ImportedPlugin
+            const nodes = [...tree]; // flatten the search tree to a list
+            let lastChild = node; // start searching backwards from the current node
+            let currentParent: ImportedPlugin;
 
-            do { // work backwards until a break is found in a dependency with "loadedBefore" set to false (a lazy dependency)
+            do { // search backwards until a break is found in a dependency with "loadedBefore" set to false (a lazy dependency)
                 currentParent = nodes.pop()!;
                 const dependencies = currentParent.getDependencies();
                 const lastNodeEdge = dependencies[lastChild.pluginCtr.meta.id]; // get the edge between this node & the parent

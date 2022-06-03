@@ -481,7 +481,11 @@ async function runCreatePlugin() {
         packageJson.keywords = [ "hindenburg", "plugin", "among us" ];
         packageJson.license = "GPL-3.0-only";
         packageJson.author = author;
-        packageJson.files = [ "dist" ];
+        if (useTypescript) {
+            packageJson.files = [ "dist", "config.schema.json" ];
+        } else {
+            packageJson.files = [ "src", "index.js", "config.schema.json" ]
+        }
         packageJson.main = useTypescript ? "./dist/index.js" : "./index.js";
         if (useTypescript) {
             packageJson.types = "./index.ts";

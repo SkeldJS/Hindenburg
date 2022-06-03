@@ -447,43 +447,60 @@ export class PluginLoader {
 
         if (lazyLoadForCircular.has(node)) {
             const nodes = [...lazyLoadForCircular];
-            let lastNode = node;
-            let currentNode: [ImportedPlugin, ImportedPlugin[]];
+            let lastChild = node;
+            let currentParent: ImportedPlugin
 
-            do {
-                currentNode = nodes.pop()!;
-                const dependencies = currentNode[0].getDependencies();
-                const lastNodeEdge = dependencies[lastNode.pluginCtr.meta.id];
+            do { // work backwards until a break is found in a dependency with "loadedBefore" set to false (a lazy dependency)
+                currentParent = nodes.pop()!;
+                const dependencies = currentParent.getDependencies();
+                const lastNodeEdge = dependencies[lastChild.pluginCtr.meta.id]; // get the edge between this node & the parent
 
+                // check if the edge/dependency between the child and parent is lazy, meaning it doesn't
+                // necessarily _have_ to be loaded before the plugin, it just should be loaded at some point, whose
+                // existence is checked below with the "missing dependency for: " error, which would be thrown if
+                // a parent had a lazy dependency on a child but the child didn't exist or wasn't intended on being
+                // loaded.
                 if (typeof lastNodeEdge === "object" && lastNodeEdge.loadedBefore === false /* might be undefined & defaults to true */)
                     break;
 
-                lastNode = currentNode[0];
+                // move upwards through the tree/graph
+                lastChild = currentParent;
             } while (nodes.length > 0);
 
-            if (lastNode === currentNode[0]) {
+            // if the loop didn't iterate again, because there were nodes more left, it means that
+            // the currentNode wasn't updated, and since lastNode is set to currentNode before the
+            // end of the loop, it makes more an easy check for whether or not a lazy dependency was found.
+            if (lastChild === currentParent) {
                 const searchedNodes = [...lazyLoadForCircular.keys(), node];
                 throw new Error("Unsupported circular dependency: " + searchedNodes.map(node => node.pluginCtr.meta.id).join(" -> "));
             }
 
-            currentNode[1].push(node);
-            // todo: work backwards - find a "break" in the circle with {@link PluginDependencyDeclaration}
-            throw lastNode;
+            throw lastChild; // throw the child that has a lazy connection to the parent. this is
+            // caught later in the loop below to basically cancel this entire depth-search and
+            // to tell the parent of the child that it has a lazy dependency on to send it to
+            // the end of the search/graph to load later
         }
 
+        // as this is a depth-first search, we need to be able to check for circular dependencies
+        // this is done by keeping a temporary track of all nodes that this search vein/spanning tree
+        // has been through. if it comes up again later, we can know by checking whether the current node
+        // is in this set. 
         lazyLoadForCircular.add(node);
         const dependencies = node.getDependencies();
         for (const pluginId in dependencies) {
-            if (pluginId === node.pluginCtr.meta.id)
+            if (pluginId === node.pluginCtr.meta.id) // technically this would work completely fine, but erroring anyway for bad habits
                 throw new Error("Plugin depends on itself: " + node.pluginCtr.meta.id);
 
-            const pluginInGraph = graph.find(plugin => plugin.pluginCtr.meta.id === pluginId);
+            const pluginInGraph = graph.find(plugin => plugin.pluginCtr.meta.id === pluginId); // find the plugin with that dependency plugin id in the graph
             const dependencyOptions = dependencies[pluginId];
 
             if (!pluginInGraph) {
                 if (typeof dependencyOptions === "object" && dependencyOptions.optional)
-                    continue;
+                    continue; // if it's optional then we can just skip
 
+                // note that this includes any lazy dependencies, which are checked above,
+                // meaning that a lazy dependency _will_ get loaded at some point, just not
+                // necessarily before the plugin is loaded.
                 throw new Error("Missing dependency for '" + node.pluginCtr.meta.id + "': " + pluginId);
             }
 
@@ -494,8 +511,10 @@ export class PluginLoader {
             }
 
             try {
-                const loadedPlugin = await this.visitAndLoadPlugin(graph, loaded, lazyLoadForCircular, pluginInGraph);
+                await this.visitAndLoadPlugin(graph, loaded, lazyLoadForCircular, pluginInGraph);
             } catch (e) {
+                // this is thrown above, and is the result of a lazy dependency which must be loaded
+                // after the plugin due to circular dependencies.
                 if (e === pluginInGraph) {
                     const idx = graph.indexOf(pluginInGraph);
                     graph.push(graph.splice(idx, 1)[0]); // move to the end of the imported plugins array

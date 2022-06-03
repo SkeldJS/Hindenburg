@@ -1,6 +1,23 @@
 Hindenburg has a great developer experience for developers, meaning you can quickly develop, test and publish plugins.
 
 ## File Structure
+```
+| dist
+| | ...
+| node_modules
+| | ...
+| src
+| | index.ts
+| | plugin.ts
+| .gitignore
+| config.schema.json
+| index.ts
+| package.json
+| README.md
+| tsconfig.json
+| yarn.lock
+```
+
 ### `dist/`
 If your plugin is written in TypeScript, this is where your plugin code, [source maps](https://firefox-source-docs.mozilla.org/devtools-user/debugger/how_to/use_a_source_map/index.html) and [declaration files](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html) go when your plugin is built into JavaScript with `yarn build`.
 

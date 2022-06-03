@@ -526,7 +526,8 @@ export class PluginLoader {
         const loadedPlugin = node.isRoomPlugin()
             ? await this.loadPlugin(node, room!)
             : await this.loadPlugin(node as ImportedPlugin<typeof WorkerPlugin>);
-            
+
+        lazyLoadForCircular.delete(node);
         loaded.set(node, loadedPlugin);
         return loadedPlugin;
     }

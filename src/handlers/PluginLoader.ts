@@ -437,7 +437,7 @@ export class PluginLoader {
     protected async visitAndLoadPlugin(
         graph: ImportedPlugin[],
         loaded: Map<ImportedPlugin, WorkerPlugin|RoomPlugin>,
-        lazyLoadForCircular: Map<ImportedPlugin, ImportedPlugin[]>,
+        lazyLoadForCircular: Set<ImportedPlugin>,
         node: ImportedPlugin,
         room?: Room
     ): Promise<WorkerPlugin|RoomPlugin> {
@@ -471,7 +471,7 @@ export class PluginLoader {
             throw lastNode;
         }
 
-        lazyLoadForCircular.set(node, []);
+        lazyLoadForCircular.add(node);
         const dependencies = node.getDependencies();
         for (const pluginId in dependencies) {
             if (pluginId === node.pluginCtr.meta.id)
@@ -507,6 +507,7 @@ export class PluginLoader {
         const loadedPlugin = node.isRoomPlugin()
             ? await this.loadPlugin(node, room!)
             : await this.loadPlugin(node as ImportedPlugin<typeof WorkerPlugin>);
+            
         loaded.set(node, loadedPlugin);
         return loadedPlugin;
     }
@@ -530,7 +531,7 @@ export class PluginLoader {
         const loadedPlugins: Map<ImportedPlugin, WorkerPlugin> = new Map;
         for (const importedPlugin of importedPlugins) {
             if (importedPlugin.isEnabled()) {
-                await this.visitAndLoadPlugin(importedPlugins, loadedPlugins, new Map, importedPlugin);
+                await this.visitAndLoadPlugin(importedPlugins, loadedPlugins, new Set, importedPlugin);
             }
         }
     }
@@ -554,7 +555,7 @@ export class PluginLoader {
         const loadedPlugins: Map<ImportedPlugin, RoomPlugin> = new Map;
         for (const importedPlugin of importedPlugins) {
             if (importedPlugin.isEnabled()) {
-                await this.visitAndLoadPlugin(importedPlugins, loadedPlugins, new Map, importedPlugin, room);
+                await this.visitAndLoadPlugin(importedPlugins, loadedPlugins, new Set, importedPlugin, room);
             }
         }
         this.applyChatCommands(room);

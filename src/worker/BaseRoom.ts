@@ -510,7 +510,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * See {@link BaseRoom.getConnections} to get connections for a list of players and
      * returned in the same order & place as the players provided, although some connections
      * may not exist, resulting in `undefined`s.
-     * @param players The list of players to get connectiosn for.
+     * @param players The list of players to get connections for.
      * @returns All real connections for the players provided.
      */
     getRealConnections(players: PlayerDataResolvable[]) {

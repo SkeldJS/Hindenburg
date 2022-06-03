@@ -1412,23 +1412,26 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.socket = dgram.createSocket("udp4");
             this.listen(newConfig.socket.port);
         }
-
+        
         if (newConfig.matchmaker) {
             if (this.matchmaker) {
                 // prepare thyself for the worst if statement
                 if ((typeof newConfig.matchmaker === "boolean" && (typeof this.config.matchmaker !== "boolean" && this.config.matchmaker.port !== 80)) ||
                     (typeof newConfig.matchmaker === "object" && (typeof this.config.matchmaker === "boolean" ? (newConfig.matchmaker.port !== 80) : (newConfig.matchmaker.port !== this.config.matchmaker.port)))
                 ) {
+                    this.config.matchmaker = newConfig.matchmaker;
                     this.matchmaker.destroy();
                     this.matchmaker = undefined;
                     this.matchmaker = new Matchmaker(this);
                     this.matchmaker.listen();
                 }
             } else {
+                this.config.matchmaker = newConfig.matchmaker;
                 this.matchmaker = new Matchmaker(this);
                 this.matchmaker.listen();
             }
         } else if (!newConfig.matchmaker && this.matchmaker) {
+            this.config.matchmaker = newConfig.matchmaker || false;
             this.matchmaker.destroy();
             this.matchmaker = undefined;
         }

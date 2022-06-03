@@ -185,6 +185,5 @@ export class Matchmaker {
             throw new Error("No http server running; cannot destroy matchmaker");
 
         this.httpServer.server.close();
-        this.logger.info("Listening on *:" + this.port);
     }
 }

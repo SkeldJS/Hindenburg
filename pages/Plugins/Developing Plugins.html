@@ -226,29 +226,6 @@
 				<p>If you&#39;re using TypeScript for your plugin, make sure to build your plugin before any changes that you make. Hindenburg will import the built <code>/dist</code> directory for your plugin; not the TypeScript code.</p>
 				<p>If you&#39;re going to be making a lot of changes, it may be of use to open a separate temrinal session and use the <code>yarn watch</code> script to continuously check for changes and build incrementally:</p>
 				<p><img src="https://i.imgur.com/PSd6JnS.gif" alt=""></p>
-				<a href="#using-a-local-version-of-skeldjs" id="using-a-local-version-of-skeldjs" style="color: inherit; text-decoration: none;">
-					<h2>Using a Local Version of SkeldJS</h2>
-				</a>
-				<p>If you&#39;re developing both Hindenburg and SkeldJS simultaneously, i.e. developing updates for SkeldJS for use in Hindenburg, you can leverage yarn&#39;s <a href="https://yarnpkg.com/features/protocols">dependency protocols</a> in order to link SkeldJS:</p>
-				<pre><code class="language-json"><span style="color: #008000">/// hindenburg/package.json</span>
-<span style="color: #000000">...</span>
-<span style="color: #A31515">&quot;dependencies&quot;</span><span style="color: #000000">: {</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/client&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/client&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/constant&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/constant&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/core&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/client&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/data&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/data&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/events&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/events&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/protocol&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/protocol&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/reactor&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/reactor&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/state&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/state&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/text&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/text&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #0451A5">&quot;@skeldjs/util&quot;</span><span style="color: #000000">: </span><span style="color: #A31515">&quot;link:../SkeldJS/packages/util&quot;</span><span style="color: #000000">,</span>
-<span style="color: #000000">    </span><span style="color: #CD3131">...</span>
-</code></pre>
-				<blockquote>
-					<p>Remember not to stage your updated package.json changes before committing.</p>
-				</blockquote>
-				<p>Note that you&#39;ll have to build if you make any changes made to the SkeldJS packages.</p>
 				<a href="#plugin-hot-reloading" id="plugin-hot-reloading" style="color: inherit; text-decoration: none;">
 					<h2>Plugin Hot-Reloading</h2>
 				</a>
@@ -295,6 +272,9 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Getting Started/Installing Plugins.html">Installing <wbr>Plugins</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Contributing.html">Contributing</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>

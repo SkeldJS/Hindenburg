@@ -89,7 +89,7 @@ import {
     BaseReactorRpcMessage
 } from "../api";
 
-import { PluginLoader, WorkerPlugin } from "../handlers";
+import { LoadedPlugin, PluginLoader, WorkerPlugin } from "../handlers";
 
 import {
     ReactorRpcMessage,
@@ -153,7 +153,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      */
     pluginLoader: PluginLoader;
 
-    loadedPlugins: Map<string, WorkerPlugin>;
+    loadedPlugins: Map<string, LoadedPlugin<typeof WorkerPlugin>>;
     reactorRpcHandlers: Map<`${string}:${number}`, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
 
     /**
@@ -911,8 +911,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                     new ReactorPluginDeclarationMessage(
                                         i,
                                         new ReactorMod(
-                                            plugin.meta.id,
-                                            plugin.meta.version,
+                                            plugin.pluginInstance.meta.id,
+                                            plugin.pluginInstance.meta.version,
                                             ModPluginSide.Both
                                         )
                                     )
@@ -1449,15 +1449,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         continue;
 
                     if (!recursiveCompare(newConfig.plugins[key], this.config.plugins[key])) {
-                        const oldConfig = loadedPlugin.config;
+                        const oldConfig = loadedPlugin.pluginInstance.config;
 
-                        const setConfig = newConfig.plugins[loadedPlugin.meta.id];
-                        const pluginConfig = recursiveClone(loadedPlugin.meta.defaultConfig || {});
+                        const setConfig = newConfig.plugins[loadedPlugin.pluginInstance.meta.id];
+                        const pluginConfig = recursiveClone(loadedPlugin.pluginInstance.meta.defaultConfig || {});
                         if (setConfig && setConfig !== true)
                             recursiveAssign(pluginConfig, setConfig);
 
-                        loadedPlugin.config = pluginConfig;
-                        loadedPlugin.onConfigUpdate(oldConfig, loadedPlugin.config);
+                        loadedPlugin.pluginInstance.config = pluginConfig;
+                        loadedPlugin.pluginInstance.onConfigUpdate(oldConfig, loadedPlugin.pluginInstance.config);
                     }
                 }
             }

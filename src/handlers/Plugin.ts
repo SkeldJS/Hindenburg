@@ -131,53 +131,6 @@ export abstract class Plugin {
      */
     packageJson!: PluginPackageJson;
 
-    /**
-     * All chat commands that were loaded into the room, created with {@link ChatCommand}.
-     */
-    loadedChatCommands: string[];
-    /**
-     * All CLI commands that were loaded into the worker, created with {@link CliCommand}.
-     */
-    loadedCliCommands: vorpal.Command[];
-    /**
-     * All event listeners that were loaded into the worker, created with {@link EventListener}.
-     */
-    loadedEventListeners: {
-        eventName: string;
-        handler: (...args: any) => any;
-    }[];
-    /**
-     * All protocol message handlers that were loaded into the worker, created with
-     * {@link MessageHandler}.
-     */
-    loadedMessageHandlers: PluginRegisteredMessageHandlerInfo[];
-    /**
-     * All reactor rpc message handlers that were loaded into the worker, created with
-     * {@link ReactorRpcHandler}.
-     */
-    loadedReactorRpcHandlers: {
-        reactorRpc: typeof BaseReactorRpcMessage,
-        handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
-    }[];
-    /**
-     * All registered http endpoints to be hosted on the http matchmaker, created with
-     * {@link MatchmakerEndpoint}.
-     */
-    loadedMatchmakerEndpoints: PluginRegisteredMatchmakerEndpoint[];
-    /**
-     * All protocol messages that were registered into the worker, created with
-     * {@link RegisterMessage}.
-     */
-    loadedRegisteredMessages: Deserializable[];
-    /**
-     * All registered spawn prefabs for the plugin, created with {@link RegisterPrefab}.
-     */
-    registeredPrefabs: RegisteredPrefab[];
-    /**
-     * All registered player roles for the plugin, created with {@link RegisterRole}.
-     */
-    registeredRoles: typeof BaseRole[];
-
     protected constructor(
         /**
          * The config passed into this plugin, usually by the `config.json` on the
@@ -188,16 +141,6 @@ export abstract class Plugin {
         this.meta = (this["constructor"] as typeof Plugin).meta; // typescript hax
         this.baseDirectory = (this["constructor"] as typeof Plugin).baseDirectory;
         this.packageJson = (this["constructor"] as typeof Plugin).packageJson;
-
-        this.loadedChatCommands = [];
-        this.loadedCliCommands = [];
-        this.loadedEventListeners = [];
-        this.loadedMessageHandlers = [];
-        this.loadedReactorRpcHandlers = [];
-        this.loadedMatchmakerEndpoints = [];
-        this.loadedRegisteredMessages = [];
-        this.registeredPrefabs = [];
-        this.registeredRoles = [];
     }
 
     static [Symbol.for("nodejs.util.inspect.custom")]() {
@@ -349,7 +292,7 @@ export class RoomPlugin extends Plugin {
         if (typeof plugin !== "string")
             return this.getDependency(plugin.meta.id);
 
-        return this.room.loadedPlugins.get(plugin)!;
+        return this.room.loadedPlugins.get(plugin)?.pluginInstance!;
     }
 }
 
@@ -391,7 +334,7 @@ export class WorkerPlugin extends Plugin {
         if (typeof plugin !== "string")
             return this.getDependency(plugin.meta.id);
 
-        return this.worker.loadedPlugins.get(plugin)!;
+        return this.worker.loadedPlugins.get(plugin)!.pluginInstance;
     }
 }
 

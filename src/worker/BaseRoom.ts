@@ -84,7 +84,8 @@ import {
     ChatCommandContext,
     RoomPlugin,
     ChatCommandHandler,
-    WorkerPlugin
+    WorkerPlugin,
+    LoadedPlugin
 } from "../handlers";
 
 import { fmtCode } from "../util/fmtCode";
@@ -200,11 +201,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     /**
      * All plugins loaded and scoped to the worker when this room was created, mapped by plugin id to worker plugin object.
      */
-    workerPlugins: Map<string, WorkerPlugin>;
+    workerPlugins: Map<string, LoadedPlugin<typeof WorkerPlugin>>;
     /**
      * All plugins loaded and scoped to the room, mapped by plugin id to room plugin object.
      */
-    loadedPlugins: Map<string, RoomPlugin>;
+    loadedPlugins: Map<string, LoadedPlugin<typeof RoomPlugin>>;
     /**
      * All reactor rpc handlers in the room, mapped by reactor message to an array of handlers for that message.
      */

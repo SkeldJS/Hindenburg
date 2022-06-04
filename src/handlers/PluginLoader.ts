@@ -11,6 +11,7 @@ import minimatch from "minimatch";
 import {
     AirshipStatus,
     AprilShipStatus,
+    BaseRole,
     CrewmateRole,
     CustomNetworkTransform,
     EngineerRole,
@@ -20,6 +21,7 @@ import {
     LobbyBehaviour,
     MeetingHud,
     MiraShipStatus,
+    Networkable,
     PlayerControl,
     PlayerPhysics,
     PolusShipStatus,
@@ -47,32 +49,36 @@ import {
     WorkerImportPluginEvent,
     WorkerLoadPluginEvent,
     getPluginRegisteredPrefabs,
-    getPluginMatchmakerEndpoints
+    getPluginMatchmakerEndpoints,
+    PluginRegisteredMatchmakerEndpoint,
+    PluginRegisteredMessageHandlerInfo,
+    RegisteredPrefab
 } from "../api";
 
 import { recursiveClone } from "../util/recursiveClone";
 import { recursiveAssign } from "../util/recursiveAssign";
 
 import { getPluginDependencies, PluginDependencyDeclaration } from "../api/hooks/Dependency";
-import { RoomPlugin, SomePluginCtr, WorkerPlugin } from "./Plugin";
-import { MessageDirection, Serializable } from "@skeldjs/protocol";
+import { Plugin, PluginInstanceType, RoomPlugin, SomePluginCtr, WorkerPlugin } from "./Plugin";
+import { Deserializable, MessageDirection, Serializable } from "@skeldjs/protocol";
+import vorpal from "vorpal";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
 export interface PluginPackageJsonOptions {
-    loadOrder?: "first"|"last"|"none"|number;
+    loadOrder?: "first" | "last" | "none" | number;
     defaultConfig?: any;
-    dependencies?: Record<string, boolean|Partial<Omit<PluginDependencyDeclaration, "pluginId">>>;
+    dependencies?: Record<string, boolean | Partial<Omit<PluginDependencyDeclaration, "pluginId">>>;
 }
 
 export interface PluginPackageJson extends PackageJson {
     plugin?: PluginPackageJsonOptions;
 }
 
-export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlugin = typeof RoomPlugin|typeof WorkerPlugin > {
+export class ImportedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerPlugin = typeof RoomPlugin | typeof WorkerPlugin> {
     protected _cachedPackageJson?: PluginPackageJson;
-    
-    static async getPluginPackageJson(pluginPath: string): Promise<PluginPackageJson|undefined> {
+
+    static async getPluginPackageJson(pluginPath: string): Promise<PluginPackageJson | undefined> {
         try {
             const packageJsonText = await fs.readFile(path.resolve(pluginPath, "package.json"), "utf8");
             try {
@@ -108,13 +114,13 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlu
             throw new Error("The path didn't exist or wasn't a javascript module");
         }
         const { default: pluginCtr } = await import(pluginPath) as { default: SomePluginCtr };
-        
+
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             throw new Error("The imported module wasn't a Hindenburg plugin");
 
         pluginCtr.baseDirectory = pluginPath;
         pluginCtr.packageJson = packageJson;
-        
+
         const packageJsonMeta = {
             id: packageJson?.name || pluginLoader.generateRandomPluginIdSafe(),
             version: packageJson?.version || "1.0.0",
@@ -141,7 +147,7 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlu
         public readonly pluginCtr: PluginCtr,
         public readonly localDirectory: string,
         public readonly packageJson: PluginPackageJson = {}
-    ) {}
+    ) { }
 
     isWorkerPlugin(): this is ImportedPlugin<typeof WorkerPlugin> {
         return PluginLoader.isWorkerPlugin(this.pluginCtr);
@@ -168,7 +174,7 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlu
         const dependencies = this.packageJson.plugin?.dependencies
             ? { ...this.packageJson.plugin.dependencies }
             : {};
-            
+
         for (const extraDependency of getPluginDependencies(this.pluginCtr)) { // dependencies defined with the @Dependency decorator
             dependencies[extraDependency.pluginId] = extraDependency;
         }
@@ -177,8 +183,77 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlu
     }
 }
 
-const colours = [ "red", "blue", "green", "pink", "orange", "yellow", "black", "white", "purple", "brown", "cyan", "lime", "maroon", "rose", "banana", "gray", "tan", "coral" ];
-const roles = [ "crewmate", "impostor", "scientist", "engineer", "guardian-angel", "shapeshift" ];
+export class LoadedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerPlugin = typeof RoomPlugin | typeof WorkerPlugin> {
+    /**
+     * All chat commands that were loaded into the room, created with {@link ChatCommand}.
+     */
+    loadedChatCommands: string[];
+    /**
+     * All CLI commands that were loaded into the worker, created with {@link CliCommand}.
+     */
+    loadedCliCommands: vorpal.Command[];
+    /**
+     * All event listeners that were loaded into the worker, created with {@link EventListener}.
+     */
+    loadedEventListeners: {
+        eventName: string;
+        handler: (...args: any) => any;
+    }[];
+    /**
+     * All protocol message handlers that were loaded into the worker, created with
+     * {@link MessageHandler}.
+     */
+    loadedMessageHandlers: PluginRegisteredMessageHandlerInfo[];
+    /**
+      * All reactor rpc message handlers that were loaded into the worker, created with
+      * {@link ReactorRpcHandler}.
+      */
+    loadedReactorRpcHandlers: {
+        reactorRpc: typeof BaseReactorRpcMessage,
+        handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
+    }[];
+    /**
+     * All registered http endpoints to be hosted on the http matchmaker, created with
+     * {@link MatchmakerEndpoint}.
+     */
+    loadedMatchmakerEndpoints: PluginRegisteredMatchmakerEndpoint[];
+    /**
+     * All protocol messages that were registered into the worker, created with
+     * {@link RegisterMessage}.
+     */
+    loadedRegisteredMessages: Deserializable[];
+    /**
+     * All registered spawn prefabs for the plugin, created with {@link RegisterPrefab}.
+     */
+    registeredPrefabs: RegisteredPrefab[];
+    /**
+     * All registered player roles for the plugin, created with {@link RegisterRole}.
+     */
+    registeredRoles: typeof BaseRole[];
+
+    constructor(public readonly importedPlugin: ImportedPlugin<PluginCtr>, public readonly pluginInstance: PluginInstanceType<PluginCtr>) {
+        this.loadedChatCommands = [];
+        this.loadedCliCommands = [];
+        this.loadedEventListeners = [];
+        this.loadedMessageHandlers = [];
+        this.loadedReactorRpcHandlers = [];
+        this.loadedMatchmakerEndpoints = [];
+        this.loadedRegisteredMessages = [];
+        this.registeredPrefabs = [];
+        this.registeredRoles = [];
+    }
+
+    isWorkerPlugin(): this is LoadedPlugin<typeof WorkerPlugin> {
+        return this.pluginInstance instanceof WorkerPlugin;
+    }
+
+    isRoomPlugin(): this is LoadedPlugin<typeof RoomPlugin> {
+        return this.pluginInstance instanceof RoomPlugin;
+    }
+}
+
+const colours = ["red", "blue", "green", "pink", "orange", "yellow", "black", "white", "purple", "brown", "cyan", "lime", "maroon", "rose", "banana", "gray", "tan", "coral"];
+const roles = ["crewmate", "impostor", "scientist", "engineer", "guardian-angel", "shapeshift"];
 
 /**
  * Service for the worker node to import plugins & load them globally or into
@@ -452,11 +527,11 @@ export class PluginLoader {
 
     protected async visitAndLoadPlugin(
         graph: ImportedPlugin[],
-        visited: Map<ImportedPlugin, WorkerPlugin|RoomPlugin>,
+        visited: Map<ImportedPlugin, WorkerPlugin | RoomPlugin>,
         tree: Set<ImportedPlugin>,
         node: ImportedPlugin,
         room?: Room
-    ): Promise<WorkerPlugin|RoomPlugin> {
+    ): Promise<WorkerPlugin | RoomPlugin> {
         const alreadyLoaded = visited.get(node);
         if (alreadyLoaded)
             return alreadyLoaded;
@@ -558,7 +633,7 @@ export class PluginLoader {
      */
     async loadAllWorkerPlugins() {
         const importedPlugins = [];
-        for (const [ , importedPlugin ] of this.importedPlugins) {
+        for (const [, importedPlugin] of this.importedPlugins) {
             if (!importedPlugin.isWorkerPlugin())
                 continue;
 
@@ -582,7 +657,7 @@ export class PluginLoader {
      */
     async loadAllRoomPlugins(room: Room) {
         const importedPlugins = [];
-        for (const [ , importedPlugin ] of this.importedPlugins) {
+        for (const [, importedPlugin] of this.importedPlugins) {
             if (!importedPlugin.isRoomPlugin())
                 continue;
 
@@ -629,8 +704,8 @@ export class PluginLoader {
      * }x
      * ```
      */
-    async importPlugin(pluginPath: string): Promise<ImportedPlugin|false> {
-        const importedPlugin = await ImportedPlugin.importPlugin(this, pluginPath);        
+    async importPlugin(pluginPath: string): Promise<ImportedPlugin | false> {
+        const importedPlugin = await ImportedPlugin.importPlugin(this, pluginPath);
 
         const ev = await this.worker.emit(
             new WorkerImportPluginEvent(importedPlugin)
@@ -652,15 +727,15 @@ export class PluginLoader {
     private applyChatCommands(room: Room) {
         room.chatCommandHandler.registeredCommands.clear();
         room.chatCommandHandler.registerHelpCommand();
-        for (const [ , loadedPlugin ] of room.workerPlugins) {
-            const pluginChatCommands = getPluginChatCommands(loadedPlugin);
+        for (const [, loadedPlugin] of room.workerPlugins) {
+            const pluginChatCommands = getPluginChatCommands(loadedPlugin.pluginInstance);
             for (const chatCommand of pluginChatCommands) {
                 room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin));
             }
         }
 
-        for (const [ , loadedPlugin ] of room.loadedPlugins) {
-            const pluginChatCommands = getPluginChatCommands(loadedPlugin);
+        for (const [, loadedPlugin] of room.loadedPlugins) {
+            const pluginChatCommands = getPluginChatCommands(loadedPlugin.pluginInstance);
             for (const chatCommand of pluginChatCommands) {
                 room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin));
             }
@@ -679,13 +754,13 @@ export class PluginLoader {
 
     private applyReactorRpcHandlers(room: Room) {
         room.reactorRpcHandlers.clear();
-        for (const [ , loadedPlugin ] of room.workerPlugins) {
+        for (const [, loadedPlugin] of room.workerPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
                 this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
             }
         }
 
-        for (const [ , loadedPlugin ] of room.loadedPlugins) {
+        for (const [, loadedPlugin] of room.loadedPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
                 this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
             }
@@ -694,24 +769,24 @@ export class PluginLoader {
 
     private applyRegisteredPrefabs(room: Room) {
         room.registeredPrefabs = new Map([
-            [SpawnType.SkeldShipStatus, [ SkeldShipStatus ]],
-            [SpawnType.MeetingHud, [ MeetingHud ]],
-            [SpawnType.LobbyBehaviour, [ LobbyBehaviour ]],
-            [SpawnType.GameData, [ GameData, VoteBanSystem ]],
-            [SpawnType.Player, [ PlayerControl, PlayerPhysics, CustomNetworkTransform ]],
-            [SpawnType.MiraShipStatus, [ MiraShipStatus ]],
-            [SpawnType.Polus, [ PolusShipStatus ]],
-            [SpawnType.AprilShipStatus, [ AprilShipStatus ]],
-            [SpawnType.Airship, [ AirshipStatus ]]
+            [SpawnType.SkeldShipStatus, [SkeldShipStatus]],
+            [SpawnType.MeetingHud, [MeetingHud]],
+            [SpawnType.LobbyBehaviour, [LobbyBehaviour]],
+            [SpawnType.GameData, [GameData, VoteBanSystem]],
+            [SpawnType.Player, [PlayerControl, PlayerPhysics, CustomNetworkTransform]],
+            [SpawnType.MiraShipStatus, [MiraShipStatus]],
+            [SpawnType.Polus, [PolusShipStatus]],
+            [SpawnType.AprilShipStatus, [AprilShipStatus]],
+            [SpawnType.Airship, [AirshipStatus]]
         ]);
 
-        for (const [ , loadedPlugin ] of room.workerPlugins) {
+        for (const [, loadedPlugin] of room.workerPlugins) {
             for (const registeredPrefab of loadedPlugin.registeredPrefabs) {
                 room.registerPrefab(registeredPrefab.spawnType, registeredPrefab.components);
             }
         }
 
-        for (const [ , loadedPlugin ] of room.loadedPlugins) {
+        for (const [, loadedPlugin] of room.loadedPlugins) {
             for (const registeredPrefab of loadedPlugin.registeredPrefabs) {
                 room.registerPrefab(registeredPrefab.spawnType, registeredPrefab.components);
             }
@@ -720,21 +795,21 @@ export class PluginLoader {
 
     private applyRegisteredRoles(room: Room) {
         room.registeredRoles = new Map([
-            [ RoleType.Crewmate, CrewmateRole ],
-            [ RoleType.Engineer, EngineerRole ],
-            [ RoleType.GuardianAngel, GuardianAngelRole ],
-            [ RoleType.Impostor, ImpostorRole ],
-            [ RoleType.Scientist, ScientistRole ],
-            [ RoleType.Shapeshifter, ShapeshifterRole ]
+            [RoleType.Crewmate, CrewmateRole],
+            [RoleType.Engineer, EngineerRole],
+            [RoleType.GuardianAngel, GuardianAngelRole],
+            [RoleType.Impostor, ImpostorRole],
+            [RoleType.Scientist, ScientistRole],
+            [RoleType.Shapeshifter, ShapeshifterRole]
         ]);
 
-        for (const [ , loadedPlugin ] of room.workerPlugins) {
+        for (const [, loadedPlugin] of room.workerPlugins) {
             for (const registeredRole of loadedPlugin.registeredRoles) {
                 room.registerRole(registeredRole);
             }
         }
 
-        for (const [ , loadedPlugin ] of room.loadedPlugins) {
+        for (const [, loadedPlugin] of room.loadedPlugins) {
             for (const registeredRole of loadedPlugin.registeredRoles) {
                 room.registerRole(registeredRole);
             }
@@ -747,8 +822,8 @@ export class PluginLoader {
         this.worker.decoder.listeners = listeners;
         this.worker.registerMessages();
 
-        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
-            for (let i = 0; i <  loadedPlugin.loadedRegisteredMessages.length; i++) {
+        for (const [, loadedPlugin] of this.worker.loadedPlugins) {
+            for (let i = 0; i < loadedPlugin.loadedRegisteredMessages.length; i++) {
                 const messageClass = loadedPlugin.loadedRegisteredMessages[i];
                 this.worker.decoder.register(messageClass);
             }
@@ -758,8 +833,8 @@ export class PluginLoader {
     private applyMessageHandlers() {
         this.worker.decoder.listeners.clear();
         this.worker.registerPacketHandlers();
-        
-        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+
+        for (const [, loadedPlugin] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
                 const { messageClass: messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
                 const method = handler.bind(loadedPlugin);
@@ -806,7 +881,7 @@ export class PluginLoader {
      * await this.worker.pluginLoader.loadPlugin("hbplugin-what-the-hell"); // !! Plugin with ID 'hbplugin-what-the-hell' not imported
      * ```
      */
-    async loadPlugin(pluginCtr: string|ImportedPlugin<typeof WorkerPlugin>): Promise<WorkerPlugin>;
+    async loadPlugin(pluginCtr: string | ImportedPlugin<typeof WorkerPlugin>): Promise<WorkerPlugin>;
     /**
      * Load a room plugin into a room, does not regard {@link PluginLoader.isEnabled},
      * waits for {@link Plugin.onPluginLoad} to be finish.
@@ -833,8 +908,8 @@ export class PluginLoader {
      * await this.worker.pluginLoader.loadPlugin("hbplugin-what-the-hell", this.room); // !! Plugin with ID 'hbplugin-what-the-hell' not imported
      * ```
      */
-    async loadPlugin(pluginCtr: string|ImportedPlugin<typeof RoomPlugin>, room?: Room): Promise<RoomPlugin>;
-    async loadPlugin(importedPlugin: string|ImportedPlugin, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
+    async loadPlugin(pluginCtr: string | ImportedPlugin<typeof RoomPlugin>, room?: Room): Promise<RoomPlugin>;
+    async loadPlugin(importedPlugin: string | ImportedPlugin, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
         if (typeof importedPlugin === "string") {
             const _importedPlugin = this.importedPlugins.get(importedPlugin);
 
@@ -865,18 +940,20 @@ export class PluginLoader {
                 : undefined;
 
         if (!initPlugin)
-            throw new Error("Imported plugin was neither a room plugin nor a worker plugin")
+            throw new Error("Imported plugin was neither a room plugin nor a worker plugin");
+        
+        const loadedPlugin = new LoadedPlugin(importedPlugin, initPlugin);
 
         const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
         const registeredPrefabs = getPluginRegisteredPrefabs(importedPlugin.pluginCtr);
         const registeredRoles = getPluginRegisteredRoles(importedPlugin.pluginCtr);
 
-        initPlugin.loadedReactorRpcHandlers = [...reactorRpcHandlers];
-        initPlugin.registeredPrefabs = [...registeredPrefabs];
-        initPlugin.registeredRoles = [...registeredRoles];
+        loadedPlugin.loadedReactorRpcHandlers = [...reactorRpcHandlers];
+        loadedPlugin.registeredPrefabs = [...registeredPrefabs];
+        loadedPlugin.registeredRoles = [...registeredRoles];
 
-        if (importedPlugin.isRoomPlugin() && room) {
-            room.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, initPlugin as RoomPlugin);
+        if (loadedPlugin.isRoomPlugin() && room) {
+            room.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, loadedPlugin);
             this.applyChatCommands(room);
             this.applyReactorRpcHandlers(room);
             this.applyRegisteredPrefabs(room);
@@ -885,7 +962,7 @@ export class PluginLoader {
             room.logger.info("Loaded plugin: %s", initPlugin);
         }
 
-        if (importedPlugin.isWorkerPlugin()) {
+        if (loadedPlugin.isWorkerPlugin()) {
             const cliCommands = getPluginCliCommands(initPlugin);
             const messageHandlers = getPluginMessageHandlers(initPlugin);
             const registeredMatchmakerEndpoints = getPluginMatchmakerEndpoints(initPlugin);
@@ -904,18 +981,18 @@ export class PluginLoader {
                 const fn = commandInfo.handler.bind(initPlugin);
                 command.action(fn);
 
-                initPlugin.loadedCliCommands.push(command);
+                loadedPlugin.loadedCliCommands.push(command);
             }
 
-            initPlugin.loadedMessageHandlers = [...messageHandlers];
-            initPlugin.loadedMatchmakerEndpoints = [...registeredMatchmakerEndpoints];
-            initPlugin.loadedRegisteredMessages = [...registeredMessages];
+            loadedPlugin.loadedMessageHandlers = [...messageHandlers];
+            loadedPlugin.loadedMatchmakerEndpoints = [...registeredMatchmakerEndpoints];
+            loadedPlugin.loadedRegisteredMessages = [...registeredMessages];
 
-            this.worker.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, initPlugin as WorkerPlugin);
+            this.worker.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, loadedPlugin);
 
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
-            if (initPlugin.loadedMatchmakerEndpoints.length && this.worker.matchmaker) {
+            if (loadedPlugin.loadedMatchmakerEndpoints.length && this.worker.matchmaker) {
                 this.worker.matchmaker.restart();
             }
 
@@ -931,7 +1008,7 @@ export class PluginLoader {
             } else {
                 this.worker.on(eventListenerInfo.eventName, fn);
             }
-            initPlugin.loadedEventListeners.push({
+            loadedPlugin.loadedEventListeners.push({
                 eventName: eventListenerInfo.eventName,
                 handler: fn
             });
@@ -972,7 +1049,7 @@ export class PluginLoader {
      * this.worker.pluginLoader.unloadPlugin("hbplugin-what-the-hell"); // !! Plugin with id 'hbplugin-what-the-hell' not loaded
      * ```
      */
-    unloadPlugin(pluginCtr: string|WorkerPlugin|typeof WorkerPlugin): void;
+    unloadPlugin(pluginCtr: string | WorkerPlugin | typeof WorkerPlugin): void;
     /**
      * Unload a room plugin from a room, calls but doesn't wait for
      * {@link Plugin.onPluginUnload} to finish.
@@ -989,8 +1066,8 @@ export class PluginLoader {
      * this.worker.pluginLoader.unloadPlugin("hbplugin-what-the-hell"); // !! Plugin with id 'hbplugin-what-the-hell' not loaded
      * ```
      */
-    unloadPlugin(pluginCtr: string|RoomPlugin|typeof RoomPlugin, room: Room): void;
-    unloadPlugin(pluginCtr: string|RoomPlugin|typeof RoomPlugin|WorkerPlugin|typeof WorkerPlugin, room?: Room) {
+    unloadPlugin(pluginCtr: string | RoomPlugin | typeof RoomPlugin, room: Room): void;
+    unloadPlugin(pluginCtr: string | RoomPlugin | typeof RoomPlugin | WorkerPlugin | typeof WorkerPlugin, room?: Room) {
         const pluginId = typeof pluginCtr === "string"
             ? pluginCtr
             : pluginCtr.meta.id;
@@ -1002,14 +1079,14 @@ export class PluginLoader {
         if (!loadedPlugin)
             throw new Error("Plugin with id '" + pluginId + "' not loaded");
 
-        loadedPlugin.onPluginUnload();
+        loadedPlugin.pluginInstance.onPluginUnload();
 
         if (room) {
             room.loadedPlugins.delete(pluginId);
             this.applyChatCommands(room);
             this.applyRegisteredPrefabs(room);
             this.applyRegisteredRoles(room);
-    
+
             room.logger.info("Unloaded plugin: %s", loadedPlugin);
         } else {
             this.worker.loadedPlugins.delete(pluginId);

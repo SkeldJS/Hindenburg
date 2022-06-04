@@ -30,12 +30,6 @@ export function HindenburgPlugin(id: string, version?: string, loadOrder?: "firs
 
         const hookedClass = class extends constructor {
             static meta = metadata;
-
-            constructor(...args: any) {
-                super(...args);
-
-                this.baseDirectory = Reflect.getMetadata(hindenburgPluginDirectory, hookedClass);
-            }
         };
 
         return hookedClass;

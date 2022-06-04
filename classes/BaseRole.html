@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PluginRegisteredChatCommandInfo | @skeldjs/hindenburg</title>
+	<title>BaseRole | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,21 +57,52 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="PluginRegisteredChatCommandInfo.html">PluginRegisteredChatCommandInfo</a>
+					<a href="BaseRole.html">BaseRole</a>
 				</li>
 			</ul>
-			<h1>Interface PluginRegisteredChatCommandInfo</h1>
+			<h1>Class BaseRole&lt;RoomType&gt;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>RoomType<span class="tsd-signature-symbol">: </span><a href="Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a></h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">PluginRegisteredChatCommandInfo</span>
+						<span class="target">BaseRole</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="CrewmateRole.html" class="tsd-signature-type" data-tsd-kind="Class">CrewmateRole</a>
+							</li>
+							<li>
+								<a href="EngineerRole.html" class="tsd-signature-type" data-tsd-kind="Class">EngineerRole</a>
+							</li>
+							<li>
+								<a href="GuardianAngelRole.html" class="tsd-signature-type" data-tsd-kind="Class">GuardianAngelRole</a>
+							</li>
+							<li>
+								<a href="ImpostorRole.html" class="tsd-signature-type" data-tsd-kind="Class">ImpostorRole</a>
+							</li>
+							<li>
+								<a href="ScientistRole.html" class="tsd-signature-type" data-tsd-kind="Class">ScientistRole</a>
+							</li>
+							<li>
+								<a href="ShapeshifterRole.html" class="tsd-signature-type" data-tsd-kind="Class">ShapeshifterRole</a>
+							</li>
+							<li>
+								<a href="SomeUnknownRole.html" class="tsd-signature-type" data-tsd-kind="Class">SomeUnknownRole</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -79,59 +110,101 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginRegisteredChatCommandInfo.html#accessCheck" class="tsd-kind-icon">access<wbr>Check</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginRegisteredChatCommandInfo.html#description" class="tsd-kind-icon">description</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginRegisteredChatCommandInfo.html#handler" class="tsd-kind-icon">handler</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="PluginRegisteredChatCommandInfo.html#usage" class="tsd-kind-icon">usage</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="BaseRole.html#roleMetadata" class="tsd-kind-icon">role<wbr>Metadata</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="BaseRole.html#player" class="tsd-kind-icon">player</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external"><a href="BaseRole.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="BaseRole.html#onInitialize" class="tsd-kind-icon">on<wbr>Initialize</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="accessCheck" class="tsd-anchor"></a>
-					<h3>access<wbr>Check</h3>
-					<div class="tsd-signature tsd-kind-icon">access<wbr>Check<span class="tsd-signature-symbol">:</span> <a href="../modules.html#AccessCheckFn" class="tsd-signature-type" data-tsd-kind="Type alias">AccessCheckFn</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
+					<a name="roleMetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> role<wbr>Metadata</h3>
+					<div class="tsd-signature tsd-kind-icon">role<wbr>Metadata<span class="tsd-signature-symbol">:</span> <a href="../interfaces/RoleMetadata.html" class="tsd-signature-type" data-tsd-kind="Interface">RoleMetadata</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/1c37016/src/api/hooks/ChatCommand.ts#L11">src/api/hooks/ChatCommand.ts:11</a></li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/roles/BaseRole.d.ts:11</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="description" class="tsd-anchor"></a>
-					<h3>description</h3>
-					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="player" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> player</h3>
+					<div class="tsd-signature tsd-kind-icon">player<span class="tsd-signature-symbol">:</span> <a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/1c37016/src/api/hooks/ChatCommand.ts#L10">src/api/hooks/ChatCommand.ts:10</a></li>
+							<li>Defined in node_modules/@skeldjs/core/dist/lib/roles/BaseRole.d.ts:10</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="handler" class="tsd-anchor"></a>
-					<h3>handler</h3>
-					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="../modules.html#ChatCommandCallback" class="tsd-signature-type" data-tsd-kind="Type alias">ChatCommandCallback</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/1c37016/src/api/hooks/ChatCommand.ts#L12">src/api/hooks/ChatCommand.ts:12</a></li>
-						</ul>
-					</aside>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Base<wbr>Role&lt;RoomType&gt;<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="BaseRole.html" class="tsd-signature-type" data-tsd-kind="Class">BaseRole</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/roles/BaseRole.d.ts:12</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>RoomType<span class="tsd-signature-symbol">: </span><a href="Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>player: <a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="BaseRole.html" class="tsd-signature-type" data-tsd-kind="Class">BaseRole</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RoomType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="usage" class="tsd-anchor"></a>
-					<h3>usage</h3>
-					<div class="tsd-signature tsd-kind-icon">usage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/1c37016/src/api/hooks/ChatCommand.ts#L9">src/api/hooks/ChatCommand.ts:9</a></li>
-						</ul>
-					</aside>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="onInitialize" class="tsd-anchor"></a>
+					<h3>on<wbr>Initialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">on<wbr>Initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/roles/BaseRole.d.ts:13</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -219,20 +292,20 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="PluginRegisteredChatCommandInfo.html" class="tsd-kind-icon">Plugin<wbr>Registered<wbr>Chat<wbr>Command<wbr>Info</a>
+					<li class="current tsd-kind-class tsd-has-type-parameter tsd-is-external">
+						<a href="BaseRole.html" class="tsd-kind-icon">Base<wbr>Role</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="PluginRegisteredChatCommandInfo.html#accessCheck" class="tsd-kind-icon">access<wbr>Check</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
+								<a href="BaseRole.html#roleMetadata" class="tsd-kind-icon">role<wbr>Metadata</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="PluginRegisteredChatCommandInfo.html#description" class="tsd-kind-icon">description</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+								<a href="BaseRole.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="PluginRegisteredChatCommandInfo.html#handler" class="tsd-kind-icon">handler</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="BaseRole.html#onInitialize" class="tsd-kind-icon">on<wbr>Initialize</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="PluginRegisteredChatCommandInfo.html#usage" class="tsd-kind-icon">usage</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="BaseRole.html#player" class="tsd-kind-icon">player</a>
 							</li>
 						</ul>
 					</li>

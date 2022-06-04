@@ -1420,10 +1420,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     (typeof newConfig.matchmaker === "object" && (typeof this.config.matchmaker === "boolean" ? (newConfig.matchmaker.port !== 80) : (newConfig.matchmaker.port !== this.config.matchmaker.port)))
                 ) {
                     this.config.matchmaker = newConfig.matchmaker;
-                    this.matchmaker.destroy();
-                    this.matchmaker = undefined;
-                    this.matchmaker = new Matchmaker(this);
-                    this.matchmaker.listen();
+                    this.matchmaker.restart();
+                    this.pluginLoader
                 }
             } else {
                 this.config.matchmaker = newConfig.matchmaker;

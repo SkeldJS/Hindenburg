@@ -46,7 +46,8 @@ import {
     getPluginRegisteredRoles,
     WorkerImportPluginEvent,
     WorkerLoadPluginEvent,
-    getPluginRegisteredPrefabs
+    getPluginRegisteredPrefabs,
+    getPluginHttpEndpoints
 } from "../api";
 
 import { recursiveClone } from "../util/recursiveClone";
@@ -858,9 +859,9 @@ export class PluginLoader {
         }
 
         const initPlugin = importedPlugin.isWorkerPlugin()
-            ? importedPlugin.pluginCtr.createInstance(importedPlugin, this.worker, defaultConfig)
+            ? importedPlugin.pluginCtr.createInstance(this.worker, defaultConfig)
             : importedPlugin.isRoomPlugin()
-                ? importedPlugin.pluginCtr.createInstance(importedPlugin, room!, defaultConfig)
+                ? importedPlugin.pluginCtr.createInstance(room!, defaultConfig)
                 : undefined;
 
         if (!initPlugin)
@@ -887,6 +888,7 @@ export class PluginLoader {
         if (importedPlugin.isWorkerPlugin()) {
             const cliCommands = getPluginCliCommands(initPlugin);
             const messageHandlers = getPluginMessageHandlers(initPlugin);
+            const registeredHttpEndpoints = getPluginHttpEndpoints(initPlugin);
             const registeredMessages = getPluginRegisteredMessages(importedPlugin.pluginCtr);
 
             for (const commandInfo of cliCommands) {
@@ -905,20 +907,17 @@ export class PluginLoader {
                 initPlugin.loadedCliCommands.push(command);
             }
 
-            for (const messageHandlerInfo of messageHandlers) {
-                initPlugin.loadedMessageHandlers.push({
-                    messageCtr: messageHandlerInfo.messageClass,
-                    options: messageHandlerInfo.options,
-                    handler: messageHandlerInfo.handler.bind(initPlugin)
-                });
-            }
-
+            initPlugin.loadedMessageHandlers = [...messageHandlers];
+            initPlugin.loadedHttpEndpoints = [...registeredHttpEndpoints];
             initPlugin.loadedRegisteredMessages = [...registeredMessages];
 
             this.worker.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, initPlugin as WorkerPlugin);
 
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
+            if (initPlugin.loadedHttpEndpoints.length && this.worker.matchmaker) {
+                this.worker.matchmaker.restart();
+            }
 
             this.worker.logger.info("Loaded plugin globally: %s", initPlugin);
         }
@@ -1010,11 +1009,15 @@ export class PluginLoader {
             this.applyChatCommands(room);
             this.applyRegisteredPrefabs(room);
             this.applyRegisteredRoles(room);
+    
             room.logger.info("Unloaded plugin: %s", loadedPlugin);
         } else {
             this.worker.loadedPlugins.delete(pluginId);
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
+            if (loadedPlugin.loadedHttpEndpoints.length && this.worker.matchmaker) {
+                this.worker.matchmaker.restart();
+            }
             this.worker.logger.info("Unloaded plugin globally: %s", loadedPlugin);
         }
 

@@ -66,20 +66,17 @@ export class Matchmaker {
         return typeof this.worker.config.matchmaker === "boolean" ? 80 : this.worker.config.matchmaker.port;
     }
 
-    listen() {
-        if (this.httpServer)
-            throw new Error("Http server already running; cannot listen on socket");
+    protected createHttpServer() {
+        const httpServer = polka();
 
-        this.httpServer = polka();
-
-        this.httpServer.use(json() as any);
-        this.httpServer.use((req, res, next) => {
+        httpServer.use(json() as any);
+        httpServer.use((req, res, next) => {
             res.status = res.sendStatus = x => (res.statusCode = x, res);
             res.json = (body: any) => (res.setHeader("Content-Type", "application/json"), res.end(JSON.stringify(body)), res);
             next();
         });
 
-        this.httpServer.post("/api/user", (req, res) => {
+        httpServer.post("/api/user", (req, res) => {
             if (req.headers["content-type"] !== "application/json")
                 return res.status(400).end("");
 
@@ -105,7 +102,7 @@ export class Matchmaker {
             res.status(200).end(mmToken);
         });
 
-        this.httpServer.post("/api/games", (req, res) => {
+        httpServer.post("/api/games", (req, res) => {
             if (!req.query.gameId)
                 return res.status(400).end("");
 
@@ -117,7 +114,7 @@ export class Matchmaker {
             });
         });
 
-        this.httpServer.put("/api/games", (req, res) => {
+        httpServer.put("/api/games", (req, res) => {
             const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
 
             res.status(200).json({
@@ -126,7 +123,7 @@ export class Matchmaker {
             });
         });
 
-        this.httpServer.get("/api/games", (req, res) => {
+        httpServer.get("/api/games", (req, res) => {
             if (!req.query.mapId || !req.query.lang || !req.query.quickChat || !req.query.platformFlags || !req.query.numImpostors)
                 return res.status(400).end("");
 
@@ -176,6 +173,22 @@ export class Matchmaker {
             res.status(200).json(returnList);
         });
 
+        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+            for (let i = 0; i < loadedPlugin.loadedHttpEndpoints.length; i++) {
+                const { method, route, body } = loadedPlugin.loadedHttpEndpoints[i];
+
+                httpServer[method](route, body.bind(loadedPlugin) as any);
+            }
+        }
+
+        return httpServer;
+    }
+
+    listen() {
+        if (this.httpServer)
+            throw new Error("Http server already running; cannot listen on socket");
+
+        this.httpServer = this.createHttpServer();
         this.httpServer.listen(this.port);
         this.logger.info("Listening on *:%s", this.port);
     }
@@ -185,5 +198,14 @@ export class Matchmaker {
             throw new Error("No http server running; cannot destroy matchmaker");
 
         this.httpServer.server.close();
+        this.httpServer = undefined;
+    }
+
+    restart() {
+        if (this.httpServer)
+            this.destroy();
+
+        this.httpServer = this.createHttpServer();
+        this.httpServer.listen(this.port);
     }
 }

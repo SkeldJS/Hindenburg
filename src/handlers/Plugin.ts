@@ -6,10 +6,15 @@ import { Deserializable, RpcMessage } from "@skeldjs/protocol";
 
 import { Logger } from "../logger";
 import { Room, Worker } from "../worker";
-import { BaseReactorRpcMessage, MessageHandlerOptions, RegisteredPrefab } from "../api";
+import {
+    BaseReactorRpcMessage,
+    PluginRegisteredMessageHandlerInfo,
+    PluginRegisteredHttpEndpoint,
+    RegisteredPrefab
+} from "../api";
 import { ReactorRpcMessage } from "../packets";
 import { fmtCode } from "../util/fmtCode";
-import { ImportedPlugin, PluginPackageJson } from "./PluginLoader";
+import { PluginPackageJson } from "./PluginLoader";
 
 /**
  * Metadata about a plugin, created with {@link HindenburgPlugin}.
@@ -155,20 +160,23 @@ export abstract class Plugin {
         handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
     }[];
     /**
+     * All registered http endpoints to be hosted on the http matchmaker, created with
+     * {@link HttpEndpoint}.
+     */
+    loadedHttpEndpoints: PluginRegisteredHttpEndpoint[];
+    /**
      * All protocol messages that were registered into the worker, created with
      * {@link RegisterMessage}.
      */
     loadedRegisteredMessages: Deserializable[];
-
     /**
      * All registered spawn prefabs for the plugin, created with {@link RegisterPrefab}.
      */
     registeredPrefabs: RegisteredPrefab[];
-    
     /**
      * All registered player roles for the plugin, created with {@link RegisterRole}.
      */
-     registeredRoles: typeof BaseRole[];
+    registeredRoles: typeof BaseRole[];
 
     protected constructor(
         /**
@@ -186,6 +194,7 @@ export abstract class Plugin {
         this.loadedEventListeners = [];
         this.loadedMessageHandlers = [];
         this.loadedReactorRpcHandlers = [];
+        this.loadedHttpEndpoints = [];
         this.loadedRegisteredMessages = [];
         this.registeredPrefabs = [];
         this.registeredRoles = [];
@@ -321,7 +330,7 @@ export class RoomPlugin extends Plugin {
      * }
      * ```
      */
-    constructor(
+    protected constructor(
         /**
          * The room that this plugin is loaded into.
          */
@@ -364,7 +373,7 @@ export class WorkerPlugin extends Plugin {
      * }
      * ```
      */
-    constructor(
+    protected constructor(
         /**
          * The worker that this plugin is loaded into.
          */

@@ -1,5 +1,5 @@
-(async () => {
-    const { default: setupScript } = await import("./_setup");
+import setupScript from "./_setup";
 
+(async () => {
     await setupScript(false);
 })();

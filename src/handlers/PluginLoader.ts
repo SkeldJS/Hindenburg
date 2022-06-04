@@ -93,7 +93,11 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlu
             throw new Error("Expected an absolute path to a plugin but got a relative one.");
 
         const packageJson = await this.getPluginPackageJson(pluginPath);
-        if (packageJson && packageJson.engines && packageJson.engines.hindenburg)
+
+        if (!packageJson)
+            throw new Error("No package.json for plugin found");
+
+        if (packageJson.engines && packageJson.engines.hindenburg)
             if (!minimatch(Worker.serverVersion, packageJson.engines.hindenburg))
                 throw new Error("Built for an incompatible version of hindenburg");
 
@@ -106,6 +110,9 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin|typeof WorkerPlu
         
         if (!PluginLoader.isHindenburgPlugin(pluginCtr))
             throw new Error("The imported module wasn't a Hindenburg plugin");
+
+        pluginCtr.baseDirectory = pluginPath;
+        pluginCtr.packageJson = packageJson;
         
         const packageJsonMeta = {
             id: packageJson?.name || pluginLoader.generateRandomPluginIdSafe(),

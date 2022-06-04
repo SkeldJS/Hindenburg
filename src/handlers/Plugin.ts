@@ -97,6 +97,16 @@ export abstract class Plugin {
     static meta: PluginMetadata;
 
     /**
+     * The base directory of the plugin.
+     */
+    static baseDirectory: string;
+
+    /**
+     * The package.json of this plugin.
+     */
+    static packageJson: PluginPackageJson;
+
+    /**
      * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
      */
     meta!: PluginMetadata;
@@ -168,6 +178,8 @@ export abstract class Plugin {
         public config: any
     ) {
         this.meta = (this["constructor"] as typeof Plugin).meta; // typescript hax
+        this.baseDirectory = (this["constructor"] as typeof Plugin).baseDirectory;
+        this.packageJson = (this["constructor"] as typeof Plugin).packageJson;
 
         this.loadedChatCommands = [];
         this.loadedCliCommands = [];
@@ -293,14 +305,10 @@ export class RoomPlugin extends Plugin {
     /**
      * Create a new instance of this plugin.
      * @param room The room that this plugin is for.
-     * @param importedPlugin The constructor plugin as imported in memory, with relevant file and metadata associations.
      * @param config Configuration for the plugin.
      */
-     static createInstance(importedPlugin: ImportedPlugin<typeof RoomPlugin>, room: Room, config: any) {
+    static createInstance(room: Room, config: any) {
         const plugin = new this(room, config);
-        plugin.meta = importedPlugin.pluginCtr.meta;
-        plugin.baseDirectory = importedPlugin.localDirectory;
-        plugin.packageJson = importedPlugin.packageJson;
         return plugin;
     }
 
@@ -339,15 +347,11 @@ export class RoomPlugin extends Plugin {
 export class WorkerPlugin extends Plugin {
     /**
      * Create a new instance of this plugin.
-     * @param worker The Hindenbugr worker that this plugin is for.
-     * @param importedPlugin The constructor plugin as imported in memory, with relevant file and metadata associations.
+     * @param worker The Hindenburg worker that this plugin is for.
      * @param config Configuration for the plugin.
      */
-     static createInstance(importedPlugin: ImportedPlugin<typeof WorkerPlugin>, worker: Worker, config: any) {
+     static createInstance(worker: Worker, config: any) {
         const plugin = new this(worker, config);
-        plugin.meta = importedPlugin.pluginCtr.meta;
-        plugin.baseDirectory = importedPlugin.localDirectory;
-        plugin.packageJson = importedPlugin.packageJson;
         return plugin;
     }
 

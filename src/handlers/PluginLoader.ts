@@ -11,14 +11,21 @@ import minimatch from "minimatch";
 import {
     AirshipStatus,
     AprilShipStatus,
+    CrewmateRole,
     CustomNetworkTransform,
+    EngineerRole,
     GameData,
+    GuardianAngelRole,
+    ImpostorRole,
     LobbyBehaviour,
     MeetingHud,
     MiraShipStatus,
     PlayerControl,
     PlayerPhysics,
     PolusShipStatus,
+    RoleType,
+    ScientistRole,
+    ShapeshifterRole,
     SkeldShipStatus,
     SpawnType,
     VoteBanSystem
@@ -36,9 +43,10 @@ import {
     isHindenburgPlugin,
     BaseReactorRpcMessage,
     shouldPreventLoading,
-    getPluginRegisteredPrefabs,
+    getPluginRegisteredRoles,
     WorkerImportPluginEvent,
-    WorkerLoadPluginEvent
+    WorkerLoadPluginEvent,
+    getPluginRegisteredPrefabs
 } from "../api";
 
 import { recursiveClone } from "../util/recursiveClone";
@@ -702,6 +710,29 @@ export class PluginLoader {
         }
     }
 
+    private applyRegisteredRoles(room: Room) {
+        room.registeredRoles = new Map([
+            [ RoleType.Crewmate, CrewmateRole ],
+            [ RoleType.Engineer, EngineerRole ],
+            [ RoleType.GuardianAngel, GuardianAngelRole ],
+            [ RoleType.Impostor, ImpostorRole ],
+            [ RoleType.Scientist, ScientistRole ],
+            [ RoleType.Shapeshifter, ShapeshifterRole ]
+        ]);
+
+        for (const [ , loadedPlugin ] of room.workerPlugins) {
+            for (const registeredRole of loadedPlugin.registeredRoles) {
+                room.registerRole(registeredRole);
+            }
+        }
+
+        for (const [ , loadedPlugin ] of room.loadedPlugins) {
+            for (const registeredRole of loadedPlugin.registeredRoles) {
+                room.registerRole(registeredRole);
+            }
+        }
+    }
+
     private applyRegisteredMessages() {
         const listeners = new Map([...this.worker.decoder.listeners]);
         this.worker.decoder.reset();
@@ -829,15 +860,18 @@ export class PluginLoader {
 
         const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
         const registeredPrefabs = getPluginRegisteredPrefabs(importedPlugin.pluginCtr);
+        const registeredRoles = getPluginRegisteredRoles(importedPlugin.pluginCtr);
 
         initPlugin.loadedReactorRpcHandlers = [...reactorRpcHandlers];
         initPlugin.registeredPrefabs = [...registeredPrefabs];
+        initPlugin.registeredRoles = [...registeredRoles];
 
         if (importedPlugin.isRoomPlugin() && room) {
             room.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, initPlugin as RoomPlugin);
             this.applyChatCommands(room);
             this.applyReactorRpcHandlers(room);
             this.applyRegisteredPrefabs(room);
+            this.applyRegisteredRoles(room);
 
             room.logger.info("Loaded plugin: %s", initPlugin);
         }

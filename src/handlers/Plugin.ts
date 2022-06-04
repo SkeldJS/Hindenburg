@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import vorpal from "vorpal";
 
-import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
+import { BaseRole, Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
 import { Deserializable, RpcMessage } from "@skeldjs/protocol";
 
 import { Logger } from "../logger";
@@ -158,11 +158,11 @@ export abstract class Plugin {
      * All registered spawn prefabs for the plugin, created with {@link RegisterPrefab}.
      */
     registeredPrefabs: RegisteredPrefab[];
-
+    
     /**
-     * 
+     * All registered player roles for the plugin, created with {@link RegisterRole}.
      */
-    dependencies: Record<string, Plugin>;
+     registeredRoles: typeof BaseRole[];
 
     protected constructor(
         /**
@@ -180,8 +180,7 @@ export abstract class Plugin {
         this.loadedReactorRpcHandlers = [];
         this.loadedRegisteredMessages = [];
         this.registeredPrefabs = [];
-
-        this.dependencies = {};
+        this.registeredRoles = [];
     }
 
     static [Symbol.for("nodejs.util.inspect.custom")]() {

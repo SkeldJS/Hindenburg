@@ -135,11 +135,7 @@ export abstract class Plugin {
      * All protocol message handlers that were loaded into the worker, created with
      * {@link MessageHandler}.
      */
-    loadedMessageHandlers: {
-        messageCtr: Deserializable;
-        options: MessageHandlerOptions;
-        handler: (...args: any) => any;
-    }[];
+    loadedMessageHandlers: PluginRegisteredMessageHandlerInfo[];
     /**
      * All reactor rpc message handlers that were loaded into the worker, created with
      * {@link ReactorRpcHandler}.

@@ -1,7 +1,6 @@
-import { Deserializable, GetSerialized } from "@skeldjs/protocol";
+import { Deserializable, GetSerialized, Serializable } from "@skeldjs/protocol";
 import { PacketContext } from "../../worker";
 import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers";
-import { Serializable } from "child_process";
 
 const hindenburgMessageHandlersKey = Symbol("hindenburg:message");
 
@@ -9,21 +8,21 @@ export interface MessageHandlerOptions {
     override: boolean;
 }
 
-export type MessageHandlerCallback<Packet extends Serializable> = (
-    message: Packet,
+export type MessageHandlerCallback<Message extends Serializable> = (
+    message: Message,
     ctx: PacketContext
 ) => any;
 
-export type MessageHandlerCallbackOriginalListeners<T extends Serializable> = (
-    message: T,
+export type MessageHandlerCallbackOriginalListeners<Message extends Serializable> = (
+    message: Message,
     ctx: PacketContext,
-    originalListeners: MessageHandlerCallback<T>[]
+    originalListeners: MessageHandlerCallback<Message>[]
 ) => any;
 
 export interface PluginRegisteredMessageHandlerInfo {
     messageClass: Deserializable;
     options: MessageHandlerOptions;
-    handler: MessageHandlerCallback<Deserializable>;
+    handler: MessageHandlerCallbackOriginalListeners<Serializable>;
 }
 
 export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<{ override: false }>):

@@ -753,21 +753,22 @@ export class PluginLoader {
         
         for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
-                const { messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
+                const { messageClass: messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
+                const method = handler.bind(loadedPlugin);
                 if (options.override) {
                     const key = `${messageCtr.messageType}:${messageCtr.messageTag}` as const;
                     const listeners = this.worker.decoder.listeners.get(key) || [];
                     this.worker.decoder.listeners.delete(key);
 
                     this.worker.decoder.on(messageCtr, (message, direction, ctx) => {
-                        handler(message, ctx, listeners.map(x => {
+                        method(message, ctx, listeners.map(x => {
                             return (message: Serializable, ctx: PacketContext) => x(message, MessageDirection.Serverbound, ctx);
                         }));
                     });
                     continue;
                 }
 
-                this.worker.decoder.on(messageCtr, (message, direction, ctx) => handler(message, ctx));
+                this.worker.decoder.on(messageCtr, (message, direction, ctx) => (method as any)(message, ctx));
             }
         }
     }

@@ -9,7 +9,7 @@ import { Room, Worker } from "../worker";
 import {
     BaseReactorRpcMessage,
     PluginRegisteredMessageHandlerInfo,
-    PluginRegisteredHttpEndpoint,
+    PluginRegisteredMatchmakerEndpoint,
     RegisteredPrefab
 } from "../api";
 import { ReactorRpcMessage } from "../packets";
@@ -161,9 +161,9 @@ export abstract class Plugin {
     }[];
     /**
      * All registered http endpoints to be hosted on the http matchmaker, created with
-     * {@link HttpEndpoint}.
+     * {@link MatchmakerEndpoint}.
      */
-    loadedHttpEndpoints: PluginRegisteredHttpEndpoint[];
+    loadedMatchmakerEndpoints: PluginRegisteredMatchmakerEndpoint[];
     /**
      * All protocol messages that were registered into the worker, created with
      * {@link RegisterMessage}.
@@ -194,7 +194,7 @@ export abstract class Plugin {
         this.loadedEventListeners = [];
         this.loadedMessageHandlers = [];
         this.loadedReactorRpcHandlers = [];
-        this.loadedHttpEndpoints = [];
+        this.loadedMatchmakerEndpoints = [];
         this.loadedRegisteredMessages = [];
         this.registeredPrefabs = [];
         this.registeredRoles = [];

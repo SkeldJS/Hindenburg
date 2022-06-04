@@ -47,7 +47,7 @@ import {
     WorkerImportPluginEvent,
     WorkerLoadPluginEvent,
     getPluginRegisteredPrefabs,
-    getPluginHttpEndpoints
+    getPluginMatchmakerEndpoints
 } from "../api";
 
 import { recursiveClone } from "../util/recursiveClone";
@@ -888,7 +888,7 @@ export class PluginLoader {
         if (importedPlugin.isWorkerPlugin()) {
             const cliCommands = getPluginCliCommands(initPlugin);
             const messageHandlers = getPluginMessageHandlers(initPlugin);
-            const registeredHttpEndpoints = getPluginHttpEndpoints(initPlugin);
+            const registeredMatchmakerEndpoints = getPluginMatchmakerEndpoints(initPlugin);
             const registeredMessages = getPluginRegisteredMessages(importedPlugin.pluginCtr);
 
             for (const commandInfo of cliCommands) {
@@ -908,14 +908,14 @@ export class PluginLoader {
             }
 
             initPlugin.loadedMessageHandlers = [...messageHandlers];
-            initPlugin.loadedHttpEndpoints = [...registeredHttpEndpoints];
+            initPlugin.loadedMatchmakerEndpoints = [...registeredMatchmakerEndpoints];
             initPlugin.loadedRegisteredMessages = [...registeredMessages];
 
             this.worker.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, initPlugin as WorkerPlugin);
 
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
-            if (initPlugin.loadedHttpEndpoints.length && this.worker.matchmaker) {
+            if (initPlugin.loadedMatchmakerEndpoints.length && this.worker.matchmaker) {
                 this.worker.matchmaker.restart();
             }
 
@@ -1015,7 +1015,7 @@ export class PluginLoader {
             this.worker.loadedPlugins.delete(pluginId);
             this.applyMessageHandlers();
             this.applyRegisteredMessages();
-            if (loadedPlugin.loadedHttpEndpoints.length && this.worker.matchmaker) {
+            if (loadedPlugin.loadedMatchmakerEndpoints.length && this.worker.matchmaker) {
                 this.worker.matchmaker.restart();
             }
             this.worker.logger.info("Unloaded plugin globally: %s", loadedPlugin);

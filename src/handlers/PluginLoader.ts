@@ -1000,6 +1000,8 @@ export class PluginLoader {
         if (room) {
             room.loadedPlugins.delete(pluginId);
             this.applyChatCommands(room);
+            this.applyRegisteredPrefabs(room);
+            this.applyRegisteredRoles(room);
             room.logger.info("Unloaded plugin: %s", loadedPlugin);
         } else {
             this.worker.loadedPlugins.delete(pluginId);

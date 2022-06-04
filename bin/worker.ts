@@ -307,8 +307,33 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     }
 }
 
+async function checkConfigDeprecations(config: HindenburgConfig, configFilename: string, logger: Logger) {
+    let flag = false;
+    if ("broadcastUnknownGameData" in config.socket) {
+        config.socket.acceptUnknownGameData = (config as any).socket.broadcastUnknownGameData;
+        delete (config as any).socket.broadcastUnknownGameData;
+        logger.warn("Config deprecation: 'socket.broadcastUnknownGameData' has been renamed to 'socket.acceptUnknownGameData' to better reflect its purpose");
+        flag = true;
+    }
+    if (flag) {
+        const configSpinner = new Spinner("Writing config to reflect deprecations.. %s");
+        try {
+            await fs.writeFile(
+                configFilename,
+                JSON.stringify({ $schema: "./config.schema.json", ...config }, undefined, 4),
+                "utf8"
+            );
+            configSpinner.success();
+        } catch (e) {
+            configSpinner.fail();
+            logger.error("Failed to update config.json: %s", (e as { code: string }).code || e);
+        }
+    }
+    return;
+}
+
 (async () => {
-    const logger = new Logger;
+    const logger = new Logger("Startup");
     const internalIp = await getInternalIp();
 
     const workerConfig = createDefaultConfig();
@@ -319,10 +344,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     if (workerConfig.socket.ip === "auto") {
         workerConfig.socket.ip = externalIp;
     }
-    if ("broadcastUnknownGameData" in workerConfig.socket) {
-        workerConfig.socket.acceptUnknownGameData = (workerConfig as any).broadcastUnknownGameData;
-        logger.warn("Deprecation: 'socket.broadcastUnknownGameData' has been renamed to 'socket.acceptUnknownGameData' to better reflect its purpose");
-    }
+    checkConfigDeprecations(workerConfig, configFilename, logger);
 
     if (workerConfig.checkForUpdates) {
         await checkForUpdates(logger, workerConfig.autoUpdate);

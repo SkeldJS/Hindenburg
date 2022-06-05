@@ -1,3 +1,5 @@
+import "./modulePatch";
+
 import path from "path";
 import fs from "fs/promises";
 import { iteratePlugins } from "./util/iteratePlugins";
@@ -21,14 +23,14 @@ export default async () => {
     for await (const pluginDirectory of iteratePlugins()) {
         try {
             const importedPlugins = await importPlugin(pluginDirectory);
-            const schemaPath = path.resolve(pluginDirectory, "config.schema.json");
+            const schemaPath = path.relative(configFileDirectory, path.resolve(pluginDirectory, "config.schema.json"));
             try {
                 await fs.stat(schemaPath);
-    
+
                 configSchemaJson.properties.plugins.properties[importedPlugins.meta.id] = {
                     "anyOf": [
                         {
-                            "$ref": schemaPath.startsWith("/") ? schemaPath : "/" + schemaPath
+                            "$ref": schemaPath
                         },
                         {
                             "type": "boolean"
@@ -52,5 +54,5 @@ export default async () => {
         }
     }
 
-    await fs.writeFile(path.resolve(configFileDirectory, "./config.schema.json"), JSON.stringify(configSchemaJson, undefined, 4), "utf8");
+    await fs.writeFile(path.resolve(configFileDirectory, "./config.schema.json"), JSON.stringify(configSchemaJson), "utf8");
 };

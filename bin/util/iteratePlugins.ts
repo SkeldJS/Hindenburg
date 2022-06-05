@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
-import resolveFrom from "resolve-from";
+import resolvePkg from "resolve-pkg";
 
 const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
 
@@ -14,8 +14,12 @@ export async function* iteratePlugins() {
                 if (!dependencyName.startsWith("hbplugin-"))
                     continue;
 
-                const resolvedPackage = resolveFrom(pluginsDirectory, dependencyName);
-                yield resolvedPackage;
+                const packageLocation = resolvePkg(dependencyName, { cwd: pluginsDirectory });
+
+                if (!packageLocation)
+                    continue;
+
+                yield packageLocation;
             }
         }
 

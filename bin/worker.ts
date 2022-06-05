@@ -369,7 +369,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
     worker.logger.info(chalk.grey`   Local: ${chalk.white("localhost")}:${port}`);
 
     if (worker.config.plugins.loadDirectory) {
-        await worker.pluginLoader.importFromDirectory();
+        await worker.pluginLoader.importFromDirectories();
         await worker.pluginLoader.loadAllWorkerPlugins();
     }
 

@@ -381,7 +381,7 @@ export class PluginLoader {
 
     /**
      * Generate a random plugin ID.
-     * 
+     *
      * Note that this will return one even if it is taken, see {@link PluginLoader.generateRandomPluginIdSafe}
      * if you need one that is not taken.
      * @returns A random plugin ID.
@@ -443,7 +443,7 @@ export class PluginLoader {
      * console.log("Imported %s plugins!", importedPlugins.size);
      * ```
      */
-    async importFromDirectory() {
+    async importFromDirectories() {
         const importedPlugins: Map<string, ImportedPlugin> = new Map;
 
         const pluginPaths: string[] = [];
@@ -576,7 +576,7 @@ export class PluginLoader {
         // as this is a depth-first search, we need to be able to check for circular dependencies
         // this is done by keeping a temporary track of all nodes that this search vein/spanning tree
         // has been through. if it comes up again later, we can know by checking whether the current node
-        // is in this set. 
+        // is in this set.
         tree.add(node);
         const dependencies = node.getDependencies();
         for (const pluginId in dependencies) {
@@ -941,7 +941,7 @@ export class PluginLoader {
 
         if (!initPlugin)
             throw new Error("Imported plugin was neither a room plugin nor a worker plugin");
-        
+
         const loadedPlugin = new LoadedPlugin(importedPlugin, initPlugin);
 
         const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);

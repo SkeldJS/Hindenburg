@@ -5,14 +5,12 @@ import fs from "fs/promises";
 
 import chalk from "chalk";
 import prompts from "prompts";
-import resolveFrom from "resolve-from";
-import minimatch from "minimatch";
+import resolvePkg from "resolve-pkg";
 
 import pluginGitignore from "./resources/plugin-gitignore";
 
 import { Logger } from "../src/logger";
-import { PluginLoader, PluginPackageJson, SomePluginCtr } from "../src/handlers";
-import { Worker } from "../src/worker";
+import { PluginLoader } from "../src/handlers";
 import { runCommandInDir } from "./util/runCommandInDir";
 import { Spinner } from "./util/Spinner";
 import createSchema from "./createSchema";
@@ -428,14 +426,14 @@ async function runCreatePlugin() {
         if (useTypescript) {
             packageJson.files = [ "dist", "config.schema.json" ];
         } else {
-            packageJson.files = [ "src", "index.js", "config.schema.json" ]
+            packageJson.files = [ "src", "index.js", "config.schema.json" ];
         }
         packageJson.main = useTypescript ? "./dist/index.js" : "./index.js";
         if (useTypescript) {
             packageJson.types = "./index.ts";
             packageJson.publishConfig = {
                 types: "./dist/index.d.ts"
-            }
+            };
         }
         packageJson.scripts = {
             publish: "yarn npm publish --access public"
@@ -564,7 +562,11 @@ export default ${codeFriendlyName};`,
 async function verifyInstalledPlugin(logger: Logger, pluginsDirectory: string, packageInfoJson: any, packageFilename: string) {
     const verifySpinner = new Spinner("Verifying installed plugin.. %s").start();
     try {
-        const packageLocation = resolveFrom(pluginsDirectory, packageFilename);
+        const packageLocation = resolvePkg(packageFilename, { cwd: pluginsDirectory });
+
+        if (!packageLocation)
+            throw new Error("Not a valid package directory");
+
         const importedPlugin = await importPlugin(packageLocation);
 
         if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
@@ -882,17 +884,15 @@ async function runUninstallPlugin() {
         ? argvPluginName
         : "hbplugin-" + argvPluginName;
 
-    const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
-
     const resolvingPlugin = new Spinner("Resolving plugin.. %s").start();
-    try {
-        resolveFrom(pluginsDirectory, pluginName);
-    } catch (e) {
+    const packageDirectory = resolvePkg(pluginName, { cwd: pluginsDirectory });
+    if (!packageDirectory) {
         resolvingPlugin.fail();
         logger.error("Plugin with name '%s' not installed or inaccessible", pluginName);
         return;
     }
 
+    const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
     try {
         await fs.stat(pluginDirectory);
         resolvingPlugin.fail();
@@ -968,7 +968,11 @@ async function runInfo() {
     const localInstallation = new Spinner("Checking for local installation.. %s").start();
     for (const pluginsDirectory of pluginsDirectories) {
         try {
-            const packageLocation = resolveFrom(pluginsDirectory, packageInfoJson.name);
+            const packageLocation = resolvePkg(packageInfoJson.name, { cwd: pluginsDirectory });
+
+            if (!packageLocation)
+                throw new Error("Not a valid package directory");
+
             const importedPlugin = await importPlugin(packageLocation);
 
             if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
@@ -1028,7 +1032,7 @@ async function runList() {
             if ((e as { code: string }).code === "ENOENT") {
                 return;
             }
-            logger.error("Failed to resovle npm plugins: %s", (e as any).message || e);
+            logger.error("Failed to resolve npm plugins: %s", (e as any).message || e);
             continue;
         }
 

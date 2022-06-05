@@ -357,7 +357,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         worker.logger.warn("Cannot open config file; using default config");
     }
 
-    const port = worker.config.socket.port;
+    const port = worker.matchmaker?.port || worker.config.socket.port;
     await worker.listen(port);
 
     worker.logger.info("Listening on:");
@@ -366,7 +366,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         worker.logger.info(chalk.grey`External: ${chalk.white(externalIp)}:${port}`);
     }
     worker.logger.info(chalk.grey`Internal: ${chalk.white(internalIp)}:${port}`);
-    worker.logger.info(chalk.grey`   Local: ${chalk.white("127.0.0.1")}:${port}`);
+    worker.logger.info(chalk.grey`   Local: ${chalk.white("localhost")}:${port}`);
 
     if (worker.config.plugins.loadDirectory) {
         await worker.pluginLoader.importFromDirectory();

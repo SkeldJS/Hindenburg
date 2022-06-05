@@ -59,7 +59,7 @@ import { recursiveClone } from "../util/recursiveClone";
 import { recursiveAssign } from "../util/recursiveAssign";
 
 import { getPluginDependencies, PluginDependencyDeclaration } from "../api/hooks/Dependency";
-import { Plugin, PluginInstanceType, RoomPlugin, SomePluginCtr, WorkerPlugin } from "./Plugin";
+import { PluginInstanceType, RoomPlugin, SomePluginCtr, WorkerPlugin } from "./Plugin";
 import { Deserializable, MessageDirection, Serializable } from "@skeldjs/protocol";
 import vorpal from "vorpal";
 

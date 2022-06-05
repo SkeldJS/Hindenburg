@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import { hindenburgPluginDirectory, Plugin, PluginMetadata } from "../../handlers";
+import { Plugin, PluginMetadata } from "../../handlers";
 
 export interface DeclaredPlugin {
     new(...args: any[]): Plugin;

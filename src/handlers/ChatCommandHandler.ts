@@ -74,7 +74,7 @@ export class ChatCommandUsage {
      * Create a formatted usage of this command, in [standard unix command-line
      * command syntax](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
      */
-     toString(prefix = "/") {
+    toString(prefix = "/") {
         return prefix + this.name + " " + this.params.map(param => {
             return (param.required ? "<" : "[")
                 + param.name

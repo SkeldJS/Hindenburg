@@ -1,17 +1,11 @@
 import chalk from "chalk";
-import vorpal from "vorpal";
 
-import { BaseRole, Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
-import { Deserializable, RpcMessage } from "@skeldjs/protocol";
+import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
+import { RpcMessage } from "@skeldjs/protocol";
 
 import { Logger } from "../logger";
 import { Room, Worker } from "../worker";
-import {
-    BaseReactorRpcMessage,
-    PluginRegisteredMessageHandlerInfo,
-    PluginRegisteredMatchmakerEndpoint,
-    RegisteredPrefab
-} from "../api";
+import { BaseReactorRpcMessage } from "../api";
 import { ReactorRpcMessage } from "../packets";
 import { fmtCode } from "../util/fmtCode";
 import { PluginPackageJson } from "./PluginLoader";
@@ -19,7 +13,7 @@ import { PluginPackageJson } from "./PluginLoader";
 /**
  * Metadata about a plugin, created with {@link HindenburgPlugin}.
  */
- export interface PluginMetadata {
+export interface PluginMetadata {
     /**
      * The ID of the plugin, beginning with `hbplugin-`.
      *
@@ -243,6 +237,7 @@ export abstract class Plugin {
 
     getDependency(pluginId: string): Plugin;
     getDependency<K extends typeof Plugin>(plugin: K): WorkerPlugin|RoomPlugin;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getDependency(plugin: any): Plugin {
         throw new Error("Method not implemented");
     }
@@ -292,7 +287,7 @@ export class RoomPlugin extends Plugin {
         if (typeof plugin !== "string")
             return this.getDependency(plugin.meta.id);
 
-        return this.room.loadedPlugins.get(plugin)?.pluginInstance!;
+        return this.room.loadedPlugins.get(plugin)!.pluginInstance;
     }
 }
 
@@ -302,7 +297,7 @@ export class WorkerPlugin extends Plugin {
      * @param worker The Hindenburg worker that this plugin is for.
      * @param config Configuration for the plugin.
      */
-     static createInstance(worker: Worker, config: any) {
+    static createInstance(worker: Worker, config: any) {
         const plugin = new this(worker, config);
         return plugin;
     }

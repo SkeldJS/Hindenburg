@@ -31,29 +31,6 @@ export interface GameListingJson {
     HostPlatformName: string;
 }
 
-enum AmongUsLanguage {
-    All,
-    Other,
-    SpanisLA,
-    Korean,
-    Russian,
-    Portuguese,
-    Arabic,
-    Filipino,
-    Polish,
-    English,
-    Japanese,
-    SpanishEU,
-    Brazilian,
-    Dutch,
-    French,
-    German,
-    Italian,
-    ChineseSimplified,
-    ChineseTraditional,
-    Irish
-}
-
 export class Matchmaker {
     httpServer?: polka.Polka;
     logger: Logger;

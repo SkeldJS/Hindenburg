@@ -1421,7 +1421,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 ) {
                     this.config.matchmaker = newConfig.matchmaker;
                     this.matchmaker.restart();
-                    this.pluginLoader
+                    this.pluginLoader;
                 }
             } else {
                 this.config.matchmaker = newConfig.matchmaker;

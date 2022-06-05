@@ -1,5 +1,5 @@
 import { CancelableEvent } from "@skeldjs/events";
-import { ImportedPlugin, PluginLoader } from "../../../handlers";
+import { ImportedPlugin } from "../../../handlers";
 
 /**
  * Emitted when a plugin is imported to be loaded.

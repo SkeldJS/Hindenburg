@@ -1,4 +1,4 @@
-import { PlayerData, RoleTeamType } from "@skeldjs/core";
+import { PlayerData } from "@skeldjs/core";
 import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
 
 const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
@@ -61,7 +61,8 @@ export function ChatCommand(...args: any[]) {
             ? target
             : args.shift().prototype;
 
-        let [ usage, description, accessCheck ] = args;
+        const [ usage ] = args;
+        let [ , description, accessCheck ] = args;
 
         if (typeof description === "function") {
             accessCheck = description;

@@ -23,31 +23,34 @@ function RegisterMatchmakerEndpoint(method: HttpMethod, route: string) {
             route,
             body: descriptor.value!
         });
-    }
+    };
 }
 
 export function getPluginMatchmakerEndpoints(target: typeof Plugin|Plugin): PluginRegisteredMatchmakerEndpoint[] {
     return Reflect.getMetadata(hindenburgMatchmakerEndpointsKey, target) || [];
 }
 
-export namespace MatchmakerEndpoint {
-    export function Get(route: string) {
+export class MatchmakerEndpoint {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    private constructor() {}
+
+    static Get(route: string) {
         return RegisterMatchmakerEndpoint("get", route);
     }
 
-    export function Post(route: string) {
+    static Post(route: string) {
         return RegisterMatchmakerEndpoint("post", route);
     }
 
-    export function Put(route: string) {
+    static Put(route: string) {
         return RegisterMatchmakerEndpoint("put", route);
     }
 
-    export function Patch(route: string) {
+    static Patch(route: string) {
         return RegisterMatchmakerEndpoint("patch", route);
     }
 
-    export function Delete(route: string) {
+    static Delete(route: string) {
         return RegisterMatchmakerEndpoint("delete", route);
     }
 }

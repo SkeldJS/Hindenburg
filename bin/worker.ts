@@ -357,7 +357,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         worker.logger.warn("Cannot open config file; using default config");
     }
 
-    const port = worker.matchmaker?.port || worker.config.socket.port;
+    const port = worker.config.socket.port || worker.matchmaker?.port as number;
     await worker.listen(port);
 
     worker.logger.info("Listening on:");

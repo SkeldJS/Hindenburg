@@ -1,5 +1,52 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.1.4": {
+    "version": "1.1.4",
+    "contributors": ["edward"],
+    "date": "2022-06-06",
+    "notes": [
+        {
+            "description": "Use matchmaker port for listening on *:port log",
+            "commits": ["d7c548fa82fa54592dbfab4ca97ddfd39f92ef70"]
+        },
+        {
+            "description": "Add @HttpEndpoint[\"Method\"] decorator",
+            "commits": ["d04d0cf24bc1fa96994431948603425527161913", "424c42884704649c6b9e5bb629f1973249b1f7ad"]
+        },
+        {
+            "description": "Add @RegisterRole decorator",
+            "commits": ["c0ca76b800a39f64d1be446a7cfb268821d54e41", "1c37016de0ccea89560ca7776b7a1255d6e02633"]
+        },
+        {
+            "description": "Update skeldjs to version 2.15.21",
+            "commits": ["0b497ddb01e94c43c6315055153e01f0ee88d4c0"]
+        },
+        {
+            "description": "Add several API methods related to connections and players on the room",
+            "commits": ["9f73abb1623e96aec9038b76a9e5b314dbdcf148"]
+        },
+        {
+            "description": "Add API method to get commands available to specific players",
+            "commits": ["c0c09654e911ea91776f7eb6ae740566da0054dd"]
+        },
+        {
+            "description": "Allow returning any truthy/falsy value in chat command visiblity function",
+            "commits": ["b90f0d408d72741d0cd955e397d2032a1c2d0bba"]
+        },
+        {
+            "description": "Fix plugin metadata not being available in constructor",
+            "commits": ["7e9ac8dea65b75251c31b9521ede7ce21789aa6e"]
+        },
+        {
+            "description": "Fix publish files list for package.json",
+            "commits": ["4d9084361400cff95aef878b2eb0baba860f3f39"]
+        },
+        {
+            "description": "Fix several issues to loading plugins' metadata properly",
+            "commits": ["b372faf65ff5f7424098d8688403d9f615d6eed9", "e2088aaba5be38912f51cec2ad67c8ee7b7e6f21"]
+        }
+    ]
+  },
   "1.1.3": {
     "version": "1.1.3",
     "contributors": ["edward"],

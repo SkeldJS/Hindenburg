@@ -559,10 +559,12 @@ export default ${codeFriendlyName};`,
     logger.info("Successfully created plugin!");
 }
 
-async function verifyInstalledPlugin(logger: Logger, pluginsDirectory: string, packageInfoJson: any, packageFilename: string) {
+async function verifyInstalledPlugin(logger: Logger, pluginsDirectory: string, packageFilename: string) {
     const verifySpinner = new Spinner("Verifying installed plugin.. %s").start();
     try {
-        const packageLocation = resolvePkg(packageFilename, { cwd: pluginsDirectory });
+        const packageLocation = packageFilename.startsWith("./")
+            ? path.resolve(pluginsDirectory, packageFilename)
+            : resolvePkg(packageFilename, { cwd: pluginsDirectory });
 
         if (!packageLocation)
             throw new Error("Not a valid package directory");
@@ -678,7 +680,7 @@ async function runInstallPlugin() {
         return;
     }
 
-    if (!await verifyInstalledPlugin(logger, pluginsDirectory, packageInfoJson, packageInfoJson.name)) {
+    if (!await verifyInstalledPlugin(logger, pluginsDirectory, packageInfoJson.name)) {
         const uninstallSpinner = new Spinner("Uninstalling invalid plugin.. %s");
         try {
             await runCommandInDir(pluginsDirectory, "yarn remove " + packageInfoJson.name);
@@ -842,7 +844,7 @@ async function runImportPlugin() {
         return;
     }
 
-    if (!await verifyInstalledPlugin(logger, pluginsDirectory, packageJson, "./" + pluginDirectoryName)) {
+    if (!await verifyInstalledPlugin(logger, pluginsDirectory, "./" + pluginDirectoryName)) {
         const deleteSpinner = new Spinner("Deleting directory.. %s").start();
         try {
             await runCommandInDir(
@@ -885,12 +887,6 @@ async function runUninstallPlugin() {
         : "hbplugin-" + argvPluginName;
 
     const resolvingPlugin = new Spinner("Resolving plugin.. %s").start();
-    const packageDirectory = resolvePkg(pluginName, { cwd: pluginsDirectory });
-    if (!packageDirectory) {
-        resolvingPlugin.fail();
-        logger.error("Plugin with name '%s' not installed or inaccessible", pluginName);
-        return;
-    }
 
     const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
     try {
@@ -899,6 +895,13 @@ async function runUninstallPlugin() {
         logger.error("Plugin is a local folder, not installed with NPM, please delete the folder manually.");
         return;
     } catch (e) { void e; }
+
+    const packageDirectory = resolvePkg(pluginName, { cwd: pluginsDirectory });
+    if (!packageDirectory) {
+        resolvingPlugin.fail();
+        logger.error("Plugin with name '%s' not installed or inaccessible", pluginName);
+        return;
+    }
 
     resolvingPlugin.success();
 
@@ -971,13 +974,12 @@ async function runInfo() {
             const packageLocation = resolvePkg(packageInfoJson.name, { cwd: pluginsDirectory });
 
             if (!packageLocation)
-                throw new Error("Not a valid package directory");
+                continue;
 
             const importedPlugin = await importPlugin(packageLocation);
 
-            if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
+            if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin))
                 continue;
-            }
 
             if (PluginLoader.isWorkerPlugin(importedPlugin)) {
                 pluginType = "worker";

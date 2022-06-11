@@ -1,9 +1,10 @@
 import { BaseRole } from "@skeldjs/core";
 import { SomePluginCtr } from "../../handlers";
+import { ClassDecorator } from "../types";
 
 const hindenburgRegisterRole = Symbol("hindenburg:registerrole");
 
-export function RegisterRole(role: typeof BaseRole) {
+export function RegisterRole(role: typeof BaseRole): ClassDecorator {
     return function (target: any) {
         const cachedSet: typeof BaseRole[]|undefined = Reflect.getMetadata(hindenburgRegisterRole, target);
         const rolesToRegister = cachedSet || [];

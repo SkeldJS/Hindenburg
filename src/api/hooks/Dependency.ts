@@ -1,6 +1,7 @@
 import "reflect-metadata";
 
 import { Plugin, SomePluginCtr } from "../../handlers";
+import { ClassDecorator } from "../types";
 import { isHindenburgPlugin } from "./HindenburgPlugin";
 
 const hindenburgDependenciesKey = Symbol("hindenburg:dependencies");
@@ -51,7 +52,7 @@ export interface PluginDependencyDeclaration {
     version: string;
 }
 
-export function Dependency(plugin: string|typeof Plugin, options: Partial<Omit<PluginDependencyDeclaration, "pluginId">> = {}) {
+export function Dependency(plugin: string|typeof Plugin, options: Partial<Omit<PluginDependencyDeclaration, "pluginId">> = {}): ClassDecorator {
     if (typeof plugin !== "string" && !isHindenburgPlugin(plugin)) {
         throw new TypeError("Expected 'plugin' to be either a plugin ID or a plugin constructor.");
     }

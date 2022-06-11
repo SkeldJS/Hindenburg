@@ -1,6 +1,7 @@
 import { Deserializable, GetSerialized, Serializable } from "@skeldjs/protocol";
 import { PacketContext } from "../../worker";
 import { Plugin, RoomPlugin, WorkerPlugin } from "../../handlers";
+import { MethodDecorator } from "../types";
 
 const hindenburgMessageHandlersKey = Symbol("hindenburg:message");
 
@@ -25,14 +26,10 @@ export interface PluginRegisteredMessageHandlerInfo {
     handler: MessageHandlerCallbackOriginalListeners<Serializable>;
 }
 
-export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<{ override: false }>):
-    (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallback<GetSerialized<T>>>) => any;
-export function MessageHandler<T extends Deserializable>(messageClass: T, options: Partial<{ override: true }>):
-    (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallbackOriginalListeners<GetSerialized<T>>>) => any;
-export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options?: Partial<{ override: false }>):
-    (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallback<GetSerialized<T>>>) => any;
-export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options: Partial<{ override: true }>):
-    (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<MessageHandlerCallbackOriginalListeners<GetSerialized<T>>>) => any;
+export function MessageHandler<T extends Deserializable>(messageClass: T, options?: Partial<{ override: false }>): MethodDecorator<MessageHandlerCallback<GetSerialized<T>>>;
+export function MessageHandler<T extends Deserializable>(messageClass: T, options: Partial<{ override: true }>): MethodDecorator<MessageHandlerCallbackOriginalListeners<GetSerialized<T>>>;
+export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options?: Partial<{ override: false }>): MethodDecorator<MessageHandlerCallback<GetSerialized<T>>>;
+export function MessageHandler<T extends Deserializable>(pluginClass: typeof WorkerPlugin|typeof RoomPlugin, messageClass: T, options: Partial<{ override: true }>): MethodDecorator<MessageHandlerCallbackOriginalListeners<GetSerialized<T>>>;
 export function MessageHandler<T extends Deserializable>(pluginClassOrMessageClass: typeof WorkerPlugin|typeof RoomPlugin|T, messageClassOrOptions: T|Partial<MessageHandlerOptions>, _options?: Partial<MessageHandlerOptions>) {
     return function (
         target: any,

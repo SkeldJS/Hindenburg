@@ -4,6 +4,7 @@ import { HazelReader } from "@skeldjs/util";
 
 import { Plugin } from "../../handlers";
 import { BaseReactorRpcMessage } from "../BaseReactorRpcMessage";
+import { MethodDecorator } from "../types";
 
 const hindenburgReactorRpcKey = Symbol("hindenburg:reactorrpc");
 
@@ -23,7 +24,7 @@ export interface PluginRegisteredRpcHandlerInfo {
 export function ReactorRpcHandler<
     ComponentType extends Networkable,
     RpcType extends BaseReactorRpcMessage
->(reactorRpc: ReactorRpcConstructor<RpcType>) {
+>(reactorRpc: ReactorRpcConstructor<RpcType>): MethodDecorator<(component: ComponentType, rpc: RpcType) => any> {
     return function(
         target: any,
         propertyKey: string,

@@ -1,6 +1,7 @@
 import vorpal from "vorpal";
 
 import { Plugin } from "../../handlers";
+import { MethodDecorator } from "../types";
 
 const hindenburgCliCommandsKey = Symbol("hindenburg:clicommands");
 
@@ -18,7 +19,7 @@ export interface PluginRegisteredCliCommandInfo {
     command: CliCommandInformation;
 }
 
-export function CliCommand(command: CliCommandInformation) {
+export function CliCommand(command: CliCommandInformation): MethodDecorator<(args: vorpal.Args) => Promise<any>> {
     return function(
         target: any,
         propertyKey: string,

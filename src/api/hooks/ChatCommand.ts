@@ -1,5 +1,6 @@
 import { PlayerData } from "@skeldjs/core";
 import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
+import { MethodDecorator } from "../types";
 
 const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
@@ -12,42 +13,75 @@ export interface PluginRegisteredChatCommandInfo {
     handler: ChatCommandCallback;
 }
 
-export function ChatCommand(usage: string, description?: string) :
-    (
-        target: any,
-        propertyKey: string,
-        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
-    ) => any;
-export function ChatCommand(usage: string, accessCheck: AccessCheckFn) :
-    (
-        target: any,
-        propertyKey: string,
-        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
-    ) => any;
-export function ChatCommand(usage: string, description: string, accessCheck: AccessCheckFn) :
-    (
-        target: any,
-        propertyKey: string,
-        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
-    ) => any;
-export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string) :
-    (
-        target: any,
-        propertyKey: string,
-        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
-    ) => any;
-export function ChatCommand(pluginClass: SomePluginCtr, usage: string, accessCheck?: AccessCheckFn) :
-    (
-        target: any,
-        propertyKey: string,
-        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
-    ) => any;
-export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description: string, accessCheck: AccessCheckFn) :
-    (
-        target: any,
-        propertyKey: string,
-        descriptor: TypedPropertyDescriptor<ChatCommandCallback>
-    ) => any;
+/**
+ * A decorator to attach to a method in order to register a callback for a command
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * page for more information.
+ *
+ * Can only be used on {@link WorkerPlugin}s.
+ * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+ * @param description A short description of what the command does and how to use it.
+ */
+export function ChatCommand(usage: string, description?: string): MethodDecorator<ChatCommandCallback>;
+/**
+ * A decorator to attach to a method in order to register a callback for a command
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * page for more information.
+ *
+ * Can only be used on {@link WorkerPlugin}s.
+ * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+ * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * a boolean dictating whether or not the player is allowed to view/use the command.
+ */
+export function ChatCommand(usage: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
+/**
+ * A decorator to attach to a method in order to register a callback for a command
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * page for more information.
+ *
+ * Can only be used on {@link WorkerPlugin}s.
+ * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+ * @param description A short description of what the command does and how to use it.
+ * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * a boolean dictating whether or not the player is allowed to view/use the command.
+ */
+export function ChatCommand(usage: string, description: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
+/**
+ * A decorator to attach to a method in order to register a callback for a command
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * page for more information.
+ *
+ * Can only be used on {@link WorkerPlugin}s.
+ * @param pluginClass The class of the plugin to add this chat command to.
+ * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+ * @param description A short description of what the command does and how to use it.
+ */
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string): MethodDecorator<ChatCommandCallback>;
+/**
+ * A decorator to attach to a method in order to register a callback for a command
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * page for more information.
+ *
+ * Can only be used on {@link WorkerPlugin}s.
+ * @param pluginClass The class of the plugin to add this chat command to.
+ * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+ * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * a boolean dictating whether or not the player is allowed to view/use the command.
+ */
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, accessCheck?: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
+/**
+ * A decorator to attach to a method in order to register a callback for a command
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * page for more information.
+ *
+ * Can only be used on {@link WorkerPlugin}s.
+ * @param pluginClass The class of the plugin to add this chat command to.
+ * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
+ * @param description A short description of what the command does and how to use it.
+ * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * a boolean dictating whether or not the player is allowed to view/use the command.
+ */
+export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 export function ChatCommand(...args: any[]) {
     return function(
         target: any,

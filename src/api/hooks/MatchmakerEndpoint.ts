@@ -1,5 +1,6 @@
 import polka from "polka";
 import { Plugin } from "../../handlers";
+import { MethodDecorator } from "../types";
 
 const hindenburgMatchmakerEndpointsKey = Symbol("hindenburg:matchmakerendpoints");
 
@@ -34,23 +35,23 @@ export class MatchmakerEndpoint {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
-    static Get(route: string) {
+    static Get(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
         return RegisterMatchmakerEndpoint("get", route);
     }
 
-    static Post(route: string) {
+    static Post(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
         return RegisterMatchmakerEndpoint("post", route);
     }
 
-    static Put(route: string) {
+    static Put(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
         return RegisterMatchmakerEndpoint("put", route);
     }
 
-    static Patch(route: string) {
+    static Patch(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
         return RegisterMatchmakerEndpoint("patch", route);
     }
 
-    static Delete(route: string) {
+    static Delete(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
         return RegisterMatchmakerEndpoint("delete", route);
     }
 }

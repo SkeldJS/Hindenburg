@@ -49,7 +49,7 @@ function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, plugi
 
 @HindenburgPlugin("${pluginName}")
 export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {
-    ${isTypescript ? "message: string\n\n    " : ""}constructor(${pluginType}${isTypescript ? ": " + (pluginType === "worker" ? "Worker" : "Room") : ""}, config${isTypescript ? ": any" : ""}) {
+    ${isTypescript ? "message: string;\n\n    " : ""}constructor(${pluginType}${isTypescript ? ": " + (pluginType === "worker" ? "Worker" : "Room") : ""}, config${isTypescript ? ": any" : ""}) {
         super(${pluginType}, config);
 
         this.message = config.message;

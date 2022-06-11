@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Environment Variables | @skeldjs/hindenburg</title>
+	<title>Custom Roles | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -57,13 +57,13 @@
 					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Installation.html">Getting Started</a>
+					<a href="Creating a Plugin.html">Plugins</a>
 				</li>
 				<li>
-					<a href="Environment Variables.html">Environment Variables</a>
+					<a href="Custom Roles.html">Custom Roles</a>
 				</li>
 			</ul>
-			<h1>Environment Variables</h1>
+			<h1>Custom Roles</h1>
 		</div>
 	</div>
 </header>
@@ -71,68 +71,43 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>There are a few environment variables that Hindenburg makes use of that you can use, for example to automate setting up a server in production.</p>
-				<a href="#setting-environment-variables" id="setting-environment-variables" style="color: inherit; text-decoration: none;">
-					<h3>Setting Environment Variables</h3>
+				<p>Creating a custom role in Hindenburg is a surprisingly light concept, although that&#39;s only because most of your role logic (abilities, buttons, etc.) is done in the <a href="../../classes/PlayerControl.html">PlayerControl</a> innernet object, such as the <a href="../../classes/PlayerControl.html#shapeshift">PlayerControl.shapeshift</a> method.</p>
+				<blockquote>
+					<p>Check out the {@page Custom Innernet Objects} or {@page Handling Custom RPCs} for more information.</p>
+				</blockquote>
+				<a href="#notes-for-modders" id="notes-for-modders" style="color: inherit; text-decoration: none;">
+					<h2>Notes for Modders</h2>
 				</a>
-				<p>If you&#39;re unsure how to set environment variables in your terminal, check out , or</p>
-				<a href="#on-windows" id="on-windows" style="color: inherit; text-decoration: none;">
-					<h4>On Windows</h4>
+				<p>Note that this is <em>only</em> a server-side construct, custom roles must also be added to each client using a client mod.</p>
+				<a href="#creating-the-role-class" id="creating-the-role-class" style="color: inherit; text-decoration: none;">
+					<h2>Creating the Role Class</h2>
 				</a>
-				<p>There are 2 ways you can set environment variables on Windows:</p>
-				<ul>
-					<li>Follow <a href="https://www.minitool.com/news/environment-variables-windows-10-005.html">this guide</a> to set environment variables via the system settings</li>
-					<li>Or, prefix every command you run with <code>npx cross-env VARIABLE=VALUE</code>, for example:</li>
-				</ul>
-				<pre><code class="language-sh"><span style="color: #000000">npx cross-env HINDENBURG_PLUGINS=</span><span style="color: #A31515">&quot;C:/Users/essma/Downloads/my-hindenburg-plugins,C:/Users/essma/Documents/Hindenburg/plugins&quot;</span><span style="color: #000000"> yarn start</span>
+				<p>Creating a class for your role is extremely simple:</p>
+				<pre><code class="language-ts"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyRole</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">BaseRole</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Room</span><span style="color: #000000">&gt; {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #001080">roleMetadata</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">        </span><span style="color: #001080">roleType:</span><span style="color: #000000"> </span><span style="color: #098658">60</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">RoleType</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">roleTeam:</span><span style="color: #000000"> </span><span style="color: #001080">RoleTeamType</span><span style="color: #000000">.</span><span style="color: #001080">Crewmate</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">isGhostRole:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
 </code></pre>
-				<a href="#on-linux" id="on-linux" style="color: inherit; text-decoration: none;">
-					<h3>On Linux</h3>
+				<p>Where <code>roleType</code> is a unique integer/enum value for your role, <code>roleTeam</code> is the team that your role is for, either <a href="../../enums/RoleTeamType.html#Crewmate">RoleTeamType.Crewmate</a> or <a href="../../enums/RoleTeamType.html#Impostor">RoleTeamType.Impostor</a>, and <code>isGhostRole</code> is whether or not your role is assigned on a player&#39;s death, like the <a href="../../classes/GuardianAngelRole.html">Guardian Angel</a>.</p>
+				<a href="#registering-the-role" id="registering-the-role" style="color: inherit; text-decoration: none;">
+					<h2>Registering the Role</h2>
 				</a>
-				<p>Follow <a href="https://phoenixnap.com/kb/linux-set-environment-variable#ftoc-heading-9">this guide</a> to learn how to set environment variables on Linux.</p>
-				<a href="#hindenburg_config" id="hindenburg_config" style="color: inherit; text-decoration: none;">
-					<h3><code>HINDENBURG_CONFIG</code></h3>
+				<p>Registering your role class is as simple as using the <a href="../../modules.html#RegisterRole">RegisterRole</a> decorator and passing in your role class. That is,</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">RegisterRole</span><span style="color: #000000">(</span><span style="color: #001080">MyRole</span><span style="color: #000000">)</span>
+<span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">)</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">FunThingsPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
+
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#role-abilities" id="role-abilities" style="color: inherit; text-decoration: none;">
+					<h2>Role Abilities</h2>
 				</a>
-				<p>You can set the <code>HINDENBURG_CONFIG</code> variable to the location of a <code>config.json</code> file in the system to tell hindenburg where to look for configuration for the server.</p>
-				<blockquote>
-					<p>By default, Hindenburg will look for your <code>config.json</code> in the <strong>current working directory</strong>, i.e. where you have your terminal opened.</p>
-				</blockquote>
-				<blockquote>
-					<p>Note that the location has to be <strong>absolute</strong>, meaning that it must begin with either <code>Drive:/</code> on windows or <code>/</code> on linux, and be the complete path to the file.</p>
-				</blockquote>
-				<blockquote>
-					<p>Check out the <a href="Configuration.html">Configuration</a> page for information on configuring Hindenburg</p>
-				</blockquote>
-				<p>For example, if you downloaded a <code>config.json</code> into your downloads directory, you could set <code>HINDENBURG_CONFIG</code> to <code>C:/Users/essma/Downloads/config.json</code> and Hindenburg would use that.</p>
-				<p>On Windows:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/144691905-6af9bb0e-53d1-4e50-ac9e-72406ac73d33.png" alt="image"></p>
-				<p>On Linux (WSL2):</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/144691372-44e34c72-69b0-4289-915f-1e12f759fac2.png" alt="image"></p>
-				<a href="#hindenburg_plugins" id="hindenburg_plugins" style="color: inherit; text-decoration: none;">
-					<h3><code>HINDENBURG_PLUGINS</code></h3>
-				</a>
-				<p>The <code>HINDENBURG_PLUGINS</code> allows you to specify where Hindenburg should look for plugins to load, with <strong>absolute</strong> paths to each location separated by commas (<code>,</code>).</p>
-				<blockquote>
-					<p>By default, Hindenburg will look for a <code>/plugins</code> directory in the <strong>current working directory</strong>, i.e. where you have your terminal opened.</p>
-				</blockquote>
-				<p>For example, you might want to use someone else&#39;s plugin folder that you downloaded as well as your plugins in your hindenburg directory, so you might set <code>HINDENBURG_PLUGINS</code> to:
-				<code>C:/Users/essma/Downloads/my-hindenburg-plugins,C:/Users/essma/Documents/Hindenburg/plugins</code></p>
-				<blockquote>
-					<p>Notice how the two directories are separated by commas (<code>,</code>).</p>
-				</blockquote>
-				<p>On Windows:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/144691936-b73582bd-0c34-4451-8f30-cf48ae5cc3d1.png" alt="image"></p>
-				<p>On Linux (WSL2):</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/144691992-bb446c6b-83e0-4187-b99d-7a32e598a788.png" alt="image"></p>
-				<a href="#hindenburg_cli_args" id="hindenburg_cli_args" style="color: inherit; text-decoration: none;">
-					<h3><code>HINDENBURG_CLI_ARGS</code></h3>
-				</a>
-				<p>This environment variable very simply allows you to pass extra cli arguments into Hindenburg that you don&#39;t specify with <code>yarn start</code> or <code>yarn dev</code>.</p>
-				<p>For example, if you wanted to change the port without changing the command to be run, you could set <code>HINDENBURG_CLI_ARGS</code> to <code>--socket.port 22123</code>.</p>
-				<p>On Windows:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/144692048-57915458-c4b7-4fe4-9bf2-feb16c988089.png" alt="image"></p>
-				<p>On Linux (WSL2):</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/144692313-e5db0b48-b9eb-4089-9f89-cada1fa724f6.png" alt="image"></p>
+				<p>As noted above, you will have to implement role abilities/buttons either by extending the <a href="../../classes/PlayerControl.html">PlayerControl</a> Innernet Object with your own {@page Custom Innernet Object | Custom PlayerControl object), or by hooking into RPCs recieved with {@page Handling Custom RPCs} and sending yourself.</p>
+				<p>If you&#39;re making a full mod and not intending on having any other mods with conflicting roles, you should extend <a href="../../classes/PlayerControl.html">PlayerControl</a> and implement your own rpc handlers and methods.</p>
+				<p>If you&#39;re making a partial mod and expecting other mods to implement their own roles, you should probably just handle custom RPCs for the <a href="../../classes/PlayerControl.html">PlayerControl</a> class and send them yourself.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -142,55 +117,55 @@
 						<span>Getting <wbr>Started</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Installation.html">Installation</a>
-					</li>
-					<li class="current pp-nav pp-page">
-						<a href="Environment Variables.html">Environment <wbr>Variables</a>
+						<a href="../Getting Started/Installation.html">Installation</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Configuration.html">Configuration</a>
+						<a href="../Getting Started/Environment Variables.html">Environment <wbr>Variables</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Installing Plugins.html">Installing <wbr>Plugins</a>
+						<a href="../Getting Started/Configuration.html">Configuration</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Contributing.html">Contributing</a>
+						<a href="../Getting Started/Installing Plugins.html">Installing <wbr>Plugins</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Contributing.html">Contributing</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
+						<a href="Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Developing Plugins.html">Developing <wbr>Plugins</a>
+						<a href="Developing Plugins.html">Developing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Compatible Hindenburg API Versions.html">Compatible <wbr>Hindenburg API <wbr>Versions</a>
+						<a href="Compatible Hindenburg API Versions.html">Compatible <wbr>Hindenburg API <wbr>Versions</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Publishing Plugins.html">Publishing <wbr>Plugins</a>
+						<a href="Publishing Plugins.html">Publishing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Load Ordering.html">Load <wbr>Ordering</a>
+						<a href="Load Ordering.html">Load <wbr>Ordering</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+						<a href="Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Receiving Protocol Messages.html">Receiving <wbr>Protocol <wbr>Messages</a>
+						<a href="Receiving Protocol Messages.html">Receiving <wbr>Protocol <wbr>Messages</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
-					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Custom Roles.html">Custom <wbr>Roles</a>
+					<li class="current pp-nav pp-page">
+						<a href="Custom Roles.html">Custom <wbr>Roles</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Information</span>

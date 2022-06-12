@@ -21,7 +21,7 @@ Where `roleType` is a unique integer/enum value for your role, `roleTeam` is the
 
 
 ## Registering the Role
-Registering your role class is as simple as using the {@link RegisterRole} decorator and passing in your role class. That is,
+Registering your role class is as simple as using the {@link RegisterRole} decorator and passing in your role class:
 ```ts
 @RegisterRole(MyRole)
 @HindenburgPlugin("hbplugin-fun-things")

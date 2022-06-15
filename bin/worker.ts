@@ -269,6 +269,9 @@ export interface ChangelogJson {
 }
 
 async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
+    if (process.env.IS_PKG)
+        return logger.warn("Auto-updating disabled when using server executable");
+
     const versionSpinner = new Spinner("Checking for updates.. %s").start();
 
     try {

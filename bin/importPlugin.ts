@@ -36,10 +36,10 @@ export async function importPlugin(pluginPath: string) {
         throw new Error("The path didn't exist or wasn't a javascript module");
     }
     const { default: pluginCtr } = await import(pluginPath) as { default: SomePluginCtr };
-    
+
     if (!PluginLoader.isHindenburgPlugin(pluginCtr))
         throw new Error("The imported module wasn't a Hindenburg plugin");
-    
+
     const packageJsonMeta = {
         id: packageJson?.name || "no id",
         version: packageJson?.version || "1.0.0",

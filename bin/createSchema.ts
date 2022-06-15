@@ -8,17 +8,24 @@ import { importPlugin } from "./importPlugin";
 const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 const configFileDirectory = path.dirname(configFile);
 
-export default async () => {
-    const configSchemaJson = {
-        $extends: path.relative(configFileDirectory, path.resolve(__dirname, "../misc/config.schema.json")),
-        properties: {
-            plugins: {
-                properties: {
-
-                } as Record<string, any>
-            }
+async function findConfigSchemaFilename() {
+    try {
+        const ts = path.resolve(__dirname, "../misc/config.schema.json");
+        await fs.stat(ts);
+        return ts;
+    } catch (e: any) {
+        if (e.code === "ENOENT") {
+            return path.resolve(__dirname, "../../misc/config.schema.json");
         }
-    };
+
+        throw e;
+    }
+}
+
+export default async () => {
+    console.log(await fs.readdir(path.resolve(__dirname, "../..")));
+    console.log(await findConfigSchemaFilename());
+    const configSchemaJson = JSON.parse(await fs.readFile(await findConfigSchemaFilename(), "utf8"));
 
     for await (const pluginDirectory of iteratePlugins()) {
         try {

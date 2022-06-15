@@ -11,7 +11,7 @@ export function createDefaultConfig(): HindenburgConfig {
         defaultLanguage: "en",
         acceptedVersions: [ "2022.1.10.0", "2022.2.2.0" ],
         matchmaker: {
-            port: 80
+            port: 22021
         },
         socket: {
             port: 22023,

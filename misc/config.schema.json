@@ -79,7 +79,7 @@
         "port": {
           "type": "number",
           "description": "The port that the matchmaker should listen on.",
-          "default": 80
+          "default": 22021
         }
       }
     },

@@ -20,10 +20,10 @@ const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").
 const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 
 const yarnCommand = process.env.IS_PKG ?
-    "node \"" + path.join(process.env.PKG_EXE_DIRNAME as string, "yarn/bin/yarn.js")
+    "node \"" + path.join(__dirname, "../../build/yarn/bin/yarn.js") + "\""
     : "yarn";
 
-const baseHindenburgCommand = process.env.IS_PKG ? "hindenburg" : "yarn";
+const baseHindenburgCommand = process.env.IS_PKG ? process.env.PKG_EXE_BASENAME : "yarn";
 
 async function buildHindenburg(logger: Logger) {
     const buildSpinner = new Spinner("Building Hindenburg.. %s").start();
@@ -103,8 +103,8 @@ async function getPackageInfo(pluginsDirectory: string, packageName: string, log
             throw e;
         } catch (e) {
             logger.error("Failed to get plugin package information, either it doesn't exist, it's private, or you aren't connected to the internet");
-            throw e;
         }
+        throw e;
     }
 }
 
@@ -266,7 +266,7 @@ async function runCreatePlugin() {
         }
     }
 
-    const buildSucceeded = !useTypescript || await buildHindenburg(logger);
+    const buildSucceeded = process.env.IS_PKG || !useTypescript || await buildHindenburg(logger);
 
     const creatingDirectorySpinner = new Spinner("Creating plugins/" + pluginName + ".. %s").start();
     try {
@@ -407,8 +407,7 @@ async function runCreatePlugin() {
         } catch (e) {
             deleteSpinner.fail();
         }
-        console.log(e);
-        return;
+        throw e;
     }
 
     const configureSpinner = new Spinner("Configuring files.. %s").start();
@@ -1120,13 +1119,13 @@ async function runList() {
         await runList();
         break;
     default:
-        console.log("Usage: yarn plugins <action>");
-        console.log("       yarn plugins create    <plugin name> " + chalk.gray("# initialise a new plugin"));
-        console.log("       yarn plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
-        console.log("       yarn plugins import    <plugin repo> " + chalk.gray("# import a plugin from a git repository"));
-        console.log("       yarn plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
-        console.log("       yarn plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
-        console.log("       yarn plugins list                    " + chalk.gray("# list all installed plugins"));
+        console.log("Usage: " + baseHindenburgCommand + " plugins <action>");
+        console.log("       " + baseHindenburgCommand + " plugins create    <plugin name> " + chalk.gray("# initialise a new plugin"));
+        console.log("       " + baseHindenburgCommand + " plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
+        console.log("       " + baseHindenburgCommand + " plugins import    <plugin repo> " + chalk.gray("# import a plugin from a git repository"));
+        console.log("       " + baseHindenburgCommand + " plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
+        console.log("       " + baseHindenburgCommand + " plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
+        console.log("       " + baseHindenburgCommand + " plugins list                    " + chalk.gray("# list all installed plugins"));
         break;
     }
 

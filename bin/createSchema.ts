@@ -23,8 +23,6 @@ async function findConfigSchemaFilename() {
 }
 
 export default async () => {
-    console.log(await fs.readdir(path.resolve(__dirname, "../..")));
-    console.log(await findConfigSchemaFilename());
     const configSchemaJson = JSON.parse(await fs.readFile(await findConfigSchemaFilename(), "utf8"));
 
     for await (const pluginDirectory of iteratePlugins()) {

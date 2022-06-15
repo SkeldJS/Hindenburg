@@ -2,6 +2,7 @@
     "name": "@skeldjs/hindenburg",
     "version": "1.1.4",
     "main": "./dist/src/index.js",
+    "bin": "./dist/bin/pkg.js",
     "types": "./src/index.ts",
     "license": "GPL-3.0-only",
     "scripts": {
@@ -67,5 +68,8 @@
     "lint-staged": {
         "*.ts": "eslint src/**/*.ts"
     },
-    "packageManager": "yarn@3.1.1"
+    "packageManager": "yarn@3.1.1",
+    "pkg": {
+        "assets": [ "misc/config.schema.json", "build/yarn/bin/yarn.js", "build/yarn/lib/*" ]
+    }
 }

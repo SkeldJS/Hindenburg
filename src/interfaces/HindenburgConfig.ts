@@ -13,7 +13,7 @@ export interface PluginConfig {
 export interface MatchmakerConfig {
     /**
      * The port that the matchmaker should listen on.
-     * @default 80
+     * @default 22021
      */
     port: number;
 }

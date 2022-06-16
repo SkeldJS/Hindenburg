@@ -86,9 +86,10 @@ export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlug
 async function getPackageInfo(pluginsDirectory: string, packageName: string, logger: Logger) {
     const pluginInfoSpinner = new Spinner("Fetching plugin information.. %s").start();
     try {
-        const packageInfoData = await queryRegistry.getPackageManifest({ name: packageName });
+        const packageInfoData = await queryRegistry.getPackument({ name: packageName });
+        const packageJsonData = await queryRegistry.getPackageManifest({ name: packageName });
         pluginInfoSpinner.success();
-        return packageInfoData;
+        return { ...packageInfoData, ...packageJsonData };
     } catch (e) {
         pluginInfoSpinner.fail();
         try {
@@ -1020,19 +1021,17 @@ async function runInfo() {
     localInstallation.success();
 
     logger.info(chalk.green(packageInfoJson.name) + chalk.gray("@v" + pluginVersion));
-    if (packageInfoJson.maintainers?.[0]) {
-        let authorText = "- by " + chalk.green(packageInfoJson.maintainers[0].name);
-        if (packageInfoJson.maintainers[0].email) {
-            authorText += chalk.grey(" (" + packageInfoJson.maintainers[0].email + ")");
+    if (packageInfoJson.author?.name) {
+        let authorText = "- by " + chalk.green(packageInfoJson.author.name);
+        if (packageInfoJson.author.email) {
+            authorText += chalk.grey(" (" + packageInfoJson.author.email + ")");
         }
         logger.info(authorText);
     }
-    logger.info("- created at " + chalk.green(packageInfoJson.createdAt));
-    if (pluginType === "worker") {
-        logger.info("- Worker plugin");
-    } else if (pluginType === "room") {
-        logger.info("- Room plugin");
-    }
+    logger.info("- created at " + chalk.green(packageInfoJson.time.created));
+    logger.info("- updated at " + chalk.green(packageInfoJson.time.modified));
+    if (pluginType)
+        logger.info("- plugin type: " + chalk.green(pluginType));
 }
 
 async function runList() {

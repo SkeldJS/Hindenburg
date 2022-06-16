@@ -1,10 +1,8 @@
 const pkg = require("pkg");
-const jszip = require("jszip");
 const fs = require("fs-extra");
 const path = require("path");
 const tar = require("tar");
 const child_process = require("child_process");
-const { extname } = require("path/posix");
 
 function runCommandInDir(dir, command) {
   return new Promise((resolve, reject) => {
@@ -56,27 +54,6 @@ const yarnVersion = "1.22.19";
 
   console.log("Creating packages..");
   await pkg.exec([ path.resolve(__dirname, ".."), "--targets", buildTargets.join(","), "--output", path.resolve(baseBuildDir, "hindenburg") ]);
-
-  /*console.log("Creating archives..");
-  for (const outputExecutable of outputExecutables) {
-    console.log("Bundling %s..", outputExecutable);
-    const zip = new jszip();
-    
-    zip.folder("yarn");
-    zip.folder("yarn/bin");
-    zip.folder("yarn/lib");
-
-    zip.file("yarn/bin/yarn.js", fs.createReadStream(path.resolve(yarnInstallationDir, "bin", "yarn.js"), "utf8"));
-    zip.file("yarn/lib/cli.js", fs.createReadStream(path.resolve(yarnInstallationDir, "lib", "cli.js"), "utf8"));
-    zip.file("yarn/lib/v8-compile-cache.js", fs.createReadStream(path.resolve(yarnInstallationDir, "lib", "v8-compile-cache.js"), "utf8"));
-
-    const extension = path.extname(outputExecutable);
-
-    zip.file("hindenburg" + extension, fs.createReadStream(path.resolve(baseBuildDir, outputExecutable)));
-
-    const contents = await zip.generateAsync({ type: "nodebuffer" });
-    await fs.writeFile(path.resolve(baseBuildDir, path.basename(outputExecutable, extension) + ".zip"), contents);
-  }*/
 
   console.log("Cleaning up..");
   const files = await fs.readdir(baseBuildDir);

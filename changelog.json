@@ -1,5 +1,20 @@
 {
   "$schema": "./misc/changelog.schema.json",
+  "1.1.5": {
+    "version": "1.1.5",
+    "contributors": ["edward"],
+    "date": "2022-06-16",
+    "notes": [
+        {
+            "description": "Package scripts to package Hindenburg as a single distributable executable",
+            "commits": ["eeba3b5f1af4c7845e9c087b2a76a535fccff883", "2743fc60ed7318b5f9c67e6bddbb758947e83892", "cddac80898e749f65332189b43262c2ffb018a47"]
+        },
+        {
+            "description": "Update SkeldJS",
+            "commits": ["124ebd085220c1187d4665b9d931d516b27871d3", "ddd4e67bf0c70fca19f30b9662eef78187ef2557", "0bc4daed71402288b16395afc506b73beac0daa9"]
+        }
+    ]
+  },
   "1.1.4": {
     "version": "1.1.4",
     "contributors": ["edward"],

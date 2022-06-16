@@ -507,7 +507,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     /**
      * Get all real client-server connections for a list of players. That is, connections for
      * all players that are being controlled by a remote client/real player.
-     * 
+     *
      * See {@link BaseRoom.getConnections} to get connections for a list of players and
      * returned in the same order & place as the players provided, although some connections
      * may not exist, resulting in `undefined`s.
@@ -569,6 +569,32 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * ]);
      * ```
      */
+
+    /**
+     * Ban player from a room
+     * @param connection The connection or the player that should be banned.
+     * @param messages The messages in that the banned player gets displayed.
+     */
+    banPlayer(connection: Connection|PlayerData, message?: string): void {
+        if (connection instanceof PlayerData) {
+            return this.banPlayer(this.getConnection(connection) as Connection, message);
+        }
+
+        if (!connection) {
+            return;
+        }
+
+        const player = connection.getPlayer();
+        if (!player) {
+            return;
+        }
+
+        this.bannedAddresses.add(connection.remoteInfo.address);
+        connection.disconnect(message ?? DisconnectReason.Banned);
+
+        this.logger.info("%s was banned from the room by the server" + message ? ". Message: " + message : "", player);
+    }
+
     async broadcastMessages(
         gamedata: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],
@@ -1018,7 +1044,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.actingHostIds.add(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
-        
+
         this.logger.info("%s is now an acting host", connection || player);
 
         if (connection && this.actingHostWaitingFor === undefined) {
@@ -1034,7 +1060,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.actingHostIds.delete(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
-        
+
         this.logger.info("%s is no longer an acting host", connection || player);
 
         if (connection) {

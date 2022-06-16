@@ -70,6 +70,10 @@
     },
     "packageManager": "yarn@3.1.1",
     "pkg": {
-        "assets": [ "misc/config.schema.json", "build/yarn/bin/yarn.js", "build/yarn/lib/*" ]
+        "assets": [
+            "misc/config.schema.json",
+            "build/yarn/bin/yarn.js",
+            "build/yarn/lib/*"
+        ]
     }
 }

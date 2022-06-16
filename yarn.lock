@@ -291,6 +291,8 @@ __metadata:
     typescript: ^4.3.2
     vorpal: ^1.12.0
     winston-transport: ^4.4.0
+  bin:
+    hindenburg: ./dist/bin/pkg.js
   languageName: unknown
   linkType: soft
 

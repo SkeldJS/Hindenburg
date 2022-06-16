@@ -6,6 +6,7 @@ import fs from "fs/promises";
 import chalk from "chalk";
 import prompts from "prompts";
 import resolvePkg from "resolve-pkg";
+import * as queryRegistry from "query-registry";
 
 import pluginGitignore from "./resources/plugin-gitignore";
 
@@ -85,9 +86,9 @@ export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlug
 async function getPackageInfo(pluginsDirectory: string, packageName: string, logger: Logger) {
     const pluginInfoSpinner = new Spinner("Fetching plugin information.. %s").start();
     try {
-        const packageInfoData = await runCommandInDir(pluginsDirectory, yarnCommand + " npm info " + packageName + " --json");
+        const packageInfoData = await queryRegistry.getPackageManifest({ name: packageName });
         pluginInfoSpinner.success();
-        return JSON.parse(packageInfoData);
+        return packageInfoData;
     } catch (e) {
         pluginInfoSpinner.fail();
         try {
@@ -690,7 +691,7 @@ async function runInstallPlugin() {
         return;
 
     let installingText = "Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version);
-    if (packageInfoJson.maintainers[0]) {
+    if (packageInfoJson.maintainers?.[0]) {
         installingText += " by " + packageInfoJson.maintainers[0].name;
     }
     installingText += ".. %s";
@@ -1019,14 +1020,14 @@ async function runInfo() {
     localInstallation.success();
 
     logger.info(chalk.green(packageInfoJson.name) + chalk.gray("@v" + pluginVersion));
-    if (packageInfoJson.maintainers[0]) {
+    if (packageInfoJson.maintainers?.[0]) {
         let authorText = "- by " + chalk.green(packageInfoJson.maintainers[0].name);
         if (packageInfoJson.maintainers[0].email) {
             authorText += chalk.grey(" (" + packageInfoJson.maintainers[0].email + ")");
         }
         logger.info(authorText);
     }
-    logger.info("- last updated " + chalk.green(packageInfoJson.time[packageInfoJson.version]));
+    logger.info("- created at " + chalk.green(packageInfoJson.createdAt));
     if (pluginType === "worker") {
         logger.info("- Worker plugin");
     } else if (pluginType === "room") {

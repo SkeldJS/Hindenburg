@@ -55,6 +55,7 @@
         "minimatch": "^3.0.4",
         "polka": "^0.5.2",
         "prompts": "^2.4.2",
+        "query-registry": "^2.5.0",
         "reflect-metadata": "^0.1.13",
         "resolve-from": "^5.0.0",
         "resolve-pkg": "^2.0.0",

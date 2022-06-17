@@ -550,27 +550,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
     }
 
     /**
-     * Broadcast [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
-     * and root messages to all or some connections.
-     *
-     * Sends GameDataTo if a filter is applied with the include parameter.
-     * @param gamedata The [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
-     * to send.
-     * @param payloads The [Root messages](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/README.md)
-     * to send.
-     * @param include The connections to include in the broadcast.
-     * @param exclude The connections to exclude in the broadcast.
-     * @returns A promise that resolves when all packets have been sent.
-     * @example
-     * ```ts
-     * // Broadcast a scenechange message.
-     * await room.broadcastMessages([
-     *   new SceneChangeMessage(0, "OnlineGame")
-     * ]);
-     * ```
-     */
-
-    /**
      * Ban player from a room
      * @param connection The connection or the player that should be banned.
      * @param messages The messages in that the banned player gets displayed.
@@ -595,6 +574,26 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.logger.info("%s was banned from the room by the server" + message ? ". Message: " + message : "", player);
     }
 
+    /**
+     * Broadcast [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
+     * and root messages to all or some connections.
+     *
+     * Sends GameDataTo if a filter is applied with the include parameter.
+     * @param gamedata The [GameData messages](https://github.com/codyphobe/among-us-protocol/blob/master/03_gamedata_and_gamedatato_message_types/README.md)
+     * to send.
+     * @param payloads The [Root messages](https://github.com/codyphobe/among-us-protocol/blob/master/02_root_message_types/README.md)
+     * to send.
+     * @param include The connections to include in the broadcast.
+     * @param exclude The connections to exclude in the broadcast.
+     * @returns A promise that resolves when all packets have been sent.
+     * @example
+     * ```ts
+     * // Broadcast a scenechange message.
+     * await room.broadcastMessages([
+     *   new SceneChangeMessage(0, "OnlineGame")
+     * ]);
+     * ```
+     */
     async broadcastMessages(
         gamedata: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],

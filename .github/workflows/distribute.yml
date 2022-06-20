@@ -20,7 +20,7 @@ jobs:
       run: yarn && cd scripts && yarn && cd ..
 
     - name: Create release
-      run: node scripts/createRelease.js
+      run: node scripts/createRelease.js ${{ github.ref }}
 
     - name: Release
       uses: softprops/action-gh-release@v1

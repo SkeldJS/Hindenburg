@@ -67,7 +67,7 @@ const yarnVersion = "1.22.19";
 
   console.log("Creating release body..");
   const changelogJson = JSON.parse(await fs.readFile(path.resolve(baseHindenburgDir, "changelog.json"), "utf8"));
-  const latestVersionId = await runCommandInDir(baseHindenburgDir, "git describe --tags --abbrev=0");
+  const latestVersionId = process.argv[2] || await runCommandInDir(baseHindenburgDir, "git describe --tags --abbrev=0");
   const latestChanges = changelogJson[latestVersionId.trim()];
 
   let releaseBody = "";

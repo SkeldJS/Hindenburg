@@ -18,14 +18,15 @@ function runCommandInDir(dir, command) {
   });
 }
 
-const baseBuildDir = path.resolve(__dirname, "..", "build");
+const baseHindenburgDir = path.resolve(__dirname, "..");
+const baseBuildDir = path.resolve(baseHindenburgDir, "release");
 const buildTargets = [ "latest-win-x64", "latest-linux-x64" ];
 const outputExecutables = [ "hindenburg-win.exe", "hindenburg-linux" ];
 
 const yarnVersion = "1.22.19";
 
 (async () => {
-  console.log("Creating build dir..");
+  console.log("Creating release dir..");
 
   try {
     await fs.stat(baseBuildDir);
@@ -35,7 +36,7 @@ const yarnVersion = "1.22.19";
   await fs.mkdir(baseBuildDir);
 
   console.log("Building Hindenburg..");
-  await runCommandInDir(path.resolve(__dirname, ".."), "yarn build");
+  await runCommandInDir(baseHindenburgDir, "yarn build");
 
   console.log("Installing yarn tarball to bundle..");
   const resultStdout = await runCommandInDir(baseBuildDir, "npm pack yarn@" + yarnVersion + " --json");
@@ -52,8 +53,8 @@ const yarnVersion = "1.22.19";
 
   await fs.rename(yarnInstallationDir, path.resolve(baseBuildDir, "yarn"));
 
-  console.log("Creating packages..");
-  await pkg.exec([ path.resolve(__dirname, ".."), "--targets", buildTargets.join(","), "--output", path.resolve(baseBuildDir, "hindenburg") ]);
+  console.log("Creating releases..");
+  await pkg.exec([ baseHindenburgDir, "--targets", buildTargets.join(","), "--output", path.resolve(baseBuildDir, "hindenburg") ]);
 
   console.log("Cleaning up..");
   const files = await fs.readdir(baseBuildDir);
@@ -63,4 +64,15 @@ const yarnVersion = "1.22.19";
 
     await fs.rm(path.resolve(baseBuildDir, file), { recursive: true });
   }
+
+  console.log("Creating release body..");
+  const changelogJson = JSON.parse(await fs.readFile(path.resolve(baseHindenburgDir, "changelog.json"), "utf8"));
+  const latestVersionId = await runCommandInDir(baseHindenburgDir, "git describe --tags --abbrev=0");
+  const latestChanges = changelogJson[latestVersionId.trim()];
+
+  let releaseBody = "";
+  for (const note of latestChanges.notes)  {
+    releaseBody += "- " + note.description + (note.commits ? " (" + note.commits.join(", ") + ")" : "");
+  }
+  await fs.writeFile(path.resolve(baseBuildDir, "body.txt"), releaseBody, "utf8");
 })();

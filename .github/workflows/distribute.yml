@@ -20,6 +20,7 @@ jobs:
       run: yarn && cd scripts && yarn && cd ..
 
     - name: Create release
+      if: startsWith(github.ref, 'refs/tags/')
       run: node scripts/createRelease.js ${{ github.ref }}
 
     - name: Release

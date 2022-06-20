@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  create_releases:
     runs-on: ubuntu-latest
 
     steps:

@@ -2,7 +2,8 @@ name: Distribute
 
 on:
   push:
-    branches: [ master ]
+    tags:
+    - '*'
 
 jobs:
   create_releases:

@@ -136,6 +136,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="Hostable.html#destroy" class="tsd-kind-icon">destroy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="Hostable.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="Hostable.html#emitSerial" class="tsd-kind-icon">emit<wbr>Serial</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="Hostable.html#emitSync" class="tsd-kind-icon">emit<wbr>Sync</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="Hostable.html#endGame" class="tsd-kind-icon">end<wbr>Game</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="Hostable.html#findPlayersWithName" class="tsd-kind-icon">find<wbr>Players<wbr>With<wbr>Name</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="Hostable.html#getAvailablePlayerID" class="tsd-kind-icon">get<wbr>Available<wbr>PlayerID</a></li>
@@ -741,6 +742,36 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+					<a name="emitSync" class="tsd-anchor"></a>
+					<h3>emit<wbr>Sync</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">emit<wbr>Sync&lt;Event&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from EventEmitter.emitSync</p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:21</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>Event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">Event</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Event</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="endGame" class="tsd-anchor"></a>
 					<h3>end<wbr>Game</h3>
@@ -846,7 +877,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.getListeners</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:31</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:32</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1162,7 +1193,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.off</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:29</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:30</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1186,7 +1217,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.off</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:30</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1220,7 +1251,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.on</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:21</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:22</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1256,7 +1287,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.on</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:22</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:23</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1302,7 +1333,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.once</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:23</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:24</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1338,7 +1369,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.once</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:24</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:25</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1484,7 +1515,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.removeAllListeners</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:33</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:34</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1502,7 +1533,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.removeListeners</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:32</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:33</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1887,7 +1918,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.wait</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:25</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:26</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1908,7 +1939,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.wait</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:26</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:27</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1933,7 +1964,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.waitf</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:27</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:28</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1975,7 +2006,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from EventEmitter.waitf</p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:28</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:29</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -2270,6 +2301,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="Hostable.html#emitSerial" class="tsd-kind-icon">emit<wbr>Serial</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="Hostable.html#emitSync" class="tsd-kind-icon">emit<wbr>Sync</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="Hostable.html#endGame" class="tsd-kind-icon">end<wbr>Game</a>

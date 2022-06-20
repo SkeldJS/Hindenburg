@@ -138,14 +138,35 @@
 <span style="color: #000000">}</span>
 </code></pre>
 				<p>Notice the new function passed into <code>@ChatCommand</code>: <code>player =&gt; player.isHost</code>. This will make the command only available to host players.</p>
-				<p>Here are some more functions to filter which players can use your commands:
-					|                  Function                 |                    Description                 |
-					|-------------------------------------------|------------------------------------------------|
-					| <code>player =&gt; player.playerInfo?.isImpostor</code> | Only available to impostors                    |
-					| <code>player =&gt; player.playerInfo?.isDead</code>     | Only available to dead players                 |
-					| <code>player =&gt; !player.playerInfo?.isDead</code>    | Only available to alive players                |
-					| <code>player =&gt; !!player.room.meetingHud</code>      | Only available during meetings                 |
-				| <code>player =&gt; !!player.room.lobbyBehaviour</code>  | Only available during the lobby (before games) |</p>
+				<p>Here are some more functions to filter which players can use your commands:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Function</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><code>player =&gt; player.playerInfo?.isImpostor</code></td>
+							<td>Only available to impostors</td>
+						</tr>
+						<tr>
+							<td><code>player =&gt; player.playerInfo?.isDead</code></td>
+							<td>Only available to dead players</td>
+						</tr>
+						<tr>
+							<td><code>player =&gt; !player.playerInfo?.isDead</code></td>
+							<td>Only available to alive players</td>
+						</tr>
+						<tr>
+							<td><code>player =&gt; !!player.room.meetingHud</code></td>
+							<td>Only available during meetings</td>
+						</tr>
+						<tr>
+							<td><code>player =&gt; !!player.room.lobbyBehaviour</code></td>
+							<td>Only available during the lobby (before games)</td>
+						</tr>
+				</tbody></table>
 				<p>Adding a filter to your command will also change how the help command shows up for each player:
 					<img src="https://user-images.githubusercontent.com/60631511/171652565-257d0c49-c90e-48c9-91f8-3a967d06cc6f.png" alt="image">
 				<em>The player on the left screen is the host of the room</em></p>

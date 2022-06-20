@@ -111,6 +111,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="DoorsSystem.html#closeDoor" class="tsd-kind-icon">close<wbr>Door</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="DoorsSystem.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="DoorsSystem.html#emitSerial" class="tsd-kind-icon">emit<wbr>Serial</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="DoorsSystem.html#emitSync" class="tsd-kind-icon">emit<wbr>Sync</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="DoorsSystem.html#getListeners" class="tsd-kind-icon">get<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="DoorsSystem.html#off" class="tsd-kind-icon">off</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="DoorsSystem.html#on" class="tsd-kind-icon">on</a></li>
@@ -243,7 +244,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#HandleSabotage">HandleSabotage</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:30</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:32</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -358,7 +359,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#emitSerial">emitSerial</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:20</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:26</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -378,6 +379,36 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+					<a name="emitSync" class="tsd-anchor"></a>
+					<h3>emit<wbr>Sync</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">emit<wbr>Sync&lt;Event&gt;<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#emitSync">emitSync</a></p>
+								<ul>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:27</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>Event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BasicEvent</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">&gt;</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">Event</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Event</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 					<a name="getListeners" class="tsd-anchor"></a>
 					<h3>get<wbr>Listeners</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
@@ -388,7 +419,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#getListeners">getListeners</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:31</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:32</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -419,7 +450,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#off">off</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:29</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:30</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -443,7 +474,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#off">off</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:30</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -477,7 +508,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#on">on</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:21</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:22</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -513,7 +544,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#on">on</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:22</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:23</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -559,7 +590,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#once">once</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:23</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:24</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -595,7 +626,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#once">once</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:24</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:25</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -671,7 +702,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#removeAllListeners">removeAllListeners</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:33</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:34</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -689,7 +720,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#removeListeners">removeListeners</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:32</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:33</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -713,7 +744,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#repair">repair</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:34</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:36</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -736,7 +767,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#sabotage">sabotage</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:38</li>
+									<li>Defined in node_modules/@skeldjs/core/dist/lib/systems/SystemStatus.d.ts:40</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -760,7 +791,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#wait">wait</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:25</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:26</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -781,7 +812,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#wait">wait</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:26</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:27</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -806,7 +837,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#waitf">waitf</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:27</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:28</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -848,7 +879,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="SystemStatus.html">SystemStatus</a>.<a href="SystemStatus.html#waitf">waitf</a></p>
 								<ul>
-									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:28</li>
+									<li>Defined in node_modules/@skeldjs/events/dist/lib/EventEmitter.d.ts:29</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1180,6 +1211,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="DoorsSystem.html#emitSerial" class="tsd-kind-icon">emit<wbr>Serial</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
+								<a href="DoorsSystem.html#emitSync" class="tsd-kind-icon">emit<wbr>Sync</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="DoorsSystem.html#getListeners" class="tsd-kind-icon">get<wbr>Listeners</a>

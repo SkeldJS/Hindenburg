@@ -9,7 +9,7 @@ export function createDefaultConfig(): HindenburgConfig {
         autoUpdate: false,
         exitConfirmation: true,
         defaultLanguage: "en",
-        acceptedVersions: [ "2022.1.10.0", "2022.2.2.0" ],
+        acceptedVersions: [ "2022.4.20" ],
         matchmaker: {
             port: 22021
         },

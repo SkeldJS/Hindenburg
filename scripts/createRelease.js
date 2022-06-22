@@ -72,7 +72,7 @@ const yarnVersion = "1.22.19";
 
   let releaseBody = "";
   for (const note of latestChanges.notes)  {
-    releaseBody += "- " + note.description + (note.commits ? " (" + note.commits.join(", ") + ")" : "");
+    releaseBody += "\n- " + note.description + (note.commits ? " (" + note.commits.join(", ") + ")" : "");
   }
-  await fs.writeFile(path.resolve(baseBuildDir, "body.txt"), releaseBody, "utf8");
+  await fs.writeFile(path.resolve(baseBuildDir, "body.txt"), releaseBody.trim(), "utf8");
 })();

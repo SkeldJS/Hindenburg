@@ -1,5 +1,16 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.9": {
+        "version": "1.1.9",
+        "contributors": ["edward"],
+        "date": "2022-06-22",
+        "notes": [
+            {
+                "description": "Fix npm package typings",
+                "commits": ["ee3df9e08d5f900bb68ae425e9138ccae7bb8939"]
+            }
+        ]
+    },
     "1.1.8": {
         "version": "1.1.8",
         "contributors": ["edward"],

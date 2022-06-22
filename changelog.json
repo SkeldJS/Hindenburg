@@ -1,5 +1,16 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.8": {
+        "version": "1.1.8",
+        "contributors": ["edward"],
+        "date": "2022-06-22",
+        "notes": [
+            {
+                "description": "Oopsies, accidentally published bad package",
+                "commits": []
+            }
+        ]
+    },
     "1.1.7": {
         "version": "1.1.7",
         "contributors": ["edward"],

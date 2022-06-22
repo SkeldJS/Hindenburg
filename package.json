@@ -1,10 +1,13 @@
 {
     "name": "@skeldjs/hindenburg",
-    "version": "1.1.7",
+    "version": "1.1.8",
     "main": "./dist/src/index.js",
     "bin": "./dist/bin/pkg.js",
     "types": "./src/index.ts",
     "license": "GPL-3.0-only",
+    "publishConfig": {
+        "types":" ./dist/src/index.d.ts"
+    },
     "scripts": {
         "build": "tsc -p ./",
         "setup": "ts-node ./bin/setup",

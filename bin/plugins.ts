@@ -519,7 +519,13 @@ async function runCreatePlugin() {
 
     const schemaSpinner = new Spinner("Creating config schema.. %s").start();
     try {
-        await fs.writeFile(path.resolve(pluginDirectory, "config.schema.json"), "{}", "utf8");
+        await fs.writeFile(path.resolve(pluginDirectory, "config.schema.json"), `{
+    "properties": {
+        "message": {
+            "type": "string"
+        }
+    }
+}`, "utf8");
         schemaSpinner.success();
     } catch (e) {
         schemaSpinner.fail();

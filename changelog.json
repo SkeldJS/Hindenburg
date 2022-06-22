@@ -1,12 +1,27 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.7": {
+        "version": "1.1.7",
+        "contributors": ["edward"],
+        "date": "2022-06-22",
+        "notes": [
+            {
+                "description": "Update SkeldJS to fix utf8 strings in names",
+                "commits": ["dc132abb1325487c912167daf5f2328631484a43"]
+            },
+            {
+                "description": "Update default accepted versions",
+                "commits": ["a3507b945e7ca2dd7584e72637a9de78f268f272"]
+            }
+        ]
+    },
     "1.1.6": {
         "version": "1.1.6",
         "contributors": ["edward"],
         "date": "2022-06-20",
         "notes": [
             {
-                "description": "Update skeldjs to fix movingplatform animation bug",
+                "description": "Update SkeldJS to fix movingplatform animation bug",
                 "commits": ["b5d9911a1e3e87110f5df1e06e6556d6b7c39fd5"]
             }
         ]

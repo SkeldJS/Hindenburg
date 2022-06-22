@@ -41,7 +41,7 @@ async function buildHindenburg(logger: Logger) {
 
 async function checkGitInstallation() {
     try {
-        await runCommandInDir(process.cwd(), "git");
+        await runCommandInDir(process.cwd(), "git help -g");
         return true;
     } catch (e) {
         return false;
@@ -374,23 +374,23 @@ async function runCreatePlugin() {
 
     const dependenciesSpinner = new Spinner("Installing dependencies.. %s").start();
     try {
-        const relativeHindenburg = path.relative(pluginDirectory, process.cwd()).replace(/\\/g, path.posix.sep);
+        // const relativeHindenburg = path.relative(pluginDirectory, process.cwd()).replace(/\\/g, path.posix.sep);
         if (packageManager === "yarn") {
             await runCommandInDir(
                 pluginDirectory,
-                yarnCommand + " add --dev @skeldjs/hindenburg" + (process.env.IS_PKG ? "" : "@link:" + relativeHindenburg)
+                yarnCommand + " add --dev @skeldjs/hindenburg"
                     + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "npm") {
             await runCommandInDir(
                 pluginDirectory,
-                "npm install --save-dev @skeldjs/hindenburg" + (process.env.IS_PKG ? "" : "@file:" + relativeHindenburg)
+                "npm install --save-dev @skeldjs/hindenburg"
                     + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "pnpm") {
             await runCommandInDir(
                 pluginDirectory,
-                "pnpm install --save-dev @skeldjs/hindenburg" + (process.env.IS_PKG ? "" : "@file:" + relativeHindenburg)
+                "pnpm install --save-dev @skeldjs/hindenburg"
                     + (useTypescript ? " typescript@latest" : "")
             );
         }

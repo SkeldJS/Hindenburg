@@ -61,6 +61,9 @@ export function createDefaultConfig(): HindenburgConfig {
             gameCodes: "v2",
             enforceSettings: {},
             serverAsHost: false,
+            advanced: {
+                unknownObjects: false
+            },
             serverPlayer: {
                 name: "<color=yellow>[Server]</color>",
                 color: "Yellow",

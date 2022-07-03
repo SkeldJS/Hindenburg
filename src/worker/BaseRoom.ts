@@ -10,6 +10,7 @@ import {
     Hat,
     Platform,
     Skin,
+    SpawnFlag,
     SpawnType,
     Visor
 } from "@skeldjs/constant";
@@ -18,7 +19,9 @@ import {
     AlterGameMessage,
     BaseGameDataMessage,
     BaseRootMessage,
+    ComponentSpawnData,
     DataMessage,
+    DespawnMessage,
     EndGameMessage,
     GameDataMessage,
     GameDataToMessage,
@@ -27,18 +30,22 @@ import {
     JoinedGameMessage,
     JoinGameMessage,
     MessageDirection,
+    PacketDecoder,
     PlatformSpecificData,
     PlayerJoinData,
+    ReadyMessage,
     ReliablePacket,
     RemoveGameMessage,
     RemovePlayerMessage,
     RpcMessage,
+    SceneChangeMessage,
     SendChatMessage,
     SetColorMessage,
     SetHatMessage,
     SetNameMessage,
     SetSkinMessage,
     SetVisorMessage,
+    SpawnMessage,
     StartGameMessage,
     UnreliablePacket,
     WaitForHostMessage
@@ -47,19 +54,21 @@ import {
 import {
     CustomNetworkTransform,
     EndGameIntent,
+    Hostable,
     HostableEvents,
     Networkable,
     PlayerData,
     PlayerDataResolvable,
     PlayerJoinEvent,
+    PlayerSceneChangeEvent,
     PlayerSetHostEvent,
     RoomEndGameIntentEvent,
-    RoomFixedUpdateEvent
+    RoomFixedUpdateEvent,
+    RoomSetPrivacyEvent
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
-import { GameCode, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
-import { SkeldjsStateManager } from "@skeldjs/state";
+import { GameCode, HazelReader, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
 
 import {
     BaseReactorRpcMessage,
@@ -95,6 +104,7 @@ import { Logger } from "../logger";
 import { Connection, logLanguages, logPlatforms } from "./Connection";
 import { Worker } from "./Worker";
 import { Perspective, PresetFilter } from "./Perspective";
+import { UnknownComponent } from "../components";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: PlayerData<BaseRoom>) {
@@ -154,7 +164,7 @@ export type RoomEvents = HostableEvents<BaseRoom> & ExtractEventTypes<[
 
 const _movementTick = Symbol("_movementTick");
 
-export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
+export class BaseRoom extends Hostable<RoomEvents> {
     /**
      * The unix (milliseconds) timestamp. that the room was created.
      */
@@ -218,6 +228,10 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
      * The chat command handler in the room.
      */
     chatCommandHandler: ChatCommandHandler;
+    /**
+     * A packet decoder for the room to decode and handle incoming packets.
+     */
+    decoder: PacketDecoder;
 
     private roomNameOverride?: string;
 
@@ -250,6 +264,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.connections = new Map;
         this.waitingForHost = new Set;
 
+        this.decoder = new PacketDecoder;
         this.decoder.types = worker.decoder.types;
 
         this.bannedAddresses = new Set;
@@ -267,14 +282,6 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
         this.hostId = this.config.serverAsHost
             ? SpecialClientId.Server
             : 0;
-
-        this.decoder.on(EndGameMessage, message => {
-            this.handleEnd(message.reason);
-        });
-
-        this.decoder.on(StartGameMessage, async () => {
-            this.handleStart();
-        });
 
         this.on("player.setname", async ev => {
             if (ev.oldName) {
@@ -331,6 +338,167 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 ev.setSettings(this.config.enforceSettings);
             }
         });
+
+        this.decoder.on(EndGameMessage, message => {
+            this.handleEnd(message.reason);
+        });
+
+        this.decoder.on(StartGameMessage, async () => {
+            this.handleStart();
+        });
+
+        this.decoder.on(AlterGameMessage, async message => {
+            if (message.alterTag === AlterGameTag.ChangePrivacy) {
+                const messagePrivacy = message.value ? "public" : "private";
+                const oldPrivacy = this.privacy;
+                const ev = await this.emit(
+                    new RoomSetPrivacyEvent(
+                        this,
+                        message,
+                        oldPrivacy,
+                        messagePrivacy
+                    )
+                );
+
+                if (ev.alteredPrivacy !== messagePrivacy) {
+                    await this.broadcast([], [
+                        new AlterGameMessage(
+                            this.code,
+                            AlterGameTag.ChangePrivacy,
+                            ev.alteredPrivacy === "public" ? 1 : 0
+                        )
+                    ]);
+                }
+
+                if (ev.alteredPrivacy !== oldPrivacy) {
+                    this._setPrivacy(ev.alteredPrivacy);
+                }
+            }
+        });
+
+        this.decoder.on(DataMessage, message => {
+            const component = this.netobjects.get(message.netId);
+
+            if (component) {
+                const reader = HazelReader.from(message.data);
+                component.Deserialize(reader);
+            }
+        });
+
+        this.decoder.on(RpcMessage, async message => {
+            const component = this.netobjects.get(message.netId);
+
+            if (component) {
+                try {
+                    await component.HandleRpc(message.data);
+                } catch (e) {
+                    void e;
+                }
+            }
+        });
+
+        this.decoder.on(SpawnMessage, message => {
+            const ownerClient = this.players.get(message.ownerid);
+
+            if (message.ownerid > 0 && !ownerClient) {
+                return;
+            }
+
+            if (this.config.advanced.unknownObjects === "all") {
+                return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
+            }
+
+            if (Array.isArray(this.config.advanced.unknownObjects) && (this.config.advanced.unknownObjects.includes(message.spawnType) || this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType]))) {
+                return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
+            }
+
+            if (!this.registeredPrefabs.has(message.spawnType)) {
+                if (this.config.advanced.unknownObjects === true) {
+                    return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
+                }
+
+                throw new Error("Cannot spawn object of type: " + message.spawnType + " (not registered, you might need to add this to config.rooms.advanced.unknownObjects)");
+            }
+
+            try {
+                this.spawnPrefabOfType(
+                    message.spawnType,
+                    message.ownerid,
+                    message.flags,
+                    message.components,
+                    false,
+                    false
+                );
+            } catch (e) {
+
+                this.logger.error("Couldn't spawn object of type: %s (you might need to add it to config.rooms.advanced.unknownObjects)", message.spawnType);
+            }
+        });
+
+        this.decoder.on(DespawnMessage, message => {
+            const component = this.netobjects.get(message.netId);
+
+            if (component) {
+                this._despawnComponent(component);
+            }
+        });
+
+        this.decoder.on(SceneChangeMessage, async message => {
+            const player = this.players.get(message.clientId);
+
+            if (player) {
+                if (message.scene === "OnlineGame") {
+                    player.inScene = true;
+
+                    const ev = await this.emit(
+                        new PlayerSceneChangeEvent(
+                            this,
+                            player,
+                            message
+                        )
+                    );
+
+                    if (ev.canceled) {
+                        player.inScene = false;
+                    } else {
+                        if (this.hostIsMe) {
+                            await this.broadcast(
+                                this.getExistingObjectSpawn(),
+                                undefined,
+                                [ player ]
+                            );
+
+                            this.spawnPrefabOfType(
+                                SpawnType.Player,
+                                player.clientId,
+                                SpawnFlag.IsClientCharacter
+                            );
+
+                            this.host?.control?.syncSettings(this.settings);
+                        }
+                    }
+                }
+            }
+        });
+
+        this.decoder.on(ReadyMessage, message => {
+            const player = this.players.get(message.clientId);
+
+            if (player) {
+                player.setReady();
+            }
+        });
+    }
+
+    protected _reset() {
+        this.players.clear();
+        this.netobjects.clear();
+        this.messageStream = [];
+        this.code = 0;
+        this.hostId = 0;
+        this.settings = new GameSettings;
+        this.counter = -1;
+        this.privacy = "private";
     }
 
     async emit<Event extends RoomEvents[keyof RoomEvents]>(
@@ -455,8 +623,9 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 continue;
 
             component.PreSerialize();
-            const writer = HazelWriter.alloc(0);
+            const writer = HazelWriter.alloc(1024);
             if (component.Serialize(writer, false)) {
+                writer.realloc(writer.cursor);
                 this.messageStream.push(new DataMessage(component.netId, writer.buffer));
             }
             component.dirtyBit = 0;
@@ -1309,11 +1478,11 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
         if (this.hostIsMe) {
             if (!this.lobbyBehaviour && this.gameState === GameState.NotStarted) {
-                this.spawnPrefab(SpawnType.LobbyBehaviour, -2);
+                this.spawnPrefabOfType(SpawnType.LobbyBehaviour, -2);
             }
 
             if (!this.gameData) {
-                this.spawnPrefab(SpawnType.GameData, -2);
+                this.spawnPrefabOfType(SpawnType.GameData, -2);
             }
         }
     }
@@ -1524,7 +1693,7 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
                 SpawnType.Airship
             ];
 
-            this.spawnPrefab(ship_prefabs[this.settings?.map] || 0, -2);
+            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, -2);
             await this.shipStatus?.assignTasks();
             await this.shipStatus?.assignRoles();
 
@@ -1571,6 +1740,18 @@ export class BaseRoom extends SkeldjsStateManager<RoomEvents> {
 
     async endGame(reason: GameOverReason, intent?: EndGameIntent) {
         await this.handleEnd(reason, intent);
+    }
+
+    protected spawnUnknownPrefab(
+        spawnType: number,
+        ownerId: number|PlayerData|undefined,
+        flags: number,
+        componentData: (any|ComponentSpawnData)[],
+        doBroadcast = true,
+        doAwake = true
+    ) {
+        const prefab = new Array(componentData.length).fill(UnknownComponent);
+        return this.spawnPrefab(spawnType, prefab, ownerId, flags, componentData, doBroadcast, doAwake);
     }
 
     private getOtherPlayer(base: PlayerData<this>) {

@@ -268,21 +268,57 @@ export interface ServerPlayerOptions {
      */
     name?: string;
     /**
-     * The color of the player for a message sent by the server in game chat
+     * The name of the color of the player for a message sent by the server in game chat.
+     *
+     * Check out the [Official Wiki page for colors](https://among-us.fandom.com/wiki/Colors)
+     * for names to use.
      */
     color?: string;
     /**
-     * The hat of the player for a message sent by the server in game chat
+     * The ID of the hat of the player for a message sent by the server in game chat.
+     *
+     * Check out the [Official Wiki page for hats](https://among-us.fandom.com/wiki/Hats)
+     * for IDs to use.
      */
     hat?: string;
     /**
-     * The skin of the player for a message sent by the server in game chat
+     * The ID of the skin of the player for a message sent by the server in game chat.
+     *
+     * Check out the [Official Wiki page for skins](https://among-us.fandom.com/wiki/Skins)
+     * for IDs to use.
      */
     skin?: string;
     /**
-     * The visor of the player for a message sent by the server in game chat
+     * The ID of the visor of the player for a message sent by the server in game chat.
+     *
+     * Check out the [Official Wiki page for visors](https://among-us.fandom.com/wiki/Visors)
+     * for IDs to use.
      */
     visor?: string;
+}
+
+export interface AdvancedRoomOptions {
+    /**
+     * In-game object types for Hindenburg to ignore and treat as unknown
+     * objects.
+     *
+     * Pass `false` to ignore no object types and ban uknown object types,
+     * or 'true' for Hindenburg to ignore any unknown objects.
+     *
+     * Pass `all` to ignore _every_ object type and treat all of them as uknown,
+     * including standard Among Us objects.
+     *
+     * Alternatively, pass an array of either spawn type ids or members of the
+     * {@link SpawnType} enum of the objects to ignore and treat as unknown.
+     *
+     * This will allow objects with a spawn type unknown to Hindenburg to spawn,
+     * making it useful for custom modded maps or mods that use custom objects that
+     * aren't implemented on the server. Note that any of these objects spawned
+     * can't be handled by Hindenburg, so they will be incompatible with
+     * {@link RoomsConfig.serverAsHost}.
+     * @default false
+     */
+    unknownObjects: "all"|boolean|(string|number)[];
 }
 
 export interface RoomsConfig extends HostableOptions {
@@ -326,6 +362,11 @@ export interface RoomsConfig extends HostableOptions {
      * @default 10
      */
     createTimeout: number;
+    /**
+     * Advanced room options for mod and plugin developers, or knowledgeable
+     * server owners.
+     */
+    advanced: AdvancedRoomOptions;
 }
 
 export interface MovementOptimizations {

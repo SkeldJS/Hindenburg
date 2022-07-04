@@ -516,12 +516,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        const paren = fmtLogFormat(
-            this.worker.config.logging.rooms?.format || ["players", "map", "issaah"],
+            this.worker.config.logging.rooms?.format || ["players", "map", "issaah", "privacy"],
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",
                 map: logMaps[this.settings.map],
-                issaah: this.config.serverAsHost ? "SaaH" : undefined
+                issaah: this.config.serverAsHost ? "SaaH" : undefined,
+                privacy: this.privacy
             }
         );
 

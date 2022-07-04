@@ -99,7 +99,7 @@ export interface AnticheatRuleConfig {
 }
 
 export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"mods"|"level"|"version"|"platform"|"language";
-export type RoomFormatOptions = "players"|"map"|"issaah";
+export type RoomFormatOptions = "players"|"map"|"issaah"|"privacy";
 export type PlayerFormatOptions = "id"|"ping"|"mods"|"level"|"ishost"|"platform"|"language";
 
 export interface LoggingConfig {
@@ -158,7 +158,7 @@ export interface LoggingConfig {
          * // => ABCDEF
          * ```
          *
-         * @default ["players", "map", "issaah"]
+         * @default ["players", "map", "issaah", "privacy"]
          */
         format?: RoomFormatOptions[]
     };

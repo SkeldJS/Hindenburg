@@ -243,11 +243,12 @@
                 "enum": [
                   "players",
                   "map",
-                  "issaah"
+                  "issaah",
+                  "privacy"
                 ]
               },
               "uniqueItems": true,
-              "default": [ "players", "map", "issaah" ]
+              "default": [ "players", "map", "issaah", "privacy" ]
             }
           }
         },

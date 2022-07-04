@@ -39,7 +39,7 @@ export function createDefaultConfig(): HindenburgConfig {
                 format: ["id", "ip", "ping", "room"]
             },
             rooms: {
-                format: ["players", "map"]
+                format: ["players", "map", "issaah", "privacy"]
             },
             players: {
                 format: ["id", "ping", "ishost"]

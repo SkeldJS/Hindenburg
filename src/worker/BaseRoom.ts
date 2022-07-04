@@ -117,7 +117,7 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
             this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
             {
                 id: this.clientId,
-                ping: connection?.roundTripPing,
+                ping: connection ? connection.roundTripPing + "ms" : undefined,
                 mods: connection ? connection.numMods + " mod" + (connection.numMods === 1 ? "" : "s") : undefined,
                 level: connection ? "level " + connection.playerLevel : undefined,
                 ishost: isHost ? "host" : isActingHost ? "acting host" : undefined,

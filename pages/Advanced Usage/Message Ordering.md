@@ -3,3 +3,11 @@ Hindenburg has support for _message ordering_. Message ordering refers to making
 Mod developers, however, may find it useful to enable as it removes the need for using _sequence IDs_ for particular packets.
 
 It also just adds another layer of reliability on top of DTLS, which is fundamentally an unreliable communication protocol.
+
+## Configuring Hindenburg for Message Ordering
+Configuring Hindenburg to process reliable packets in the order that they are sent is easy:
+```json
+"socket": {
+    "messageOrdering": true
+}
+```

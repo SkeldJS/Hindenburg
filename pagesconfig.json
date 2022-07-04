@@ -22,6 +22,44 @@
                 {
                     "title": "Contributing",
                     "source": "./pages/Getting Started/Contributing.md"
+                },
+                {
+                    "title": "Comparison with Impostor",
+                    "source": "./pages/Getting Started/Comparison with Impostor.md"
+                }
+            ]
+        },
+        {
+            "title": "Using Hindenburg",
+            "pages": [
+                {
+                    "title": "Chat Commands",
+                    "source": "./pages/Using Hindenburg/Chat Commands.md"
+                },
+                {
+                    "title": "Logging Config",
+                    "source": "./pages/Using Hindenburg/Logging Config.md"
+                },
+                {
+                    "title": "Reactor Support",
+                    "source": "./pages/Using Hindenburg/Reactor Support.md"
+                },
+                {
+                    "title": "Server-as-a-Host",
+                    "source": "./pages/Using Hindenburg/Server-as-a-Host.md"
+                }
+            ]
+        },
+        {
+            "title": "Advanced Usage",
+            "pages": [
+                {
+                    "title": "Unknown Innernet Objects",
+                    "source": "./pages/Advanced Usage/Logging Config.md"
+                },
+                {
+                    "title": "Message Ordering",
+                    "source": "./pages/Advanced Usage/Message Ordering.md"
                 }
             ]
         },
@@ -71,39 +109,6 @@
                 {
                     "title": "Custom Roles",
                     "source": "./pages/Plugins/Custom Roles.md"
-                }
-            ]
-        },
-        {
-            "title": "Information",
-            "pages": [
-                {
-                    "title": "Chat Commands",
-                    "source": "./pages/Information/Chat Commands.md"
-                },
-                {
-                    "title": "Comparison with Impostor",
-                    "source": "./pages/Information/Comparison with Impostor.md"
-                },
-                {
-                    "title": "Interactive CLI",
-                    "source": "./pages/Information/Interactive CLI.md"
-                },
-                {
-                    "title": "Message Ordering",
-                    "source": "./pages/Information/Message Ordering.md"
-                },
-                {
-                    "title": "Plugins",
-                    "source": "./pages/Information/Plugins.md"
-                },
-                {
-                    "title": "Reactor Support",
-                    "source": "./pages/Information/Reactor Support.md"
-                },
-                {
-                    "title": "Server-as-a-Host",
-                    "source": "./pages/Information/Server-as-a-Host.md"
                 }
             ]
         }

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MessageHandlerOptions | @skeldjs/hindenburg</title>
+	<title>AdvancedRoomOptions | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="MessageHandlerOptions.html">MessageHandlerOptions</a>
+					<a href="AdvancedRoomOptions.html">AdvancedRoomOptions</a>
 				</li>
 			</ul>
-			<h1>Interface MessageHandlerOptions</h1>
+			<h1>Interface AdvancedRoomOptions</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">MessageHandlerOptions</span>
+						<span class="target">AdvancedRoomOptions</span>
 					</li>
 				</ul>
 			</section>
@@ -82,7 +82,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="MessageHandlerOptions.html#override" class="tsd-kind-icon">override</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="AdvancedRoomOptions.html#unknownObjects" class="tsd-kind-icon">unknown<wbr>Objects</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,14 +91,36 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="override" class="tsd-anchor"></a>
-					<h3>override</h3>
-					<div class="tsd-signature tsd-kind-icon">override<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="unknownObjects" class="tsd-anchor"></a>
+					<h3>unknown<wbr>Objects</h3>
+					<div class="tsd-signature tsd-kind-icon">unknown<wbr>Objects<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;all&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/7652b3f/src/api/hooks/MessageHandler.ts#L9">src/api/hooks/MessageHandler.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/7652b3f/src/interfaces/HindenburgConfig.ts#L321">src/interfaces/HindenburgConfig.ts:321</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>In-game object types for Hindenburg to ignore and treat as unknown
+							objects.</p>
+						</div>
+						<p>Pass <code>false</code> to ignore no object types and ban uknown object types,
+						or &#39;true&#39; for Hindenburg to ignore any unknown objects.</p>
+						<p>Pass <code>all</code> to ignore <em>every</em> object type and treat all of them as uknown,
+						including standard Among Us objects.</p>
+						<p>Alternatively, pass an array of either spawn type ids or members of the
+						<a href="../enums/SpawnType.html">SpawnType</a> enum of the objects to ignore and treat as unknown.</p>
+						<p>This will allow objects with a spawn type unknown to Hindenburg to spawn,
+							making it useful for custom modded maps or mods that use custom objects that
+							aren&#39;t implemented on the server. Note that any of these objects spawned
+							can&#39;t be handled by Hindenburg, so they will be incompatible with
+						<a href="RoomsConfig.html#serverAsHost">RoomsConfig.serverAsHost</a>.</p>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p>false</p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -193,10 +215,10 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="MessageHandlerOptions.html" class="tsd-kind-icon">Message<wbr>Handler<wbr>Options</a>
+						<a href="AdvancedRoomOptions.html" class="tsd-kind-icon">Advanced<wbr>Room<wbr>Options</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="MessageHandlerOptions.html#override" class="tsd-kind-icon">override</a>
+								<a href="AdvancedRoomOptions.html#unknownObjects" class="tsd-kind-icon">unknown<wbr>Objects</a>
 							</li>
 						</ul>
 					</li>

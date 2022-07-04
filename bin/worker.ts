@@ -318,6 +318,9 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         logger.warn("Config deprecation: 'socket.broadcastUnknownGameData' has been renamed to 'socket.acceptUnknownGameData' to better reflect its purpose");
         flag = true;
     }
+    if (config.rooms.advanced.unknownObjects && config.rooms.serverAsHost) {
+        logger.warn("Server-as-a-Host may not function properly with unknown objects allowed; consider writing object logic with a plugin or remove rooms.advanced.unknownObjects in the config");
+    }
     if (flag) {
         const configSpinner = new Spinner("Writing config to reflect deprecations.. %s");
         try {

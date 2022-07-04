@@ -98,7 +98,7 @@ import {
 } from "../handlers";
 
 import { fmtCode } from "../util/fmtCode";
-import { fmtLogFormat } from "../util/fmtLogFormat";
+import { fmtConfigurableLog } from "../util/fmtLogFormat";
 import { Logger } from "../logger";
 
 import { Connection, logLanguages, logPlatforms } from "./Connection";
@@ -113,7 +113,7 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
         const isHost = this.room.hostId === this.clientId;
         const isActingHost = !isHost && this.room.actingHostsEnabled && this.room.actingHostIds.has(this.clientId);
 
-        const paren = fmtLogFormat(
+        const paren = fmtConfigurableLog(
             this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
             {
                 id: this.clientId,
@@ -526,6 +526,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
+        const paren = fmtConfigurableLog(
             this.worker.config.logging.rooms?.format || ["players", "map", "issaah", "privacy"],
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",

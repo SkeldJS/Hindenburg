@@ -1410,7 +1410,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.socket = dgram.createSocket("udp4");
             this.listen(newConfig.socket.port);
         }
-        
+
         if (newConfig.matchmaker) {
             if (this.matchmaker) {
                 // prepare thyself for the worst if statement

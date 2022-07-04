@@ -16,7 +16,7 @@ import {
 
 import { ClientDisconnectEvent, ClientLeaveEvent } from "../api";
 import { fmtCode } from "../util/fmtCode";
-import { fmtLogFormat } from "../util/fmtLogFormat";
+import { fmtConfigurableLog } from "../util/fmtLogFormat";
 
 import { Worker } from "./Worker";
 import { Room } from "./Room";
@@ -246,7 +246,7 @@ export class Connection {
     }
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
-        const paren = fmtLogFormat(
+        const paren = fmtConfigurableLog(
             this.worker.config.logging.connections?.format || ["id", "ip", "ping", "room"],
             {
                 id: this.clientId,

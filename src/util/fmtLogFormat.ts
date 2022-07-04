@@ -21,7 +21,7 @@
  * ); // => 5
  * ```
  */
-export function fmtLogFormat<T extends string>(format: T[], data: Record<T, string|number|undefined>) {
+export function fmtConfigurableLog<T extends string>(format: T[], data: Record<T, string|number|undefined>) {
     return format
         .map(fmt => data[fmt])
         .filter(a => a !== undefined)

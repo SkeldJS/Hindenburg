@@ -3,11 +3,13 @@ Chat commands allow players to run simple commands in the chat (similar to those
 > If you're a plugin developer and want to add chat commands to your plugin, check out the [Chat Commands](../Plugins/Chat%20Commands.html)
 
 For example, players could switch gamemodes with commands with the following command:
+
 ![image](https://user-images.githubusercontent.com/60631511/143772589-e7cad6cb-b528-4b03-9f61-69465f9ed15f.png)
 
 In Hindenburg, chat commands are designed to be as simple to use as possible, so players don't have a hard time using them.
 
 Hindenburg also has a built-in `/help` command:
+
 ![image](https://user-images.githubusercontent.com/60631511/143772648-ed5e25b9-5420-47aa-9cbb-4af6bcee62ac.png)
 
 ## Disabling Chat Commands

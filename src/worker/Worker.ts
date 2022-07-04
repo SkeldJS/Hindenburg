@@ -922,13 +922,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     );
                 }
             } else {
-                if (
-                    this.config.reactor !== false &&
-                    (this.config.reactor === true ||
-                    !this.config.reactor.allowNormalClients)
-                ) {
-                    sender.disconnect(i18n.reactor_required_on_server);
-                    return;
+                if (this.config.reactor) {
+                    if (this.config.reactor === true || !this.config.reactor.allowNormalClients) {
+                        sender.disconnect(i18n.reactor_required_on_server);
+                        return;
+                    }
                 }
             }
 

@@ -1750,7 +1750,15 @@ export class BaseRoom extends Hostable<RoomEvents> {
         doBroadcast = true,
         doAwake = true
     ) {
+        const _ownerId = ownerId === undefined || ownerId === -2 ? this :
+            typeof ownerId === "number"
+                ? this.players.get(ownerId)
+                : ownerId;
+
         const prefab = new Array(componentData.length).fill(UnknownComponent);
+        this.logger.warn("Spawning unknown prefab with spawn id %s, owned by %s, with %s component%s (flags=%s)",
+            spawnType, _ownerId, componentData.length, componentData.length === 1 ? "" : "s", flags);
+
         return this.spawnPrefab(spawnType, prefab, ownerId, flags, componentData, doBroadcast, doAwake);
     }
 

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Plugins | @skeldjs/hindenburg</title>
+	<title>Server-as-a-Host | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -57,13 +57,13 @@
 					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Chat Commands.html">Information</a>
+					<a href="Chat Commands.html">Using Hindenburg</a>
 				</li>
 				<li>
-					<a href="Plugins.html">Plugins</a>
+					<a href="Server-as-a-Host.html">Server-as-a-Host</a>
 				</li>
 			</ul>
-			<h1>Plugins</h1>
+			<h1>Server-as-a-Host</h1>
 		</div>
 	</div>
 </header>
@@ -71,17 +71,23 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>Plugins in Hindenburg give you fine-grained control to your server, whether you&#39;re making gamemodes, working with client mods or connecting Hindenburg with external services, plugins are perfect, and are especially easy to install and write yourself.</p>
-				<a href="#installing-plugins" id="installing-plugins" style="color: inherit; text-decoration: none;">
-					<h3>Installing plugins</h3>
+				<p>Server-as-a-Host (<strong>SaaH</strong>) in Hindenburg allows you to have ultimate control and bypassing the middle man of having a host, as it is on officials. This doesn&#39;t mean that there are no hosts to change settings or to start the game, actually, SaaH allows you to have multiple hosts at once.</p>
+				<a href="#performance" id="performance" style="color: inherit; text-decoration: none;">
+					<h3>Performance</h3>
 				</a>
-				<p>Installing, configuring and using plugins should be a breeze, and for a <a href="../Using%20Hindenburg/CLI%20Commands.html#install-plugin">good majority of cases is just a single command</a>, as plugins can be installed from either a <a href="https://github.com">github repository</a>, or directly from <a href="https://npmjs.com">npm</a>.</p>
-				<p><a href="../Getting Started/Installing Plugins.html">Check out the page on installing plugins for more information</a></p>
-				<a href="#creating-your-own-plugins" id="creating-your-own-plugins" style="color: inherit; text-decoration: none;">
-					<h3>Creating your own plugins</h3>
+				<p>As SaaH doesn&#39;t analyse or process any more that Hindenburg normally does for hosted games, it should result in almost identical performance as if it were disabled.</p>
+				<p>However, there should be a just-barely noticeable difference in high-ping scenarios, as it means that any packets made to the host (such as system sabotages) can instead be done on the server.</p>
+				<a href="#multiple-hosts" id="multiple-hosts" style="color: inherit; text-decoration: none;">
+					<h3>Multiple Hosts</h3>
 				</a>
-				<p><a href="https://www.typescriptlang.org/">While some programming knowledge is required</a>, creating plugins should be as straight-forward as possible, <a href="../Plugins/Creating a Plugin.html">providing good templates</a>, a great development experience with a an <a href="https://skeld.js.org">easy-to-understand API</a> and {@page Development Environment | stress-free environment}, as well as <a href="../Plugins/Publishing Plugins.html">an easy way to publish and distribute plugins</a>.</p>
-				<p><a href="../Plugins/Creating%20A%20Plugin.html">Check out the page on creating plugins for more information</a>.</p>
+				<p>The technology used for SaaH allows for you to have multiple hosts in the same room. This is because SaaH creates hosts known as &quot;acting hosts&quot; — players that are only hosts in the lobby, where their host state is removed while a player is joining and while a game is being played.</p>
+				<p>This also works when SaaH is disabled — meaning that there is one &quot;actual&quot; host and none or several &quot;acting&quot; hosts.</p>
+				<p><img src="https://user-images.githubusercontent.com/60631511/170726121-a03df946-55bc-4529-aee8-69a4124a91b5.png" alt="image"></p>
+				<a href="#command-line" id="command-line" style="color: inherit; text-decoration: none;">
+					<h3>Command-Line</h3>
+				</a>
+				<p>You can enable/disable SaaH with the <code>setsaah &lt;room code&gt; &lt;on/off&gt;</code> command:</p>
+				<p><img src="https://i.imgur.com/Z3YZtBz.gif" alt=""></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -104,6 +110,33 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Getting Started/Contributing.html">Contributing</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Using <wbr>Hindenburg</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Logging Config.html">Logging <wbr>Config</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Reactor Support.html">Reactor <wbr>Support</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Advanced <wbr>Usage</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Advanced Usage/Unknown Innernet Objects.html">Unknown <wbr>Innernet <wbr>Objects</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Advanced Usage/Message Ordering.html">Message <wbr>Ordering</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>
@@ -140,30 +173,6 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Plugins/Custom Roles.html">Custom <wbr>Roles</a>
-					</li>
-					<li class="label pp-nav pp-group">
-						<span>Information</span>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Interactive CLI.html">Interactive CLI</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Message Ordering.html">Message <wbr>Ordering</a>
-					</li>
-					<li class="current pp-nav pp-page">
-						<a href="Plugins.html">Plugins</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Reactor Support.html">Reactor <wbr>Support</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

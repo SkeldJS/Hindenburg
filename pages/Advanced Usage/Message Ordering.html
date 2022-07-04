@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Interactive CLI | @skeldjs/hindenburg</title>
+	<title>Message Ordering | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -57,13 +57,13 @@
 					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Chat Commands.html">Information</a>
+					<a href="Unknown Innernet Objects.html">Advanced Usage</a>
 				</li>
 				<li>
-					<a href="Interactive CLI.html">Interactive CLI</a>
+					<a href="Message Ordering.html">Message Ordering</a>
 				</li>
 			</ul>
-			<h1>Interactive CLI</h1>
+			<h1>Message Ordering</h1>
 		</div>
 	</div>
 </header>
@@ -71,9 +71,17 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>You can interact with Hindenburg through simple commands provided by Hindenburg to access information about the server or execute simple commands, with auto-completion for rooms and players.</p>
-				<p><img src="https://i.imgur.com/1FEFFv5.gif" alt=""></p>
-				<p>You can use the built-in <code>help</code> command to get full help and usage syntax for all commands.</p>
+				<p>Hindenburg has support for <em>message ordering</em>. Message ordering refers to making sure that packets received by Hindenburg are processed in the correct order. This shouldn&#39;t be especially important for most people, as the official servers also don&#39;t process messages in a particular order.</p>
+				<p>Mod developers, however, may find it useful to enable as it removes the need for using <em>sequence IDs</em> for particular packets.</p>
+				<p>It also just adds another layer of reliability on top of DTLS, which is fundamentally an unreliable communication protocol.</p>
+				<a href="#configuring-hindenburg-for-message-ordering" id="configuring-hindenburg-for-message-ordering" style="color: inherit; text-decoration: none;">
+					<h2>Configuring Hindenburg for Message Ordering</h2>
+				</a>
+				<p>Configuring Hindenburg to process reliable packets in the order that they are sent is easy:</p>
+				<pre><code class="language-json"><span style="color: #A31515">&quot;socket&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;messageOrdering&quot;</span><span style="color: #000000">: </span><span style="color: #0000FF">true</span>
+<span style="color: #000000">}</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -96,6 +104,33 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Getting Started/Contributing.html">Contributing</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Using <wbr>Hindenburg</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Using Hindenburg/Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Using Hindenburg/Logging Config.html">Logging <wbr>Config</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Using Hindenburg/Reactor Support.html">Reactor <wbr>Support</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Using Hindenburg/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Advanced <wbr>Usage</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Unknown Innernet Objects.html">Unknown <wbr>Innernet <wbr>Objects</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Message Ordering.html">Message <wbr>Ordering</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>
@@ -132,30 +167,6 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Plugins/Custom Roles.html">Custom <wbr>Roles</a>
-					</li>
-					<li class="label pp-nav pp-group">
-						<span>Information</span>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
-					</li>
-					<li class="current pp-nav pp-page">
-						<a href="Interactive CLI.html">Interactive CLI</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Message Ordering.html">Message <wbr>Ordering</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Plugins.html">Plugins</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Reactor Support.html">Reactor <wbr>Support</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

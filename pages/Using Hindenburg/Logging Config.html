@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Chat Commands | @skeldjs/hindenburg</title>
+	<title>Logging Config | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -57,13 +57,13 @@
 					<a href="../../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="Chat Commands.html">Information</a>
+					<a href="Chat Commands.html">Using Hindenburg</a>
 				</li>
 				<li>
-					<a href="Chat Commands.html">Chat Commands</a>
+					<a href="Logging Config.html">Logging Config</a>
 				</li>
 			</ul>
-			<h1>Chat Commands</h1>
+			<h1>Logging Config</h1>
 		</div>
 	</div>
 </header>
@@ -71,16 +71,61 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>Chat commands allow players to run simple commands in the chat (similar to those from Minecraft) to communicate with plugins. This gives plugins a lot of flexibility without having to make a client mod.</p>
-				<p>For example, players could switch gamemodes with commands with the following command:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/143772589-e7cad6cb-b528-4b03-9f61-69465f9ed15f.png" alt="image"></p>
-				<p>In Hindenburg, chat commands are designed to be as simple to use as possible, so players don&#39;t have a hard time using them.</p>
-				<p>Hindenburg also has a built-in <code>/help</code> command:</p>
-				<p><img src="https://user-images.githubusercontent.com/60631511/143772648-ed5e25b9-5420-47aa-9cbb-4af6bcee62ac.png" alt="image"></p>
-				<a href="#chat-commands-and-plugins" id="chat-commands-and-plugins" style="color: inherit; text-decoration: none;">
-					<h3>Chat Commands and Plugins</h3>
+				<a href="#custom-logging-information" id="custom-logging-information" style="color: inherit; text-decoration: none;">
+					<h2>Custom Logging Information</h2>
 				</a>
-				<p>Hindenburg provides a great and simple API for registering chat commands as a plugin, <a href="../Plugins/Chat%20Commands.html">check out the guide on registering custom chat commands for more information</a>.</p>
+				<p>Hindenburg allows you to customise the information displayed about players, connections and rooms in Hindenburg.</p>
+				<p>Located in the <a href="../../interfaces/HindenburgConfig.html#logging"><code>logging</code></a> area of Hindenburg&#39;s configuration, you can pass an array of keys to display about each area of Hindenburg. For example:</p>
+				<pre><code class="language-json"><span style="color: #A31515">&quot;logging&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;hideSensitiveInfo&quot;</span><span style="color: #000000">: </span><span style="color: #0000FF">true</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;connections&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;format&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;id&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;language&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;ip&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;ping&quot;</span>
+<span style="color: #000000">        ]</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;rooms&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;format&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;players&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;map&quot;</span>
+<span style="color: #000000">        ]</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #0451A5">&quot;players&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #0451A5">&quot;format&quot;</span><span style="color: #000000">: [</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;id&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;ping&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;ishost&quot;</span>
+<span style="color: #000000">        ]</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<blockquote>
+					<p>You can set <code>&quot;hideSensitiveInfo&quot;</code> to <code>true</code> to quickly hide ip addresses and user ids; useful for screenshots and public logs. Set it to <code>&quot;false&quot;</code> to disable this.</p>
+				</blockquote>
+				<p>This would log the following</p>
+				<a href="#connections" id="connections" style="color: inherit; text-decoration: none;">
+					<h4>Connections</h4>
+				</a>
+				<p><img src="https://user-images.githubusercontent.com/60631511/177192627-c8a2a5b6-a1ee-4ae9-9414-a8283ecc4ad6.png" alt="image"></p>
+				<blockquote>
+					<p>Note that the IP is hidden, as <code>&quot;hideSensitiveInfo&quot;</code> is on true.</p>
+				</blockquote>
+				<a href="#rooms" id="rooms" style="color: inherit; text-decoration: none;">
+					<h4>Rooms</h4>
+				</a>
+				<p><img src="https://user-images.githubusercontent.com/60631511/177193258-7c2671af-adfe-4f6a-a53a-8f0a2a584088.png" alt="image"></p>
+				<a href="#players" id="players" style="color: inherit; text-decoration: none;">
+					<h4>Players</h4>
+				</a>
+				<p><img src="https://user-images.githubusercontent.com/60631511/177193215-265d4670-6d65-4f54-aa13-a78e070f8a8e.png" alt="image"></p>
+				<p>For connections (clients connected to the server), you can use any of the following keys:
+				<code>&quot;id&quot;</code>, <code>&quot;ip&quot;</code>, <code>&quot;ping&quot;</code>, <code>&quot;room&quot;</code>, <code>&quot;mods&quot;</code>, <code>&quot;level&quot;</code>, <code>&quot;version&quot;</code>, <code>&quot;platform&quot;</code>, <code>&quot;language&quot;</code></p>
+				<p>For rooms:
+				<code>&quot;players&quot;</code>, <code>&quot;map&quot;</code>, <code>&quot;issaah&quot;</code>, <code>&quot;privacy&quot;</code></p>
+				<p>For players:
+				<code>&quot;id&quot;</code>, <code>&quot;ping&quot;</code>, <code>&quot;mods&quot;</code>, <code>&quot;level&quot;</code>, <code>&quot;ishost&quot;</code>, <code>&quot;platform&quot;</code>, <code>&quot;language&quot;</code></p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -103,6 +148,33 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Getting Started/Contributing.html">Contributing</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Getting Started/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Using <wbr>Hindenburg</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Chat Commands.html">Chat <wbr>Commands</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Logging Config.html">Logging <wbr>Config</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Reactor Support.html">Reactor <wbr>Support</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Advanced <wbr>Usage</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Advanced Usage/Unknown Innernet Objects.html">Unknown <wbr>Innernet <wbr>Objects</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Advanced Usage/Message Ordering.html">Message <wbr>Ordering</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>
@@ -139,30 +211,6 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Plugins/Custom Roles.html">Custom <wbr>Roles</a>
-					</li>
-					<li class="label pp-nav pp-group">
-						<span>Information</span>
-					</li>
-					<li class="current pp-nav pp-page">
-						<a href="Chat Commands.html">Chat <wbr>Commands</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Interactive CLI.html">Interactive CLI</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Message Ordering.html">Message <wbr>Ordering</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Plugins.html">Plugins</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Reactor Support.html">Reactor <wbr>Support</a>
-					</li>
-					<li class=" pp-nav pp-page">
-						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

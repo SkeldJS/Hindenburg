@@ -339,6 +339,16 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         });
 
+        this.on("player.startmeeting", ev => {
+            this.logger.info("Meeting started (%s)",
+                ev.body === "emergency" ? "emergency meeting" : ev.body + "'s body was reported");
+        });
+
+        this.on("room.setprivacy", ev => {
+            this.logger.info("Privacy changed to %s",
+                ev.newPrivacy);
+        });
+
         this.decoder.on(EndGameMessage, message => {
             this.handleEnd(message.reason);
         });

@@ -151,4 +151,5 @@ temp/
 # End of https://www.toptal.com/developers/gitignore/api/node,yarn,redis
 
 # Ignore for webstorm
-/.idea`;
+/.idea
+`;

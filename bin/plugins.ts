@@ -284,7 +284,7 @@ async function runCreatePlugin() {
         const yarnSpinner = new Spinner("Initialising yarn.. %s").start();
         try {
             await runCommandInDir(pluginDirectory, yarnCommand + " init -y");
-            await fs.writeFile(path.resolve(pluginDirectory, "yarn.lock"), "", "utf8");
+            await fs.writeFile(path.resolve(pluginDirectory, "yarn.lock"), "\n", "utf8");
             yarnSpinner.success();
         } catch (e) {
             yarnSpinner.fail();
@@ -438,7 +438,7 @@ async function runCreatePlugin() {
                         experimentalDecorators: true,
                         emitDecoratorMetadata: true
                     }
-                }, undefined, 2),
+                }, undefined, 2) + "\n",
                 "utf8"
             );
         }
@@ -495,7 +495,7 @@ async function runCreatePlugin() {
 
         await fs.writeFile(
             packageJsonFile,
-            JSON.stringify(packageJson, undefined, 2),
+            JSON.stringify(packageJson, undefined, 2) + "\n",
             "utf8"
         );
 
@@ -525,7 +525,8 @@ async function runCreatePlugin() {
             "type": "string"
         }
     }
-}`, "utf8");
+}
+`, "utf8");
         schemaSpinner.success();
     } catch (e) {
         schemaSpinner.fail();
@@ -540,17 +541,18 @@ async function runCreatePlugin() {
             `import { ${codeFriendlyName} } from "./src/plugin";
 
 export * from "./src";
-export default ${codeFriendlyName};`,
+export default ${codeFriendlyName};
+`,
             "utf8"
         );
         await fs.writeFile(
             path.resolve(pluginDirectory, "src", useTypescript ? "index.ts" : "index.js"),
-            "export * from \"./plugin\";",
+            "export * from \"./plugin\";\n",
             "utf8"
         );
         await fs.writeFile(
             path.resolve(pluginDirectory, "src", useTypescript ? "plugin.ts" : "plugin.js"),
-            createHelloWorldPlugin(pluginName, useTypescript, pluginType),
+            createHelloWorldPlugin(pluginName, useTypescript, pluginType) + "\n",
             "utf8"
         );
         entryPointSpinner.success();
@@ -626,7 +628,7 @@ async function verifyInstalledPlugin(logger: Logger, pluginsDirectory: string, p
 
             await fs.writeFile(
                 configFile,
-                JSON.stringify(configJson, undefined, 4),
+                JSON.stringify(configJson, undefined, 4) + "\n",
                 "utf8"
             );
 
@@ -959,7 +961,7 @@ async function runUninstallPlugin() {
 
         await fs.writeFile(
             configFile,
-            JSON.stringify(configJson, undefined, 4),
+            JSON.stringify(configJson, undefined, 4) + "\n",
             "utf8"
         );
         removePluginSpinner.success();

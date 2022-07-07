@@ -25,6 +25,11 @@ export interface SocketConfig {
      */
     port: number;
     /**
+     * Any additional ports for Hindenburg to listen on.
+     * @default []
+     */
+    additionalPorts: number[];
+    /**
      * Whether or not to broadcast gamedata messages that don't get handled by the server.
      * @default false
      */

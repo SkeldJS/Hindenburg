@@ -61,11 +61,15 @@ function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, plugi
     HindenburgPlugin,
     ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"},
     EventListener${isTypescript ? ",\n    PlayerSetNameEvent,\n    Room" + (pluginType === "worker" ? ",\n    Worker" : "") : ""}
-} ${isTypescript ? "from " : "= require("}"@skeldjs/hindenburg"${isTypescript ? "" : ")"};
+} ${isTypescript ? "from " : "= require("}"@skeldjs/hindenburg"${isTypescript ? "" : ")"};${isTypescript ? `
+
+export interface ${codeFriendlyName}Config {
+    message: string;
+}` : ""}
 
 @HindenburgPlugin("${pluginName}")
 export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {
-    ${isTypescript ? "message: string;\n\n    " : ""}constructor(${pluginType}${isTypescript ? ": " + (pluginType === "worker" ? "Worker" : "Room") : ""}, config${isTypescript ? ": any" : ""}) {
+    ${isTypescript ? "message: string;\n\n    " : ""}constructor(public readonly ${pluginType}${isTypescript ? ": " + (pluginType === "worker" ? "Worker" : "Room") : ""}, public config${isTypescript ? ": " + codeFriendlyName + "Config" : ""}) {
         super(${pluginType}, config);
 
         this.message = config.message;

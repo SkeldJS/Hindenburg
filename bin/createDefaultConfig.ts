@@ -15,6 +15,7 @@ export function createDefaultConfig(): HindenburgConfig {
         },
         socket: {
             port: 22023,
+            additionalPorts: [],
             acceptUnknownGameData: false,
             messageOrdering: false,
             ip: "auto",

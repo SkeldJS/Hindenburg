@@ -2,7 +2,6 @@ import chalk from "chalk";
 import polka from "polka";
 import { GameKeyword, Platform } from "@skeldjs/constant";
 import { json } from "../util/jsonBodyParser";
-import { Logger } from "../logger";
 import { Worker } from "../worker";
 
 // This mmtoken will be invalid instantly because:
@@ -33,14 +32,16 @@ export interface GameListingJson {
 
 export class Matchmaker {
     httpServer?: polka.Polka;
-    logger: Logger;
 
-    constructor(protected readonly worker: Worker) {
-        this.logger = new Logger("Matchmaker", this.worker.vorpal);
-    }
+    constructor(protected readonly worker: Worker) {}
 
     get port() {
         return typeof this.worker.config.matchmaker === "boolean" ? 80 : this.worker.config.matchmaker.port;
+    }
+
+    getRandomWorkerPort() {
+        const allPorts = [this.worker.config.socket.port, ...this.worker.config.socket.additionalPorts];
+        return allPorts[~~(Math.random() * allPorts.length)];
     }
 
     protected createHttpServer() {
@@ -71,9 +72,9 @@ export class Matchmaker {
 
             // todo: record matchmaking tokens used
             if (this.worker.config.logging.hideSensitiveInfo) {
-                this.logger.info("Client %s got a matchmaker token", chalk.blue(req.body.Username));
+                this.worker.logger.info("Client %s got a matchmaker token", chalk.blue(req.body.Username));
             } else {
-                this.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(req.body.Username), chalk.grey(req.body.Puid));
+                this.worker.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(req.body.Username), chalk.grey(req.body.Puid));
             }
 
             res.status(200).end(mmToken);
@@ -87,7 +88,7 @@ export class Matchmaker {
 
             res.status(200).json({
                 Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                Port: this.worker.config.socket.port
+                Port: this.getRandomWorkerPort()
             });
         });
 
@@ -96,7 +97,7 @@ export class Matchmaker {
 
             res.status(200).json({
                 Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                Port: this.worker.config.socket.port
+                Port: this.getRandomWorkerPort()
             });
         });
 
@@ -128,7 +129,7 @@ export class Matchmaker {
                 ) {
                     const gameListing: GameListingJson = {
                         IP: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                        Port: this.worker.config.socket.port,
+                        Port: this.getRandomWorkerPort(),
                         GameId: room.code,
                         HostName: room.roomName,
                         PlayerCount: room.players.size,
@@ -167,7 +168,7 @@ export class Matchmaker {
 
         this.httpServer = this.createHttpServer();
         this.httpServer.listen(this.port);
-        this.logger.info("Listening on *:%s", this.port);
+        this.worker.logger.info("HTTP matchmaker on *:%s", this.port);
     }
 
     destroy() {

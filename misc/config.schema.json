@@ -92,6 +92,13 @@
           "description": "The port to listen on.",
           "default": 22023
         },
+        "additionalPorts": {
+          "type": "array",
+          "description": "Any additional ports for Hindenburg to listen on.",
+          "items": {
+              "type": "number"
+          }
+        },
         "broadcastUnknownGamedata": {
           "type": "boolean",
           "description": "Whether or not to broadcast gamedata messages that don't get handled by the server.",

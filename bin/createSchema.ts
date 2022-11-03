@@ -26,7 +26,7 @@ export default async () => {
     const configSchemaJson = process.env.IS_PKG
         ? JSON.parse(await fs.readFile(await findConfigSchemaFilename(), "utf8"))
         : {
-            "$extends": await findConfigSchemaFilename(),
+            "allOf": [{ "$ref": "/" + await findConfigSchemaFilename() }],
             "properties": {
                 "plugins": {
                     "properties": {}
@@ -44,7 +44,7 @@ export default async () => {
                 configSchemaJson.properties.plugins.properties[importedPlugins.meta.id] = {
                     "anyOf": [
                         {
-                            "$ref": schemaPath
+                            "$ref": "/" + schemaPath
                         },
                         {
                             "type": "boolean"

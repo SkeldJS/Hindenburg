@@ -1,5 +1,32 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.10": {
+        "version": "1.1.10",
+        "contributors": ["edward"],
+        "date": "2022-06-22",
+        "notes": [
+            {
+                "description": "Allow spawning unknown components",
+                "commits": ["339425cc228a0b2b0a2a6b23ba7311f9b7eb1795", "fab4f8c49ffc019ad7bac19b556b623d5b530743"]
+            },
+            {
+                "description": "Add privacy to room logging",
+                "commits": ["7faff68db07cb4d271e6f68972940c1a5be1fb14"]
+            },
+            {
+                "description": "Add more room logging",
+                "commits": ["4058ce368d61ee77b0d4f2a97a55fd0b2ef3a9bd"]
+            },
+            {
+                "description": "Add ability to listen on multiple ports",
+                "commits": ["c067714d340772a1eb03cb1bf57e5760947bf611"]
+            },
+            {
+                "description": "Update config schema for not running in packaged mode",
+                "commits": ["79f9be38b084f909476fdfad3875c173f021c3b1"]
+            }
+        ]
+    },
     "1.1.9": {
         "version": "1.1.9",
         "contributors": ["edward"],

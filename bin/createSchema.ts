@@ -23,12 +23,21 @@ async function findConfigSchemaFilename() {
 }
 
 export default async () => {
-    const configSchemaJson = JSON.parse(await fs.readFile(await findConfigSchemaFilename(), "utf8"));
+    const configSchemaJson = process.env.IS_PKG
+        ? JSON.parse(await fs.readFile(await findConfigSchemaFilename(), "utf8"))
+        : {
+            "$extends": await findConfigSchemaFilename(),
+            "properties": {
+                "plugins": {
+                    "properties": {}
+                }
+            }
+        };
 
     for await (const pluginDirectory of iteratePlugins()) {
         try {
             const importedPlugins = await importPlugin(pluginDirectory);
-            const schemaPath = path.relative(configFileDirectory, path.resolve(pluginDirectory, "config.schema.json"));
+            const schemaPath = path.resolve(configFileDirectory, path.resolve(pluginDirectory, "config.schema.json"));
             try {
                 await fs.stat(schemaPath);
 

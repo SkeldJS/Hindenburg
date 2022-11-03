@@ -213,6 +213,10 @@ export class Connection {
          */
         public readonly worker: Worker,
         /**
+         * The socket that this client connected to.
+         */
+        public readonly listenSocket: dgram.Socket,
+        /**
          * Remote information about this client.
          */
         public readonly remoteInfo: dgram.RemoteInfo,

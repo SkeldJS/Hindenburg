@@ -157,9 +157,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
     reactorRpcHandlers: Map<`${string}:${number}`, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
 
     /**
-     * The UDP socket that all clients connect to.
+     * A map of ports to UDP sockets that clients can connect to.
      */
-    socket: dgram.Socket;
+    listenSockets: Map<number, dgram.Socket>;
 
     /**
      * The Http matchmaker for the server, if enabled, see {@link HindenburgConfig.matchmaker}.
@@ -224,8 +224,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.loadedPlugins = new Map;
         this.reactorRpcHandlers = new Map;
 
-        this.socket = dgram.createSocket("udp4");
-        this.socket.on("message", this.handleMessage.bind(this));
+        this.listenSockets = new Map;
 
         if (this.config.matchmaker)
             this.matchmaker = new Matchmaker(this);
@@ -763,18 +762,44 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.registerPacketHandlers();
     }
 
+    protected _listenPort(port: number) {
+        const socket = dgram.createSocket("udp4");
+        socket.on("message", this.handleMessage.bind(this, socket));
+
+        socket.bind(port);
+
+        this.listenSockets.set(port, socket);
+
+        this.logger.info("UDP server on *:" + port);
+
+        return socket;
+    }
+
+    protected _unlistenPort(port: number) {
+        const socket = this.listenSockets.get(port);
+
+        if (!socket)
+            return undefined;
+
+        socket.removeAllListeners("message");
+        socket.close();
+
+        this.logger.warn("Stopped listening on *:" + port);
+
+        return socket;
+    }
+
     /**
      * Bind the socket to the configured port.
      */
-    listen(port: number) {
-        return new Promise<void>(resolve => {
-            this.socket.bind(port);
-            this.matchmaker?.listen();
+    listen() {
+        this._listenPort(this.config.socket.port);
 
-            this.socket.once("listening", () => {
-                resolve();
-            });
-        });
+        for (const additionalPort of this.config.socket.additionalPorts) {
+            this._listenPort(additionalPort);
+        }
+
+        this.matchmaker?.listen();
     }
 
     /**
@@ -796,14 +821,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * Retrieve or create a connection based on its remote information received
      * from a [socket `message` event](https://nodejs.org/api/dgram.html#dgram_event_message).
      */
-    getOrCreateConnection(rinfo: dgram.RemoteInfo): Connection {
+    getOrCreateConnection(listenSocket: dgram.Socket, rinfo: dgram.RemoteInfo): Connection {
         const fmt = rinfo.address + ":" + rinfo.port;
         const cached = this.connections.get(fmt);
         if (cached)
             return cached;
 
         const clientid = this.getNextClientId();
-        const connection = new Connection(this, rinfo, clientid);
+        const connection = new Connection(this, listenSocket, rinfo, clientid);
         this.connections.set(fmt, connection);
         return connection;
     }
@@ -1395,7 +1420,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const sent = connection.sentPackets[i];
                 if (!sent.acked) {
                     if (dateNow - sent.sentAt > 1500) {
-                        this.sendRawPacket(connection.remoteInfo, sent.buffer);
+                        this.sendRawPacket(connection.listenSocket, connection.remoteInfo, sent.buffer);
                         sent.sentAt = dateNow;
                     }
                 }
@@ -1404,11 +1429,20 @@ export class Worker extends EventEmitter<WorkerEvents> {
         await Promise.all(promises);
     }
 
-    updateConfig(newConfig: Partial<HindenburgConfig>) {
-        if (newConfig.socket && newConfig.socket?.port !== this.config.socket.port) {
-            this.socket.close();
-            this.socket = dgram.createSocket("udp4");
-            this.listen(newConfig.socket.port);
+    updateConfig(newConfig: HindenburgConfig) {
+        const oldPorts = new Set([this.config.socket.port, ...this.config.socket.additionalPorts]);
+        const newPorts = new Set([newConfig.socket.port, ...newConfig.socket.additionalPorts]);
+
+        for (const oldPort of oldPorts) {
+            if (!newPorts.has(oldPort)) {
+                this._unlistenPort(oldPort);
+            }
+        }
+
+        for (const newPort of newPorts) {
+            if (!oldPorts.has(newPort)) {
+                this._listenPort(newPort);
+            }
         }
 
         if (newConfig.matchmaker) {
@@ -1461,7 +1495,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         }
 
-        recursiveAssign(this.config, newConfig, { removeKeys: true });
+        recursiveAssign(this.config, newConfig);
     }
 
     checkClientMods(connection: Connection) {
@@ -1535,9 +1569,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         return true;
     }
 
-    sendRawPacket(remote: dgram.RemoteInfo, buffer: Buffer) {
+    sendRawPacket(listenSocket: dgram.Socket, remote: dgram.RemoteInfo, buffer: Buffer) {
         return new Promise((resolve, reject) => {
-            this.socket.send(buffer, remote.port, remote.address, (err, bytes) => {
+            listenSocket.send(buffer, remote.port, remote.address, (err, bytes) => {
                 if (err) return reject(err);
 
                 resolve(bytes);
@@ -1589,9 +1623,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 )
             );
             connection.sentPackets.splice(8);
-            await this.sendRawPacket(connection.remoteInfo, writer.buffer);
+            await this.sendRawPacket(connection.listenSocket, connection.remoteInfo, writer.buffer);
         } else {
-            await this.sendRawPacket(connection.remoteInfo, writer.buffer);
+            await this.sendRawPacket(connection.listenSocket, connection.remoteInfo, writer.buffer);
         }
     }
 
@@ -1600,12 +1634,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * @param buffer The raw data buffer that was received.
      * @param rinfo Information about the remote that sent this data.
      */
-    async handleMessage(buffer: Buffer, rinfo: dgram.RemoteInfo) {
+    async handleMessage(listenSocket: dgram.Socket, buffer: Buffer, rinfo: dgram.RemoteInfo) {
         try {
             const parsedPacket = this.decoder.parse(buffer, MessageDirection.Serverbound);
 
             if (!parsedPacket) {
-                const connection = this.getOrCreateConnection(rinfo);
+                const connection = this.getOrCreateConnection(listenSocket, rinfo);
                 this.logger.warn("%s sent an unknown root packet (%s)", connection, buffer[0]);
                 return;
             }
@@ -1700,7 +1734,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     if (parsedReliable.messageTag !== SendOption.Hello)
                         return;
 
-                    const connection = cachedConnection || new Connection(this, rinfo, this.getNextClientId());
+                    const connection = cachedConnection || new Connection(this, listenSocket, rinfo, this.getNextClientId());
                     if (!cachedConnection)
                         this.connections.set(rinfo.address + ":" + rinfo.port, connection);
 
@@ -1712,13 +1746,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     });
                 }
             } catch (e) {
-                const connection = this.getOrCreateConnection(rinfo);
+                const connection = this.getOrCreateConnection(listenSocket, rinfo);
                 this.logger.error("Error occurred while processing packet from %s:",
                     connection);
                 console.log(e);
             }
         } catch (e) {
-            const connection = this.getOrCreateConnection(rinfo);
+            const connection = this.getOrCreateConnection(listenSocket, rinfo);
             this.logger.error("%s sent a malformed packet", connection);
             console.log(e);
         }

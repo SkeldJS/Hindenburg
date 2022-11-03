@@ -958,6 +958,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             if (writer) {
                 promises.push(
                     this.worker.sendRawPacket(
+                        connection.listenSocket,
                         connection.remoteInfo,
                         writer.buffer
                     )

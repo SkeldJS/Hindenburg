@@ -730,14 +730,14 @@ export class PluginLoader {
         for (const [, loadedPlugin] of room.workerPlugins) {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin.pluginInstance);
             for (const chatCommand of pluginChatCommands) {
-                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin));
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin.pluginInstance));
             }
         }
 
         for (const [, loadedPlugin] of room.loadedPlugins) {
             const pluginChatCommands = getPluginChatCommands(loadedPlugin.pluginInstance);
             for (const chatCommand of pluginChatCommands) {
-                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin));
+                room.chatCommandHandler.registerCommand(chatCommand.usage, chatCommand.description, chatCommand.accessCheck, chatCommand.handler.bind(loadedPlugin.pluginInstance));
             }
         }
     }
@@ -756,13 +756,13 @@ export class PluginLoader {
         room.reactorRpcHandlers.clear();
         for (const [, loadedPlugin] of room.workerPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
-                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
+                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin.pluginInstance));
             }
         }
 
         for (const [, loadedPlugin] of room.loadedPlugins) {
             for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
-                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin));
+                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin.pluginInstance));
             }
         }
     }
@@ -837,7 +837,7 @@ export class PluginLoader {
         for (const [, loadedPlugin] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
                 const { messageClass: messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
-                const method = handler.bind(loadedPlugin);
+                const method = handler.bind(loadedPlugin.pluginInstance);
                 if (options.override) {
                     const key = `${messageCtr.messageType}:${messageCtr.messageTag}` as const;
                     const listeners = this.worker.decoder.listeners.get(key) || [];

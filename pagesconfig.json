@@ -107,6 +107,10 @@
                     "source": "./pages/Plugins/Chat Commands.md"
                 },
                 {
+                    "title": "Perspectives",
+                    "source": "./pages/Plugins/Perspectives.md"
+                },
+                {
                     "title": "Custom Roles",
                     "source": "./pages/Plugins/Custom Roles.md"
                 }

@@ -147,7 +147,7 @@ export class Room extends BaseRoom {
             // get this player's player object in the perspective in question
             const povPlayer = activePerspective.players.get(player.clientId);
 
-            if (!povPlayer)
+            if (!povPlayer) // if the sender is already in this perspective, we can skip
                 continue;
 
             const povNotCanceled = [];

@@ -869,7 +869,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     registerPacketHandlers() {
         this.decoder.listeners.clear();
 
-        this.decoder.on(ModdedHelloPacket, async (message, direction, { sender }) => {
+        this.decoder.on(ModdedHelloPacket, async (message, _direction, { sender }) => {
             if (sender.hasIdentified)
                 return;
 
@@ -960,7 +960,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(ReactorModDeclarationMessage, async (message, direction, { sender }) => {
+        this.decoder.on(ReactorModDeclarationMessage, async (message, _direction, { sender }) => {
             if (sender.mods.size >= sender.numMods)
                 return;
 
@@ -989,14 +989,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(DisconnectPacket, async (message, direciton, { sender }) => {
+        this.decoder.on(DisconnectPacket, async (_message, _direciton, { sender }) => {
             if (!sender.sentDisconnect)
                 await sender.disconnect();
 
             this.removeConnection(sender);
         });
 
-        this.decoder.on(AcknowledgePacket, (message, direction, { sender }) => {
+        this.decoder.on(AcknowledgePacket, (message, _direction, { sender }) => {
             for (const sentPacket of sender.sentPackets) {
                 if (sentPacket.nonce === message.nonce) {
                     sentPacket.acked = true;
@@ -1006,7 +1006,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(HostGameMessage, async (message, direction, { sender }) => {
+        this.decoder.on(HostGameMessage, async (message, _direction, { sender }) => {
             if (sender.room)
                 return;
 
@@ -1038,7 +1038,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(JoinGameMessage, async (message, direction, { sender }) => {
+        this.decoder.on(JoinGameMessage, async (message, _direction, { sender }) => {
             if (
                 sender.room &&
                 sender.room.gameState !== GameState.Ended &&
@@ -1059,7 +1059,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             await this.attemptJoin(sender, message.code);
         });
 
-        this.decoder.on(QueryPlatformIdsMessage, async (message, direction, { sender }) => {
+        this.decoder.on(QueryPlatformIdsMessage, async (message, _direction, { sender }) => {
             const room = this.rooms.get(message.gameCode);
             const playersPlatformSpecificData: PlatformSpecificData[] = [];
 
@@ -1079,7 +1079,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(RpcMessage, async (message, direction, { sender }) => {
+        this.decoder.on(RpcMessage, async (message, _direction, { sender }) => {
             const player = sender.getPlayer();
             if (!player)
                 return;
@@ -1190,7 +1190,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 if (child.canceled)
                     continue;
 
-                if (!reliable && child.messageTag === GameDataMessageTag.Data) {
+                if (!reliable && child.messageTag === GameDataMessageTag.Data && !playerPov) {
                     const dataMessage = child as DataMessage;
                     if (dataMessage.data.byteLength === 10) {
                         const component = sender.room?.netobjects.get(dataMessage.netId);
@@ -1239,7 +1239,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(GameDataToMessage, async (message, direction, { sender }) => {
+        this.decoder.on(GameDataToMessage, async (message, _direction, { sender }) => {
             const player = sender.getPlayer();
 
             if (!sender.room || !player)
@@ -1307,7 +1307,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             sender.room?.decoder.emitDecoded(message, direction, player);
         });
 
-        this.decoder.on(KickPlayerMessage, async (message, direction, { sender }) => {
+        this.decoder.on(KickPlayerMessage, async (message, _direction, { sender }) => {
             const player = sender.getPlayer();
             if (!player || !sender.room)
                 return;
@@ -1329,7 +1329,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             await targetConnection.disconnect(message.banned ? DisconnectReason.Banned : DisconnectReason.Kicked);
         });
 
-        this.decoder.on(GetGameListMessage, async (message, direction, { sender }) => {
+        this.decoder.on(GetGameListMessage, async (message, _direction, { sender }) => {
             const returnList: GameListing[] = [];
             const listingIp = sender.remoteInfo.address !== "127.0.0.1" ? this.config.socket.ip : "127.0.0.1";
 

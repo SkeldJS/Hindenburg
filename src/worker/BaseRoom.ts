@@ -170,7 +170,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     createdAt: number;
 
-    private playerJoinedFlag: boolean;
+    protected playerJoinedFlag: boolean;
     /**
      * All connections in the room, mapped by client ID to connection object.
      */
@@ -318,7 +318,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             if (this.config.chatCommands && ev.chatMessage.startsWith(prefix)) {
                 ev.message?.cancel(); // Prevent message from being broadcasted
-                const restMessage = ev.chatMessage.substr(prefix.length);
+                const restMessage = ev.chatMessage.substring(prefix.length);
                 const context = new ChatCommandContext(this as any, ev.player, ev.chatMessage);
                 try {
                     await this.chatCommandHandler.parseMessage(context, restMessage);
@@ -337,6 +337,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
             }
+            this.logger.info("settings updated");
         });
 
         this.on("player.startmeeting", ev => {
@@ -610,7 +611,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.emit(new RoomDestroyEvent(this));
 
-        this.logger.info("Room was destroyed.");
+        this.logger.info("Room was destroyed (%s).", DisconnectReason[reason]);
     }
 
     async FixedUpdate() {
@@ -839,6 +840,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             return;
         }
+
 
         for (let i = 0; i < clientsToBroadcast.length; i++) {
             const connection = clientsToBroadcast[i];
@@ -1359,13 +1361,39 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (this.gameState === GameState.Ended && !this.config.serverAsHost) {
             if (joiningClient.clientId === this.hostId) {
                 this.gameState = GameState.NotStarted;
-                this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
                 this.logger.info("%s joined, joining other clients..",
                     joiningPlayer);
 
                 this.gameState = GameState.NotStarted;
+
+                await joiningClient.sendPacket(
+                    new ReliablePacket(
+                        joiningClient.getNextNonce(),
+                        [
+                            new JoinedGameMessage(
+                                this.code,
+                                joiningClient.clientId,
+                                this.hostId,
+                                [...this.connections.values()]
+                                    .reduce<PlayerJoinData[]>((prev, cur) => {
+                                        if (cur !== joiningClient) {
+                                            prev.push(new PlayerJoinData(
+                                                cur.clientId,
+                                                cur.username,
+                                                cur.platform,
+                                                cur.playerLevel,
+                                                "",
+                                                ""
+                                            ));
+                                        }
+                                        return prev;
+                                    }, [])
+                            )
+                        ]
+                    )
+                );
 
                 await this.broadcastMessages([], [
                     new JoinGameMessage(
@@ -1626,7 +1654,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             for (const actingHostId of this.actingHostIds) {
                 const actingHostConn = this.connections.get(actingHostId);
                 if (actingHostConn) {
-                    await this.updateHost(SpecialClientId.Server, actingHostConn);
+                    await this.updateHost(this.config.serverAsHost ? SpecialClientId.Server : this.hostId, actingHostConn);
                 }
             }
         }

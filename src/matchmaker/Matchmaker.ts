@@ -107,7 +107,10 @@ export class Matchmaker {
                 return res.status(400).end("");
 
             const returnList: GameListingJson[] = [];
-            const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
+            console.log(req.socket.remoteAddress);
+            const listingIp = req.socket.remoteAddress === "127.0.0.1" || req.socket.remoteAddress === "::ffff:127.0.0.1"
+                ? "127.0.0.1"
+                : this.worker.config.socket.ip;
 
             for (const [ gameCode, room ] of this.worker.rooms) {
                 if (gameCode === 0x20 /* local game */) {

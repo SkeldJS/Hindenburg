@@ -28,6 +28,7 @@ export interface GameListingJson {
     MaxPlayers: number;
     Platform: number;
     HostPlatformName: string;
+    Language: number;
 }
 
 export class Matchmaker {
@@ -138,7 +139,8 @@ export class Matchmaker {
                         NumImpostors: room.settings.numImpostors,
                         MaxPlayers: room.settings.maxPlayers,
                         Platform: room.host?.platform.platformTag || Platform.Unknown,
-                        HostPlatformName: room.host?.platform.platformName || "UNKNOWN"
+                        HostPlatformName: room.host?.platform.platformName || "UNKNOWN",
+                        Language: room.settings.keywords
                     };
 
                     returnList.push(gameListing);

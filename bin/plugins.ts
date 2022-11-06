@@ -310,6 +310,7 @@ async function runCreatePlugin() {
         const updateYarnSpinner = new Spinner("Updating yarn.. %s").start();
         try {
             await runCommandInDir(pluginDirectory, yarnCommand + " set version berry");
+            await runCommandInDir(pluginDirectory, yarnCommand + " config set nodeLinker node-modules");
             updateYarnSpinner.success();
         } catch (e) {
             updateYarnSpinner.fail();

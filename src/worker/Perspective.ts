@@ -85,7 +85,7 @@ import { Logger } from "../logger";
 import { Worker } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
 
-export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
+export type AllSystems = Map<SystemType, SystemStatus<any, any>>;
 
 /**
  * Preset perspective filters to use with {@link Room.createPerspective}.
@@ -392,7 +392,7 @@ export class Perspective extends BaseRoom {
 
     private cloneSystems(ship: InnerShipStatus<this>) {
         const systemsEntries = Object.entries(ship.systems) as unknown as [SystemType, SystemStatus<any, any>][];
-        const newSystems: AllSystems<this> = {};
+        const newSystems: AllSystems = new Map;
         for (const [ systemType, system ] of systemsEntries) {
             if (system instanceof AutoDoorsSystem) {
                 const newAd = new AutoDoorsSystem(ship, system.systemType);
@@ -406,14 +406,14 @@ export class Perspective extends BaseRoom {
                     newAd.doors.push(newDoor);
                 }
 
-                newSystems[systemType] = newAd;
+                newSystems.set(systemType, newAd);
             } else if (system instanceof DeconSystem) {
                 const newDecon = new DeconSystem(ship, system.systemType);
 
                 newDecon.timer = system.timer;
                 newDecon.state = system.state;
 
-                newSystems[systemType] = newDecon;
+                newSystems.set(systemType, newDecon);
             } else if (system instanceof DoorsSystem) {
                 const newDoors = new DoorsSystem(ship, system.systemType);
 
@@ -425,7 +425,7 @@ export class Perspective extends BaseRoom {
                     newDoors.doors.push(newDoor);
                 }
 
-                newSystems[systemType] = newDoors;
+                newSystems.set(systemType, newDoors);
             } else if (system instanceof ElectricalDoorsSystem) {
                 const newEd = new ElectricalDoorsSystem(ship, system.systemType);
 
@@ -435,7 +435,7 @@ export class Perspective extends BaseRoom {
                     newEd.doors.push(newDoor);
                 }
 
-                newSystems[systemType] = newEd;
+                newSystems.set(systemType, newEd);
             } else if (system instanceof HqHudSystem) {
                 const newHh = new HqHudSystem(ship, system.systemType);
 
@@ -446,20 +446,20 @@ export class Perspective extends BaseRoom {
                 }));
                 newHh.completedConsoles = new Set(newHh.completedConsoles);
 
-                newSystems[systemType] = newHh;
+                newSystems.set(systemType, newHh);
             } else if (system instanceof HudOverrideSystem) {
                 const newHo = new HudOverrideSystem(ship, system.systemType);
 
                 newHo["_sabotaged"] = system["_sabotaged"];
 
-                newSystems[systemType] = newHo;
+                newSystems.set(systemType, newHo);
             } else if (system instanceof LifeSuppSystem) {
                 const newLs = new LifeSuppSystem(ship, system.systemType);
 
                 newLs.timer = system.timer;
                 newLs.completed = new Set(system.completed);
 
-                newSystems[systemType] = newLs;
+                newSystems.set(systemType, newLs);
             } else if (system instanceof HeliSabotageSystem) {
                 const newHs = new HeliSabotageSystem(ship, system.systemType);
 
@@ -468,7 +468,7 @@ export class Perspective extends BaseRoom {
                 newHs.activeConsoles = new Map(system.activeConsoles.entries());
                 newHs.completedConsoles = new Set(system.completedConsoles);
 
-                newSystems[systemType] = newHs;
+                newSystems.set(systemType, newHs);
             } else if (system instanceof MedScanSystem) {
                 const newMs = new MedScanSystem(ship, system.systemType);
 
@@ -478,7 +478,7 @@ export class Perspective extends BaseRoom {
                     newMs.queue.push(newPlayer!);
                 }
 
-                newSystems[systemType] = newMs;
+                newSystems.set(systemType, newMs);
             } else if (system instanceof MovingPlatformSystem) {
                 const newMp = new MovingPlatformSystem(ship, system.systemType);
 
@@ -490,20 +490,20 @@ export class Perspective extends BaseRoom {
                     newMp.target = newTarget;
                 }
 
-                newSystems[systemType] = newMp;
+                newSystems.set(systemType, newMp);
             } else if (system instanceof ReactorSystem) {
                 const newReactor = new ReactorSystem(ship, system.systemType);
 
                 newReactor.timer = system.timer;
                 newReactor.completed = new Set(system.completed);
 
-                newSystems[systemType] = newReactor;
+                newSystems.set(systemType, newReactor);
             } else if (system instanceof SabotageSystem) {
                 const newSab = new SabotageSystem(ship, system.systemType);
 
                 newSab.cooldown = system.cooldown;
 
-                newSystems[systemType] = newSab;
+                newSystems.set(systemType, newSab);
             } else if (system instanceof SecurityCameraSystem) {
                 const newSc = new SecurityCameraSystem(ship, system.systemType);
 
@@ -512,7 +512,7 @@ export class Perspective extends BaseRoom {
                     newSc.players.add(newPlayer!);
                 }
 
-                newSystems[systemType] = newSc;
+                newSystems.set(systemType, newSc);
             } else if (system instanceof SwitchSystem) {
                 const newSwitches = new SwitchSystem(ship, system.systemType);
 
@@ -520,7 +520,7 @@ export class Perspective extends BaseRoom {
                 newSwitches.actual = [...system.actual];
                 newSwitches.brightness = system.brightness;
 
-                newSystems[systemType] = newSwitches;
+                newSystems.set(systemType, newSwitches);
             }
         }
 

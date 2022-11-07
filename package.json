@@ -37,16 +37,16 @@
     },
     "dependencies": {
         "@schemastore/package": "^0.0.6",
-        "@skeldjs/client": "^2.15.33",
-        "@skeldjs/constant": "^2.15.33",
-        "@skeldjs/core": "^2.15.33",
-        "@skeldjs/data": "^2.15.33",
-        "@skeldjs/events": "^2.15.33",
-        "@skeldjs/protocol": "^2.15.33",
-        "@skeldjs/reactor": "^2.15.33",
-        "@skeldjs/state": "^2.15.33",
-        "@skeldjs/text": "^2.15.33",
-        "@skeldjs/util": "^2.15.33",
+        "@skeldjs/client": "^2.15.35",
+        "@skeldjs/constant": "^2.15.35",
+        "@skeldjs/core": "^2.15.35",
+        "@skeldjs/data": "^2.15.35",
+        "@skeldjs/events": "^2.15.35",
+        "@skeldjs/protocol": "^2.15.35",
+        "@skeldjs/reactor": "^2.15.35",
+        "@skeldjs/state": "^2.15.35",
+        "@skeldjs/text": "^2.15.35",
+        "@skeldjs/util": "^2.15.35",
         "chalk": "^4.1.1",
         "chokidar": "^3.5.2",
         "compare-versions": "^3.6.0",
@@ -67,7 +67,7 @@
     "lint-staged": {
         "*.ts": "eslint src/**/*.ts"
     },
-    "packageManager": "yarn@3.1.1",
+    "packageManager": "yarn@3.2.4",
     "pkg": {
         "assets": [
             "misc/config.schema.json",

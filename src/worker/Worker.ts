@@ -371,7 +371,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 const loadedPlugins = [...extendable.loadedPlugins];
                 for (let i = 0; i < loadedPlugins.length; i++) {
                     const [ , plugin ] = loadedPlugins[i];
-                    this.logger.info("%s) %s", i + 1, plugin);
+                    this.logger.info("%s) %s", i + 1, plugin.pluginInstance);
                 }
             });
 

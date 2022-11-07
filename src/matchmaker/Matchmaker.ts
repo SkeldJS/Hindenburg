@@ -3,6 +3,7 @@ import polka from "polka";
 import { GameKeyword, Platform } from "@skeldjs/constant";
 import { json } from "../util/jsonBodyParser";
 import { Worker } from "../worker";
+import { VersionInfo } from "@skeldjs/util";
 
 // This mmtoken will be invalid instantly because:
 // The ClientVersion is set to 0 and the expires at is set to Jan 1st 1970
@@ -56,20 +57,37 @@ export class Matchmaker {
         });
 
         httpServer.post("/api/user", (req, res) => {
-            if (req.headers["content-type"] !== "application/json")
+            if (req.headers["content-type"] !== "application/json") {
+                this.worker.logger.warn("Client failed to get a matchmaker token: Invalid Content-Type header (%s)", req.headers["content-type"]);
                 return res.status(400).end("");
+            }
 
-            if (typeof req.body.Puid !== "string")
+            if (typeof req.body.Puid !== "string") {
+                this.worker.logger.warn("Client failed to get a matchmaker token: No 'Puid' provided in body");
                 return res.status(400).end("");
+            }
 
-            if (typeof req.body.Username !== "string")
+            if (typeof req.body.Username !== "string") {
+                this.worker.logger.warn("Client failed to get a matchmaker token: No 'Username' provided in body");
                 return res.status(400).end("");
+            }
 
-            if (typeof req.body.ClientVersion !== "number" || !this.worker.isVersionAccepted(req.body.ClientVersion))
+            if (typeof req.body.ClientVersion !== "number") {
+                this.worker.logger.warn("Client %s failed to get a matchmaker token: No 'ClientVersion' provided in body", chalk.blue(req.body.Username));
                 return res.status(400).end("");
+            }
 
-            if (typeof req.body.Language !== "number")
+            if (!this.worker.isVersionAccepted(req.body.ClientVersion)) {
+                this.worker.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
+                    chalk.blue(req.body.Username), VersionInfo.from(req.body.ClientVersion).toString(), chalk.grey("(" + req.body.ClientVersion + ")"));
                 return res.status(400).end("");
+            }
+
+
+            if (typeof req.body.Language !== "number") {
+                this.worker.logger.warn("Client failed to get a matchmaker token: No 'Language' provided in body");
+                return res.status(400).end("");
+            }
 
             // todo: record matchmaking tokens used
             if (this.worker.config.logging.hideSensitiveInfo) {
@@ -82,8 +100,10 @@ export class Matchmaker {
         });
 
         httpServer.post("/api/games", (req, res) => {
-            if (!req.query.gameId)
+            if (!req.query.gameId) {
+                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
                 return res.status(400).end("");
+            }
 
             const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
 
@@ -103,11 +123,32 @@ export class Matchmaker {
         });
 
         httpServer.get("/api/games", (req, res) => {
-            if (!req.query.mapId || !req.query.lang || !req.query.quickChat || !req.query.platformFlags || !req.query.numImpostors)
+            if (!req.query.mapId) {
+                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
                 return res.status(400).end("");
+            }
+
+            if (!req.query.lang) {
+                this.worker.logger.warn("Client failed to find host for room: No 'lang' provided in query parameters");
+                return res.status(400).end("");
+            }
+
+            if (!req.query.quickChat) {
+                this.worker.logger.warn("Client failed to find host for room: No 'quickChat' provided in query parameters");
+                return res.status(400).end("");
+            }
+
+            if (!req.query.platformFlags) {
+                this.worker.logger.warn("Client failed to find host for room: No 'platformFlags' provided in query parameters");
+                return res.status(400).end("");
+            }
+
+            if (!req.query.numImpostors) {
+                this.worker.logger.warn("Client failed to find host for room: No 'numImpostors' provided in query parameters");
+                return res.status(400).end("");
+            }
 
             const returnList: GameListingJson[] = [];
-            console.log(req.socket.remoteAddress);
             const listingIp = req.socket.remoteAddress === "127.0.0.1" || req.socket.remoteAddress === "::ffff:127.0.0.1"
                 ? "127.0.0.1"
                 : this.worker.config.socket.ip;

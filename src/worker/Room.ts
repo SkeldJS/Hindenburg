@@ -54,7 +54,7 @@ export class Room extends BaseRoom {
      */
     createPerspective(
         players: PlayerData|PlayerData[],
-        filters: PresetFilter[]
+        filters?: PresetFilter[]
     ): Perspective;
     /**
      * Create a {@link Perspective} object for this room, with preset filters to

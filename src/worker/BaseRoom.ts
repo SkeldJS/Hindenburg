@@ -638,7 +638,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const writer = HazelWriter.alloc(1024);
             if (component.Serialize(writer, false)) {
                 writer.realloc(writer.cursor);
-                this.messageStream.push(new DataMessage(component.netId, writer.buffer));
+                this.messageStream.unshift(new DataMessage(component.netId, writer.buffer));
             }
             component.dirtyBit = 0;
         }
@@ -1683,6 +1683,19 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.logger.info("Game started");
 
         if (this.hostIsMe) {
+            if (this.lobbyBehaviour)
+                this.despawnComponent(this.lobbyBehaviour);
+
+            const ship_prefabs = [
+                SpawnType.SkeldShipStatus,
+                SpawnType.MiraShipStatus,
+                SpawnType.Polus,
+                SpawnType.AprilShipStatus,
+                SpawnType.Airship
+            ];
+
+            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, -2);
+
             await Promise.race([
                 Promise.all(
                     [...this.players.values()].map((player) => {
@@ -1701,7 +1714,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             ]);
 
             const removes = [];
-            for (const [clientid, player] of this.players) {
+            for (const [ clientid, player ] of this.players) {
                 if (!player.isReady) {
                     await this.handleLeave(player);
                     removes.push(clientid);
@@ -1722,18 +1735,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 );
             }
 
-            if (this.lobbyBehaviour)
-                this.despawnComponent(this.lobbyBehaviour);
-
-            const ship_prefabs = [
-                SpawnType.SkeldShipStatus,
-                SpawnType.MiraShipStatus,
-                SpawnType.Polus,
-                SpawnType.AprilShipStatus,
-                SpawnType.Airship
-            ];
-
-            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, -2);
             await this.shipStatus?.assignTasks();
             await this.shipStatus?.assignRoles();
 

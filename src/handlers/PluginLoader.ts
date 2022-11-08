@@ -1087,7 +1087,7 @@ export class PluginLoader {
             this.applyRegisteredPrefabs(room);
             this.applyRegisteredRoles(room);
 
-            room.logger.info("Unloaded plugin: %s", loadedPlugin);
+            room.logger.info("Unloaded plugin: %s", loadedPlugin.pluginInstance);
         } else {
             this.worker.loadedPlugins.delete(pluginId);
             this.applyMessageHandlers();
@@ -1095,7 +1095,7 @@ export class PluginLoader {
             if (loadedPlugin.loadedMatchmakerEndpoints.length && this.worker.matchmaker) {
                 this.worker.matchmaker.restart();
             }
-            this.worker.logger.info("Unloaded plugin globally: %s", loadedPlugin);
+            this.worker.logger.info("Unloaded plugin globally: %s", loadedPlugin.pluginInstance);
         }
 
         for (const loadedEventListener of loadedPlugin.loadedEventListeners) {

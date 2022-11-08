@@ -602,7 +602,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         super.destroy();
 
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new RemoveGameMessage(reason)
         ]);
 
@@ -988,6 +988,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         const includeConnections = include ? this.getRealConnections(include) : undefined;
         const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
+        const promises = [];
+
         if (!this.worker.config.optimizations.disablePerspectives) {
             for (let i = 0; i < this.activePerspectives.length; i++) {
                 const activePerspective = this.activePerspectives[i];
@@ -1036,13 +1038,17 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     payloadsNotCanceled.push(child);
                 }
 
+                console.log(activePerspective, gamedataNotCanceled, payloadsNotCanceled);
+
                 if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
-                    return this.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable);
+                    promises.push(activePerspective.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable));
                 }
             }
         }
 
-        return this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable);
+        promises.push(this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable));
+
+        await Promise.all(promises);
     }
 
     async setCode(code: number|string): Promise<void> {
@@ -1059,7 +1065,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         super.setCode(code);
 
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new HostGameMessage(code)
         ]);
     }
@@ -1070,7 +1076,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param recipient The specific client recipient if required.
      */
     async updateHost(hostId: number, recipient?: Connection) {
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new JoinGameMessage(
                 this.code,
                 SpecialClientId.Temp,
@@ -1087,7 +1093,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 DisconnectReason.Error,
                 hostId
             )
-        ], recipient ? [ recipient ] : undefined);
+        ], recipient ? [ recipient.getPlayer()! ] : undefined);
     }
 
     /**
@@ -1395,7 +1401,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     )
                 );
 
-                await this.broadcastMessages([], [
+                await this.broadcast([], [
                     new JoinGameMessage(
                         this.code,
                         joiningClient.clientId,
@@ -1406,14 +1412,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         "",
                         ""
                     )
-                ], undefined, [ joiningClient ]);
+                ], undefined, [ joiningClient.getPlayer()! ]);
 
                 await this._joinOtherClients();
             } else {
                 this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
-                await this.broadcastMessages([], [
+                await this.broadcast([], [
                     new JoinGameMessage(
                         this.code,
                         joiningClient.clientId,
@@ -1424,7 +1430,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         "",
                         ""
                     )
-                ], undefined, [ joiningClient ]);
+                ], undefined, [ joiningClient.getPlayer()! ]);
 
                 await joiningClient.sendPacket(
                     new ReliablePacket(
@@ -1676,7 +1682,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new StartGameMessage(this.code)
         ]);
 
@@ -1767,7 +1773,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
             component.despawn();
         }
 
-        await this.broadcastMessages([], [
+        for (const activePerspective of this.activePerspectives) {
+            await activePerspective.destroyPerspective(false);
+        }
+
+        await this.broadcast([], [
             new EndGameMessage(this.code, reason, false)
         ]);
 

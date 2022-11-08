@@ -420,7 +420,7 @@ export class Connection {
                     this.room
                 )
             );
-            await this.room.handleRemoteLeave(this, reason || DisconnectReason.Error);
+            await this.room.handleRemoteLeave(this, reason || DisconnectReason.ExitGame);
         }
 
         await this.worker.emit(

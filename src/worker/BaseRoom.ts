@@ -1778,12 +1778,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        for (const [ , component ] of this.netobjects) {
-            component.despawn();
-        }
-
         for (const activePerspective of this.activePerspectives) {
             await activePerspective.destroyPerspective(false);
+        }
+
+        for (const [ , component ] of this.netobjects) {
+            component.despawn();
         }
 
         await this.broadcast([], [

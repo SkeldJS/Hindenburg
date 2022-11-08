@@ -341,8 +341,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.on("player.startmeeting", ev => {
-            this.logger.info("Meeting started (%s)",
-                ev.body === "emergency" ? "emergency meeting" : ev.body + "'s body was reported");
+            if (ev.body === "emergency") {
+                this.logger.info("Meeting started (emergency meeting)");
+            } else {
+                this.logger.info("Meeting started (%s's body was reported)", ev.body);
+            }
         });
 
         this.on("room.setprivacy", ev => {
@@ -638,7 +641,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const writer = HazelWriter.alloc(1024);
             if (component.Serialize(writer, false)) {
                 writer.realloc(writer.cursor);
-                this.messageStream.unshift(new DataMessage(component.netId, writer.buffer));
+                this.messageStream.push(new DataMessage(component.netId, writer.buffer));
             }
             component.dirtyBit = 0;
         }
@@ -1702,6 +1705,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, -2);
 
+            this.logger.info("Waiting for players to ready up..");
+
             await Promise.race([
                 Promise.all(
                     [...this.players.values()].map((player) => {
@@ -1720,11 +1725,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
             ]);
 
             const removes = [];
-            for (const [ clientid, player ] of this.players) {
+            for (const [ clientId, player ] of this.players) {
                 if (!player.isReady) {
+                    this.logger.warn("Player %s failed to ready up, kicking..", player);
                     await this.handleLeave(player);
-                    removes.push(clientid);
+                    removes.push(clientId);
                 }
+                player.isReady = false;
             }
 
             if (removes.length) {
@@ -1741,7 +1748,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 );
             }
 
+            this.logger.info("Assigning tasks..");
             await this.shipStatus?.assignTasks();
+            this.logger.info("Assigning roles..");
             await this.shipStatus?.assignRoles();
 
             if (this.shipStatus) {

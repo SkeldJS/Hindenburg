@@ -47,6 +47,10 @@
                 {
                     "title": "Server-as-a-Host",
                     "source": "./pages/Using Hindenburg/Server-as-a-Host.md"
+                },
+                {
+                    "title": "Interactive CLI",
+                    "source": "./pages/Using Hindenburg/Server-as-a-Host.md"
                 }
             ]
         },
@@ -107,12 +111,36 @@
                     "source": "./pages/Plugins/Chat Commands.md"
                 },
                 {
-                    "title": "Perspectives",
-                    "source": "./pages/Plugins/Perspectives.md"
+                    "title": "Player Perspectives",
+                    "source": "./pages/Plugins/Player Perspectives.md"
+                },
+                {
+                    "title": "Reactor Integration",
+                    "source": "./pages/Plugins/Reactor Integration.md"
+                },
+                {
+                    "title": "End Game Intents",
+                    "source": "./pages/Plugins/End Game Intents.md"
+                },
+                {
+                    "title": "Server Broadcast",
+                    "source": "./pages/Plugins/Server Broadcast.md"
+                },
+                {
+                    "title": "CLI Commands",
+                    "source": "./pages/Plugins/CLI Commands"
                 },
                 {
                     "title": "Custom Roles",
                     "source": "./pages/Plugins/Custom Roles.md"
+                },
+                {
+                    "title": "Custom Innernet Objects",
+                    "source": "Custom Innernet Objects.md"
+                },
+                {
+                    "title": "Custom Protocol Messages",
+                    "source": "Custom Protocol Messages"
                 }
             ]
         }

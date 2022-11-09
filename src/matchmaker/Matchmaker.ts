@@ -201,7 +201,7 @@ export class Matchmaker {
             for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
                 const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
 
-                httpServer[method](route, body.bind(loadedPlugin) as any);
+                httpServer[method](route, body.bind(loadedPlugin.pluginInstance) as any);
             }
         }
 

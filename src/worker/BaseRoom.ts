@@ -170,7 +170,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     createdAt: number;
 
-    private playerJoinedFlag: boolean;
+    protected playerJoinedFlag: boolean;
     /**
      * All connections in the room, mapped by client ID to connection object.
      */
@@ -318,7 +318,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             if (this.config.chatCommands && ev.chatMessage.startsWith(prefix)) {
                 ev.message?.cancel(); // Prevent message from being broadcasted
-                const restMessage = ev.chatMessage.substr(prefix.length);
+                const restMessage = ev.chatMessage.substring(prefix.length);
                 const context = new ChatCommandContext(this as any, ev.player, ev.chatMessage);
                 try {
                     await this.chatCommandHandler.parseMessage(context, restMessage);
@@ -337,11 +337,15 @@ export class BaseRoom extends Hostable<RoomEvents> {
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
             }
+            this.logger.info("settings updated");
         });
 
         this.on("player.startmeeting", ev => {
-            this.logger.info("Meeting started (%s)",
-                ev.body === "emergency" ? "emergency meeting" : ev.body + "'s body was reported");
+            if (ev.body === "emergency") {
+                this.logger.info("Meeting started (emergency meeting)");
+            } else {
+                this.logger.info("Meeting started (%s's body was reported)", ev.body);
+            }
         });
 
         this.on("room.setprivacy", ev => {
@@ -601,7 +605,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         super.destroy();
 
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new RemoveGameMessage(reason)
         ]);
 
@@ -610,7 +614,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.emit(new RoomDestroyEvent(this));
 
-        this.logger.info("Room was destroyed.");
+        this.logger.info("Room was destroyed (%s).", DisconnectReason[reason]);
     }
 
     async FixedUpdate() {
@@ -840,6 +844,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
+
         for (let i = 0; i < clientsToBroadcast.length; i++) {
             const connection = clientsToBroadcast[i];
 
@@ -986,6 +991,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         const includeConnections = include ? this.getRealConnections(include) : undefined;
         const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
+        const promises = [];
+
         if (!this.worker.config.optimizations.disablePerspectives) {
             for (let i = 0; i < this.activePerspectives.length; i++) {
                 const activePerspective = this.activePerspectives[i];
@@ -1034,13 +1041,17 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     payloadsNotCanceled.push(child);
                 }
 
+                console.log(activePerspective, gamedataNotCanceled, payloadsNotCanceled);
+
                 if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
-                    return this.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable);
+                    promises.push(activePerspective.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable));
                 }
             }
         }
 
-        return this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable);
+        promises.push(this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable));
+
+        await Promise.all(promises);
     }
 
     async setCode(code: number|string): Promise<void> {
@@ -1057,7 +1068,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         super.setCode(code);
 
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new HostGameMessage(code)
         ]);
     }
@@ -1068,7 +1079,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param recipient The specific client recipient if required.
      */
     async updateHost(hostId: number, recipient?: Connection) {
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new JoinGameMessage(
                 this.code,
                 SpecialClientId.Temp,
@@ -1085,7 +1096,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 DisconnectReason.Error,
                 hostId
             )
-        ], recipient ? [ recipient ] : undefined);
+        ], recipient ? [ recipient.getPlayer()! ] : undefined);
     }
 
     /**
@@ -1359,7 +1370,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (this.gameState === GameState.Ended && !this.config.serverAsHost) {
             if (joiningClient.clientId === this.hostId) {
                 this.gameState = GameState.NotStarted;
-                this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
                 this.logger.info("%s joined, joining other clients..",
@@ -1367,7 +1377,34 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
                 this.gameState = GameState.NotStarted;
 
-                await this.broadcastMessages([], [
+                await joiningClient.sendPacket(
+                    new ReliablePacket(
+                        joiningClient.getNextNonce(),
+                        [
+                            new JoinedGameMessage(
+                                this.code,
+                                joiningClient.clientId,
+                                this.hostId,
+                                [...this.connections.values()]
+                                    .reduce<PlayerJoinData[]>((prev, cur) => {
+                                        if (cur !== joiningClient) {
+                                            prev.push(new PlayerJoinData(
+                                                cur.clientId,
+                                                cur.username,
+                                                cur.platform,
+                                                cur.playerLevel,
+                                                "",
+                                                ""
+                                            ));
+                                        }
+                                        return prev;
+                                    }, [])
+                            )
+                        ]
+                    )
+                );
+
+                await this.broadcast([], [
                     new JoinGameMessage(
                         this.code,
                         joiningClient.clientId,
@@ -1378,14 +1415,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         "",
                         ""
                     )
-                ], undefined, [ joiningClient ]);
+                ], undefined, [ joiningClient.getPlayer()! ]);
 
                 await this._joinOtherClients();
             } else {
                 this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
-                await this.broadcastMessages([], [
+                await this.broadcast([], [
                     new JoinGameMessage(
                         this.code,
                         joiningClient.clientId,
@@ -1396,7 +1433,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         "",
                         ""
                     )
-                ], undefined, [ joiningClient ]);
+                ], undefined, [ joiningClient.getPlayer()! ]);
 
                 await joiningClient.sendPacket(
                     new ReliablePacket(
@@ -1626,7 +1663,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             for (const actingHostId of this.actingHostIds) {
                 const actingHostConn = this.connections.get(actingHostId);
                 if (actingHostConn) {
-                    await this.updateHost(SpecialClientId.Server, actingHostConn);
+                    await this.updateHost(this.config.serverAsHost ? SpecialClientId.Server : this.hostId, actingHostConn);
                 }
             }
         }
@@ -1648,13 +1685,28 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new StartGameMessage(this.code)
         ]);
 
         this.logger.info("Game started");
 
         if (this.hostIsMe) {
+            if (this.lobbyBehaviour)
+                this.despawnComponent(this.lobbyBehaviour);
+
+            const ship_prefabs = [
+                SpawnType.SkeldShipStatus,
+                SpawnType.MiraShipStatus,
+                SpawnType.Polus,
+                SpawnType.AprilShipStatus,
+                SpawnType.Airship
+            ];
+
+            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, -2);
+
+            this.logger.info("Waiting for players to ready up..");
+
             await Promise.race([
                 Promise.all(
                     [...this.players.values()].map((player) => {
@@ -1673,11 +1725,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
             ]);
 
             const removes = [];
-            for (const [clientid, player] of this.players) {
+            for (const [ clientId, player ] of this.players) {
                 if (!player.isReady) {
+                    this.logger.warn("Player %s failed to ready up, kicking..", player);
                     await this.handleLeave(player);
-                    removes.push(clientid);
+                    removes.push(clientId);
                 }
+                player.isReady = false;
             }
 
             if (removes.length) {
@@ -1694,19 +1748,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 );
             }
 
-            if (this.lobbyBehaviour)
-                this.despawnComponent(this.lobbyBehaviour);
-
-            const ship_prefabs = [
-                SpawnType.SkeldShipStatus,
-                SpawnType.MiraShipStatus,
-                SpawnType.Polus,
-                SpawnType.AprilShipStatus,
-                SpawnType.Airship
-            ];
-
-            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, -2);
+            this.logger.info("Assigning tasks..");
             await this.shipStatus?.assignTasks();
+            this.logger.info("Assigning roles..");
             await this.shipStatus?.assignRoles();
 
             if (this.shipStatus) {
@@ -1734,11 +1778,15 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
+        for (const activePerspective of this.activePerspectives) {
+            await activePerspective.destroyPerspective(false);
+        }
+
         for (const [ , component ] of this.netobjects) {
             component.despawn();
         }
 
-        await this.broadcastMessages([], [
+        await this.broadcast([], [
             new EndGameMessage(this.code, reason, false)
         ]);
 

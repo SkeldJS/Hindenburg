@@ -85,6 +85,7 @@ export class ModdedHelloPacket extends BaseRootPacket {
 
     Serialize(writer: HazelWriter) {
         writer.uint16(this.nonce, true);
+        writer.uint8(0);
         writer.write(this.clientVer);
         writer.string(this.username);
         if (typeof this.auth === "string") {
@@ -96,6 +97,7 @@ export class ModdedHelloPacket extends BaseRootPacket {
         writer.uint8(this.chatMode);
         writer.write(this.platform);
         writer.int32(0);
+        writer.uint8(0);
         writer.uint8(this.protocolVer || 0);
         writer.packed(this.modCount || 0);
     }

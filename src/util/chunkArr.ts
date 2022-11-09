@@ -11,7 +11,7 @@ export function chunkArr<T, N extends number>(arr: T[], num: N): FixedArray<T, N
 
     const output = [];
     for (let i = 0; i < arr.length; i += num) {
-        output.push(arr.slice(i, num));
+        output.push(arr.slice(i, i + num));
     }
 
     return output as FixedArray<T, N>[];

@@ -33,4 +33,4 @@ Hindenburg has 2 types of plugins, Worker plugins and Room plugins. Worker plugi
 > Learn more about different plugin types and find out which one you're looking for with the {@page Worker and Room Plugins} page.
 
 ## Development
-See the page on {@page Development Environment} for information on developing plugins.
+See the page on {@page Developing Plugins} for information on developing plugins.

@@ -85,7 +85,7 @@ import { Logger } from "../logger";
 import { Worker } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
 
-export type AllSystems<RoomType extends Hostable<any>> = Partial<Record<SystemType, SystemStatus<any, any, RoomType>>>;
+export type AllSystems = Map<SystemType, SystemStatus<any, any>>;
 
 /**
  * Preset perspective filters to use with {@link Room.createPerspective}.
@@ -180,7 +180,7 @@ export class Perspective extends BaseRoom {
         /**
          * The original room that this perspective is mirroring.
          */
-        private readonly parentRoom: BaseRoom,
+        public readonly parentRoom: BaseRoom,
         /**
          * The players that this perspective is from the perspective of. Every
          * player object is from the original {@link Room} object, rather than
@@ -220,6 +220,8 @@ export class Perspective extends BaseRoom {
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
+        this.playerJoinedFlag = true; // prevent room closing due to inactivity
+
         this.logger = new Logger(() => {
             if (this.playersPov.length === 1) {
                 return `${chalk.yellow(fmtCode(this.code))} @ ${util.format(this.playersPov[0])}`;
@@ -246,7 +248,7 @@ export class Perspective extends BaseRoom {
         for (const [ netId, component ] of parentRoom.netobjects) {
             if (component instanceof AirshipStatus) {
                 const airshipStatus = component as AirshipStatus<this>;
-                const newAs = new AirshipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newAs = new AirshipStatus(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 newAs.systems = this.cloneSystems(airshipStatus) as typeof airshipStatus.systems;
 
@@ -254,7 +256,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newAs);
             } else if (component instanceof AprilShipStatus) {
                 const aprilShipStatus = component as AprilShipStatus<this>;
-                const newAss = new AprilShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newAss = new AprilShipStatus(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 newAss.systems = this.cloneSystems(aprilShipStatus) as typeof aprilShipStatus.systems;
 
@@ -262,7 +264,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newAss);
             } else if (component instanceof CustomNetworkTransform) {
                 const cnt = component as CustomNetworkTransform<this>;
-                const newCnt = new CustomNetworkTransform(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newCnt = new CustomNetworkTransform(this, component.spawnType, netId, component.ownerId, component.flags);
                 newCnt.oldSeqId = cnt.oldSeqId;
                 newCnt.seqId = cnt.seqId;
                 newCnt.position = new Vector2(cnt.position);
@@ -271,7 +273,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newCnt);
             } else if (component instanceof GameData) {
                 const gameData = component as GameData<this>;
-                const newGd = new GameData(this, component.spawnType, netId, component.flags, component.ownerId, {
+                const newGd = new GameData(this, component.spawnType, netId, component.ownerId, component.flags, {
                     players: new Map
                 });
                 for (const [ playerId, playerInfo ] of gameData.players) {
@@ -283,12 +285,12 @@ export class Perspective extends BaseRoom {
                 this.gameData = newGd;
                 this.netobjects.set(netId, newGd);
             } else if (component instanceof LobbyBehaviour) {
-                const newLb = new LobbyBehaviour(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newLb = new LobbyBehaviour(this, component.spawnType, netId, component.ownerId, component.flags);
                 this.netobjects.set(netId, newLb);
                 this.lobbyBehaviour = newLb;
             } else if (component instanceof MeetingHud) {
                 const meetingHud = component as MeetingHud<this>;
-                const newMh = new MeetingHud(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newMh = new MeetingHud(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 newMh.dirtyBit = meetingHud.dirtyBit;
                 newMh.tie = meetingHud.tie;
@@ -305,7 +307,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newMh);
             } else if (component instanceof MiraShipStatus) {
                 const hqShipStatus = component as MiraShipStatus<this>;
-                const newHqss = new MiraShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newHqss = new MiraShipStatus(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 newHqss.systems = this.cloneSystems(hqShipStatus) as typeof hqShipStatus.systems;
 
@@ -313,7 +315,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newHqss);
             } else if (component instanceof PlayerControl) {
                 const playerControl = component as PlayerControl<this>;
-                const newPc = new PlayerControl(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newPc = new PlayerControl(this, component.spawnType, netId, component.ownerId, component.flags);
                 newPc.isNew = playerControl.isNew;
                 newPc.playerId = playerControl.playerId;
 
@@ -326,13 +328,13 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newPc);
             } else if (component instanceof PlayerPhysics) {
                 const playerPhysics = component as PlayerPhysics<this>;
-                const newPp = new PlayerPhysics(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newPp = new PlayerPhysics(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 newPp.ventId = playerPhysics.ventId;
                 this.netobjects.set(netId, newPp);
             } else if (component instanceof PolusShipStatus) {
                 const polusShipStatus = component as PolusShipStatus<this>;
-                const newPss = new PolusShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newPss = new PolusShipStatus(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 newPss.systems = this.cloneSystems(polusShipStatus) as typeof polusShipStatus.systems;
 
@@ -340,7 +342,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newPss);
             } else if (component instanceof SkeldShipStatus) {
                 const shipStatus = component as SkeldShipStatus<this>;
-                const newSss = new SkeldShipStatus(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newSss = new SkeldShipStatus(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 newSss.systems = this.cloneSystems(shipStatus) as typeof shipStatus.systems;
 
@@ -348,7 +350,7 @@ export class Perspective extends BaseRoom {
                 this.netobjects.set(netId, newSss);
             } else if (component instanceof VoteBanSystem) {
                 const voteBanSystem = component as VoteBanSystem<this>;
-                const newVbs = new VoteBanSystem(this, component.spawnType, netId, component.flags, component.ownerId);
+                const newVbs = new VoteBanSystem(this, component.spawnType, netId, component.ownerId, component.flags);
 
                 for (const [ votedId, voters ] of voteBanSystem.voted) {
                     const newVoters = [];
@@ -390,7 +392,7 @@ export class Perspective extends BaseRoom {
 
     private cloneSystems(ship: InnerShipStatus<this>) {
         const systemsEntries = Object.entries(ship.systems) as unknown as [SystemType, SystemStatus<any, any>][];
-        const newSystems: AllSystems<this> = {};
+        const newSystems: AllSystems = new Map;
         for (const [ systemType, system ] of systemsEntries) {
             if (system instanceof AutoDoorsSystem) {
                 const newAd = new AutoDoorsSystem(ship, system.systemType);
@@ -404,14 +406,14 @@ export class Perspective extends BaseRoom {
                     newAd.doors.push(newDoor);
                 }
 
-                newSystems[systemType] = newAd;
+                newSystems.set(systemType, newAd);
             } else if (system instanceof DeconSystem) {
                 const newDecon = new DeconSystem(ship, system.systemType);
 
                 newDecon.timer = system.timer;
                 newDecon.state = system.state;
 
-                newSystems[systemType] = newDecon;
+                newSystems.set(systemType, newDecon);
             } else if (system instanceof DoorsSystem) {
                 const newDoors = new DoorsSystem(ship, system.systemType);
 
@@ -423,7 +425,7 @@ export class Perspective extends BaseRoom {
                     newDoors.doors.push(newDoor);
                 }
 
-                newSystems[systemType] = newDoors;
+                newSystems.set(systemType, newDoors);
             } else if (system instanceof ElectricalDoorsSystem) {
                 const newEd = new ElectricalDoorsSystem(ship, system.systemType);
 
@@ -433,7 +435,7 @@ export class Perspective extends BaseRoom {
                     newEd.doors.push(newDoor);
                 }
 
-                newSystems[systemType] = newEd;
+                newSystems.set(systemType, newEd);
             } else if (system instanceof HqHudSystem) {
                 const newHh = new HqHudSystem(ship, system.systemType);
 
@@ -444,20 +446,20 @@ export class Perspective extends BaseRoom {
                 }));
                 newHh.completedConsoles = new Set(newHh.completedConsoles);
 
-                newSystems[systemType] = newHh;
+                newSystems.set(systemType, newHh);
             } else if (system instanceof HudOverrideSystem) {
                 const newHo = new HudOverrideSystem(ship, system.systemType);
 
                 newHo["_sabotaged"] = system["_sabotaged"];
 
-                newSystems[systemType] = newHo;
+                newSystems.set(systemType, newHo);
             } else if (system instanceof LifeSuppSystem) {
                 const newLs = new LifeSuppSystem(ship, system.systemType);
 
                 newLs.timer = system.timer;
                 newLs.completed = new Set(system.completed);
 
-                newSystems[systemType] = newLs;
+                newSystems.set(systemType, newLs);
             } else if (system instanceof HeliSabotageSystem) {
                 const newHs = new HeliSabotageSystem(ship, system.systemType);
 
@@ -466,7 +468,7 @@ export class Perspective extends BaseRoom {
                 newHs.activeConsoles = new Map(system.activeConsoles.entries());
                 newHs.completedConsoles = new Set(system.completedConsoles);
 
-                newSystems[systemType] = newHs;
+                newSystems.set(systemType, newHs);
             } else if (system instanceof MedScanSystem) {
                 const newMs = new MedScanSystem(ship, system.systemType);
 
@@ -476,7 +478,7 @@ export class Perspective extends BaseRoom {
                     newMs.queue.push(newPlayer!);
                 }
 
-                newSystems[systemType] = newMs;
+                newSystems.set(systemType, newMs);
             } else if (system instanceof MovingPlatformSystem) {
                 const newMp = new MovingPlatformSystem(ship, system.systemType);
 
@@ -488,20 +490,20 @@ export class Perspective extends BaseRoom {
                     newMp.target = newTarget;
                 }
 
-                newSystems[systemType] = newMp;
+                newSystems.set(systemType, newMp);
             } else if (system instanceof ReactorSystem) {
                 const newReactor = new ReactorSystem(ship, system.systemType);
 
                 newReactor.timer = system.timer;
                 newReactor.completed = new Set(system.completed);
 
-                newSystems[systemType] = newReactor;
+                newSystems.set(systemType, newReactor);
             } else if (system instanceof SabotageSystem) {
                 const newSab = new SabotageSystem(ship, system.systemType);
 
                 newSab.cooldown = system.cooldown;
 
-                newSystems[systemType] = newSab;
+                newSystems.set(systemType, newSab);
             } else if (system instanceof SecurityCameraSystem) {
                 const newSc = new SecurityCameraSystem(ship, system.systemType);
 
@@ -510,7 +512,7 @@ export class Perspective extends BaseRoom {
                     newSc.players.add(newPlayer!);
                 }
 
-                newSystems[systemType] = newSc;
+                newSystems.set(systemType, newSc);
             } else if (system instanceof SwitchSystem) {
                 const newSwitches = new SwitchSystem(ship, system.systemType);
 
@@ -518,7 +520,7 @@ export class Perspective extends BaseRoom {
                 newSwitches.actual = [...system.actual];
                 newSwitches.brightness = system.brightness;
 
-                newSystems[systemType] = newSwitches;
+                newSystems.set(systemType, newSwitches);
             }
         }
 
@@ -535,7 +537,15 @@ export class Perspective extends BaseRoom {
         for (let i = 0; i < filters.length; i++) {
             const filter = filters[i];
             if (filter === PresetFilter.GameDataUpdates) {
-                decoder.on([ SetNameMessage, SetColorMessage, SetSkinMessage, SetPetMessage, SetHatMessage, SetVisorMessage, SetNameplateMessage ], message => {
+                decoder.on([ SetNameMessage, SetColorMessage, SetSkinMessage, SetPetMessage, SetHatMessage, SetVisorMessage, SetNameplateMessage, DataMessage ], message => {
+                    if (message instanceof DataMessage) {
+                        const netobject = perspective.netobjects.get(message.netId);
+
+                        if (!(netobject instanceof GameData)) {
+                            return;
+                        }
+                    }
+
                     message.cancel();
                 });
             } else if (filter === PresetFilter.PositionUpdates) {
@@ -632,7 +642,7 @@ export class Perspective extends BaseRoom {
             }
         }
 
-        return this.broadcastMessages(povNotCanceled, payloads, includeConnections, excludedConnections, reliable);
+        return this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable);
     }
 
     /**
@@ -644,315 +654,316 @@ export class Perspective extends BaseRoom {
     async destroyPerspective(restoreState = true) {
         Hostable.prototype.destroy.call(this);
 
-        for (let i = 0; i < this.playersPov.length; i++) {
-            const playersPov = this.playersPov[i];
-            this.parentRoom.playerPerspectives.delete(playersPov.clientId);
+        if (restoreState) {
+            const gameData = this.parentRoom.gameData!;
+            const gameDataWriter = HazelWriter.alloc(0);
+            gameData.dirtyBit = 0xffffffff;
+            gameDataWriter.write(gameData, false);
 
-            /**
-             * todo:
-             * - [ ] Restore room state
-             *   - [x] Restore room visibility
-             *   - [x] Restore room host
-             *   - [x] Restore impostors
-             *   - [x] Restore room settings
-             *   - [x] Restore room counter
-             *   - [ ] Restore started/ended/meeting
-             * - [ ] Restore objects
-             *   - [ ] Despawn spawned components
-             *   - [ ] Spawn despawned components and objects
-             *   - [x] Restore GameData
-             *   - [ ] Restore MeetingHud
-             *     - [ ] Restore player votes
-             *   - [x] Restore VoteBanSystem
-             *   - [x] Restore ShipStatus
-             *   - [x] Restore players
-             *     - [x] Restore PlayerControl
-             *     - [x] Restore PlayerPhysics
-             *     - [x] Restore CustomNetworkTransform
-             *     - [x] Restore player info
-             */
+            const voteBanSystem = this.parentRoom.voteBanSystem!;
+            const voteBanSystemWriter = HazelWriter.alloc(0);
+            voteBanSystemWriter.write(voteBanSystem, false);
 
-            if (restoreState) {
-                const playerConn = this.parentRoom.connections.get(playersPov.clientId);
+            const messages: BaseGameDataMessage[] = [
+                new DataMessage(
+                    gameData.netId,
+                    gameDataWriter.buffer
+                ),
+                new DataMessage(
+                    voteBanSystem.netId,
+                    voteBanSystemWriter.buffer
+                )
+            ];
 
-                if (!playerConn)
-                    continue;
+            const payloads: BaseRootMessage[] = [
+                new AlterGameMessage(
+                    this.parentRoom.code,
+                    AlterGameTag.ChangePrivacy,
+                    this.parentRoom.privacy === "public" ? 1 : 0
+                )
+            ];
 
-                const gameData = this.parentRoom.gameData!;
-                const gameDataWriter = HazelWriter.alloc(0);
-                gameData.dirtyBit = 0b111111111111111;
-                gameDataWriter.write(gameData, false);
-
-                const voteBanSystem = this.parentRoom.voteBanSystem!;
-                const voteBanSystemWriter = HazelWriter.alloc(0);
-                voteBanSystemWriter.write(voteBanSystem, false);
-
-                const messages: BaseGameDataMessage[] = [
-                    new DataMessage(
-                        gameData.netId,
-                        gameDataWriter.buffer
-                    ),
-                    new DataMessage(
-                        voteBanSystem.netId,
-                        voteBanSystemWriter.buffer
-                    )
-                ];
-
-                const payloads: BaseRootMessage[] = [
-                    new AlterGameMessage(
-                        this.parentRoom.code,
-                        AlterGameTag.ChangePrivacy,
-                        this.parentRoom.privacy === "public" ? 1 : 0
-                    )
-                ];
-
-                // todo: figure out some way of handling spawns/despawns in perspectives
-                // problems:
-                // 1. despawning an objet makes that netid not able to be used.
-                //    - solution: have a per-connection netid counter and map
-                //    - the host's netids to the connection's netids on every
-                //    - message involving netids
-                //        - probably slow AF
-                // 2. you can't spawn a single component, you can only spawn
-                // prefabs
-                //    - solution: despawn every other component in that prefab,
-                //    - and respawn the prefab
-                for (const [ netId ] of this.netobjects) {
-                    if (!this.parentRoom.netobjects.get(netId)) {
-                        messages.push(
-                            new DespawnMessage(netId)
-                        );
-                    }
-                }
-
-                if (this.hostId !== this.parentRoom.hostId) {
-                    payloads.push(
-                        new JoinGameMessage(
-                            this.code,
-                            SpecialClientId.Temp,
-                            this.parentRoom.hostId,
-                            "TEMP",
-                            new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
-                            0,
-                            "",
-                            ""
-                        )
+            // todo: figure out some way of handling spawns/despawns in perspectives
+            // problems:
+            // 1. despawning an objet makes that netid not able to be used.
+            //    - solution: have a per-connection netid counter and map
+            //    - the host's netids to the connection's netids on every
+            //    - message involving netids
+            //        - probably slow AF
+            // 2. you can't spawn a single component, you can only spawn
+            // prefabs
+            //    - solution: despawn every other component in that prefab,
+            //    - and respawn the prefab
+            for (const [ netId ] of this.netobjects) {
+                if (!this.parentRoom.netobjects.get(netId)) {
+                    messages.push(
+                        new DespawnMessage(netId)
                     );
+                }
+            }
+
+            if (this.hostId !== this.parentRoom.hostId) {
+                payloads.push(
+                    new JoinGameMessage(
+                        this.code,
+                        SpecialClientId.Temp,
+                        this.parentRoom.hostId,
+                        "TEMP",
+                        new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
+                        0,
+                        "",
+                        ""
+                    )
+                );
+                payloads.push(
+                    new RemovePlayerMessage(
+                        this.code,
+                        SpecialClientId.Temp,
+                        DisconnectReason.Error,
+                        this.parentRoom.hostId
+                    )
+                );
+            }
+
+            for (const [ clientId ] of this.players) {
+                if (!this.parentRoom.players.get(clientId)) {
                     payloads.push(
                         new RemovePlayerMessage(
-                            this.code,
-                            SpecialClientId.Temp,
+                            this.parentRoom.code,
+                            clientId,
                             DisconnectReason.Error,
                             this.parentRoom.hostId
                         )
                     );
                 }
+            }
 
-                for (const [ clientId ] of this.players) {
-                    if (!this.parentRoom.players.get(clientId)) {
-                        payloads.push(
-                            new RemovePlayerMessage(
-                                this.parentRoom.code,
-                                clientId,
-                                DisconnectReason.Error,
-                                this.parentRoom.hostId
-                            )
-                        );
-                    }
-                }
-
-                for (const [ , player ] of this.parentRoom.players) {
-                    if (!this.players.has(player.clientId)) {
-                        payloads.push(
-                            new JoinGameMessage(
-                                this.parentRoom.code,
-                                player.clientId,
-                                this.parentRoom.hostId,
-                                player.username,
-                                player.platform,
-                                player.playerLevel,
-                                "",
-                                ""
-                            )
-                        );
-                    }
-                }
-
-                const shipStatus = this.parentRoom.shipStatus;
-                if (shipStatus) {
-                    const systemTypes = Object.keys(shipStatus.systems);
-                    for (let i = 0; i < systemTypes.length; i++) {
-                        const systemType = systemTypes[i];
-
-                        (shipStatus.systems as any)[systemType].dirty = true; // cast to any because types are complicated LOL
-                    }
-
-                    const shipStatusWriter = HazelWriter.alloc(0);
-                    shipStatusWriter.write(shipStatus, false);
-
-                    messages.push(
-                        new DataMessage(
-                            shipStatus.netId,
-                            shipStatusWriter.buffer
+            for (const [ , player ] of this.parentRoom.players) {
+                if (!this.players.has(player.clientId)) {
+                    payloads.push(
+                        new JoinGameMessage(
+                            this.parentRoom.code,
+                            player.clientId,
+                            this.parentRoom.hostId,
+                            player.username,
+                            player.platform,
+                            player.playerLevel,
+                            "",
+                            ""
                         )
                     );
                 }
+            }
 
-                const impostorIds = [];
-                for (const [ , player ] of this.parentRoom.players) {
-                    const defaultOutfit = player.playerInfo?.defaultOutfit;
-                    if (!defaultOutfit)
-                        continue;
+            const shipStatus = this.parentRoom.shipStatus;
+            if (shipStatus) {
+                const systemTypes = Object.keys(shipStatus.systems);
+                for (let i = 0; i < systemTypes.length; i++) {
+                    const systemType = systemTypes[i];
 
-                    const playerControl = player.control!;
+                    (shipStatus.systems as any)[systemType].dirty = true; // cast to any because types are complicated LOL
+                }
+
+                const shipStatusWriter = HazelWriter.alloc(0);
+                shipStatusWriter.write(shipStatus, false);
+
+                messages.push(
+                    new DataMessage(
+                        shipStatus.netId,
+                        shipStatusWriter.buffer
+                    )
+                );
+            }
+
+            const impostorIds = [];
+            for (const [ , player ] of this.parentRoom.players) {
+                const defaultOutfit = player.playerInfo?.defaultOutfit;
+                if (!defaultOutfit)
+                    continue;
+
+                const playerControl = player.control!;
+                messages.push(
+                    new RpcMessage(
+                        playerControl.netId,
+                        new SetNameMessage(defaultOutfit.name)
+                    )
+                );
+
+                messages.push(
+                    new RpcMessage(
+                        playerControl.netId,
+                        new SetColorMessage(defaultOutfit.color)
+                    )
+                );
+
+                messages.push(
+                    new RpcMessage(
+                        playerControl.netId,
+                        new SetHatMessage(defaultOutfit.hatId)
+                    )
+                );
+
+                messages.push(
+                    new RpcMessage(
+                        playerControl.netId,
+                        new SetPetMessage(defaultOutfit.petId)
+                    )
+                );
+
+                messages.push(
+                    new RpcMessage(
+                        playerControl.netId,
+                        new SetSkinMessage(defaultOutfit.skinId)
+                    )
+                );
+
+                messages.push(
+                    new RpcMessage(
+                        playerControl.netId,
+                        new SetVisorMessage(defaultOutfit.visorId)
+                    )
+                );
+
+                messages.push(
+                    new RpcMessage(
+                        playerControl.netId,
+                        new SetNameplateMessage(defaultOutfit.nameplateId)
+                    )
+                );
+
+                const playerPhysics = player.physics!;
+
+                const playersPov = this.resolvePlayer(player);
+                if (playerPhysics.isInVent) {
                     messages.push(
                         new RpcMessage(
-                            playerControl.netId,
-                            new SetNameMessage(defaultOutfit.name)
+                            playerPhysics.netId,
+                            new EnterVentMessage(playerPhysics.ventId)
                         )
                     );
-
+                } else if (playersPov && playersPov.physics && playersPov.physics.ventId >= 0) {
                     messages.push(
                         new RpcMessage(
-                            playerControl.netId,
-                            new SetColorMessage(defaultOutfit.color)
+                            playerPhysics.netId,
+                            new ExitVentMessage(playersPov.physics.ventId)
                         )
                     );
+                }
 
-                    messages.push(
-                        new RpcMessage(
-                            playerControl.netId,
-                            new SetHatMessage(defaultOutfit.hatId)
-                        )
-                    );
+                const ctrl = player.control!;
+                const ctrlWriter = HazelWriter.alloc(1);
+                ctrlWriter.write(ctrl, false);
 
-                    messages.push(
-                        new RpcMessage(
-                            playerControl.netId,
-                            new SetPetMessage(defaultOutfit.petId)
-                        )
-                    );
+                messages.push(
+                    new DataMessage(
+                        ctrl.netId,
+                        ctrlWriter.buffer
+                    )
+                );
 
-                    messages.push(
-                        new RpcMessage(
-                            playerControl.netId,
-                            new SetSkinMessage(defaultOutfit.skinId)
-                        )
-                    );
+                const phys = player.physics!;
+                const physWriter = HazelWriter.alloc(1);
+                physWriter.write(phys, false);
 
-                    messages.push(
-                        new RpcMessage(
-                            playerControl.netId,
-                            new SetVisorMessage(defaultOutfit.visorId)
-                        )
-                    );
+                messages.push(
+                    new DataMessage(
+                        phys.netId,
+                        physWriter.buffer
+                    )
+                );
 
-                    messages.push(
-                        new RpcMessage(
-                            playerControl.netId,
-                            new SetNameplateMessage(defaultOutfit.nameplateId)
-                        )
-                    );
+                const cnt = player.transform!;
+                const cntWriter = HazelWriter.alloc(10);
+                cntWriter.write(cnt, false);
 
-                    const playerPhysics = player.physics!;
+                messages.push(
+                    new DataMessage(
+                        cnt.netId,
+                        cntWriter.buffer
+                    )
+                );
 
-                    if (playerPhysics.isInVent) {
-                        messages.push(
-                            new RpcMessage(
-                                playerPhysics.netId,
-                                new EnterVentMessage(playerPhysics.ventId)
-                            )
-                        );
-                    } else if (playersPov.physics) {
-                        messages.push(
-                            new RpcMessage(
-                                playerPhysics.netId,
-                                new ExitVentMessage(playersPov.physics?.ventId)
-                            )
-                        );
-                    }
+                if (player.playerInfo?.isImpostor) {
+                    impostorIds.push(player.playerId!);
 
-                    const ctrl = player.control!;
-                    const ctrlWriter = HazelWriter.alloc(1);
-                    ctrlWriter.write(ctrl, false);
+                    for (let i = 0; i < player.playerInfo.taskStates.length; i++) {
+                        const taskState = player.playerInfo.taskStates[i];
 
-                    messages.push(
-                        new DataMessage(
-                            ctrl.netId,
-                            ctrlWriter.buffer
-                        )
-                    );
-
-                    const phys = player.physics!;
-                    const physWriter = HazelWriter.alloc(1);
-                    physWriter.write(phys, false);
-
-                    messages.push(
-                        new DataMessage(
-                            phys.netId,
-                            physWriter.buffer
-                        )
-                    );
-
-                    const cnt = player.transform!;
-                    const cntWriter = HazelWriter.alloc(10);
-                    cntWriter.write(cnt, false);
-
-                    messages.push(
-                        new DataMessage(
-                            cnt.netId,
-                            cntWriter.buffer
-                        )
-                    );
-
-                    if (player.playerInfo?.isImpostor) {
-                        impostorIds.push(player.playerId!);
-
-                        for (let i = 0; i < player.playerInfo.taskStates.length; i++) {
-                            const taskState = player.playerInfo.taskStates[i];
-
-                            if (taskState.completed) {
-                                messages.push(
-                                    new RpcMessage(
-                                        playerControl.netId,
-                                        new CompleteTaskMessage(i)
-                                    )
-                                );
-                            }
+                        if (taskState.completed) {
+                            messages.push(
+                                new RpcMessage(
+                                    playerControl.netId,
+                                    new CompleteTaskMessage(i)
+                                )
+                            );
                         }
                     }
                 }
+            }
 
-                const hostPlayer = this.parentRoom.host;
-                if (hostPlayer) {
-                    messages.push(
-                        new RpcMessage(
-                            hostPlayer.control!.netId,
-                            new SetInfectedMessage(impostorIds)
+            const hostPlayer = this.parentRoom.host;
+            if (hostPlayer) {
+                messages.push(
+                    new RpcMessage(
+                        hostPlayer.control!.netId,
+                        new SetInfectedMessage(impostorIds)
+                    )
+                );
+
+                messages.push(
+                    new RpcMessage(
+                        hostPlayer.control!.netId,
+                        new SyncSettingsMessage(this.parentRoom.settings)
+                    )
+                );
+
+                (hostPlayer.control as any).lastStartCounter++;
+                messages.push(
+                    new RpcMessage(
+                        hostPlayer.control!.netId,
+                        new SetStartCounterMessage(
+                            (hostPlayer.control as any).lastStartCounter,
+                            this.parentRoom.counter
                         )
-                    );
+                    )
+                );
+            }
 
-                    messages.push(
-                        new RpcMessage(
-                            hostPlayer.control!.netId,
-                            new SyncSettingsMessage(this.parentRoom.settings)
-                        )
-                    );
+            const chunkedMessages = chunkArr(messages, 5);
+            const chunkedPayloads = chunkArr(payloads, 3);
 
-                    (hostPlayer.control as any).lastStartCounter++;
-                    messages.push(
-                        new RpcMessage(
-                            hostPlayer.control!.netId,
-                            new SetStartCounterMessage(
-                                (hostPlayer.control as any).lastStartCounter,
-                                this.parentRoom.counter
-                            )
-                        )
-                    );
-                }
+            for (let i = 0; i < this.playersPov.length; i++) {
+                const playersPov = this.playersPov[i];
+                this.parentRoom.playerPerspectives.delete(playersPov.clientId);
 
-                const chunkedMessages = chunkArr(messages, 5);
-                const chunkedPayloads = chunkArr(payloads, 3);
+                /**
+                 * todo:
+                 * - [ ] Restore room state
+                 *   - [x] Restore room visibility
+                 *   - [x] Restore room host
+                 *   - [x] Restore impostors
+                 *   - [x] Restore room settings
+                 *   - [x] Restore room counter
+                 *   - [ ] Restore started/ended/meeting
+                 * - [ ] Restore objects
+                 *   - [ ] Despawn spawned components
+                 *   - [ ] Spawn despawned components and objects
+                 *   - [x] Restore GameData
+                 *   - [ ] Restore MeetingHud
+                 *     - [ ] Restore player votes
+                 *   - [x] Restore VoteBanSystem
+                 *   - [x] Restore ShipStatus
+                 *   - [x] Restore players
+                 *     - [x] Restore PlayerControl
+                 *     - [x] Restore PlayerPhysics
+                 *     - [x] Restore CustomNetworkTransform
+                 *     - [x] Restore player info
+                 */
+
+                const playerConn = this.parentRoom.connections.get(playersPov.clientId);
+
+                if (!playerConn)
+                    continue;
 
                 for (let i = 0; i < Math.max(chunkedMessages.length, chunkedPayloads.length); i++) {
                     playerConn.sendPacket(
@@ -976,10 +987,36 @@ export class Perspective extends BaseRoom {
             }
         }
 
+        for (let i = 0; i < this.playersPov.length; i++) {
+            const playersPov = this.playersPov[i];
+            this.parentRoom.playerPerspectives.delete(playersPov.clientId);
+        }
+
         this.parentRoom.activePerspectives.splice(this.parentRoom.activePerspectives.indexOf(this), 1);
     }
 
     createPerspective(): Perspective {
         throw new TypeError("Cannot create a perspective from another perspective; create one from the original room instead.");
+    }
+
+    /**
+     * Resolve a player by some identifier, taking into account the player in the perspective.
+     * @param player The identifier to resolve to a player.
+     * @returns The resolved player
+     * @example
+     * ```ts
+     * const playerPov = perspective.resolvePlayer(originalPlayer);
+     * ```
+     */
+    resolvePlayer(player: PlayerDataResolvable): PlayerData<this>|undefined {
+        if (player instanceof PlayerData && player.room === this)
+            return player as PlayerData<this>;
+
+        const clientId = this.resolvePlayerClientID(player);
+
+        if (clientId === undefined)
+            return undefined;
+
+        return this.players.get(clientId);
     }
 }

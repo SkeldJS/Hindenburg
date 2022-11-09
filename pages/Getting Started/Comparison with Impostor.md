@@ -12,17 +12,17 @@ based on features, and to help you make your choice:
 | **Core Features** |  |  |
 | Full replacement for official servers | ✔️ | ✔️ |
 | Server configuration | ✔️ | ✔️ |
-| [Anti-cheat](./HACS.html) | ✔️ | ✔️ |
+| [Anti-cheat](./HACS) | ✔️ | ✔️ |
 | Server logging | ✔️ | ✔️ |
-| [Plugins](./Plugins.html) | ✔️ | ✔️ |
-| [Reactor support](./Reactor%20Support.html) | ✔️ | 🧩 |
+| [Plugins](./Installing%20Plugins) | ✔️ | ✔️ |
+| [Reactor support](../Using%20Hindenburg/Reactor%20Support) | ✔️ | 🧩 |
 ||||
 | **Extra Features** |  |  |
-| [Server-as-a-Host](./Server-as-a-Host.html) | ✔️ | ❌ |
+| [Server-as-a-Host](../Using%20Hindenburg/Server-as-a-Host) | ✔️ | ❌ |
 | Multiple hosts | ✔️ | ❌ |
 | Multiple plugin directories | ✔️ | ✔️ |
-| [Chat commands](./Chat%20Commands.html) | ✔️ | 🧩 |
-| [Interactive CLI](./Interactive%20CLI.html) | ✔️ | 🚧 |
+| [Chat commands](../Using%20Hindenburg/Chat%20Commands) | ✔️ | 🧩 |
+| [Interactive CLI](./Using%20Hindenburg/Interactive%20CLI) | ✔️ | 🚧 |
 | Checking for Updates | ✔️ | ❌ |
 | Server broadcast | ✔️ | 🧩 |
 ||||
@@ -30,22 +30,22 @@ based on features, and to help you make your choice:
 | Per-room config | ✔️ | ❌ |
 | Game code config | ✔️ | ✔️ |
 | Chat command config | ✔️ |  |
-| [Message ordering](./Message%20Ordering.html) | ✔️ |  |
+| [Message ordering](../Advanced%20Usage/Message%20Ordering) | ✔️ |  |
 | Per-plugin config | ✔️ | 🚧 |
 | Reactor allowed mods config | ✔️ |  |
 ||||
 | **Plugins** |  |  |
 | Hot plugin reloading | ✔️ | ❌ |
-| [Interactive plugin template creation](../Plugins/Creating%20a%20Plugin.html) | ✔️ | 🚧 |
-| [Hookable & cancelable events](../Plugins/Event%20Listeners.html) | ✔️ | ✔️ |
-| [Custom end game intents](../Plugins/End%20Game%20Intents.html) | ✔️ | 🚧 |
-| [Global plugins](../Plugins/Global%20and%20Room%20Plugins.html#global-plugins) | ✔️ | ✔️ |
-| [Per-room plugins](../Plugins/Global%20and%20Room%20Plugins.html#room-plugins) | ✔️ | ❌ |
-| [Custom component support](../Plugins/Custom%20Components.html) | ✔️ | 🚧 |
-| [Custom protocol messages](../Plugins/Protocol%20Messages.html#custom-messages) | ✔️ | ✔️ |
-| [Reactor RPC API](../Plugins/Reactor%20Integration.html) | ✔️ |  |
-| [Custom chat commands](../Plugins/Chat%20Commands.html) | ✔️ |  |
-| [Custom CLI commands](../Plugins/CLI%20Commands.html) | ✔️ |  |
-| [Server broadcast/chat API](../Plugins/Server%20Broadcast.html) | ✔️ | ❌ |
-| [Player perspective API](../Plugins/Player%20Perspectives.html) | ✔️ | ❌ |
-| [Extendable anti-cheat](../Plugins/Anti-Cheat.html) | ✔️ | 🚧 |
+| [Interactive plugin template creation](../Plugins/Creating%20a%20Plugin) | ✔️ | 🚧 |
+| [Hookable & cancelable events](../Plugins/Event%20Listeners) | ✔️ | ✔️ |
+| [Custom end game intents](../Plugins/End%20Game%20Intents) | ✔️ | 🚧 |
+| [Global plugins](../Plugins/Worker%20and%20Room%20Plugins.html#worker-plugins) | ✔️ | ✔️ |
+| [Per-room plugins](../Plugins/Worker%20and%20Room%20Plugins.html#room-plugins) | ✔️ | ❌ |
+| [Custom innernet object support](../Plugins/Custom%20Innernet%20Objects) | ✔️ | 🚧 |
+| [Custom protocol messages](../Plugins/Custom%20Protocol%20Messages) | ✔️ | ✔️ |
+| [Reactor integration](../Plugins/Reactor%20Integration) | ✔️ |  |
+| [Custom chat commands](../Plugins/Chat%20Commands) | ✔️ |  |
+| [Custom CLI commands](../Plugins/CLI%20Commands) | ✔️ |  |
+| [Server broadcast/chat API](../Plugins/Server%20Broadcast) | ✔️ | ❌ |
+| [Player perspective API](../Plugins/Player%20Perspectives) | ✔️ | ❌ |
+| [Extendable anti-cheat](../Plugins/Anti-Cheat) | ✔️ | 🚧 |

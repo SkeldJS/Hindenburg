@@ -1,6 +1,6 @@
 {
     "name": "@skeldjs/hindenburg",
-    "version": "1.1.10",
+    "version": "1.1.16",
     "main": "./dist/src/index",
     "bin": "./dist/bin/pkg.js",
     "license": "GPL-3.0-only",
@@ -37,16 +37,16 @@
     },
     "dependencies": {
         "@schemastore/package": "^0.0.6",
-        "@skeldjs/client": "^2.15.32",
-        "@skeldjs/constant": "^2.15.32",
-        "@skeldjs/core": "^2.15.32",
-        "@skeldjs/data": "^2.15.32",
-        "@skeldjs/events": "^2.15.32",
-        "@skeldjs/protocol": "^2.15.32",
-        "@skeldjs/reactor": "^2.15.32",
-        "@skeldjs/state": "^2.15.32",
-        "@skeldjs/text": "^2.15.32",
-        "@skeldjs/util": "^2.15.32",
+        "@skeldjs/client": "^2.15.38",
+        "@skeldjs/constant": "^2.15.38",
+        "@skeldjs/core": "^2.15.38",
+        "@skeldjs/data": "^2.15.38",
+        "@skeldjs/events": "^2.15.38",
+        "@skeldjs/protocol": "^2.15.38",
+        "@skeldjs/reactor": "^2.15.38",
+        "@skeldjs/state": "^2.15.38",
+        "@skeldjs/text": "^2.15.38",
+        "@skeldjs/util": "^2.15.38",
         "chalk": "^4.1.1",
         "chokidar": "^3.5.2",
         "compare-versions": "^3.6.0",
@@ -67,7 +67,7 @@
     "lint-staged": {
         "*.ts": "eslint src/**/*.ts"
     },
-    "packageManager": "yarn@3.1.1",
+    "packageManager": "yarn@3.2.4",
     "pkg": {
         "assets": [
             "misc/config.schema.json",

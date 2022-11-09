@@ -1,7 +1,7 @@
-## Global Plugins
-Global plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that transcend individual rooms, as well as listen for events emitted from all rooms.
+## Worker Plugins
+Worker plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that don't concern rooms rooms, as well as listen for events emitted from all rooms.
 
-You can create a global plugin by extending the {@link WorkerPlugin} class exported by `@skeldjs/hindenburg`, for example:
+You can create a worker plugin by extending the {@link WorkerPlugin} class exported by `@skeldjs/hindenburg`, for example:
 ```ts
 @HindenburgPlugin("hbplugin-fun-things")
 export class MyPlugin extends WorkerPlugin {

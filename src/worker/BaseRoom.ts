@@ -1010,11 +1010,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         continue;
                     }
 
-                    await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+                    if (!includeConnections && !excludedConnections) {
+                        await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
-                    if (child.canceled) {
-                        (child as any)._canceled = false;
-                        continue;
+                        if (child.canceled) {
+                            (child as any)._canceled = false;
+                            continue;
+                        }
                     }
 
                     gamedataNotCanceled.push(child);
@@ -1031,17 +1033,19 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         continue;
                     }
 
-                    await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+                    if (!includeConnections && !excludedConnections) {
+                        await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
-                    if (child.canceled) {
-                        (child as any)._canceled = false;
-                        continue;
+                        if (child.canceled) {
+                            (child as any)._canceled = false;
+                            continue;
+                        }
                     }
 
                     payloadsNotCanceled.push(child);
                 }
 
-                console.log(activePerspective, gamedataNotCanceled, payloadsNotCanceled);
+                console.log("INCOMING", activePerspective, gamedataNotCanceled, payloadsNotCanceled);
 
                 if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
                     promises.push(activePerspective.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable));

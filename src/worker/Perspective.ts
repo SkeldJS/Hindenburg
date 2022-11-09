@@ -39,13 +39,15 @@ import {
     DisconnectReason,
     HeliSabotageSystem,
     Platform,
-    PlayerDataResolvable
+    PlayerDataResolvable,
+    SpawnType
 } from "@skeldjs/core";
 
 import {
     AlterGameMessage,
     BaseGameDataMessage,
     BaseRootMessage,
+    CloseMessage,
     CompleteTaskMessage,
     DataMessage,
     DespawnMessage,
@@ -71,7 +73,8 @@ import {
     SetVisorMessage,
     SnapToMessage,
     SpawnMessage,
-    SyncSettingsMessage
+    SyncSettingsMessage,
+    VotingCompleteMessage
 } from "@skeldjs/protocol";
 
 import { HazelWriter, Vector2 } from "@skeldjs/util";
@@ -534,6 +537,20 @@ export class Perspective extends BaseRoom {
     }
 
     static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[]) {
+        decoder.on([ CloseMessage ], message => {
+            message.cancel();
+        });
+
+        decoder.on([ VotingCompleteMessage ], message => {
+            message.cancel();
+        });
+
+        decoder.on([ SpawnMessage ], message => {
+            if (message.spawnType === SpawnType.MeetingHud) {
+                message.cancel();
+            }
+        });
+
         for (let i = 0; i < filters.length; i++) {
             const filter = filters[i];
             if (filter === PresetFilter.GameDataUpdates) {
@@ -593,27 +610,57 @@ export class Perspective extends BaseRoom {
         const includeConnections = include ? this.getRealConnections(include) : undefined;
         const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
-        const povNotCanceled = [];
+        const povNotCanceledGamedata = [];
         for (let i = 0; i < gamedata.length; i++) {
             const child = gamedata[i];
 
             (child as any)._canceled = false; // child._canceled is private
             await this.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
 
-            if (child.canceled)
+            if (child.canceled) {
+                (child as any)._canceled = false; // child._canceled is private
                 continue;
-
-            if (!includeConnections) {
-                await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                if (child.canceled)
-                    continue;
             }
 
-            povNotCanceled.push(child);
+            if (!includeConnections && !excludedConnections) {
+                await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                if (child.canceled) {
+                    (child as any)._canceled = false; // child._canceled is private
+                    continue;
+                }
+            }
+
+            povNotCanceledGamedata.push(child);
         }
 
-        if (povNotCanceled.length) {
+        const povNotCanceledPayload = [];
+        for (let i = 0; i < payloads.length; i++) {
+            const child = payloads[i];
+
+            (child as any)._canceled = false; // child._canceled is private
+            await this.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+            if (child.canceled) {
+                (child as any)._canceled = false; // child._canceled is private
+                continue;
+            }
+
+            if (!includeConnections && !excludedConnections) {
+                await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                if (child.canceled) {
+                    (child as any)._canceled = false; // child._canceled is private
+                    continue;
+                }
+            }
+
+            povNotCanceledPayload.push(child);
+        }
+
+        const promises = [];
+
+        if (povNotCanceledGamedata.length > 0 || povNotCanceledPayload.length > 0) {
             const alreadySentIn: Set<Perspective> = new Set;
 
             if (includeConnections) {
@@ -623,17 +670,52 @@ export class Perspective extends BaseRoom {
                             if (alreadySentIn.has(recipient.room))
                                 continue;
 
-                            for (let i = 0; i < povNotCanceled.length; i++) {
-                                const child = povNotCanceled[i];
+                            const extraNotCanceledGamedata = [];
+                            const extraNotCanceledPayload = [];
+
+                            for (let i = 0; i < povNotCanceledGamedata.length; i++) {
+                                const child = povNotCanceledGamedata[i];
 
                                 (child as any)._canceled = false; // child._canceled is private
                                 await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
 
-                                if (child.canceled)
+                                if (child.canceled) {
+                                    (child as any)._canceled = false; // child._canceled is private
                                     continue;
+                                }
 
                                 await recipient.room.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                                if (child.canceled) {
+                                    (child as any)._canceled = false; // child._canceled is private
+                                    continue;
+                                }
+
+                                extraNotCanceledGamedata.push(child);
                             }
+
+                            for (let i = 0; i < povNotCanceledPayload.length; i++) {
+                                const child = povNotCanceledPayload[i];
+
+                                (child as any)._canceled = false; // child._canceled is private
+                                await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
+
+                                if (child.canceled) {
+                                    (child as any)._canceled = false; // child._canceled is private
+                                    continue;
+                                }
+
+                                await recipient.room.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+
+                                if (child.canceled) {
+                                    (child as any)._canceled = false; // child._canceled is private
+                                    continue;
+                                }
+
+                                extraNotCanceledPayload.push(child);
+                            }
+
+                            promises.push(recipient.room.broadcastMessages(extraNotCanceledGamedata, extraNotCanceledPayload, [ recipient ], undefined, reliable));
 
                             alreadySentIn.add(recipient.room);
                         }
@@ -642,7 +724,13 @@ export class Perspective extends BaseRoom {
             }
         }
 
-        return this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable);
+        console.log(gamedata, payloads);
+        promises.push(this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable));
+        if (povNotCanceledGamedata.length > 0 || povNotCanceledPayload.length > 0) {
+            console.log("OUTGOING", povNotCanceledGamedata, povNotCanceledPayload);
+            promises.push(this.parentRoom.broadcastMessages(povNotCanceledGamedata, povNotCanceledPayload, undefined, undefined, reliable));
+        }
+        await Promise.all(promises);
     }
 
     /**

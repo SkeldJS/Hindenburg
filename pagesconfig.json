@@ -128,7 +128,7 @@
                 },
                 {
                     "title": "CLI Commands",
-                    "source": "./pages/Plugins/CLI Commands"
+                    "source": "./pages/Plugins/CLI Commands.md"
                 },
                 {
                     "title": "Custom Roles",
@@ -140,7 +140,7 @@
                 },
                 {
                     "title": "Custom Protocol Messages",
-                    "source": "./pages/Plugins/Custom Protocol Messages"
+                    "source": "./pages/Plugins/Custom Protocol Messages.md"
                 },
                 {
                     "title": "Game Codes",

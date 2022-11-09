@@ -1,5 +1,60 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.17": {
+        "version": "1.17",
+        "contributors": ["edward"],
+        "date": "2022-11-09",
+        "notes": [
+            {
+                "description": "Various bug fixes and improvements",
+                "commits": [
+                    "9d224fc4de0e6429c7eb6e0bb2f95e43dbe99bb6",
+                    "35c291e95c5e0dc7ed49d4f4102ab612d73c7a2a",
+                    "bdcb2090ecc49f4f416ed0dac61a2317bdce0074",
+                    "c7d30e5b6dd2d69b4682eb9e86d3e7e9526d6cf1"
+                ]
+            },
+            {
+                "description": "Fix plugin loader reference-related bugs and errors",
+                "commits": [
+                    "76c29dd2037767a460093421c6f9ef5ec5433543",
+                    "bd22403a99f9375ffa592030dcc8513df52f61d3",
+                    "cf7f1ab6c8f933f7ef8c8a338901978de3da0855"
+                ]
+            },
+            {
+                "description": "Fix indefinite waiting for ready packets from unready clients",
+                "commits": ["ce304f495195da27b7dfb3143adc7339dedb130d"]
+            },
+            {
+                "description": ""
+            },
+            {
+                "description": "Add debug logs to http matchmaker",
+                "commits": ["91e6f2335f8f8cbb995139d5c3281aeb47a876a5"]
+            },
+            {
+                "description": "Update skeldjs to fix voting impostors out in meetings",
+                "commits": ["ee171f4e04d4b65f611a44c407599b81c7debe88"]
+            },
+            {
+                "description": "Make filters optional for perspective",
+                "commits": ["2f78b5dee6788880f30897699c4c7fad7dbf4050"]
+            },
+            {
+                "description": "Fix clients leaving game wrong message in room",
+                "commits": ["51b2ea1ce498d31f75f97b49d6dff7e5ea4c6fc5"]
+            },
+            {
+                "description": "Update skeldjs, try to fix issues with players spawning without tasks and thus not being able to move",
+                "commits": ["fba5018e450ee2007d47e26260c33c8a01fba667", "09e0a6263d64c4310ae473c8d1c66557274b4d0b"]
+            },
+            {
+                "description": "Fix various issues related to rooms and perspectives having joint ownership over objects",
+                "commits": ["c7d30e5b6dd2d69b4682eb9e86d3e7e9526d6cf1"]
+            }
+        ]
+    },
     "1.1.10": {
         "version": "1.1.10",
         "contributors": ["edward"],

@@ -136,11 +136,15 @@
                 },
                 {
                     "title": "Custom Innernet Objects",
-                    "source": "Custom Innernet Objects.md"
+                    "source": "./pages/Plugins/Custom Innernet Objects.md"
                 },
                 {
                     "title": "Custom Protocol Messages",
-                    "source": "Custom Protocol Messages"
+                    "source": "./pages/Plugins/Custom Protocol Messages"
+                },
+                {
+                    "title": "Game Codes",
+                    "source": "./pages/Plugins/Game Codes.md"
                 }
             ]
         }

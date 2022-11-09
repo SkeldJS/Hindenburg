@@ -40,14 +40,13 @@ import {
     HeliSabotageSystem,
     Platform,
     PlayerDataResolvable,
-    SpawnType
+    Networkable
 } from "@skeldjs/core";
 
 import {
     AlterGameMessage,
     BaseGameDataMessage,
     BaseRootMessage,
-    CloseMessage,
     CompleteTaskMessage,
     DataMessage,
     DespawnMessage,
@@ -73,8 +72,7 @@ import {
     SetVisorMessage,
     SnapToMessage,
     SpawnMessage,
-    SyncSettingsMessage,
-    VotingCompleteMessage
+    SyncSettingsMessage
 } from "@skeldjs/protocol";
 
 import { HazelWriter, Vector2 } from "@skeldjs/util";
@@ -326,6 +324,11 @@ export class Perspective extends BaseRoom {
                     const clientOwner = this.players.get(newPc.ownerId);
                     if (clientOwner) {
                         clientOwner.control = newPc;
+
+                        if (this.connections.get(clientOwner.clientId)) {
+                            this.parentRoom.disownObject(playerControl);
+                            this.guardObjectAsOwner(newPc);
+                        }
                     }
                 }
                 this.netobjects.set(netId, newPc);
@@ -536,21 +539,11 @@ export class Perspective extends BaseRoom {
             : (this.playersPov.length + " players"));
     }
 
+    getNextNetId() {
+        return this.parentRoom.getNextNetId();
+    }
+
     static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[]) {
-        decoder.on([ CloseMessage ], message => {
-            message.cancel();
-        });
-
-        decoder.on([ VotingCompleteMessage ], message => {
-            message.cancel();
-        });
-
-        decoder.on([ SpawnMessage ], message => {
-            if (message.spawnType === SpawnType.MeetingHud) {
-                message.cancel();
-            }
-        });
-
         for (let i = 0; i < filters.length; i++) {
             const filter = filters[i];
             if (filter === PresetFilter.GameDataUpdates) {
@@ -716,7 +709,6 @@ export class Perspective extends BaseRoom {
                             }
 
                             promises.push(recipient.room.broadcastMessages(extraNotCanceledGamedata, extraNotCanceledPayload, [ recipient ], undefined, reliable));
-
                             alreadySentIn.add(recipient.room);
                         }
                     }
@@ -724,7 +716,6 @@ export class Perspective extends BaseRoom {
             }
         }
 
-        console.log(gamedata, payloads);
         promises.push(this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable));
         if (povNotCanceledGamedata.length > 0 || povNotCanceledPayload.length > 0) {
             console.log("OUTGOING", povNotCanceledGamedata, povNotCanceledPayload);
@@ -1106,5 +1097,47 @@ export class Perspective extends BaseRoom {
             return undefined;
 
         return this.players.get(clientId);
+    }
+
+    /**
+     * Guard an object so that no other room (or perspective) can make changes to it.
+     *
+     * This is useful when perspectives create conflicts and state becomes unmanageable;
+     * just assign its logic to one room.
+     *
+     * Note that this is only a nominal change; plugins can still make changes freely - the only
+     * change is that packets won't be managed by rooms that the object does not belong to.
+     * @param netObject The object to own
+     */
+    guardObjectAsOwner(netObject: Networkable) {
+        if (this.parentRoom.ownershipGuards.has(netObject.netId))
+            throw new Error("An object with the same network id is already owned; the room must disown it first");
+
+        this.parentRoom.ownershipGuards.set(netObject.netId, this);
+    }
+
+    /**
+     * Unknown an object so that all rooms can make changes to it.
+     * @param netObject The object to disown
+     */
+    disownObject(netObject: Networkable) {
+        const ownership = this.parentRoom.ownershipGuards.get(netObject.netId);
+        if (!ownership || ownership !== this)
+            throw new Error("Cannot disown object; an object with that network id isn't owned by this room");
+
+        this.parentRoom.ownershipGuards.delete(netObject.netId);
+    }
+
+    /**
+     * Get the owner of an object.
+     * @param netObject The object to disown
+     */
+    getOwnerOf(netObject: Networkable) {
+        return this.parentRoom.ownershipGuards.get(netObject.netId);
+    }
+
+    canManageObject(object: Networkable): boolean {
+        const ownership = this.parentRoom.ownershipGuards.get(object.netId);
+        return !ownership || ownership === this;
     }
 }

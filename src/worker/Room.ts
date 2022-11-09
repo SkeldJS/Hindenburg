@@ -1,9 +1,11 @@
-import { PlayerData } from "@skeldjs/core";
+import { Networkable, PlayerData } from "@skeldjs/core";
 import {
     BaseGameDataMessage,
     GameSettings,
     MessageDirection
 } from "@skeldjs/protocol";
+
+import chalk from "chalk";
 
 import { RoomsConfig } from "../interfaces";
 
@@ -12,7 +14,6 @@ import { BaseRoom } from "./BaseRoom";
 import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
 import { Connection } from "./Connection";
 import { Logger } from "../logger";
-import chalk from "chalk";
 import { fmtCode } from "../util/fmtCode";
 
 export class Room extends BaseRoom {
@@ -38,6 +39,8 @@ export class Room extends BaseRoom {
 
         this.playerPerspectives = new Map;
         this.activePerspectives = [];
+
+        this.ownershipGuards = new Map;
     }
 
     /**
@@ -159,14 +162,18 @@ export class Room extends BaseRoom {
                 // match the message against the perspective's incoming decoder to check whether it should get sent there
                 await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, povPlayer);
 
-                if (child.canceled)
+                if (child.canceled) {
+                    (child as any)._canceled = false;
                     continue;
+                }
 
                 // send message to the perspective
                 await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, connection);
 
-                if (child.canceled)
+                if (child.canceled) {
+                    (child as any)._canceled = false;
                     continue;
+                }
 
                 povNotCanceled.push(child);
             }
@@ -176,5 +183,47 @@ export class Room extends BaseRoom {
                 await activePerspective.broadcastMessages(povNotCanceled, [], undefined, [connection], reliable);
             }
         }
+    }
+
+    /**
+     * Guard an object so that no other room (or perspective) can make changes to it.
+     *
+     * This is useful when perspectives create conflicts and state becomes unmanageable;
+     * just assign its logic to one room.
+     *
+     * Note that this is only a nominal change; plugins can still make changes freely - the only
+     * change is that packets won't be managed by rooms that the object does not belong to.
+     * @param netObject The object to own
+     */
+    guardObjectAsOwner(netObject: Networkable) {
+        if (this.ownershipGuards.has(netObject.netId))
+            throw new Error("An object with the same network id is already owned; the room must disown it first");
+
+        this.ownershipGuards.set(netObject.netId, this);
+    }
+
+    /**
+     * Unknown an object so that all rooms can make changes to it.
+     * @param netObject The object to disown
+     */
+    disownObject(netObject: Networkable) {
+        const ownership = this.ownershipGuards.get(netObject.netId);
+        if (!ownership || ownership !== this)
+            throw new Error("Cannot disown object; an object with that network id isn't owned by this room");
+
+        this.ownershipGuards.delete(netObject.netId);
+    }
+
+    /**
+     * Get the owner of an object.
+     * @param netObject The object to disown
+     */
+    getOwnerOf(netObject: Networkable) {
+        return this.ownershipGuards.get(netObject.netId);
+    }
+
+    canManageObject(object: Networkable): boolean {
+        const ownership = this.ownershipGuards.get(object.netId);
+        return !ownership || ownership === this;
     }
 }

@@ -9,6 +9,7 @@ import {
     GameState,
     Hat,
     Platform,
+    RpcMessageTag,
     Skin,
     SpawnFlag,
     SpawnType,
@@ -184,6 +185,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     playerPerspectives: Map<number, Perspective>;
     /**
+     * A map of objects to their respective perspective owner.
+     */
+    ownershipGuards: Map<number, BaseRoom>;
+    /**
      * An array of every player perspective created in the room.
      */
     activePerspectives: Perspective[];
@@ -252,6 +257,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         super({ doFixedUpdate: true });
 
         this.playerPerspectives = new Map;
+        this.ownershipGuards = new Map;
         this.activePerspectives = [];
 
         this.actingHostsEnabled = true;
@@ -403,6 +409,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const component = this.netobjects.get(message.netId);
 
             if (component) {
+                this.logger.info("%s rpc", SpawnType[component.spawnType], RpcMessageTag[message.data.messageTag]);
+
                 try {
                     await component.HandleRpc(message.data);
                 } catch (e) {
@@ -422,7 +430,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
             }
 
-            if (Array.isArray(this.config.advanced.unknownObjects) && (this.config.advanced.unknownObjects.includes(message.spawnType) || this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType]))) {
+            if (
+                Array.isArray(this.config.advanced.unknownObjects)
+                    && (
+                        this.config.advanced.unknownObjects.includes(message.spawnType) ||
+                        this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType])
+                    )) {
                 return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
             }
 
@@ -686,6 +699,23 @@ export class BaseRoom extends Hostable<RoomEvents> {
             this.messageStream = [];
             await this.broadcast(stream);
         }
+    }
+
+    spawnComponent(component: Networkable<any, any, this>): void {
+        this.logger.info("%s (%s) already owned by ", component.netId, SpawnType[component.spawnType], this.getOwnerOf(component));
+        if (!this.getOwnerOf(component))
+            this.guardObjectAsOwner(component);
+        this.logger.info("%s (%s) owned by ", component.netId, SpawnType[component.spawnType], this.getOwnerOf(component));
+        super.spawnComponent(component);
+    }
+
+    despawnComponent(component: Networkable<any, any, this>): void {
+        if (this.canManageObject(component)) {
+            this.disownObject(component);
+            this.logger.info("%s (%s) disowned", component.netId, SpawnType[component.spawnType]);
+        }
+
+        super.despawnComponent(component);
     }
 
     /**
@@ -1975,7 +2005,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     /**
-     * Clear a room name override made with {@link setRoomNameOverride}.
+     * Clear a room name override made with {@link BaseRoom.setRoomNameOverride}.
      */
     clearRoomNameOverride() {
         this.roomNameOverride = undefined;
@@ -1983,11 +2013,26 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[]): Perspective {
-        throw new TypeError("Method not implemented.");
+        throw new Error("Method not implemented on base room");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
-        throw new TypeError("Method not implemented.");
+        throw new Error("Method not implemented on base room");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    guardObjectAsOwner(networkable: Networkable) {
+        throw new Error("Method not implemented on base room");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    disownObject(networkable: Networkable) {
+        throw new Error("Method not implemented on base room");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getOwnerOf(networkable: Networkable): BaseRoom|undefined {
+        throw new Error("Method not implemented on base room");
     }
 }

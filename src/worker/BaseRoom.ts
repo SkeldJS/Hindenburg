@@ -409,8 +409,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const component = this.netobjects.get(message.netId);
 
             if (component) {
-                this.logger.info("%s rpc", SpawnType[component.spawnType], RpcMessageTag[message.data.messageTag]);
-
                 try {
                     await component.HandleRpc(message.data);
                 } catch (e) {
@@ -702,18 +700,14 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     spawnComponent(component: Networkable<any, any, this>): void {
-        this.logger.info("%s (%s) already owned by ", component.netId, SpawnType[component.spawnType], this.getOwnerOf(component));
         if (!this.getOwnerOf(component))
             this.guardObjectAsOwner(component);
-        this.logger.info("%s (%s) owned by ", component.netId, SpawnType[component.spawnType], this.getOwnerOf(component));
         super.spawnComponent(component);
     }
 
     despawnComponent(component: Networkable<any, any, this>): void {
-        if (this.canManageObject(component)) {
+        if (this.canManageObject(component))
             this.disownObject(component);
-            this.logger.info("%s (%s) disowned", component.netId, SpawnType[component.spawnType]);
-        }
 
         super.despawnComponent(component);
     }
@@ -1074,8 +1068,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
                     payloadsNotCanceled.push(child);
                 }
-
-                console.log("INCOMING", activePerspective, gamedataNotCanceled, payloadsNotCanceled);
 
                 if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
                     promises.push(activePerspective.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable));

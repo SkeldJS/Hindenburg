@@ -84,9 +84,8 @@ export function EventListener(pluginClassOrEventName?: any, eventName?: any) {
         const paramType = Reflect.getMetadata("design:paramtypes", target, propertyKey)?.[0] as typeof BasicEvent|undefined;
         const actualEventName = paramType?.eventName || eventName || pluginClassOrEventName;
 
-        if (!actualEventName) {
+        if (!actualEventName)
             throw new Error("No event name passed for event emitter, if you're in typescript, make sure 'emitDecoratorMetadata' is enabled in your tsconfig.json");
-        }
 
         const cachedSet: PluginRegisteredEventListenerInfo[]|undefined = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
         const eventListeners = cachedSet || [];

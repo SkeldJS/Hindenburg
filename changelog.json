@@ -27,9 +27,6 @@
                 "commits": ["ce304f495195da27b7dfb3143adc7339dedb130d"]
             },
             {
-                "description": ""
-            },
-            {
                 "description": "Add debug logs to http matchmaker",
                 "commits": ["91e6f2335f8f8cbb995139d5c3281aeb47a876a5"]
             },

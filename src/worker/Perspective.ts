@@ -718,7 +718,6 @@ export class Perspective extends BaseRoom {
 
         promises.push(this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable));
         if (povNotCanceledGamedata.length > 0 || povNotCanceledPayload.length > 0) {
-            console.log("OUTGOING", povNotCanceledGamedata, povNotCanceledPayload);
             promises.push(this.parentRoom.broadcastMessages(povNotCanceledGamedata, povNotCanceledPayload, undefined, undefined, reliable));
         }
         await Promise.all(promises);

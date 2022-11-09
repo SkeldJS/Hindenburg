@@ -72,7 +72,7 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<p>The Among Us protocol stores game codes as integers, as converts them into their string representations to display to the user, and decodes them when a user inputs one.</p>
-				<p>SkeldJS also uses game codes as integers throughout its API, see the <a href="#conversion">Conversion</a> section to read them as a formatting string.</p>
+				<p>SkeldJS also uses game codes as integers throughout its API, see the <a href="#conversion">conversion</a> section to read them as a formatting string.</p>
 				<blockquote>
 					<p>If you&#39;re a server owner looking to set which version of game codes to use, see <a href="https://skeldjs.github.io/Hindenburg/Getting%20Started/Configuration.html#roomsgamecodes">Configuration#rooms.gameCodes</a>.</p>
 				</blockquote>
@@ -80,21 +80,66 @@
 					<h2>Versions</h2>
 				</a>
 				<p>There are two versions of games codes used in Among Us:</p>
-				<ul>
-					<li>V1, with 4 alphanumeric digits (All ascii characters from uppercase <code>A</code> to lowercase <code>z</code>). Uses integer values <code>&gt; 0</code>.</li>
-					<li>V2, with 6 uppercase alphabetic digits. Uses integer values <code>&lt; 0</code></li>
-				</ul>
+				<a href="#v1" id="v1" style="color: inherit; text-decoration: none;">
+					<h3>V1</h3>
+				</a>
+				<p>V1 game codes have 4 alphanumeric digits (All ascii characters from uppercase <code>A</code> to lowercase <code>z</code>), and uses all integer values greater than <code>0</code>.</p>
+				<a href="#v2" id="v2" style="color: inherit; text-decoration: none;">
+					<h3>V2</h3>
+				</a>
+				<p>V2 codes have 6 uppercase alphabetic digits and use integer values lower than <code>0</code>.</p>
 				<p>Both are stored as a single 32-bit integer.</p>
+				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+					<h2>API</h2>
+				</a>
+				<p>SkeldJS exports a <code>GameCode</code> class utility to convert game codes.</p>
+				<blockquote>
+					<p>See the docs on <a href="../../classes/GameCode.html">GameCode</a> for more methods and utilities.</p>
+				</blockquote>
+				<a href="#generate-codes" id="generate-codes" style="color: inherit; text-decoration: none;">
+					<h2>Generate codes</h2>
+				</a>
+				<p>You can generate random codes using <a href="../../classes/GameCode.html#generateV1">GameCode.generateV1</a> and <a href="../../classes/GameCode.html#generateV2">GameCode.generateV2</a>:</p>
+				<pre><code class="language-ts"><span style="color: #008000">// Generate a v1 4-digit code:</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">code</span><span style="color: #000000"> = </span><span style="color: #795E26">generateV1</span><span style="color: #000000">();</span>
+</code></pre>
+				<pre><code class="language-ts"><span style="color: #008000">// Generate a v2 6-digit code:</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">code</span><span style="color: #000000"> = </span><span style="color: #795E26">generateV2</span><span style="color: #000000">();</span>
+</code></pre>
 				<a href="#conversion" id="conversion" style="color: inherit; text-decoration: none;">
 					<h2>Conversion</h2>
 				</a>
-				<p>SkeldJS exports a <code>GameCode</code> class utility to convert game codes.</p>
-				<p>You can use <code>GameCode.convertIntToString</code> to get a string representation of a code to display in the console or to a user, and <code>GameCode.convertStringToInt</code> to serialize it as a 32-bit integer.</p>
-				<blockquote>
-					<p>See <a href="../../classes/GameCode.html">GameCode</a> for more methods and utilities.</p>
-				</blockquote>
-				<a href="#special" id="special" style="color: inherit; text-decoration: none;">
-					<h2>Special</h2>
+				<p>You can use <a href="../../classes/GameCode.html#convertIntToString">GameCode.convertIntToString</a> to get a string representation of a code to display in the console or to a user, and <a href="../../classes/GameCode.html#convertStringToInt">GameCode.convertStringToInt</a> to serialize it as a 32-bit integer:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-postmodern-lens&quot;</span><span style="color: #000000">)</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">PostmodernLensPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    @</span><span style="color: #795E26">ChatCommand</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;generate-code &lt;version&gt;&quot;</span><span style="color: #000000">)</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onGenerateCodeCommand</span><span style="color: #000000">(</span><span style="color: #001080">ctx</span><span style="color: #000000">: </span><span style="color: #267F99">ChatCommandContext</span><span style="color: #000000">, </span><span style="color: #001080">args</span><span style="color: #000000">: </span><span style="color: #267F99">any</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">args</span><span style="color: #000000"> === </span><span style="color: #A31515">&quot;1&quot;</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">code</span><span style="color: #000000"> = </span><span style="color: #001080">GameCode</span><span style="color: #000000">.</span><span style="color: #795E26">generateV1</span><span style="color: #000000">();</span>
+<span style="color: #000000">            </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Generated code: %s&quot;</span><span style="color: #000000">, </span><span style="color: #001080">GameCode</span><span style="color: #000000">.</span><span style="color: #795E26">convertIntToString</span><span style="color: #000000">(</span><span style="color: #001080">code</span><span style="color: #000000">));</span>
+<span style="color: #000000">        } </span><span style="color: #AF00DB">else</span><span style="color: #000000"> </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">args</span><span style="color: #000000"> === </span><span style="color: #A31515">&quot;2&quot;</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">code</span><span style="color: #000000"> = </span><span style="color: #001080">GameCode</span><span style="color: #000000">.</span><span style="color: #795E26">generateV2</span><span style="color: #000000">();</span>
+<span style="color: #000000">            </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Generated code: %s&quot;</span><span style="color: #000000">, </span><span style="color: #001080">GameCode</span><span style="color: #000000">.</span><span style="color: #795E26">convertIntToString</span><span style="color: #000000">(</span><span style="color: #001080">code</span><span style="color: #000000">));</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+
+</code></pre>
+				<a href="#events" id="events" style="color: inherit; text-decoration: none;">
+					<h2>Events</h2>
+				</a>
+				<p>The <a href="../../classes/RoomBeforeCreateEvent.html">RoomBeforeCreateEvent</a> allows you to modify a room&#39;s game code before it&#39;s set by the server.</p>
+				<p>For example:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-postmodern-lens&quot;</span><span style="color: #000000">)</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">PostmodernLensPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">RoomPlugin</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    @</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;room.beforecreate&quot;</span><span style="color: #000000">)</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onRoomCreate</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #267F99">RoomBeforeCreateEvent</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #795E26">setCode</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;AMOGUS&quot;</span><span style="color: #000000">); </span><span style="color: #008000">// can also be an integer, or a v1 4-digit game code</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#lan-games" id="lan-games" style="color: inherit; text-decoration: none;">
+					<h2>LAN games</h2>
 				</a>
 				<p>The game code used for LAN games always has an integer value of <code>32</code>, Hindenburg will render this code as <code>LOCAL</code> in the console.</p>
 			</div>

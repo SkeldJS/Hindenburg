@@ -85,6 +85,7 @@ import { Logger } from "../logger";
 
 import { Worker } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
+import { BasicEvent } from "@skeldjs/events";
 
 export type AllSystems = Map<SystemType, SystemStatus<any, any>>;
 
@@ -721,6 +722,18 @@ export class Perspective extends BaseRoom {
             promises.push(this.parentRoom.broadcastMessages(povNotCanceledGamedata, povNotCanceledPayload, undefined, undefined, reliable));
         }
         await Promise.all(promises);
+    }
+
+    async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
+        return this.parentRoom.emit(event);
+    }
+
+    async emitSerial<Event extends BasicEvent>(event: Event): Promise<Event> {
+        return this.parentRoom.emitSerial(event);
+    }
+
+    emitSync<Event extends BasicEvent>(event: Event): Event {
+        return this.parentRoom.emitSync(event);
     }
 
     /**

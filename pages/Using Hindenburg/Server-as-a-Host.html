@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Server-as-a-Host | @skeldjs/hindenburg</title>
+	<title>Interactive CLI | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../../assets/css/main.css">
@@ -60,10 +60,10 @@
 					<a href="Chat Commands.html">Using Hindenburg</a>
 				</li>
 				<li>
-					<a href="Server-as-a-Host.html">Server-as-a-Host</a>
+					<a href="Server-as-a-Host.html">Interactive CLI</a>
 				</li>
 			</ul>
-			<h1>Server-as-a-Host</h1>
+			<h1>Interactive CLI</h1>
 		</div>
 	</div>
 </header>
@@ -73,21 +73,29 @@
 			<div class="tsd-panel tsd-typography">
 				<p>Server-as-a-Host (<strong>SaaH</strong>) in Hindenburg allows you to have ultimate control and bypassing the middle man of having a host, as it is on officials. This doesn&#39;t mean that there are no hosts to change settings or to start the game, actually, SaaH allows you to have multiple hosts at once.</p>
 				<a href="#performance" id="performance" style="color: inherit; text-decoration: none;">
-					<h3>Performance</h3>
+					<h2>Performance</h2>
 				</a>
 				<p>As SaaH doesn&#39;t analyse or process any more that Hindenburg normally does for hosted games, it should result in almost identical performance as if it were disabled.</p>
 				<p>However, there should be a just-barely noticeable difference in high-ping scenarios, as it means that any packets made to the host (such as system sabotages) can instead be done on the server.</p>
 				<a href="#multiple-hosts" id="multiple-hosts" style="color: inherit; text-decoration: none;">
-					<h3>Multiple Hosts</h3>
+					<h2>Multiple Hosts</h2>
 				</a>
 				<p>The technology used for SaaH allows for you to have multiple hosts in the same room. This is because SaaH creates hosts known as &quot;acting hosts&quot; — players that are only hosts in the lobby, where their host state is removed while a player is joining and while a game is being played.</p>
 				<p>This also works when SaaH is disabled — meaning that there is one &quot;actual&quot; host and none or several &quot;acting&quot; hosts.</p>
 				<p><img src="https://user-images.githubusercontent.com/60631511/170726121-a03df946-55bc-4529-aee8-69a4124a91b5.png" alt="image"></p>
 				<a href="#command-line" id="command-line" style="color: inherit; text-decoration: none;">
-					<h3>Command-Line</h3>
+					<h2>Command-Line</h2>
 				</a>
 				<p>You can enable/disable SaaH with the <code>setsaah &lt;room code&gt; &lt;on/off&gt;</code> command:</p>
 				<p><img src="https://i.imgur.com/Z3YZtBz.gif" alt=""></p>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h2>Configuration</h2>
+				</a>
+				<p>You can enable/disable Server-as-a-Host either in the interactive setup script, or set the <code>rooms.serverAsHost</code> config option:</p>
+				<pre><code><span style="color: #A31515">&quot;rooms&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;serverAsHost&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span>
+<span style="color: #000000">}</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -128,6 +136,9 @@
 					</li>
 					<li class="current pp-nav pp-page">
 						<a href="Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="Server-as-a-Host.html">Interactive CLI</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Advanced <wbr>Usage</span>
@@ -172,10 +183,31 @@
 						<a href="../Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../Plugins/Perspectives.html">Perspectives</a>
+						<a href="../Plugins/Player Perspectives.html">Player <wbr>Perspectives</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Plugins/Reactor Integration.html">Reactor <wbr>Integration</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Plugins/End Game Intents.html">End <wbr>Game <wbr>Intents</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Plugins/Server Broadcast.html">Server <wbr>Broadcast</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Plugins/CLI Commands.html">CLI <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Plugins/Custom Roles.html">Custom <wbr>Roles</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Plugins/Custom Innernet Objects.html">Custom <wbr>Innernet <wbr>Objects</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Plugins/Custom Protocol Messages.html">Custom <wbr>Protocol <wbr>Messages</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Plugins/Game Codes.html">Game <wbr>Codes</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

@@ -71,11 +71,11 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#global-plugins" id="global-plugins" style="color: inherit; text-decoration: none;">
-					<h2>Global Plugins</h2>
+				<a href="#worker-plugins" id="worker-plugins" style="color: inherit; text-decoration: none;">
+					<h2>Worker Plugins</h2>
 				</a>
-				<p>Global plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that transcend individual rooms, as well as listen for events emitted from all rooms.</p>
-				<p>You can create a global plugin by extending the <a href="../../classes/WorkerPlugin.html">WorkerPlugin</a> class exported by <code>@skeldjs/hindenburg</code>, for example:</p>
+				<p>Worker plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that don&#39;t concern rooms rooms, as well as listen for events emitted from all rooms.</p>
+				<p>You can create a worker plugin by extending the <a href="../../classes/WorkerPlugin.html">WorkerPlugin</a> class exported by <code>@skeldjs/hindenburg</code>, for example:</p>
 				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-fun-things&quot;</span><span style="color: #000000">)</span>
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span>
@@ -148,6 +148,9 @@
 					<li class=" pp-nav pp-page">
 						<a href="../Using Hindenburg/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
 					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Using Hindenburg/Server-as-a-Host.html">Interactive CLI</a>
+					</li>
 					<li class="label pp-nav pp-group">
 						<span>Advanced <wbr>Usage</span>
 					</li>
@@ -191,10 +194,31 @@
 						<a href="Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="Perspectives.html">Perspectives</a>
+						<a href="Player Perspectives.html">Player <wbr>Perspectives</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Reactor Integration.html">Reactor <wbr>Integration</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="End Game Intents.html">End <wbr>Game <wbr>Intents</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Server Broadcast.html">Server <wbr>Broadcast</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="CLI Commands.html">CLI <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="Custom Roles.html">Custom <wbr>Roles</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Custom Innernet Objects.html">Custom <wbr>Innernet <wbr>Objects</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Custom Protocol Messages.html">Custom <wbr>Protocol <wbr>Messages</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="Game Codes.html">Game <wbr>Codes</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

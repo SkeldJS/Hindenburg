@@ -1,6 +1,6 @@
 The Among Us protocol stores game codes as integers, as converts them into their string representations to display to the user, and decodes them when a user inputs one.
 
-SkeldJS also uses game codes as integers throughout
+SkeldJS also uses game codes as integers throughout its API, see the [Conversion](#conversion) section to read them as a formatting string.
 
 > If you're a server owner looking to set which version of game codes to use, see [Configuration#rooms.gameCodes](https://skeldjs.github.io/Hindenburg/Getting%20Started/Configuration.html#roomsgamecodes).
 

@@ -208,6 +208,40 @@
 				</a>
 				<p>Whether or not to use the DTLS transport layout when listening for Hello packets.</p>
 				<p><strong>Type</strong>: boolean</p>
+				<a href="#gamelisting" id="gamelisting" style="color: inherit; text-decoration: none;">
+					<h2>gameListing</h2>
+				</a>
+				<p>Options regarding fine-tuning the results of game listings.</p>
+				<p><strong>Type</strong>: object</p>
+				<a href="#gamelistingignoreprivacy" id="gamelistingignoreprivacy" style="color: inherit; text-decoration: none;">
+					<h3><strong>gameListing.ignorePrivacy</strong></h3>
+				</a>
+				<p>Whether to ignore the privacy of a room, and return even private ones.</p>
+				<p><strong>Type</strong>: boolean</p>
+				<a href="#gamelistingignoresearchterms" id="gamelistingignoresearchterms" style="color: inherit; text-decoration: none;">
+					<h3><strong>gameListing.ignoreSearchTerms</strong></h3>
+				</a>
+				<p>Whether to ignore filtering for game listings, and just list every game on the server.</p>
+				<p><strong>Type</strong>: boolean</p>
+				<p><em>or</em></p>
+				<p>Which search terms to ignore</p>
+				<p><strong>Type</strong>: array</p>
+				<a href="#gamelistingignoresearchterms-1" id="gamelistingignoresearchterms-1" style="color: inherit; text-decoration: none;">
+					<h4><strong>gameListing.ignoreSearchTerms[]</strong></h4>
+				</a>
+				<p>Any of the following: <code>&quot;chat&quot;</code>, <code>&quot;chatType&quot;</code>, <code>&quot;impostors&quot;</code>, <code>&quot;map&quot;</code></p>
+				<a href="#gamelistingmaxresults" id="gamelistingmaxresults" style="color: inherit; text-decoration: none;">
+					<h3><strong>gameListing.maxResults</strong></h3>
+				</a>
+				<p><strong>Type</strong>: number</p>
+				<p><em>or</em></p>
+				<p><strong>Type</strong>: string</p>
+				<p>Any of the following: <code>&quot;all&quot;</code></p>
+				<a href="#gamelistingrequireperfectmatches" id="gamelistingrequireperfectmatches" style="color: inherit; text-decoration: none;">
+					<h3><strong>gameListing.requirePerfectMatches</strong></h3>
+				</a>
+				<p>Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Hindenburg will sort results by relevance to the search terms.</p>
+				<p><strong>Type</strong>: boolean</p>
 				<a href="#plugins" id="plugins" style="color: inherit; text-decoration: none;">
 					<h2>plugins</h2>
 				</a>

@@ -121,6 +121,56 @@
         }
       }
     },
+    "gameListing": {
+        "type": "object",
+        "description": "Options regarding fine-tuning the results of game listings.",
+        "properties": {
+            "ignorePrivacy": {
+                "type": "boolean",
+                "description": "Whether to ignore the privacy of a room, and return even private ones.",
+                "default": false
+            },
+            "ignoreSearchTerms": {
+                "anyOf": [
+                    {
+                        "type": "boolean",
+                        "description": "Whether to ignore filtering for game listings, and just list every game on the server."
+                    },
+                    {
+                        "type": "array",
+                        "description": "Which search terms to ignore",
+                        "items": {
+                            "enum": [
+                                "map",
+                                "impostors",
+                                "chat",
+                                "chatType"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "maxResults": {
+                "anyOf": [
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "string",
+                        "enum": ["all"]
+                    }
+                ],
+                "type": "boolean",
+                "description": "The maximum number of results to return to a client at once. Set to `0`or `\"all\"` to return all available rooms.",
+                "default": 10
+            },
+            "requirePerfectMatches": {
+                "type": "boolean",
+                "description": "Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Hindenburg will sort results by relevance to the search terms.",
+                "default": false
+            }
+        }
+    },
     "plugins": {
       "type": "object",
       "description": "Options regarding global worker plugins, such as disabling them or passing configuration options.",

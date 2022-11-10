@@ -70,7 +70,7 @@ import { recursiveClone } from "../util/recursiveClone";
 import { fmtCode } from "../util/fmtCode";
 import { chunkArr } from "../util/chunkArr";
 
-import { HindenburgConfig, RoomsConfig, MessageSide } from "../interfaces";
+import { HindenburgConfig, RoomsConfig, MessageSide, ValidSearchTerm } from "../interfaces";
 import { ModdedHelloPacket } from "../packets/ModdedHelloPacket";
 
 import { Connection, ClientMod, SentPacket } from "./Connection";
@@ -1405,48 +1405,80 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(GetGameListMessage, async (message, _direction, { sender }) => {
-            const returnList: GameListing[] = [];
-            const listingIp = sender.remoteInfo.address !== "127.0.0.1" ? this.config.socket.ip : "127.0.0.1";
+            const listingIp = sender.remoteInfo.address === "127.0.0.1"
+                ? "127.0.0.1"
+                : this.config.socket.ip;
 
+            const ignoreSearchTerms = Array.isArray(this.config.gameListing.ignoreSearchTerms)
+                ? new Set(this.config.gameListing.ignoreSearchTerms)
+                : this.config.gameListing.ignoreSearchTerms;
+
+            const gamesAndRelevance: [ number, GameListing ][] = [];
             for (const [ gameCode, room ] of this.rooms) {
                 if (gameCode === 0x20 /* local game */) {
                     continue;
                 }
 
-                if (room.privacy === "private") continue;
+                if (!this.config.gameListing.ignorePrivacy && room.privacy === "private")
+                    continue;
 
                 const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
-
-                if (
-                    room.settings.keywords === message.options.keywords &&
-                    (message.options.map & (1 << room.settings.map)) !== 0 &&
-                    (
-                        room.settings.numImpostors === message.options.numImpostors ||
-                        message.options.numImpostors === 0
+                const gameListing = new GameListing(
+                    room.code,
+                    listingIp,
+                    this.config.socket.port,
+                    room.roomName,
+                    room.players.size,
+                    roomAge,
+                    room.settings.map,
+                    room.settings.numImpostors,
+                    room.settings.maxPlayers,
+                    room.host?.platform || new PlatformSpecificData(
+                        Platform.Unknown,
+                        "UNKNOWN"
                     )
-                ) {
-                    const gameListing = new GameListing(
-                        room.code,
-                        listingIp,
-                        this.config.socket.port,
-                        room.roomName,
-                        room.players.size,
-                        roomAge,
-                        room.settings.map,
-                        room.settings.numImpostors,
-                        room.settings.maxPlayers,
-                        room.host?.platform || new PlatformSpecificData(
-                            Platform.Unknown,
-                            "UNKNOWN"
-                        )
-                    );
+                );
 
-                    returnList.push(gameListing);
-
-                    if (returnList.length >= 10)
-                        break;
+                if (ignoreSearchTerms === true) {
+                    gamesAndRelevance.push([ 0, gameListing ]);
+                    continue;
                 }
+
+                const relevancy = this.getRoomRelevancy(
+                    room,
+                    message.options.numImpostors,
+                    message.options.keywords,
+                    message.options.map,
+                    message.quickchat === QuickChatMode.FreeChat
+                        ? "FreeChatOrQuickChat"
+                        : "QuickChatOnly",
+                    this.config.gameListing.requirePefectMatches,
+                    ignoreSearchTerms
+                );
+
+                if (relevancy === 0 && this.config.gameListing.requirePefectMatches)
+                    continue;
+
+                gamesAndRelevance.push([
+                    relevancy,
+                    gameListing
+                ]);
             }
+
+            const sortedResults = gamesAndRelevance.sort((a, b) => {
+                if (a[0] === b[0]) {
+                    return a[1].age - b[1].age;
+                }
+
+                return b[0] - a[0];
+            });
+
+            const topResults = this.config.gameListing.maxResults === "all"
+                || this.config.gameListing.maxResults === 0
+                ? sortedResults
+                : sortedResults.slice(0, this.config.gameListing.maxResults);
+
+            const results = topResults.map(([ , gameListing ]) => gameListing);
 
             const ev = await this.emit(
                 new WorkerGetGameListEvent(
@@ -1454,7 +1486,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     message.options.keywords,
                     message.options.map,
                     message.options.numImpostors,
-                    returnList
+                    results
                 )
             );
 
@@ -1502,6 +1534,52 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         }
         await Promise.all(promises);
+    }
+
+    getRoomRelevancy(room: Room, numImpostors: number, lang: number, mapId: number, quickChat: string, perfectMatches: boolean, ignoreSearchTerms: Set<ValidSearchTerm>|false) {
+        let relevancy = 0;
+
+        if (!ignoreSearchTerms || !ignoreSearchTerms.has("impostors")) {
+            if ((numImpostors === 0 || room.settings.numImpostors === numImpostors)) {
+                relevancy++;
+            } else if (perfectMatches) {
+                return 0;
+            }
+        }
+
+        if (!ignoreSearchTerms || !ignoreSearchTerms.has("map")) {
+            if ((mapId & (1 << room.settings.map)) !== 0) {
+                relevancy++;
+            } else if (perfectMatches) {
+                return 0;
+            }
+        }
+
+        if (!ignoreSearchTerms || !ignoreSearchTerms.has("chat")) {
+            if (room.settings.keywords === (GameKeyword[lang] as unknown as number)) {
+                relevancy++;
+            } else if (perfectMatches) {
+                return 0;
+            }
+        }
+
+        if (!ignoreSearchTerms || !ignoreSearchTerms.has("chatType")) {
+            const roomHost = room.host;
+            if (roomHost) {
+                const hostChatMode = room.getConnection(roomHost)?.chatMode;
+                if (hostChatMode !== undefined) {
+                    if (hostChatMode === QuickChatMode.QuickChat && quickChat === "QuickChatOnly") {
+                        relevancy++;
+                    } else if (hostChatMode === QuickChatMode.FreeChat && quickChat === "FreeChatOrQuickChat") {
+                        relevancy++;
+                    } else if (perfectMatches) {
+                        return 0;
+                    }
+                }
+            }
+        }
+
+        return relevancy;
     }
 
     updateConfig(newConfig: HindenburgConfig) {

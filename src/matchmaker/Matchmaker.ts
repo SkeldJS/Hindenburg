@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import polka from "polka";
-import { GameKeyword, Platform } from "@skeldjs/constant";
+import { Platform } from "@skeldjs/constant";
 import { json } from "../util/jsonBodyParser";
 import { Worker } from "../worker";
 import { VersionInfo } from "@skeldjs/util";
@@ -148,53 +148,77 @@ export class Matchmaker {
                 return res.status(400).end("");
             }
 
-            const returnList: GameListingJson[] = [];
             const listingIp = req.socket.remoteAddress === "127.0.0.1" || req.socket.remoteAddress === "::ffff:127.0.0.1"
                 ? "127.0.0.1"
                 : this.worker.config.socket.ip;
 
+            const ignoreSearchTerms = Array.isArray(this.worker.config.gameListing.ignoreSearchTerms)
+                ? new Set(this.worker.config.gameListing.ignoreSearchTerms)
+                : this.worker.config.gameListing.ignoreSearchTerms;
+
+            const gamesAndRelevance: [ number, GameListingJson ][] = [];
             for (const [ gameCode, room ] of this.worker.rooms) {
                 if (gameCode === 0x20 /* local game */) {
                     continue;
                 }
 
-                if (room.privacy === "private")
+                if (!this.worker.config.gameListing.ignorePrivacy && room.privacy === "private")
                     continue;
 
                 const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
-                const numImpostors = parseInt(req.query.numImpostors as string);
+                const gameListing: GameListingJson = {
+                    IP: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
+                    Port: this.getRandomWorkerPort(),
+                    GameId: room.code,
+                    HostName: room.roomName,
+                    PlayerCount: room.players.size,
+                    Age: roomAge,
+                    MapId: room.settings.map,
+                    NumImpostors: room.settings.numImpostors,
+                    MaxPlayers: room.settings.maxPlayers,
+                    Platform: room.host?.platform.platformTag || Platform.Unknown,
+                    HostPlatformName: room.host?.platform.platformName || "UNKNOWN",
+                    Language: room.settings.keywords
+                };
 
-                if (
-                    room.settings.keywords === (GameKeyword[req.query.lang as unknown as number] as unknown as number) &&
-                    (parseInt(req.query.mapId as string) & (1 << room.settings.map)) !== 0 &&
-                    (
-                        room.settings.numImpostors === numImpostors ||
-                        numImpostors === 0
-                    )
-                ) {
-                    const gameListing: GameListingJson = {
-                        IP: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                        Port: this.getRandomWorkerPort(),
-                        GameId: room.code,
-                        HostName: room.roomName,
-                        PlayerCount: room.players.size,
-                        Age: roomAge,
-                        MapId: room.settings.map,
-                        NumImpostors: room.settings.numImpostors,
-                        MaxPlayers: room.settings.maxPlayers,
-                        Platform: room.host?.platform.platformTag || Platform.Unknown,
-                        HostPlatformName: room.host?.platform.platformName || "UNKNOWN",
-                        Language: room.settings.keywords
-                    };
-
-                    returnList.push(gameListing);
-
-                    if (returnList.length >= 10)
-                        break;
+                if (ignoreSearchTerms === true) {
+                    gamesAndRelevance.push([ 0, gameListing ]);
+                    continue;
                 }
+
+                const relevancy = this.worker.getRoomRelevancy(
+                    room,
+                    parseInt(req.query.numImpostors as string),
+                    parseInt(req.query.lang as string),
+                    parseInt(req.query.mapId as string),
+                    req.query.quickChat as string,
+                    this.worker.config.gameListing.requirePefectMatches,
+                    ignoreSearchTerms
+                );
+
+                if (relevancy === 0 && this.worker.config.gameListing.requirePefectMatches)
+                    continue;
+
+                gamesAndRelevance.push([
+                    relevancy,
+                    gameListing
+                ]);
             }
 
-            res.status(200).json(returnList);
+            const sortedResults = gamesAndRelevance.sort((a, b) => {
+                if (a[0] === b[0]) {
+                    return a[1].Age - b[1].Age;
+                }
+
+                return b[0] - a[0];
+            });
+
+            const topResults = this.worker.config.gameListing.maxResults === "all"
+                || this.worker.config.gameListing.maxResults === 0
+                ? sortedResults
+                : sortedResults.slice(0, this.worker.config.gameListing.maxResults);
+
+            res.status(200).json(topResults.map(([ , gameListing ]) => gameListing));
         });
 
         for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {

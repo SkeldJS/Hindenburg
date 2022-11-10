@@ -21,6 +21,12 @@ export function createDefaultConfig(): HindenburgConfig {
             ip: "auto",
             useDtlsLayout: false
         },
+        gameListing: {
+            ignorePrivacy: false,
+            ignoreSearchTerms: false,
+            maxResults: 10,
+            requirePefectMatches: false
+        },
         plugins: {
             loadDirectory: true
         },

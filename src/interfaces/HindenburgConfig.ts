@@ -196,6 +196,38 @@ export interface LoggingConfig {
     };
 }
 
+export type ValidSearchTerm = "map"|"impostors"|"chat"|"chatType";
+
+export interface GameListingConfig {
+    /**
+     * Whether to ignore the privacy of a room, and return even private ones.
+     * @default false
+     */
+    ignorePrivacy: boolean;
+    /**
+     * Whether to ignore filtering for game listings, and just list every game
+     * on the server.
+     *
+     * Or specify which search terms (`"map"`, `"impostors"`, `"chat"`, `"chatType"`)
+     * to ignore by passing an array.
+     * @default false
+     */
+    ignoreSearchTerms: boolean|ValidSearchTerm[];
+    /**
+     * The maximum number of results to return to a client at once. Set to `0`
+     * or `"all"` for this to be infinite
+     * @default 10
+     */
+    maxResults: number|"all";
+    /**
+     * Whether to only return results that are a perfect match to all of the sort
+     * terms. Otherwise, Hindenburg will sort results by relevance to the search
+     * terms.
+     * @default false
+     */
+    requirePefectMatches: boolean;
+}
+
 export interface ReactorModConfig {
     /**
      * Whether this mod is optional, and clients can connect without it. If the
@@ -463,6 +495,10 @@ export interface HindenburgConfig {
      * Options regarding the socket that the server listens on.
      */
     socket: SocketConfig;
+    /**
+     * Options regarding fine-tuning the results of game listings.
+     */
+    gameListing: GameListingConfig;
     /**
      * Options regarding plugins, such as disabling them or passing configuration
      * options.

@@ -1,5 +1,25 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.19": {
+        "version": "1.1.19",
+        "contributors": ["edward"],
+        "date": "2022-11-10",
+        "notes": [
+            {
+                "description": "New EventTarget API for perspectives",
+                "commits": [
+                    "9ec77564f951497dbdd87bf39634cde295d93801",
+                    "51c2b5c56f189ea363a1865859634a7dd3c9e82b",
+                    "7d25f40934cf91f66604799155e386932f5b5af2",
+                    "3e3d2d1b3e15e4a77bddc47644894a730b793a05"
+                ]
+            },
+            {
+                "description": "Fix issues related to GameDataTo messages not being sent to the main room from a perspective".
+                "commits": ["3087ebc3aabf38055c663c94ffd3858b88439a5f"]
+            }
+        ]
+    },
     "1.1.18": {
         "version": "1.1.18",
         "contributors": ["edward"],

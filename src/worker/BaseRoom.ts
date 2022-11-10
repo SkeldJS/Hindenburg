@@ -575,6 +575,32 @@ export class BaseRoom extends Hostable<RoomEvents> {
         return super.emit(event);
     }
 
+    async emitSerial<Event extends RoomEvents[keyof RoomEvents]>(
+        event: Event
+    ): Promise<Event>;
+    async emitSerial<Event extends BasicEvent>(event: Event): Promise<Event>;
+    async emitSerial<Event extends BasicEvent>(event: Event): Promise<Event> {
+        const ev = await this.worker.emitSerial(event);
+
+        if ((ev as any).canceled || (ev as any).reverted) {
+            return ev;
+        }
+
+        return super.emitSerial(event);
+    }
+
+    emitSync<Event extends RoomEvents[keyof RoomEvents]>(event: Event): Event;
+    emitSync<Event extends BasicEvent>(event: Event): Event;
+    emitSync<Event extends BasicEvent>(event: Event): Event {
+        const ev = this.worker.emitSync(event);
+
+        if ((ev as any).canceled || (ev as any).reverted) {
+            return ev;
+        }
+
+        return super.emitSync(event);
+    }
+
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtConfigurableLog(
             this.worker.config.logging.rooms?.format || ["players", "map", "issaah", "privacy"],

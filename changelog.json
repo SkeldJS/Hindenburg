@@ -1,7 +1,22 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.18": {
+        "version": "1.1.18",
+        "contributors": ["edward"],
+        "date": "2022-11-10",
+        "notes": [
+            {
+                "description": "Fix perspectives event emitting",
+                "commits": ["e44aa306ec684d4eed0d9f8953a65914409ff511"]
+            },
+            {
+                "description": "Add config for game listings",
+                "commits": ["c813b3fb0c37862e01f3823f7a10c87c822bca97"]
+            }
+        ]
+    },
     "1.1.17": {
-        "version": "1.17",
+        "version": "1.1.17",
         "contributors": ["edward"],
         "date": "2022-11-09",
         "notes": [

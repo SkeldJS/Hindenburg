@@ -75,7 +75,7 @@ import {
     SyncSettingsMessage
 } from "@skeldjs/protocol";
 
-import { HazelWriter, Vector2 } from "@skeldjs/util";
+import { HazelReader, HazelWriter, Vector2 } from "@skeldjs/util";
 
 import { chunkArr } from "../util/chunkArr";
 import { MasketDecoder } from "../util/MasketDecoder";
@@ -223,8 +223,8 @@ export class Perspective extends BaseRoom {
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
-        this.messageNonce = new Set(this.parentRoom.messageStream);
         this.playerJoinedFlag = true; // prevent room closing due to inactivity
+        this.messageNonce = new Set;
 
         this.logger = new Logger(() => {
             if (this.playersPov.length === 1) {
@@ -329,7 +329,6 @@ export class Perspective extends BaseRoom {
                         clientOwner.control = newPc;
 
                         if (this.connections.get(clientOwner.clientId)) {
-                            this.logger.info("Despawn %s in parent", component.netId);
                             this.parentRoom.disownObject(playerControl);
                             this.guardObjectAsOwner(newPc);
                         }
@@ -547,7 +546,7 @@ export class Perspective extends BaseRoom {
         return this.parentRoom.getNextNetId();
     }
 
-    static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[]) {
+    static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[], direction: "incoming"|"outgoing") {
         for (let i = 0; i < filters.length; i++) {
             const filter = filters[i];
             if (filter === PresetFilter.GameDataUpdates) {
@@ -557,6 +556,57 @@ export class Perspective extends BaseRoom {
 
                         if (!(netobject instanceof GameData)) {
                             return;
+                        }
+
+                        // The following code allows the flags of "dead", "impostor" and "disconnect" to still be synced between perspectives and rooms.
+                        const updatedPlayerIds = [];
+                        const reader = HazelReader.from(message.data);
+                        while (reader.left) {
+                            const [ playerId ] = reader.message();
+                            updatedPlayerIds.push(playerId);
+                        }
+                        if (perspective.gameData && perspective.parentRoom.gameData) {
+                            if (direction === "incoming") {
+                                for (const updatedPlayerId of updatedPlayerIds) {
+                                    const destPlayerInfo = perspective.gameData.players.get(updatedPlayerId);
+                                    const srcPlayerInfo = perspective.parentRoom.gameData.players.get(updatedPlayerId);
+
+                                    if (!srcPlayerInfo ||  !destPlayerInfo)
+                                        continue;
+
+                                    destPlayerInfo.setFlags(srcPlayerInfo.flags);
+                                }
+
+                                perspective.gameData.PreSerialize();
+                                const writer = HazelWriter.alloc(1024);
+                                if (perspective.gameData.Serialize(writer, false)) {
+                                    writer.realloc(writer.cursor);
+                                    const dataMessage = new DataMessage(perspective.gameData.netId, writer.buffer);
+                                    perspective.messageNonce.add(dataMessage);
+                                    perspective.messageStream.push(dataMessage);
+                                }
+                                perspective.parentRoom.gameData.dirtyBit = 0;
+                            } else if (direction === "outgoing") {
+                                for (const updatedPlayerId of updatedPlayerIds) {
+                                    const srcPlayerInfo = perspective.gameData.players.get(updatedPlayerId);
+                                    const destPlayerInfo = perspective.parentRoom.gameData.players.get(updatedPlayerId);
+
+                                    if (!srcPlayerInfo ||  !destPlayerInfo)
+                                        continue;
+
+                                    destPlayerInfo.setFlags(srcPlayerInfo.flags);
+                                }
+
+                                perspective.parentRoom.gameData.PreSerialize();
+                                const writer = HazelWriter.alloc(1024);
+                                if (perspective.parentRoom.gameData.Serialize(writer, false)) {
+                                    writer.realloc(writer.cursor);
+                                    const dataMessage = new DataMessage(perspective.parentRoom.gameData.netId, writer.buffer);
+                                    perspective.messageNonce.add(dataMessage);
+                                    perspective.parentRoom.messageStream.push(dataMessage);
+                                }
+                                perspective.parentRoom.gameData.dirtyBit = 0;
+                            }
                         }
                     }
 

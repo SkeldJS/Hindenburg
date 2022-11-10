@@ -106,8 +106,8 @@ export class Room extends BaseRoom {
 
         const perspective = new Perspective(this, players, incomingFilter, outgoingFilter);
 
-        Perspective.applyPerspectiveFilter(perspective, incomingFilter, incomingFilters);
-        Perspective.applyPerspectiveFilter(perspective, outgoingFilter, outgoingFilters);
+        Perspective.applyPerspectiveFilter(perspective, incomingFilter, incomingFilters, "incoming");
+        Perspective.applyPerspectiveFilter(perspective, outgoingFilter, outgoingFilters, "outgoing");
 
         this.activePerspectives.push(perspective);
         for (let i = 0; i < players.length; i++) {

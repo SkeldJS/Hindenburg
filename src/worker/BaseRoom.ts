@@ -735,7 +735,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     spawnComponent(component: Networkable<any, any, this>): void {
-        this.logger.info("Own %s", component.netId);
         if (!this.getOwnerOf(component))
             this.guardObjectAsOwner(component);
         super.spawnComponent(component);
@@ -1062,8 +1061,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 for (let i = 0; i < gamedata.length; i++) {
                     const child = gamedata[i];
 
-                    if (activePerspective.messageNonce.has(child))
+                    if (activePerspective.messageNonce.has(child)) {
+                        activePerspective.messageNonce.delete(child);
                         continue;
+                    }
 
                     (child as any)._canceled = false; // child._canceled is private
                     await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);

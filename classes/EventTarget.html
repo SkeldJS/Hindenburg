@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ServerPlayerOptions | @skeldjs/hindenburg</title>
+	<title>EventTarget | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,10 +57,10 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="ServerPlayerOptions.html">ServerPlayerOptions</a>
+					<a href="EventTarget.html">EventTarget</a>
 				</li>
 			</ul>
-			<h1>Interface ServerPlayerOptions</h1>
+			<h1>Class EventTarget</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ServerPlayerOptions</span>
+						<span class="target">EventTarget</span>
 					</li>
 				</ul>
 			</section>
@@ -80,107 +80,58 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ServerPlayerOptions.html#color" class="tsd-kind-icon">color</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ServerPlayerOptions.html#hat" class="tsd-kind-icon">hat</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ServerPlayerOptions.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ServerPlayerOptions.html#skin" class="tsd-kind-icon">skin</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ServerPlayerOptions.html#visor" class="tsd-kind-icon">visor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="EventTarget.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="EventTarget.html#getEventListeners" class="tsd-kind-icon">get<wbr>Event<wbr>Listeners</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="color" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> color</h3>
-					<div class="tsd-signature tsd-kind-icon">color<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/db7e9e9/src/interfaces/HindenburgConfig.ts#L313">src/interfaces/HindenburgConfig.ts:313</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The name of the color of the player for a message sent by the server in game chat.</p>
-						</div>
-						<p>Check out the <a href="https://among-us.fandom.com/wiki/Colors">Official Wiki page for colors</a>
-						for names to use.</p>
-					</div>
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Event<wbr>Target<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="EventTarget.html" class="tsd-signature-type" data-tsd-kind="Class">EventTarget</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/db7e9e9/src/api/EventTarget.ts#L7">src/api/EventTarget.ts:7</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="EventTarget.html" class="tsd-signature-type" data-tsd-kind="Class">EventTarget</a></h4>
+						</li>
+					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="hat" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> hat</h3>
-					<div class="tsd-signature tsd-kind-icon">hat<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/db7e9e9/src/interfaces/HindenburgConfig.ts#L320">src/interfaces/HindenburgConfig.ts:320</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The ID of the hat of the player for a message sent by the server in game chat.</p>
-						</div>
-						<p>Check out the <a href="https://among-us.fandom.com/wiki/Hats">Official Wiki page for hats</a>
-						for IDs to use.</p>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="name" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> name</h3>
-					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/db7e9e9/src/interfaces/HindenburgConfig.ts#L306">src/interfaces/HindenburgConfig.ts:306</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The name of the player for a message sent by the server in game chat</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>default</dt>
-							<dd><p>&quot;&lt;color=yellow&gt;[Server]</color>&quot;</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="skin" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> skin</h3>
-					<div class="tsd-signature tsd-kind-icon">skin<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/db7e9e9/src/interfaces/HindenburgConfig.ts#L327">src/interfaces/HindenburgConfig.ts:327</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The ID of the skin of the player for a message sent by the server in game chat.</p>
-						</div>
-						<p>Check out the <a href="https://among-us.fandom.com/wiki/Skins">Official Wiki page for skins</a>
-						for IDs to use.</p>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="visor" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> visor</h3>
-					<div class="tsd-signature tsd-kind-icon">visor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/db7e9e9/src/interfaces/HindenburgConfig.ts#L334">src/interfaces/HindenburgConfig.ts:334</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The ID of the visor of the player for a message sent by the server in game chat.</p>
-						</div>
-						<p>Check out the <a href="https://among-us.fandom.com/wiki/Visors">Official Wiki page for visors</a>
-						for IDs to use.</p>
-					</div>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getEventListeners" class="tsd-anchor"></a>
+					<h3>get<wbr>Event<wbr>Listeners</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Event<wbr>Listeners<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>eventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/db7e9e9/src/api/EventTarget.ts#L11">src/api/EventTarget.ts:11</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>eventName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -304,23 +255,14 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="ServerPlayerOptions.html" class="tsd-kind-icon">Server<wbr>Player<wbr>Options</a>
+					<li class="current tsd-kind-class">
+						<a href="EventTarget.html" class="tsd-kind-icon">Event<wbr>Target</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ServerPlayerOptions.html#color" class="tsd-kind-icon">color</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="EventTarget.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ServerPlayerOptions.html#hat" class="tsd-kind-icon">hat</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ServerPlayerOptions.html#name" class="tsd-kind-icon">name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ServerPlayerOptions.html#skin" class="tsd-kind-icon">skin</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ServerPlayerOptions.html#visor" class="tsd-kind-icon">visor</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="EventTarget.html#getEventListeners" class="tsd-kind-icon">get<wbr>Event<wbr>Listeners</a>
 							</li>
 						</ul>
 					</li>

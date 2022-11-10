@@ -143,9 +143,9 @@ Object.defineProperty(Networkable.prototype, "emit", {
         const owner = this.room.getOwnerOf(this);
 
         if (owner && owner !== this.room)
-            return originalNetworkableEmit.call(this, event);
+            return event;
 
-        return event;
+        return originalNetworkableEmit.call(this, event);
     }
 });
 
@@ -155,9 +155,9 @@ Object.defineProperty(Networkable.prototype, "emitSerial", {
         const owner = this.room.getOwnerOf(this);
 
         if (owner && owner !== this.room)
-            return originalNetworkableEmitSerial.call(this, event);
+            return event;
 
-        return event;
+        return originalNetworkableEmitSerial.call(this, event);
     }
 });
 
@@ -167,9 +167,9 @@ Object.defineProperty(Networkable.prototype, "emitSync", {
         const owner = this.room.getOwnerOf(this);
 
         if (owner && owner !== this.room)
-            return originalNetworkableEmitSync.call(this, event);
+            return event;
 
-        return event;
+        return originalNetworkableEmitSync.call(this, event);
     }
 });
 

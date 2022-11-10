@@ -1264,7 +1264,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     if (playerPov) {
                         await playerPov.decoder.emitDecoded(child, direction, sender);
                     } else {
-                        await sender.room.decoder.emitDecoded(child, MessageDirection.Serverbound, player);
+                        await sender.room.decoder.emitDecoded(child, direction, sender);
                     }
 
                     if (child.canceled)
@@ -1284,44 +1284,65 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     notCanceled.push(child);
                 }
 
-                for (let i = 0; i < player.room!.activePerspectives.length; i++) {
-                    const activePerspective = player.room.activePerspectives[i];
-
-                    if (!activePerspective)
-                        continue;
-
-                    if (activePerspective === player.room)
-                        continue;
-
-                    // get this player's player object in the perspective in question
-                    const povPlayer = activePerspective.players.get(player.clientId);
-
-                    if (!povPlayer) // if the sender is already in this perspective, we can skip
-                        continue;
-
-                    const povNotCanceled = [];
+                if (playerPov) {
                     for (let i = 0; i < notCanceled.length; i++) {
                         const child = notCanceled[i];
 
                         (child as any)._canceled = false; // reset the message's canceled state
 
-                        // match the message against the perspective's incoming decoder to check whether it should get sent there
-                        await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, povPlayer);
+                        // match the message against the perspective's outgoing decoder to check whether it should get sent to the main room
+                        await playerPov.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, sender);
 
                         if (child.canceled) {
                             (child as any)._canceled = false;
                             continue;
                         }
 
-                        // send message to the perspective
-                        await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, sender);
+                        // send message to the room
+                        await playerPov.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, sender);
 
                         if (child.canceled) {
                             (child as any)._canceled = false;
                             continue;
                         }
+                    }
+                } else {
+                    for (let i = 0; i < player.room!.activePerspectives.length; i++) {
+                        const activePerspective = player.room.activePerspectives[i];
 
-                        povNotCanceled.push(child);
+                        if (!activePerspective)
+                            continue;
+
+                        if (activePerspective === player.room)
+                            continue;
+
+                        // get this player's player object in the perspective in question
+                        const povPlayer = activePerspective.players.get(player.clientId);
+
+                        if (!povPlayer) // if the sender is already in this perspective, we can skip
+                            continue;
+
+                        for (let i = 0; i < notCanceled.length; i++) {
+                            const child = notCanceled[i];
+
+                            (child as any)._canceled = false; // reset the message's canceled state
+
+                            // match the message against the perspective's incoming decoder to check whether it should get sent there
+                            await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, povPlayer);
+
+                            if (child.canceled) {
+                                (child as any)._canceled = false;
+                                continue;
+                            }
+
+                            // send message to the perspective
+                            await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, sender);
+
+                            if (child.canceled) {
+                                (child as any)._canceled = false;
+                                continue;
+                            }
+                        }
                     }
                 }
                 return;

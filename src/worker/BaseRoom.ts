@@ -79,7 +79,9 @@ import {
     RoomDestroyEvent,
     RoomGameEndEvent,
     RoomGameStartEvent,
-    RoomSelectHostEvent
+    RoomSelectHostEvent,
+    getPluginEventListeners,
+    EventTarget as EventTarget
 } from "../api";
 
 import {
@@ -134,42 +136,6 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
 Object.defineProperty(PlayerData.prototype, "isHost", {
     get(this: PlayerData<BaseRoom>) {
         return this.room.hostId === this.clientId || (this.room.actingHostsEnabled && this.room.actingHostIds.has(this.clientId));
-    }
-});
-
-const originalNetworkableEmit = Networkable.prototype.emit;
-Object.defineProperty(Networkable.prototype, "emit", {
-    async value<Event extends BasicEvent>(this: Networkable<any, any, BaseRoom>, event: Event) {
-        const owner = this.room.getOwnerOf(this);
-
-        if (owner && owner !== this.room)
-            return event;
-
-        return originalNetworkableEmit.call(this, event);
-    }
-});
-
-const originalNetworkableEmitSerial = Networkable.prototype.emitSerial;
-Object.defineProperty(Networkable.prototype, "emitSerial", {
-    async value<Event extends BasicEvent>(this: Networkable<any, any, BaseRoom>, event: Event) {
-        const owner = this.room.getOwnerOf(this);
-
-        if (owner && owner !== this.room)
-            return event;
-
-        return originalNetworkableEmitSerial.call(this, event);
-    }
-});
-
-const originalNetworkableEmitSync = Networkable.prototype.emitSync;
-Object.defineProperty(Networkable.prototype, "emitSync", {
-    value<Event extends BasicEvent>(this: Networkable<any, any, BaseRoom>, event: Event) {
-        const owner = this.room.getOwnerOf(this);
-
-        if (owner && owner !== this.room)
-            return event;
-
-        return originalNetworkableEmitSync.call(this, event);
     }
 });
 
@@ -273,7 +239,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     decoder: PacketDecoder;
 
-    private roomNameOverride?: string;
+    protected roomNameOverride: string;
+    protected eventTargets: EventTarget[];
 
     constructor(
         /**
@@ -319,6 +286,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.reactorRpcHandlers = new Map;
         this.reactorRpcs = new Map;
         this.chatCommandHandler = new ChatCommandHandler(this);
+
+        this.roomNameOverride = "";
+        this.eventTargets = [];
 
         this.hostId = this.config.serverAsHost
             ? SpecialClientId.Server
@@ -686,6 +656,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.emit(new RoomDestroyEvent(this));
 
+        for (const eventTarget of this.eventTargets) {
+            this.removeEventTarget(eventTarget);
+        }
+
         this.logger.info("Room was destroyed (%s).", DisconnectReason[reason]);
     }
 
@@ -761,6 +735,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     spawnComponent(component: Networkable<any, any, this>): void {
+        this.logger.info("Own %s", component.netId);
         if (!this.getOwnerOf(component))
             this.guardObjectAsOwner(component);
         super.spawnComponent(component);
@@ -1086,6 +1061,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 const payloadsNotCanceled = [];
                 for (let i = 0; i < gamedata.length; i++) {
                     const child = gamedata[i];
+
+                    if (activePerspective.messageNonce.has(child))
+                        continue;
 
                     (child as any)._canceled = false; // child._canceled is private
                     await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
@@ -2061,7 +2039,29 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * Clear a room name override made with {@link BaseRoom.setRoomNameOverride}.
      */
     clearRoomNameOverride() {
-        this.roomNameOverride = undefined;
+        this.roomNameOverride = "";
+    }
+
+    registerEventTarget(observer: EventTarget) {
+        const observerClass = Object.getPrototypeOf(observer);
+
+        if (observerClass === null)
+            throw new Error("Invalid event observer");
+
+        const eventListeners = getPluginEventListeners(observerClass);
+        for (const eventListener of eventListeners) {
+            const fn = eventListener.handler.bind(observer);
+
+            this.on(eventListener.eventName, fn);
+
+            observer.getEventListeners().push({ eventName: eventListener.eventName, handler: fn });
+        }
+    }
+
+    removeEventTarget(observer: EventTarget) {
+        for (const eventHandler of observer.getEventListeners()) {
+            this.off(eventHandler.eventName, eventHandler.handler);
+        }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

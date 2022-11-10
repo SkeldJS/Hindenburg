@@ -85,7 +85,6 @@ import { Logger } from "../logger";
 
 import { Worker } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
-import { BasicEvent } from "@skeldjs/events";
 
 export type AllSystems = Map<SystemType, SystemStatus<any, any>>;
 
@@ -175,6 +174,8 @@ export class PerspectiveFilter extends MasketDecoder {
  * ```
  */
 export class Perspective extends BaseRoom {
+    messageNonce: Set<BaseGameDataMessage>;
+
     /**
      * @internal
      */
@@ -222,6 +223,7 @@ export class Perspective extends BaseRoom {
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
+        this.messageNonce = new Set(this.parentRoom.messageStream);
         this.playerJoinedFlag = true; // prevent room closing due to inactivity
 
         this.logger = new Logger(() => {
@@ -327,6 +329,7 @@ export class Perspective extends BaseRoom {
                         clientOwner.control = newPc;
 
                         if (this.connections.get(clientOwner.clientId)) {
+                            this.logger.info("Despawn %s in parent", component.netId);
                             this.parentRoom.disownObject(playerControl);
                             this.guardObjectAsOwner(newPc);
                         }
@@ -722,18 +725,6 @@ export class Perspective extends BaseRoom {
             promises.push(this.parentRoom.broadcastMessages(povNotCanceledGamedata, povNotCanceledPayload, undefined, undefined, reliable));
         }
         await Promise.all(promises);
-    }
-
-    async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
-        return this.parentRoom.emit(event);
-    }
-
-    async emitSerial<Event extends BasicEvent>(event: Event): Promise<Event> {
-        return this.parentRoom.emitSerial(event);
-    }
-
-    emitSync<Event extends BasicEvent>(event: Event): Event {
-        return this.parentRoom.emitSync(event);
     }
 
     /**

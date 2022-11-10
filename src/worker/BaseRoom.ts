@@ -9,7 +9,6 @@ import {
     GameState,
     Hat,
     Platform,
-    RpcMessageTag,
     Skin,
     SpawnFlag,
     SpawnType,
@@ -135,6 +134,42 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
 Object.defineProperty(PlayerData.prototype, "isHost", {
     get(this: PlayerData<BaseRoom>) {
         return this.room.hostId === this.clientId || (this.room.actingHostsEnabled && this.room.actingHostIds.has(this.clientId));
+    }
+});
+
+const originalNetworkableEmit = Networkable.prototype.emit;
+Object.defineProperty(Networkable.prototype, "emit", {
+    async value<Event extends BasicEvent>(this: Networkable<any, any, BaseRoom>, event: Event) {
+        const owner = this.room.getOwnerOf(this);
+
+        if (owner && owner !== this.room)
+            return originalNetworkableEmit.call(this, event);
+
+        return event;
+    }
+});
+
+const originalNetworkableEmitSerial = Networkable.prototype.emitSerial;
+Object.defineProperty(Networkable.prototype, "emitSerial", {
+    async value<Event extends BasicEvent>(this: Networkable<any, any, BaseRoom>, event: Event) {
+        const owner = this.room.getOwnerOf(this);
+
+        if (owner && owner !== this.room)
+            return originalNetworkableEmitSerial.call(this, event);
+
+        return event;
+    }
+});
+
+const originalNetworkableEmitSync = Networkable.prototype.emitSync;
+Object.defineProperty(Networkable.prototype, "emitSync", {
+    value<Event extends BasicEvent>(this: Networkable<any, any, BaseRoom>, event: Event) {
+        const owner = this.room.getOwnerOf(this);
+
+        if (owner && owner !== this.room)
+            return originalNetworkableEmitSync.call(this, event);
+
+        return event;
     }
 });
 

@@ -53,9 +53,13 @@ To destroy a perspective, Hindenburg must revert all of the changes done in the 
 Creating perspectives can range from being as easy as a single line to being lots more depending on what you need.
 
 For very simple perspectives, such as the one above, you can use the {@link PresetFilter} enum to select one or more aspects of the game to isolate:
-
 ```ts
 const perspective = room.createPerspective(player, [ PresetFilter.* ]);
+```
+
+You can also omit the filters from the list if you plan to write your own, or if you want to create a dummy perspective:
+```ts
+const perspective = room.createPerspective(player);
 ```
 
 _{@link Room.createPerspective | See the documentation on `Room.createPerspective`}_.
@@ -64,24 +68,24 @@ _{@link Room.createPerspective | See the documentation on `Room.createPerspectiv
 #### `PresetFilter.GameDataUpdates`
 Isolate all updates related to cosmetics, used in the example above.
 
-### `PresetFilter.PositionUpdates`
+#### `PresetFilter.PositionUpdates`
 Isolate all updates related to movement for players.
 
 For example, you could make a mode where impostors, upon killing a player, gain the ability to seemingly teleport to a location.
 
-### `PresetFilter.SettingsUpdates`
+#### `PresetFilter.SettingsUpdates`
 Isolate settings updates, allowing some players to have different settings to other players. Helpful for changing individual players' movement speeds, or the number of emergency meetings they can call.
 
-### `PresetFilter.ChatMessages`
+#### `PresetFilter.ChatMessages`
 Isolate chat messages.
 
-### `PresetFilter.ObjectUpdates` _(advanced)_
+#### `PresetFilter.ObjectUpdates` _(advanced)_
 Isolate updates related to spawning or despawning innernet objects.
 
-## Unidirectional filters
+### Unidirectional filters
 You can also pass another argument to distinguish between _incoming_ filters and _outgoing_ filters.
 
-### Example
+#### Example
 ```ts
 const perspective = room.createPerspective(player, [ ], [ PresetFilter.PositionUpdates, PresetFilter.ChatMessages ]);
 ```
@@ -94,14 +98,14 @@ Perspectives can group together any number of players in their own isolated bubb
 const perspective = new room.createPerspective([ player1, player2, player3 ], [ ...filters ]);
 ```
 
-## Advanced filters
+### Advanced filters
 Sometimes, the preset filters won't do, so you'll have to fine-tune your filters using SkeldJS' {@link PacketDecoder} API.
 
 You can use the {@link Perspective.incomingFilter} and {@link Perspective.outgoingFilter} separately.
 
 > If you want to use  the same incoming filter as outgoing, simply run `perspective.incomingFilter = perspective.outgoingFilter`.
 
-### Example
+#### Example
 ```ts
 const perspective = room.createPerspective(player, [ ]); // use no preset filters
 
@@ -157,6 +161,43 @@ await perspective.destroyPerspective();
 You can also pass in whether or not to restore state of the original room back to the player in the perspective, although the default is `true`.
 
 > Note, if restoring state is set to `false`, it could lead to some bugs and plenty of desync if not managed correctly.
+
+## Events
+There are two ways to listen to events in Perspectives.
+
+### Event Listeners
+The first and most straight-forward way is to simply attach listeners using SkeldJS' event listener system, for example:
+```ts
+const perspective = room.createPerspective(player);
+
+perspective.on("player.setname", ev => {
+    // someone in the perspective has set their name
+});
+```
+
+Always note that perspectives, if synced with the main room, will generally fire the same events, {@page Object Ownership Guards | with some exceptions}, so attaching listeners may just be as simple for you as `perspective.on("player.setname", this.onPlayerSetName)` if you have a plugin event listener listening on a room and want to also listen to the same event on a perspective.
+
+### Event Targets
+A nicer and more formatted way to attach listeners is using the exported `EventTarget` class, and using the `@EventListener` decorator:
+```ts
+export class MyPerspectiveEventTarget extends EventTarget {
+    @EventListener("player.setname")
+    onPlayerSetName(ev: PlayerSetNameEvent<Perspective>) {
+
+    }
+}
+```
+which you can then use to attach a listener:
+```ts
+const perspective = room.createPerspective(player);
+const eventTarget = new MyPerspectiveEventTarget;
+
+perspective.registerEventTarget(eventTarget);
+```
+
+> See {@page Event Targets} for more information.
+
+> This topic may or may not require knowledge of {@page Object Ownership Guards}, a reading of that is recommended for advanced usages of perspectives.
 
 ## API
 ### Get player in perspective from original room

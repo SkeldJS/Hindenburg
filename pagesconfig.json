@@ -115,6 +115,10 @@
                     "source": "./pages/Plugins/Player Perspectives.md"
                 },
                 {
+                    "title": "Event Targets",
+                    "source": "./pages/Plugins/Event Targets.md"
+                },
+                {
                     "title": "Reactor Integration",
                     "source": "./pages/Plugins/Reactor Integration.md"
                 },
@@ -145,6 +149,15 @@
                 {
                     "title": "Game Codes",
                     "source": "./pages/Plugins/Game Codes.md"
+                }
+            ]
+        },
+        {
+            "title": "Advanced Topics",
+            "pages": [
+                {
+                    "title": "Object Ownership Guards",
+                    "source": "./pages/Advanced Topics/Object Ownership Guards.md"
                 }
             ]
         }

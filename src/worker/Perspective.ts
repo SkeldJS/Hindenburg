@@ -585,7 +585,7 @@ export class Perspective extends BaseRoom {
                                     perspective.messageNonce.add(dataMessage);
                                     perspective.messageStream.push(dataMessage);
                                 }
-                                perspective.parentRoom.gameData.dirtyBit = 0;
+                                perspective.gameData.dirtyBit = 0;
                             } else if (direction === "outgoing") {
                                 for (const updatedPlayerId of updatedPlayerIds) {
                                     const srcPlayerInfo = perspective.gameData.players.get(updatedPlayerId);

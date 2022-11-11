@@ -128,6 +128,9 @@
 				<p>For very simple perspectives, such as the one above, you can use the <a href="../../enums/PresetFilter.html">PresetFilter</a> enum to select one or more aspects of the game to isolate:</p>
 				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, [ </span><span style="color: #001080">PresetFilter</span><span style="color: #000000">.* ]);</span>
 </code></pre>
+				<p>You can also omit the filters from the list if you plan to write your own, or if you want to create a dummy perspective:</p>
+				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">);</span>
+</code></pre>
 				<p><em><a href="../../classes/Room.html#createPerspective">See the documentation on <code>Room.createPerspective</code></a></em>.</p>
 				<a href="#preset-filters" id="preset-filters" style="color: inherit; text-decoration: none;">
 					<h3>Preset filters</h3>
@@ -137,28 +140,28 @@
 				</a>
 				<p>Isolate all updates related to cosmetics, used in the example above.</p>
 				<a href="#presetfilterpositionupdates" id="presetfilterpositionupdates" style="color: inherit; text-decoration: none;">
-					<h3><code>PresetFilter.PositionUpdates</code></h3>
+					<h4><code>PresetFilter.PositionUpdates</code></h4>
 				</a>
 				<p>Isolate all updates related to movement for players.</p>
 				<p>For example, you could make a mode where impostors, upon killing a player, gain the ability to seemingly teleport to a location.</p>
 				<a href="#presetfiltersettingsupdates" id="presetfiltersettingsupdates" style="color: inherit; text-decoration: none;">
-					<h3><code>PresetFilter.SettingsUpdates</code></h3>
+					<h4><code>PresetFilter.SettingsUpdates</code></h4>
 				</a>
 				<p>Isolate settings updates, allowing some players to have different settings to other players. Helpful for changing individual players&#39; movement speeds, or the number of emergency meetings they can call.</p>
 				<a href="#presetfilterchatmessages" id="presetfilterchatmessages" style="color: inherit; text-decoration: none;">
-					<h3><code>PresetFilter.ChatMessages</code></h3>
+					<h4><code>PresetFilter.ChatMessages</code></h4>
 				</a>
 				<p>Isolate chat messages.</p>
 				<a href="#presetfilterobjectupdates-advanced" id="presetfilterobjectupdates-advanced" style="color: inherit; text-decoration: none;">
-					<h3><code>PresetFilter.ObjectUpdates</code> <em>(advanced)</em></h3>
+					<h4><code>PresetFilter.ObjectUpdates</code> <em>(advanced)</em></h4>
 				</a>
 				<p>Isolate updates related to spawning or despawning innernet objects.</p>
 				<a href="#unidirectional-filters" id="unidirectional-filters" style="color: inherit; text-decoration: none;">
-					<h2>Unidirectional filters</h2>
+					<h3>Unidirectional filters</h3>
 				</a>
 				<p>You can also pass another argument to distinguish between <em>incoming</em> filters and <em>outgoing</em> filters.</p>
 				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
-					<h3>Example</h3>
+					<h4>Example</h4>
 				</a>
 				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, [ ], [ </span><span style="color: #001080">PresetFilter</span><span style="color: #000000">.</span><span style="color: #001080">PositionUpdates</span><span style="color: #000000">, </span><span style="color: #001080">PresetFilter</span><span style="color: #000000">.</span><span style="color: #001080">ChatMessages</span><span style="color: #000000"> ]);</span>
 </code></pre>
@@ -170,7 +173,7 @@
 				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">([ </span><span style="color: #001080">player1</span><span style="color: #000000">, </span><span style="color: #001080">player2</span><span style="color: #000000">, </span><span style="color: #001080">player3</span><span style="color: #000000"> ], [ ...</span><span style="color: #001080">filters</span><span style="color: #000000"> ]);</span>
 </code></pre>
 				<a href="#advanced-filters" id="advanced-filters" style="color: inherit; text-decoration: none;">
-					<h2>Advanced filters</h2>
+					<h3>Advanced filters</h3>
 				</a>
 				<p>Sometimes, the preset filters won&#39;t do, so you&#39;ll have to fine-tune your filters using SkeldJS&#39; <a href="../../classes/PacketDecoder.html">PacketDecoder</a> API.</p>
 				<p>You can use the <a href="../../classes/Perspective.html#incomingFilter">Perspective.incomingFilter</a> and <a href="../../classes/Perspective.html#outgoingFilter">Perspective.outgoingFilter</a> separately.</p>
@@ -178,7 +181,7 @@
 					<p>If you want to use  the same incoming filter as outgoing, simply run <code>perspective.incomingFilter = perspective.outgoingFilter</code>.</p>
 				</blockquote>
 				<a href="#example-1" id="example-1" style="color: inherit; text-decoration: none;">
-					<h3>Example</h3>
+					<h4>Example</h4>
 				</a>
 				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">, [ ]); </span><span style="color: #008000">// use no preset filters</span>
 
@@ -233,6 +236,44 @@
 				<p>You can also pass in whether or not to restore state of the original room back to the player in the perspective, although the default is <code>true</code>.</p>
 				<blockquote>
 					<p>Note, if restoring state is set to <code>false</code>, it could lead to some bugs and plenty of desync if not managed correctly.</p>
+				</blockquote>
+				<a href="#events" id="events" style="color: inherit; text-decoration: none;">
+					<h2>Events</h2>
+				</a>
+				<p>There are two ways to listen to events in Perspectives.</p>
+				<a href="#event-listeners" id="event-listeners" style="color: inherit; text-decoration: none;">
+					<h3>Event Listeners</h3>
+				</a>
+				<p>The first and most straight-forward way is to simply attach listeners using SkeldJS&#39; event listener system, for example:</p>
+				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">);</span>
+
+<span style="color: #001080">perspective</span><span style="color: #000000">.</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.setname&quot;</span><span style="color: #000000">, </span><span style="color: #001080">ev</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #008000">// someone in the perspective has set their name</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<p>Always note that perspectives, if synced with the main room, will generally fire the same events, <a href="../Advanced Topics/Object Ownership Guards.html">with some exceptions</a>, so attaching listeners may just be as simple for you as <code>perspective.on(&quot;player.setname&quot;, this.onPlayerSetName)</code> if you have a plugin event listener listening on a room and want to also listen to the same event on a perspective.</p>
+				<a href="#event-targets" id="event-targets" style="color: inherit; text-decoration: none;">
+					<h3>Event Targets</h3>
+				</a>
+				<p>A nicer and more formatted way to attach listeners is using the exported <code>EventTarget</code> class, and using the <code>@EventListener</code> decorator:</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MyPerspectiveEventTarget</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">EventTarget</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    @</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.setname&quot;</span><span style="color: #000000">)</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onPlayerSetName</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #267F99">PlayerSetNameEvent</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Perspective</span><span style="color: #000000">&gt;) {</span>
+
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>which you can then use to attach a listener:</p>
+				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">eventTarget</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">MyPerspectiveEventTarget</span><span style="color: #000000">;</span>
+
+<span style="color: #001080">perspective</span><span style="color: #000000">.</span><span style="color: #795E26">registerEventTarget</span><span style="color: #000000">(</span><span style="color: #001080">eventTarget</span><span style="color: #000000">);</span>
+</code></pre>
+				<blockquote>
+					<p>See <a href="Event Targets.html">Event Targets</a> for more information.</p>
+				</blockquote>
+				<blockquote>
+					<p>This topic may or may not require knowledge of <a href="../Advanced Topics/Object Ownership Guards.html">Object Ownership Guards</a>, a reading of that is recommended for advanced usages of perspectives.</p>
 				</blockquote>
 				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
 					<h2>API</h2>
@@ -333,6 +374,9 @@
 						<a href="Player Perspectives.html">Player <wbr>Perspectives</a>
 					</li>
 					<li class=" pp-nav pp-page">
+						<a href="Event Targets.html">Event <wbr>Targets</a>
+					</li>
+					<li class=" pp-nav pp-page">
 						<a href="Reactor Integration.html">Reactor <wbr>Integration</a>
 					</li>
 					<li class=" pp-nav pp-page">
@@ -355,6 +399,12 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="Game Codes.html">Game <wbr>Codes</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>Advanced <wbr>Topics</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../Advanced Topics/Object Ownership Guards.html">Object <wbr>Ownership <wbr>Guards</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

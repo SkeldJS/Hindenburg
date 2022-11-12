@@ -817,7 +817,7 @@ export class Perspective extends BaseRoom {
 
             // todo: figure out some way of handling spawns/despawns in perspectives
             // problems:
-            // 1. despawning an objet makes that netid not able to be used.
+            // 1. despawning an object makes that netid not able to be used.
             //    - solution: have a per-connection netid counter and map
             //    - the host's netids to the connection's netids on every
             //    - message involving netids
@@ -826,11 +826,17 @@ export class Perspective extends BaseRoom {
             // prefabs
             //    - solution: despawn every other component in that prefab,
             //    - and respawn the prefab
-            for (const [ netId ] of this.netobjects) {
+            for (const [ netId, netObject ] of this.netobjects) {
                 if (!this.parentRoom.netobjects.get(netId)) {
                     messages.push(
                         new DespawnMessage(netId)
                     );
+                    continue;
+                }
+
+                if (this.getOwnerOf(netObject) === this) {
+                    this.disownObject(netObject);
+                    this.parentRoom.guardObjectAsOwner(netObject);
                 }
             }
 

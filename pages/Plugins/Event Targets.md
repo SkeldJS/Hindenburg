@@ -10,17 +10,24 @@ export class ReducedStew extends EventTarget {
 }
 ```
 
-You can then use {@link BaseRoom.registerEventTarget} and {@link BaseRoom.removeEventTarget} to choose where to apply it:
+## Register Event Targets
+You can use {@link BaseRoom.registerEventTarget} choose where to apply an event target:
 ```ts
 const reducedStewTarget = new ReducedStew;
 
-room.registerEventTarget(reducedStew);
+room.registerEventTarget(reducedStewTarget);
 ```
 
 ```ts
 const perspective = room.createPerspective(player);
 
-perspective.registerEventTarget(reducedStew);
+perspective.registerEventTarget(reducedStewTarget);
+```
+
+## Remove Event Targets
+Removing an event target is as simple as calling {@link BaseRoom.removeEventTarget}:
+```ts
+room.removeEventTarget(reducedStewTarget);
 ```
 
 ## Constructor

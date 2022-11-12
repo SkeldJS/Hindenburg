@@ -1,5 +1,20 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.20": {
+        "version": "1.1.20",
+        "contributors": ["edward"],
+        "date": "2022-11-12",
+        "notes": [
+            {
+                "description": "Add transferring ownership of objects owned by the perspective to the room",
+                "commits": ["36df6ab46ff49b3a7ab3e6b024da2b7b43647918"]
+            },
+            {
+                "description": "Update gamedata filter to pass through player flags",
+                "commits": ["db7e9e9ecd26cb59ed14b6947dc46dfba6b8ede4"]
+            }
+        ]
+    },
     "1.1.19": {
         "version": "1.1.19",
         "contributors": ["edward"],
@@ -15,7 +30,7 @@
                 ]
             },
             {
-                "description": "Fix issues related to GameDataTo messages not being sent to the main room from a perspective".
+                "description": "Fix issues related to GameDataTo messages not being sent to the main room from a perspective",
                 "commits": ["3087ebc3aabf38055c663c94ffd3858b88439a5f"]
             }
         ]

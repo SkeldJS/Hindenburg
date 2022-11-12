@@ -82,14 +82,23 @@
 <span style="color: #000000">    }</span>
 <span style="color: #000000">}</span>
 </code></pre>
-				<p>You can then use <a href="../../classes/BaseRoom.html#registerEventTarget">BaseRoom.registerEventTarget</a> and <a href="../../classes/BaseRoom.html#removeEventTarget">BaseRoom.removeEventTarget</a> to choose where to apply it:</p>
+				<a href="#register-event-targets" id="register-event-targets" style="color: inherit; text-decoration: none;">
+					<h2>Register Event Targets</h2>
+				</a>
+				<p>You can use <a href="../../classes/BaseRoom.html#registerEventTarget">BaseRoom.registerEventTarget</a> choose where to apply an event target:</p>
 				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">reducedStewTarget</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #001080">ReducedStew</span><span style="color: #000000">;</span>
 
-<span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">registerEventTarget</span><span style="color: #000000">(</span><span style="color: #001080">reducedStew</span><span style="color: #000000">);</span>
+<span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">registerEventTarget</span><span style="color: #000000">(</span><span style="color: #001080">reducedStewTarget</span><span style="color: #000000">);</span>
 </code></pre>
 				<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">perspective</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createPerspective</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">);</span>
 
-<span style="color: #001080">perspective</span><span style="color: #000000">.</span><span style="color: #795E26">registerEventTarget</span><span style="color: #000000">(</span><span style="color: #001080">reducedStew</span><span style="color: #000000">);</span>
+<span style="color: #001080">perspective</span><span style="color: #000000">.</span><span style="color: #795E26">registerEventTarget</span><span style="color: #000000">(</span><span style="color: #001080">reducedStewTarget</span><span style="color: #000000">);</span>
+</code></pre>
+				<a href="#remove-event-targets" id="remove-event-targets" style="color: inherit; text-decoration: none;">
+					<h2>Remove Event Targets</h2>
+				</a>
+				<p>Removing an event target is as simple as calling <a href="../../classes/BaseRoom.html#removeEventTarget">BaseRoom.removeEventTarget</a>:</p>
+				<pre><code class="language-ts"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">removeEventTarget</span><span style="color: #000000">(</span><span style="color: #001080">reducedStewTarget</span><span style="color: #000000">);</span>
 </code></pre>
 				<a href="#constructor" id="constructor" style="color: inherit; text-decoration: none;">
 					<h2>Constructor</h2>

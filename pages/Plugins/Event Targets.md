@@ -30,6 +30,16 @@ Removing an event target is as simple as calling {@link BaseRoom.removeEventTarg
 room.removeEventTarget(reducedStewTarget);
 ```
 
+For example, if you want to remove an event target when the _game ends_, you can use:
+```ts
+export class ReducedStew extends EventTarget {
+    @EventListener("room.gameend")
+    onRoomGameEnd(ev: RoomGameEndEvent) {
+        ev.room.removeEventTarget(this);
+    }
+}
+```
+
 ## Constructor
 The constuctor can be anything you like, useful for creating connections to your main plugin or perspective:
 ```ts

@@ -8,7 +8,7 @@ Specifically, we'll be creating the reasonably basic Jester role, and we'll be g
 
 > Only very basic knowledge of programming is required for this guide, although the concepts do get somewhat complicated.
 
-## Create plugin
+## Create the plugin
 Obviously, you'll need to actually create the plugin. See {@page Creating a Plugin} to get started, or you can just run `yarn plugins create my-jester-mod` in your Hindenburg directory for a quick-start.
 
 > In this guide we'll be using [TypeScript](https://typescriptlang.org), so make sure you enable that while creating your plugin.

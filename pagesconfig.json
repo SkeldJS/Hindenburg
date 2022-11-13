@@ -167,6 +167,10 @@
                 {
                     "title": "New Roles",
                     "source": "./pages/Guides/New Roles.md"
+                },
+                {
+                    "title": "Floating Text",
+                    "source": "./pages/Guides/Floating Text.md"
                 }
             ]
         }

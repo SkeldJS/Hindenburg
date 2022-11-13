@@ -8,6 +8,8 @@ import {
     GameOverReason,
     GameState,
     Hat,
+    Nameplate,
+    Pet,
     Platform,
     Skin,
     SpawnFlag,
@@ -297,10 +299,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.on("player.setname", async ev => {
             if (ev.oldName) {
                 this.logger.info("%s changed their name from %s to %s",
-                    ev.player, ev.oldName, ev.newName);
+                    ev.player, this.formatName(ev.oldName), this.formatName(ev.newName));
             } else {
                 this.logger.info("%s set their name to %s",
-                    ev.player, ev.newName);
+                    ev.player, this.formatName(ev.newName));
             }
         });
 
@@ -584,6 +586,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         return chalk.yellow(fmtCode(this.code))
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
+    }
+
+    formatName(name: string) {
+        return name.replace(/\n/g, "\\n");
     }
 
     get host(): PlayerData<this>|undefined {
@@ -1776,9 +1782,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
             await Promise.race([
                 Promise.all(
                     [...this.players.values()].map((player) => {
-                        if (player.isReady) {
+                        if (player.isReady || !this.getConnection(player.clientId))
                             return Promise.resolve();
-                        }
 
                         return new Promise<void>((resolve) => {
                             player.once("player.ready", () => {
@@ -2041,6 +2046,39 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     clearRoomNameOverride() {
         this.roomNameOverride = "";
+    }
+
+    /**
+     * Creates a fake dummy player without a connected client.
+     * @param isNew Whether or not this player should be considered as "joining" the room,
+     * i.e. whether they should hop off their seat in the lobby.
+     * @param setCosmetics Whether or not default cosmetics should be set for this player,
+     * i.e. whether they should be immediately visible as a player.
+     * @returns The created player.
+     * ```ts
+     * const player = room.createFakePlayer();
+     *
+     * ...
+     *
+     * player.control?.despawn();
+     * player.physics?.despawn();
+     * player.transform?.despawn();
+     * ```
+     */
+    createFakePlayer(isNew = false, setCosmetics = true) {
+        const fakePlayer = super.createFakePlayer(isNew);
+
+        if (setCosmetics) {
+            fakePlayer.control?.setName("");
+            fakePlayer.control?.setHat(Hat.NoHat);
+            fakePlayer.control?.setColor(Color.White);
+            fakePlayer.control?.setSkin(Skin.None);
+            fakePlayer.control?.setPet(Pet.EmptyPet);
+            fakePlayer.control?.setVisor(Visor.EmptyVisor);
+            fakePlayer.control?.setNameplate(Nameplate.NoPlate);
+        }
+
+        return fakePlayer;
     }
 
     registerEventTarget(observer: EventTarget) {

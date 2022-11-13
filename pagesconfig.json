@@ -160,6 +160,10 @@
                     "source": "./pages/Advanced Topics/Object Ownership Guards.md"
                 }
             ]
+        },
+        {
+            "title": "New Roles",
+            "source": "./pages/Guides/New Roles.md"
         }
     ]
 }

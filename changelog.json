@@ -1,5 +1,24 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.21": {
+        "version": "1.1.21",
+        "contributors": ["edward"],
+        "date": "2022-11-13",
+        "notes": [
+            {
+                "description": "Fix acting host missing host abilities",
+                "commits": ["a704aa452a0fb842df9fe7361af245cf90db9854"]
+            },
+            {
+                "description": "Add option for fake player not recorded in GameData",
+                "commits": ["2e9820fb9252dd2874ba6d060ddab32c5ba17e3d"]
+            },
+            {
+                "description": "Fix fake player preventing room from starting",
+                "commits": ["01f32b8a3121696c19834c585ed88a77a645e773", "cafe8882fee8180608a71b86b5b230d103d1312f"]
+            }
+        ]
+    },
     "1.1.20": {
         "version": "1.1.20",
         "contributors": ["edward"],

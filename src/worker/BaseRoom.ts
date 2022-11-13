@@ -54,11 +54,13 @@ import {
 } from "@skeldjs/protocol";
 
 import {
+    CrewmateRole,
     CustomNetworkTransform,
     EndGameIntent,
     Hostable,
     HostableEvents,
     Networkable,
+    PlayerControl,
     PlayerData,
     PlayerDataResolvable,
     PlayerJoinEvent,
@@ -2071,6 +2073,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * i.e. whether they should hop off their seat in the lobby.
      * @param setCosmetics Whether or not default cosmetics should be set for this player,
      * i.e. whether they should be immediately visible as a player.
+     * @param isRecorded Whether or not the player should appear in {@link GameData}. If not,
+     * they won't count as an actual player and will live (mostly) off-the-grid.
      * @returns The created player.
      * ```ts
      * const player = room.createFakePlayer();
@@ -2082,17 +2086,22 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * player.transform?.despawn();
      * ```
      */
-    createFakePlayer(isNew = false, setCosmetics = true) {
-        const fakePlayer = super.createFakePlayer(isNew);
+    createFakePlayer(isNew = false, setCosmetics = true, isRecorded = false) {
+        const fakePlayer = new PlayerData(this, 0, "dummy");
+        const playerControl = this.spawnPrefabOfType(SpawnType.Player, -2, undefined, !isNew ? [{ isNew: false }] : undefined, false, isRecorded) as PlayerControl<this>;
+        playerControl.player = fakePlayer;
+        fakePlayer.control = playerControl;
 
         if (setCosmetics) {
-            fakePlayer.control?.setName("");
+            fakePlayer.control?.setName("dummy");
             fakePlayer.control?.setHat(Hat.NoHat);
             fakePlayer.control?.setColor(Color.White);
             fakePlayer.control?.setSkin(Skin.None);
             fakePlayer.control?.setPet(Pet.EmptyPet);
             fakePlayer.control?.setVisor(Visor.EmptyVisor);
             fakePlayer.control?.setNameplate(Nameplate.NoPlate);
+
+            fakePlayer.control?.setRole(CrewmateRole);
         }
 
         return fakePlayer;

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RpcEvent | @skeldjs/hindenburg</title>
+	<title>New Roles | @skeldjs/hindenburg</title>
 	<meta name="description" content="Documentation for @skeldjs/hindenburg">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,55 +57,18 @@
 					<a href="../modules.html">Globals</a>
 				</li>
 				<li>
-					<a href="RpcEvent.html">RpcEvent</a>
+					<a href="New Roles">New Roles</a>
 				</li>
 			</ul>
-			<h1>Interface RpcEvent</h1>
+			<h1>New Roles</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">RpcEvent</span>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="RpcEvent.html#rpc" class="tsd-kind-icon">rpc</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="rpc" class="tsd-anchor"></a>
-					<h3>rpc</h3>
-					<div class="tsd-signature tsd-kind-icon">rpc<span class="tsd-signature-symbol">:</span> <a href="../classes/BaseRpcMessage.html" class="tsd-signature-type" data-tsd-kind="Class">BaseRpcMessage</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/03e3e4c/src/api/events/RpcEvent.ts#L7">src/api/events/RpcEvent.ts:7</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The rpc message for this event.</p>
-						</div>
-					</div>
-				</section>
-			</section>
+			<div class="tsd-panel tsd-typography">
+			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -114,121 +77,124 @@
 						<span>Getting <wbr>Started</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Installation.html">Installation</a>
+						<a href="Getting Started/Installation.html">Installation</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Environment Variables.html">Environment <wbr>Variables</a>
+						<a href="Getting Started/Environment Variables.html">Environment <wbr>Variables</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Configuration.html">Configuration</a>
+						<a href="Getting Started/Configuration.html">Configuration</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Installing Plugins.html">Installing <wbr>Plugins</a>
+						<a href="Getting Started/Installing Plugins.html">Installing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Contributing.html">Contributing</a>
+						<a href="Getting Started/Contributing.html">Contributing</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Getting Started/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
+						<a href="Getting Started/Comparison with Impostor.html">Comparison with <wbr>Impostor</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Using <wbr>Hindenburg</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Using Hindenburg/Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="Using Hindenburg/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Using Hindenburg/Logging Config.html">Logging <wbr>Config</a>
+						<a href="Using Hindenburg/Logging Config.html">Logging <wbr>Config</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Using Hindenburg/Reactor Support.html">Reactor <wbr>Support</a>
+						<a href="Using Hindenburg/Reactor Support.html">Reactor <wbr>Support</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Using Hindenburg/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
+						<a href="Using Hindenburg/Server-as-a-Host.html">Server-<wbr>as-<wbr>a-<wbr>Host</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Using Hindenburg/Server-as-a-Host.html">Interactive CLI</a>
+						<a href="Using Hindenburg/Server-as-a-Host.html">Interactive CLI</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Advanced <wbr>Usage</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Advanced Usage/Unknown Innernet Objects.html">Unknown <wbr>Innernet <wbr>Objects</a>
+						<a href="Advanced Usage/Unknown Innernet Objects.html">Unknown <wbr>Innernet <wbr>Objects</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Advanced Usage/Message Ordering.html">Message <wbr>Ordering</a>
+						<a href="Advanced Usage/Message Ordering.html">Message <wbr>Ordering</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Plugins</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
+						<a href="Plugins/Creating a Plugin.html">Creating a <wbr>Plugin</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Developing Plugins.html">Developing <wbr>Plugins</a>
+						<a href="Plugins/Developing Plugins.html">Developing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Compatible Hindenburg API Versions.html">Compatible <wbr>Hindenburg API <wbr>Versions</a>
+						<a href="Plugins/Compatible Hindenburg API Versions.html">Compatible <wbr>Hindenburg API <wbr>Versions</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Publishing Plugins.html">Publishing <wbr>Plugins</a>
+						<a href="Plugins/Publishing Plugins.html">Publishing <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Load Ordering.html">Load <wbr>Ordering</a>
+						<a href="Plugins/Load Ordering.html">Load <wbr>Ordering</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
+						<a href="Plugins/Worker and Room Plugins.html">Worker and <wbr>Room <wbr>Plugins</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
+						<a href="Plugins/Lifecycle Methods.html">Lifecycle <wbr>Methods</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Listeners.html">Event <wbr>Listeners</a>
+						<a href="Plugins/Event Listeners.html">Event <wbr>Listeners</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Receiving Protocol Messages.html">Receiving <wbr>Protocol <wbr>Messages</a>
+						<a href="Plugins/Receiving Protocol Messages.html">Receiving <wbr>Protocol <wbr>Messages</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Chat Commands.html">Chat <wbr>Commands</a>
+						<a href="Plugins/Chat Commands.html">Chat <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Player Perspectives.html">Player <wbr>Perspectives</a>
+						<a href="Plugins/Player Perspectives.html">Player <wbr>Perspectives</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Event Targets.html">Event <wbr>Targets</a>
+						<a href="Plugins/Event Targets.html">Event <wbr>Targets</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Reactor Integration.html">Reactor <wbr>Integration</a>
+						<a href="Plugins/Reactor Integration.html">Reactor <wbr>Integration</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/End Game Intents.html">End <wbr>Game <wbr>Intents</a>
+						<a href="Plugins/End Game Intents.html">End <wbr>Game <wbr>Intents</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Server Broadcast.html">Server <wbr>Broadcast</a>
+						<a href="Plugins/Server Broadcast.html">Server <wbr>Broadcast</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/CLI Commands.html">CLI <wbr>Commands</a>
+						<a href="Plugins/CLI Commands.html">CLI <wbr>Commands</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Custom Roles.html">Custom <wbr>Roles</a>
+						<a href="Plugins/Custom Roles.html">Custom <wbr>Roles</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Custom Innernet Objects.html">Custom <wbr>Innernet <wbr>Objects</a>
+						<a href="Plugins/Custom Innernet Objects.html">Custom <wbr>Innernet <wbr>Objects</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Custom Protocol Messages.html">Custom <wbr>Protocol <wbr>Messages</a>
+						<a href="Plugins/Custom Protocol Messages.html">Custom <wbr>Protocol <wbr>Messages</a>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Plugins/Game Codes.html">Game <wbr>Codes</a>
+						<a href="Plugins/Game Codes.html">Game <wbr>Codes</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>Advanced <wbr>Topics</span>
 					</li>
 					<li class=" pp-nav pp-page">
-						<a href="../pages/Advanced Topics/Object Ownership Guards.html">Object <wbr>Ownership <wbr>Guards</a>
+						<a href="Advanced Topics/Object Ownership Guards.html">Object <wbr>Ownership <wbr>Guards</a>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>New <wbr>Roles</span>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
 					</li>
 					<li class=" ">
 						<a href="../modules.html">Exports</a>
@@ -237,18 +203,6 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface">
-						<a href="RpcEvent.html" class="tsd-kind-icon">Rpc<wbr>Event</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="RpcEvent.html#rpc" class="tsd-kind-icon">rpc</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>

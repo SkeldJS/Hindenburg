@@ -100,6 +100,14 @@
 				<p>Removing an event target is as simple as calling <a href="../../classes/BaseRoom.html#removeEventTarget">BaseRoom.removeEventTarget</a>:</p>
 				<pre><code class="language-ts"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">removeEventTarget</span><span style="color: #000000">(</span><span style="color: #001080">reducedStewTarget</span><span style="color: #000000">);</span>
 </code></pre>
+				<p>For example, if you want to remove an event target when the <em>game ends</em>, you can use:</p>
+				<pre><code class="language-ts"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">ReducedStew</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">EventTarget</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    @</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;room.gameend&quot;</span><span style="color: #000000">)</span>
+<span style="color: #000000">    </span><span style="color: #795E26">onRoomGameEnd</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #267F99">RoomGameEndEvent</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">removeEventTarget</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
 				<a href="#constructor" id="constructor" style="color: inherit; text-decoration: none;">
 					<h2>Constructor</h2>
 				</a>
@@ -235,6 +243,9 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../Advanced Topics/Object Ownership Guards.html">Object <wbr>Ownership <wbr>Guards</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>New <wbr>Roles</span>
 					</li>
 					<li class="label pp-nav pp-group">
 						<span>API</span>

@@ -2084,11 +2084,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * player.control?.despawn();
      * player.physics?.despawn();
      * player.transform?.despawn();
+     *
+     * room.players.delete(fakePlayer.clientId);
      * ```
      */
     createFakePlayer(isNew = false, setCosmetics = true, isRecorded = false) {
-        const fakePlayer = new PlayerData(this, 0, "dummy");
-        const playerControl = this.spawnPrefabOfType(SpawnType.Player, -2, undefined, !isNew ? [{ isNew: false }] : undefined, false, isRecorded) as PlayerControl<this>;
+        const fakePlayer = new PlayerData(this, this.worker.getNextClientId(), "dummy");
+        const playerControl = this.spawnPrefabOfType(SpawnType.Player, -2, undefined, !isNew ? [{ isNew: false }] : undefined, true, isRecorded) as PlayerControl<this>;
         playerControl.player = fakePlayer;
         fakePlayer.control = playerControl;
 
@@ -2100,9 +2102,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
             fakePlayer.control?.setPet(Pet.EmptyPet);
             fakePlayer.control?.setVisor(Visor.EmptyVisor);
             fakePlayer.control?.setNameplate(Nameplate.NoPlate);
-
-            fakePlayer.control?.setRole(CrewmateRole);
         }
+
+        this.on("room.assignroles", ev => {
+            ev.setAssignment(fakePlayer, CrewmateRole);
+        });
 
         return fakePlayer;
     }

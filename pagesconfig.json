@@ -162,8 +162,13 @@
             ]
         },
         {
-            "title": "New Roles",
-            "source": "./pages/Guides/New Roles.md"
+            "title": "Guides",
+            "pages": [
+                {
+                    "title": "New Roles",
+                    "source": "./pages/Guides/New Roles.md"
+                }
+            ]
         }
     ]
 }

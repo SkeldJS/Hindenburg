@@ -43,7 +43,7 @@ Other than that, this file is fairly light and doesn't have any logic. So far so
 
 > Make sure to export everything from this file by writing `export * from "./<file name>.ts";` in the `src/index.ts` file.
 
-For example, I've created a `Jester.ts` file, with the code above inside:
+For example, I've created a `jesterRole.ts` file, with the code above inside:
 ![image](https://user-images.githubusercontent.com/60631511/201498357-1f794e8a-780e-49d9-bb3d-047fd94e526b.png)
 
 ## Assigning the role to a player

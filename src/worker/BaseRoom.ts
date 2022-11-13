@@ -2076,16 +2076,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param isRecorded Whether or not the player should appear in {@link GameData}. If not,
      * they won't count as an actual player and will live (mostly) off-the-grid.
      * @returns The created player.
+     * @example
      * ```ts
      * const player = room.createFakePlayer();
      *
      * ...
      *
-     * player.control?.despawn();
-     * player.physics?.despawn();
-     * player.transform?.despawn();
-     *
-     * room.players.delete(fakePlayer.clientId);
+     * room.removeFakePlayer(player);
      * ```
      */
     createFakePlayer(isNew = false, setCosmetics = true, isRecorded = false) {
@@ -2104,11 +2101,37 @@ export class BaseRoom extends Hostable<RoomEvents> {
             fakePlayer.control?.setNameplate(Nameplate.NoPlate);
         }
 
-        this.on("room.assignroles", ev => {
+        const offAssignRoles = this.on("room.assignroles", ev => {
             ev.setAssignment(fakePlayer, CrewmateRole);
         });
 
+        const offComponentDepawn = this.on("component.despawn", ev => {
+            if (ev.component instanceof PlayerControl && ev.component === fakePlayer.control) {
+                offAssignRoles();
+                offComponentDepawn();
+            }
+        });
+
         return fakePlayer;
+    }
+
+    /**
+     * Short-hand for removing a fake player created with {@link BaseRoom.createFakePlayer}. This will
+     * despawn the player immediately.
+     * @param player The fake player to remove from the game.
+     * @example
+     * ```ts
+     * const player = room.createFakePlayer();
+     *
+     * ...
+     *
+     * room.removeFakePlayer(player);
+     * ```
+     */
+    removeFakePlayer(player: PlayerData) {
+        player.control?.despawn();
+        player.physics?.despawn();
+        player.transform?.despawn();
     }
 
     registerEventTarget(observer: EventTarget) {

@@ -186,6 +186,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="Room.html#removeActingHost" class="tsd-kind-icon">remove<wbr>Acting<wbr>Host</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="Room.html#removeAllListeners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="Room.html#removeEventTarget" class="tsd-kind-icon">remove<wbr>Event<wbr>Target</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="Room.html#removeFakePlayer" class="tsd-kind-icon">remove<wbr>Fake<wbr>Player</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="Room.html#removeListeners" class="tsd-kind-icon">remove<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="Room.html#resolvePlayer" class="tsd-kind-icon">resolve<wbr>Player</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="Room.html#resolvePlayerClientID" class="tsd-kind-icon">resolve<wbr>Player<wbr>ClientID</a></li>
@@ -251,7 +252,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#actingHostIds">actingHostIds</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L205">src/worker/BaseRoom.ts:205</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L207">src/worker/BaseRoom.ts:207</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -263,11 +264,11 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="actingHostWaitingFor" class="tsd-anchor"></a>
 					<h3>acting<wbr>Host<wbr>Waiting<wbr>For</h3>
-					<div class="tsd-signature tsd-kind-icon">acting<wbr>Host<wbr>Waiting<wbr>For<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">acting<wbr>Host<wbr>Waiting<wbr>For<span class="tsd-signature-symbol">:</span> <a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#actingHostWaitingFor">actingHostWaitingFor</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L218">src/worker/BaseRoom.ts:218</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L220">src/worker/BaseRoom.ts:220</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -284,7 +285,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#actingHostsEnabled">actingHostsEnabled</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L201">src/worker/BaseRoom.ts:201</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L203">src/worker/BaseRoom.ts:203</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -300,7 +301,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#activePerspectives">activePerspectives</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L29">src/worker/Room.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L29">src/worker/Room.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -316,7 +317,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#bannedAddresses">bannedAddresses</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L213">src/worker/BaseRoom.ts:213</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L215">src/worker/BaseRoom.ts:215</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -332,7 +333,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#chatCommandHandler">chatCommandHandler</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L238">src/worker/BaseRoom.ts:238</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L240">src/worker/BaseRoom.ts:240</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -372,7 +373,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#connections">connections</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L181">src/worker/BaseRoom.ts:181</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L183">src/worker/BaseRoom.ts:183</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -404,7 +405,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#createdAt">createdAt</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L175">src/worker/BaseRoom.ts:175</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L177">src/worker/BaseRoom.ts:177</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -420,7 +421,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#decoder">decoder</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L242">src/worker/BaseRoom.ts:242</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L244">src/worker/BaseRoom.ts:244</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -511,7 +512,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#loadedPlugins">loadedPlugins</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L226">src/worker/BaseRoom.ts:226</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L228">src/worker/BaseRoom.ts:228</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -548,7 +549,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#logger">logger</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L209">src/worker/BaseRoom.ts:209</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L211">src/worker/BaseRoom.ts:211</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -633,7 +634,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#ownershipGuards">ownershipGuards</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L193">src/worker/BaseRoom.ts:193</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L195">src/worker/BaseRoom.ts:195</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -649,7 +650,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#playerPerspectives">playerPerspectives</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L24">src/worker/Room.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L24">src/worker/Room.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -698,7 +699,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#reactorRpcHandlers">reactorRpcHandlers</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L230">src/worker/BaseRoom.ts:230</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L232">src/worker/BaseRoom.ts:232</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -714,7 +715,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#reactorRpcs">reactorRpcs</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L234">src/worker/BaseRoom.ts:234</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L236">src/worker/BaseRoom.ts:236</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -822,7 +823,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#waitingForHost">waitingForHost</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L185">src/worker/BaseRoom.ts:185</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L187">src/worker/BaseRoom.ts:187</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -846,7 +847,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#workerPlugins">workerPlugins</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L222">src/worker/BaseRoom.ts:222</a></li>
+							<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L224">src/worker/BaseRoom.ts:224</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -869,7 +870,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#FixedUpdate">FixedUpdate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L672">src/worker/BaseRoom.ts:672</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L674">src/worker/BaseRoom.ts:674</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -887,7 +888,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#addActingHost">addActingHost</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1306">src/worker/BaseRoom.ts:1306</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1308">src/worker/BaseRoom.ts:1308</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -919,7 +920,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#banPlayer">banPlayer</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L806">src/worker/BaseRoom.ts:806</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L808">src/worker/BaseRoom.ts:808</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -954,7 +955,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#broadcast">broadcast</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1049">src/worker/BaseRoom.ts:1049</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1051">src/worker/BaseRoom.ts:1051</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -990,7 +991,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#broadcastMessages">broadcastMessages</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L846">src/worker/BaseRoom.ts:846</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L848">src/worker/BaseRoom.ts:848</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1057,7 +1058,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#broadcastMovement">broadcastMovement</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L968">src/worker/BaseRoom.ts:968</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L970">src/worker/BaseRoom.ts:970</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1084,7 +1085,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#broadcastToPerspectives">broadcastToPerspectives</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L131">src/worker/Room.ts:131</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L131">src/worker/Room.ts:131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1131,7 +1132,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#canManageObject">canManageObject</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L225">src/worker/Room.ts:225</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L225">src/worker/Room.ts:225</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1180,7 +1181,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#clearRoomNameOverride">clearRoomNameOverride</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L2047">src/worker/BaseRoom.ts:2047</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L2066">src/worker/BaseRoom.ts:2066</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1196,20 +1197,30 @@
 					<a name="createFakePlayer" class="tsd-anchor"></a>
 					<h3>create<wbr>Fake<wbr>Player</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Fake<wbr>Player<span class="tsd-signature-symbol">(</span>isNew<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, setCosmetics<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Fake<wbr>Player<span class="tsd-signature-symbol">(</span>isNew<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, setCosmetics<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, isRecorded<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#createFakePlayer">createFakePlayer</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L2068">src/worker/BaseRoom.ts:2068</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L2088">src/worker/BaseRoom.ts:2088</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Creates a fake dummy player without a connected client.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">player</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createFakePlayer</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">...</span>
+
+<span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">removeFakePlayer</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -1227,17 +1238,16 @@
 										i.e. whether they should be immediately visible as a player.</p>
 									</div>
 								</li>
+								<li>
+									<h5>isRecorded: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether or not the player should appear in <a href="GameData.html">GameData</a>. If not,
+										they won&#39;t count as an actual player and will live (mostly) off-the-grid.</p>
+									</div>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Room.html" class="tsd-signature-type" data-tsd-kind="Class">Room</a><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>The created player.</p>
-							<pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">player</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createFakePlayer</span><span style="color: #000000">();</span>
-
-<span style="color: #000000">...</span>
-
-<span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">control</span><span style="color: #000000">?.</span><span style="color: #795E26">despawn</span><span style="color: #000000">();</span>
-<span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">physics</span><span style="color: #000000">?.</span><span style="color: #795E26">despawn</span><span style="color: #000000">();</span>
-<span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">transform</span><span style="color: #000000">?.</span><span style="color: #795E26">despawn</span><span style="color: #000000">();</span>
-</code></pre>
 						</li>
 					</ul>
 				</section>
@@ -1253,7 +1263,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#createPerspective">createPerspective</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L58">src/worker/Room.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L58">src/worker/Room.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1287,7 +1297,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides BaseRoom.createPerspective</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L76">src/worker/Room.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L76">src/worker/Room.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1337,7 +1347,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#despawnComponent">despawnComponent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L749">src/worker/BaseRoom.ts:749</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L751">src/worker/BaseRoom.ts:751</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1366,7 +1376,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L648">src/worker/BaseRoom.ts:648</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L650">src/worker/BaseRoom.ts:650</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1398,7 +1408,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#disableActingHosts">disableActingHosts</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1342">src/worker/BaseRoom.ts:1342</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1344">src/worker/BaseRoom.ts:1344</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1425,7 +1435,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#disableSaaH">disableSaaH</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1248">src/worker/BaseRoom.ts:1248</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1250">src/worker/BaseRoom.ts:1250</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1450,7 +1460,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#disownObject">disownObject</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L209">src/worker/Room.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L209">src/worker/Room.ts:209</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1483,7 +1493,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L536">src/worker/BaseRoom.ts:536</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L538">src/worker/BaseRoom.ts:538</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1504,7 +1514,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#emit">emit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L539">src/worker/BaseRoom.ts:539</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L541">src/worker/BaseRoom.ts:541</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1535,7 +1545,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#emitSerial">emitSerial</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L550">src/worker/BaseRoom.ts:550</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L552">src/worker/BaseRoom.ts:552</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1556,7 +1566,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#emitSerial">emitSerial</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L553">src/worker/BaseRoom.ts:553</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L555">src/worker/BaseRoom.ts:555</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1587,7 +1597,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#emitSync">emitSync</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L564">src/worker/BaseRoom.ts:564</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L566">src/worker/BaseRoom.ts:566</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1608,7 +1618,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#emitSync">emitSync</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L565">src/worker/BaseRoom.ts:565</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L567">src/worker/BaseRoom.ts:567</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1638,7 +1648,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#enableActingHosts">enableActingHosts</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1363">src/worker/BaseRoom.ts:1363</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1365">src/worker/BaseRoom.ts:1365</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1661,7 +1671,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#enableSaaH">enableSaaH</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1222">src/worker/BaseRoom.ts:1222</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1224">src/worker/BaseRoom.ts:1224</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1694,7 +1704,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#endGame">endGame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1872">src/worker/BaseRoom.ts:1872</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1891">src/worker/BaseRoom.ts:1891</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1745,7 +1755,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#formatName">formatName</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L591">src/worker/BaseRoom.ts:591</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L593">src/worker/BaseRoom.ts:593</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1769,7 +1779,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#getActingHosts">getActingHosts</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L606">src/worker/BaseRoom.ts:606</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L608">src/worker/BaseRoom.ts:608</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1824,7 +1834,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#getConnection">getConnection</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L792">src/worker/BaseRoom.ts:792</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L794">src/worker/BaseRoom.ts:794</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1854,7 +1864,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#getConnections">getConnections</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L784">src/worker/BaseRoom.ts:784</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L786">src/worker/BaseRoom.ts:786</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1954,7 +1964,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#getOwnerOf">getOwnerOf</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L221">src/worker/Room.ts:221</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L221">src/worker/Room.ts:221</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2088,7 +2098,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#getRealConnections">getRealConnections</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L766">src/worker/BaseRoom.ts:766</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L768">src/worker/BaseRoom.ts:768</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2125,7 +2135,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#guardObjectAsOwner">guardObjectAsOwner</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L198">src/worker/Room.ts:198</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L198">src/worker/Room.ts:198</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2161,7 +2171,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#handleEnd">handleEnd</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1839">src/worker/BaseRoom.ts:1839</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1858">src/worker/BaseRoom.ts:1858</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2193,7 +2203,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#handleJoin">handleJoin</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1390">src/worker/BaseRoom.ts:1390</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1394">src/worker/BaseRoom.ts:1394</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2286,7 +2296,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#handleRemoteJoin">handleRemoteJoin</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1405">src/worker/BaseRoom.ts:1405</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1409">src/worker/BaseRoom.ts:1409</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2310,7 +2320,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#handleRemoteLeave">handleRemoteLeave</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1611">src/worker/BaseRoom.ts:1611</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1615">src/worker/BaseRoom.ts:1615</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2337,7 +2347,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#handleStart">handleStart</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1733">src/worker/BaseRoom.ts:1733</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1752">src/worker/BaseRoom.ts:1752</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2641,7 +2651,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#registerEventTarget">registerEventTarget</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L2084">src/worker/BaseRoom.ts:2084</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L2137">src/worker/BaseRoom.ts:2137</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2737,7 +2747,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#removeActingHost">removeActingHost</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1322">src/worker/BaseRoom.ts:1322</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1324">src/worker/BaseRoom.ts:1324</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2787,13 +2797,56 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#removeEventTarget">removeEventTarget</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L2100">src/worker/BaseRoom.ts:2100</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L2153">src/worker/BaseRoom.ts:2153</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>observer: <a href="EventTarget.html" class="tsd-signature-type" data-tsd-kind="Class">EventTarget</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="removeFakePlayer" class="tsd-anchor"></a>
+					<h3>remove<wbr>Fake<wbr>Player</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Fake<wbr>Player<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#removeFakePlayer">removeFakePlayer</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L2131">src/worker/BaseRoom.ts:2131</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Short-hand for removing a fake player created with <a href="BaseRoom.html#createFakePlayer">BaseRoom.createFakePlayer</a>. This will
+									despawn the player immediately.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-ts"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">player</span><span style="color: #000000"> = </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">createFakePlayer</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">...</span>
+
+<span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">removeFakePlayer</span><span style="color: #000000">(</span><span style="color: #001080">player</span><span style="color: #000000">);</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>player: <a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><a href="Hostable.html" class="tsd-signature-type" data-tsd-kind="Class">Hostable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The fake player to remove from the game.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -2941,7 +2994,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#sendChat">sendChat</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L2004">src/worker/BaseRoom.ts:2004</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L2023">src/worker/BaseRoom.ts:2023</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3006,7 +3059,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#setActingHostsEnabled">setActingHostsEnabled</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1382">src/worker/BaseRoom.ts:1382</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1386">src/worker/BaseRoom.ts:1386</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3039,7 +3092,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#setCode">setCode</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1129">src/worker/BaseRoom.ts:1129</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1131">src/worker/BaseRoom.ts:1131</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3068,7 +3121,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#setHost">setHost</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1178">src/worker/BaseRoom.ts:1178</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1180">src/worker/BaseRoom.ts:1180</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3135,7 +3188,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#setRoomNameOverride">setRoomNameOverride</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L2040">src/worker/BaseRoom.ts:2040</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L2059">src/worker/BaseRoom.ts:2059</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3168,7 +3221,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#setSaaHEnabled">setSaaHEnabled</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1293">src/worker/BaseRoom.ts:1293</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1295">src/worker/BaseRoom.ts:1295</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3249,7 +3302,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#spawnComponent">spawnComponent</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L743">src/worker/BaseRoom.ts:743</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L745">src/worker/BaseRoom.ts:745</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3350,7 +3403,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#startGame">startGame</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1835">src/worker/BaseRoom.ts:1835</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1854">src/worker/BaseRoom.ts:1854</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -3368,7 +3421,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#updateHost">updateHost</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L1153">src/worker/BaseRoom.ts:1153</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L1155">src/worker/BaseRoom.ts:1155</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3549,7 +3602,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="BaseRoom.html">BaseRoom</a>.<a href="BaseRoom.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/Room.ts#L31">src/worker/Room.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/Room.ts#L31">src/worker/Room.ts:31</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3581,7 +3634,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L640">src/worker/BaseRoom.ts:640</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L642">src/worker/BaseRoom.ts:642</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3603,7 +3656,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L595">src/worker/BaseRoom.ts:595</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L597">src/worker/BaseRoom.ts:597</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="PlayerData.html" class="tsd-signature-type" data-tsd-kind="Class">PlayerData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -3620,7 +3673,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L617">src/worker/BaseRoom.ts:617</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L619">src/worker/BaseRoom.ts:619</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -3659,7 +3712,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/c98b38d/src/worker/BaseRoom.ts#L627">src/worker/BaseRoom.ts:627</a></li>
+									<li>Defined in <a href="https://github.com/SkeldJS/Hindenburg/blob/39769d3/src/worker/BaseRoom.ts#L629">src/worker/BaseRoom.ts:629</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -3806,6 +3859,9 @@
 					</li>
 					<li class=" pp-nav pp-page">
 						<a href="../pages/Guides/New Roles.html">New <wbr>Roles</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="../pages/Guides/Floating Text.html">Floating <wbr>Text</a>
 					</li>
 					<li class=" ">
 						<a href="../modules.html">Exports</a>
@@ -4097,6 +4153,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="Room.html#removeEventTarget" class="tsd-kind-icon">remove<wbr>Event<wbr>Target</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="Room.html#removeFakePlayer" class="tsd-kind-icon">remove<wbr>Fake<wbr>Player</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="Room.html#removeListeners" class="tsd-kind-icon">remove<wbr>Listeners</a>

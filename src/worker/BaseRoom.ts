@@ -215,7 +215,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * Player that the server is waiting to finish joining before resetting all
      * acting hosts back.
      */
-    actingHostWaitingFor: PlayerData|undefined;
+    actingHostWaitingFor: PlayerData<this>[];
     /**
      * All plugins loaded and scoped to the worker when this room was created, mapped by plugin id to worker plugin object.
      */
@@ -281,7 +281,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.settings = settings;
 
         this.gameState = GameState.NotStarted;
-        this.actingHostWaitingFor = undefined;
+        this.actingHostWaitingFor = [];
 
         this.workerPlugins = new Map;
         this.loadedPlugins = new Map;
@@ -307,7 +307,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.on("player.setnameplate", async ev => {
-            if (this.actingHostWaitingFor === ev.player) {
+            if (this.actingHostWaitingFor[0] === ev.player) {
                 if (this.actingHostsEnabled) {
                     for (const actingHostId of this.actingHostIds) {
                         const actingHostConn = this.connections.get(actingHostId);
@@ -316,9 +316,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         }
                     }
                 }
-            }
 
-            this.actingHostWaitingFor = undefined;
+                this.actingHostWaitingFor = [];
+            }
         });
 
         this.on("player.chat", async ev => {
@@ -1227,7 +1227,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.hostId = SpecialClientId.Server;
 
         for (const [ , connection ] of this.connections) {
-            if (this.actingHostWaitingFor === undefined && this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
+            if (this.actingHostWaitingFor.length === 0 && this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
                 await this.updateHost(connection.clientId, connection);
             } else {
                 await this.updateHost(SpecialClientId.Server, connection);
@@ -1310,7 +1310,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.logger.info("%s is now an acting host", connection || player);
 
-        if (connection && this.actingHostWaitingFor === undefined) {
+        if (connection && this.actingHostWaitingFor.length === 0) {
             await this.updateHost(player.clientId, connection);
         }
     }
@@ -1364,10 +1364,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (this.actingHostsEnabled)
             throw new Error("Acting hosts are already enabled");
 
-        for (const actingHostId of this.actingHostIds) {
-            const connection = this.connections.get(actingHostId);
-            if (connection) {
-                await this.updateHost(connection.clientId, connection);
+        if (this.actingHostWaitingFor.length === 0) {
+            for (const actingHostId of this.actingHostIds) {
+                const connection = this.connections.get(actingHostId);
+                if (connection) {
+                    await this.updateHost(connection.clientId, connection);
+                }
             }
         }
         this.actingHostsEnabled = true;
@@ -1525,7 +1527,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        this.actingHostWaitingFor = joiningPlayer;
+        this.actingHostWaitingFor.unshift(joiningPlayer);
 
         await joiningClient.sendPacket(
             new ReliablePacket(
@@ -1613,7 +1615,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.connections.delete(leavingConnection.clientId);
         leavingConnection.room = undefined;
 
-        await this.handleLeave(leavingConnection.clientId);
+        const playerLeft = await this.handleLeave(leavingConnection.clientId);
 
         if (this.connections.size === 0) {
             await this.destroy();
@@ -1622,6 +1624,21 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         if (this.actingHostIds.has(leavingConnection.clientId)) {
             this.actingHostIds.delete(leavingConnection.clientId);
+        }
+
+        if (playerLeft) {
+            const idx = this.actingHostWaitingFor.indexOf(playerLeft);
+            if (idx > -1) {
+                this.actingHostWaitingFor.splice(idx, 1);
+                if (this.actingHostWaitingFor.length === 0 && this.actingHostsEnabled) {
+                    for (const actingHostId of this.actingHostIds) {
+                        const actingHostConn = this.connections.get(actingHostId);
+                        if (actingHostConn) {
+                            await this.updateHost(actingHostId, actingHostConn);
+                        }
+                    }
+                }
+            }
         }
 
         if (this.config.serverAsHost) {

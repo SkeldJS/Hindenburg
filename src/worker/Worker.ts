@@ -14,7 +14,8 @@ import {
     SendOption,
     QuickChatMode,
     Platform,
-    GameDataMessageTag
+    GameDataMessageTag,
+    GameOverReason
 } from "@skeldjs/constant";
 
 import {
@@ -243,15 +244,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
         this.vorpal
-            .command("dc", "Forcefully disconnect a client or several clients.")
+            .command("dc [all]", "Forcefully disconnect a client or several clients.")
             .option("--clientid, -i <clientid>", "client id(s) of the client(s) to disconnect")
             .option("--username, -u <username>", "username of the client(s) to disconnect")
             .option("--address, -a <ip address>", "ip address of the client(s) to disconnect")
             .option("--room, -c <room code>", "room code of the client(s) to disconnect")
-            .option("--reason, -r <reason>", "reason for why to disconnect the client")
+            .option("--reason, -r <reason>", "reason for why to disconnect the client, see https://skeldjs.github.io/Hindenburg/enums/DisconnectReason.html")
             .option("--ban, -b [duration]", "ban this client, duration in seconds")
             .action(async args => {
-                const reason = (typeof args.options.reason === "number"
+                const reason = (!isNaN(parseInt(args.options.reason))
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.Error;
 
@@ -264,6 +265,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 for (const [ , connection ] of this.connections) {
                     if (
+                        args["all"] ||
                         (Array.isArray(args.options.clientid)
                             ? args.options.clientid.includes(connection.clientId)
                             : connection.clientId === args.options.clientid
@@ -291,7 +293,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("destroy <room code>", "Destroy and remove a room from the server.")
-            .option("--reason, r <reason>", "reason to destroy this room",)
+            .option("--reason, -r <reason>", "reason to destroy this room, see https://skeldjs.github.io/Hindenburg/enums/DisconnectReason.html")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
@@ -300,7 +302,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
 
-                const reason = (typeof args.options.reason === "number"
+                const reason = (!isNaN(parseInt(args.options.reason))
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
 
@@ -312,6 +314,69 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 if (room) {
                     await room.destroy(reason as unknown as number);
+                } else {
+                    this.logger.error("Couldn't find room: %s", roomName);
+                }
+            });
+
+        this.vorpal
+            .command("start <room code>", "Start a currently playing match.")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
+            .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : GameCode.convertStringToInt(roomName);
+
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    if (room.gameState === GameState.Started) {
+                        this.logger.error("Game already started: %s", room);
+                        return;
+                    }
+
+                    await room.startGame();
+                } else {
+                    this.logger.error("Couldn't find room: %s", roomName);
+                }
+            });
+
+        this.vorpal
+            .command("end <room code>", "End a currently playing match.")
+            .option("--reason, -r <reason>", "reason to end the match, see https://skeldjs.github.io/Hindenburg/enums/GameOverReason.html")
+            .autocomplete({
+                data: async () => {
+                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                }
+            })
+            .action(async args => {
+                const roomName = args["room code"].toUpperCase();
+
+                const reason = (!isNaN(parseInt(args.options.reason))
+                    ? args.options.reason
+                    : GameOverReason[args.options.reason]) || GameOverReason.None;
+
+                console.log(reason);
+
+                const codeId = roomName === "LOCAL"
+                    ? 0x20
+                    : GameCode.convertStringToInt(roomName);
+
+                const room = this.rooms.get(codeId);
+
+                if (room) {
+                    if (room.gameState === GameState.NotStarted) {
+                        this.logger.error("Game not started: %s", room);
+                        return;
+                    }
+
+                    await room.endGame(reason as unknown as number);
                 } else {
                     this.logger.error("Couldn't find room: %s", roomName);
                 }
@@ -769,7 +834,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         socket.bind(port);
 
         this.listenSockets.set(port, socket);
-
         this.logger.info("UDP server on *:" + port);
 
         return socket;

@@ -1371,7 +1371,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            sender.room?.decoder.emitDecoded(message, direction, player);
+            sender.room?.decoder.emitDecoded(message, direction, sender);
             await sender.room?.broadcast([], [
                 new AlterGameMessage(sender.room.code, message.alterTag, message.value)
             ]);
@@ -1387,7 +1387,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            sender.room?.decoder.emitDecoded(message, direction, player);
+            sender.room?.decoder.emitDecoded(message, direction, sender);
         });
 
         this.decoder.on(EndGameMessage, async (message, direction, { sender }) => {
@@ -1400,7 +1400,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return sender.disconnect(DisconnectReason.Hacking);
             }
 
-            sender.room?.decoder.emitDecoded(message, direction, player);
+            sender.room?.decoder.emitDecoded(message, direction, sender);
         });
 
         this.decoder.on(KickPlayerMessage, async (message, _direction, { sender }) => {

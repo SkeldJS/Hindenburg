@@ -49,6 +49,7 @@ import {
     SetVisorMessage,
     SpawnMessage,
     StartGameMessage,
+    SyncSettingsMessage,
     UnreliablePacket,
     WaitForHostMessage
 } from "@skeldjs/protocol";
@@ -241,7 +242,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
     /**
      * A packet decoder for the room to decode and handle incoming packets.
      */
-    decoder: PacketDecoder;
+    decoder: PacketDecoder<Connection|undefined>;
+
+    protected finishedActingHostHandshakeRoutine: boolean;
+    protected handshakeRoutineTempNetId: number;
 
     protected roomNameOverride: string;
     protected eventTargets: EventTarget[];
@@ -291,6 +295,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.reactorRpcs = new Map;
         this.chatCommandHandler = new ChatCommandHandler(this);
 
+        this.finishedActingHostHandshakeRoutine = false;
+        this.handshakeRoutineTempNetId = -1;
         this.roomNameOverride = "";
         this.eventTargets = [];
 
@@ -311,9 +317,42 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.on("player.setnameplate", async ev => {
             if (this.actingHostWaitingFor[0] === ev.player) {
                 if (this.actingHostsEnabled) {
+                    let flag = false;
                     for (const actingHostId of this.actingHostIds) {
                         const actingHostConn = this.connections.get(actingHostId);
                         if (actingHostConn) {
+                            if (!this.finishedActingHostHandshakeRoutine && !flag) {
+                                await actingHostConn.sendPacket(
+                                    new ReliablePacket(
+                                        actingHostConn.getNextNonce(),
+                                        [
+                                            new JoinGameMessage(
+                                                this.code,
+                                                SpecialClientId.Temp,
+                                                actingHostConn.clientId,
+                                                "TMP",
+                                                new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
+                                                0,
+                                                "",
+                                                ""
+                                            ),
+                                            new GameDataToMessage(
+                                                this.code,
+                                                actingHostConn.clientId,
+                                                [
+                                                    new SceneChangeMessage(
+                                                        SpecialClientId.Temp,
+                                                        "OnlineGame"
+                                                    )
+                                                ]
+                                            )
+                                        ]
+                                    )
+                                );
+                                flag = true;
+                                continue;
+                            }
+
                             await this.updateHostForClient(actingHostId, actingHostConn);
                         }
                     }
@@ -414,24 +453,49 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         });
 
-        this.decoder.on(RpcMessage, async message => {
+        this.decoder.on(RpcMessage, async (message, _direction, sender) => {
+            if (message.netId === this.handshakeRoutineTempNetId && message.data instanceof SyncSettingsMessage) {
+                this.logger.info("Got initial settings, acting host handshake complete");
+                this.finishedActingHostHandshakeRoutine = true;
+                this.settings.patch(message.data.settings);
+                return;
+            }
+
             const component = this.netobjects.get(message.netId);
 
             if (component) {
                 try {
                     await component.HandleRpc(message.data);
                 } catch (e) {
-                    void e;
+                    this.logger.error("Could not process remote procedure call from client %s (net id %s, %s): %s",
+                        sender, component.netId, SpawnType[component.spawnType] || "Unknown", e);
                 }
+            } else {
+                this.logger.warn("Got remote procedure call for non-existent component: net id %s", message.netId);
             }
         });
 
-        this.decoder.on(SpawnMessage, message => {
+        this.decoder.on(SpawnMessage, async (message, _direction, sender) => {
             const ownerClient = this.players.get(message.ownerid);
 
-            if (message.ownerid > 0 && !ownerClient) {
+            if (message.ownerid === SpecialClientId.Temp) {
+                if (!sender)
+                    return;
+
+                await this.broadcast(message.components.map(comp => new DespawnMessage(comp.netId)), [
+                    new RemovePlayerMessage(
+                        this.code,
+                        SpecialClientId.Temp,
+                        DisconnectReason.ServerRequest,
+                        sender?.clientId
+                    ),
+                ]);
+                this.handshakeRoutineTempNetId = message.components[0].netId;
                 return;
             }
+
+            if (message.ownerid > 0 && !ownerClient)
+                return;
 
             if (this.config.advanced.unknownObjects === "all") {
                 return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
@@ -507,6 +571,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                 player.clientId,
                                 SpawnFlag.IsClientCharacter
                             );
+
+                            if (this.host && this.host.clientId !== message.clientId) {
+                                this.host?.control?.syncSettings(this.settings);
+                            }
                         }
                     }
                 }

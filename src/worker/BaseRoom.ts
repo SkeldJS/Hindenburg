@@ -314,7 +314,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     for (const actingHostId of this.actingHostIds) {
                         const actingHostConn = this.connections.get(actingHostId);
                         if (actingHostConn) {
-                            await this.updateHost(actingHostId, actingHostConn);
+                            await this.updateHostForClient(actingHostId, actingHostConn);
                         }
                     }
                 }
@@ -507,8 +507,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                 player.clientId,
                                 SpawnFlag.IsClientCharacter
                             );
-
-                            this.host?.control?.syncSettings(this.settings);
                         }
                     }
                 }
@@ -1152,7 +1150,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param hostId The host to set.
      * @param recipient The specific client recipient if required.
      */
-    async updateHost(hostId: number, recipient?: Connection) {
+    async updateHostForClient(hostId: number, recipient?: Connection) {
         await this.broadcast([], [
             new JoinGameMessage(
                 this.code,
@@ -1207,9 +1205,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         for (const [ , connection ] of this.connections) {
             if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                await this.updateHost(connection.clientId, connection);
+                await this.updateHostForClient(connection.clientId, connection);
             } else {
-                await this.updateHost(this.hostId, connection);
+                await this.updateHostForClient(this.hostId, connection);
             }
         }
     }
@@ -1230,9 +1228,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         for (const [ , connection ] of this.connections) {
             if (this.actingHostWaitingFor.length === 0 && this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                await this.updateHost(connection.clientId, connection);
+                await this.updateHostForClient(connection.clientId, connection);
             } else {
-                await this.updateHost(SpecialClientId.Server, connection);
+                await this.updateHostForClient(SpecialClientId.Server, connection);
             }
         }
 
@@ -1278,9 +1276,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         for (const [ , connection ] of this.connections) {
             if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                await this.updateHost(connection.clientId, connection);
+                await this.updateHostForClient(connection.clientId, connection);
             } else {
-                await this.updateHost(this.hostId, connection);
+                await this.updateHostForClient(this.hostId, connection);
             }
         }
     }
@@ -1313,7 +1311,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.logger.info("%s is now an acting host", connection || player);
 
         if (connection && this.actingHostWaitingFor.length === 0) {
-            await this.updateHost(player.clientId, connection);
+            await this.updateHostForClient(player.clientId, connection);
         }
     }
 
@@ -1329,7 +1327,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.logger.info("%s is no longer an acting host", connection || player);
 
         if (connection) {
-            await this.updateHost(SpecialClientId.Server, connection);
+            await this.updateHostForClient(SpecialClientId.Server, connection);
         }
     }
 
@@ -1349,9 +1347,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const connection = this.connections.get(actingHostId);
             if (connection) {
                 if (this.config.serverAsHost) {
-                    await this.updateHost(SpecialClientId.Server, connection);
+                    await this.updateHostForClient(SpecialClientId.Server, connection);
                 } else {
-                    await this.updateHost(this.hostId, connection);
+                    await this.updateHostForClient(this.hostId, connection);
                 }
             }
         }
@@ -1370,7 +1368,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             for (const actingHostId of this.actingHostIds) {
                 const connection = this.connections.get(actingHostId);
                 if (connection) {
-                    await this.updateHost(connection.clientId, connection);
+                    await this.updateHostForClient(connection.clientId, connection);
                 }
             }
         }
@@ -1636,7 +1634,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     for (const actingHostId of this.actingHostIds) {
                         const actingHostConn = this.connections.get(actingHostId);
                         if (actingHostConn) {
-                            await this.updateHost(actingHostId, actingHostConn);
+                            await this.updateHostForClient(actingHostId, actingHostConn);
                         }
                     }
                 }
@@ -1754,7 +1752,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             for (const actingHostId of this.actingHostIds) {
                 const actingHostConn = this.connections.get(actingHostId);
                 if (actingHostConn) {
-                    await this.updateHost(this.config.serverAsHost ? SpecialClientId.Server : this.hostId, actingHostConn);
+                    await this.updateHostForClient(this.config.serverAsHost ? SpecialClientId.Server : this.hostId, actingHostConn);
                 }
             }
         }
@@ -1769,7 +1767,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 for (const actingHostId of this.actingHostIds) {
                     const actingHostConn = this.connections.get(actingHostId);
                     if (actingHostConn) {
-                        await this.updateHost(actingHostId, actingHostConn);
+                        await this.updateHostForClient(actingHostId, actingHostConn);
                     }
                 }
             }

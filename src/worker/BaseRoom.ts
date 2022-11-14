@@ -478,7 +478,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.decoder.on(SpawnMessage, async (message, _direction, sender) => {
             const ownerClient = this.players.get(message.ownerid);
 
-            if (message.ownerid === SpecialClientId.Temp) {
+            if (this.hostIsMe && message.ownerid === SpecialClientId.Temp) {
                 if (!sender)
                     return;
 
@@ -490,7 +490,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         sender?.clientId
                     ),
                 ]);
+
                 this.handshakeRoutineTempNetId = message.components[0].netId;
+                this._incrNetId = message.components[message.components.length - 1].netId;
                 return;
             }
 

@@ -444,7 +444,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         });
 
-        this.decoder.on(DataMessage, message => {
+        this.decoder.on(DataMessage, (message, _direction, sender) => {
+            if (message.netId === this.gameData?.netId && this.config.serverAsHost && sender?.clientId === this.host?.clientId)
+                return;
+
             const component = this.netobjects.get(message.netId);
 
             if (component) {

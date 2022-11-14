@@ -1,5 +1,28 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.22": {
+        "version": "1.1.22",
+        "contributors": ["edward"],
+        "date": "2022-11-14",
+        "notes": [
+            {
+                "description": "Add acting host transaction to get initial settings",
+                "commits": ["9f6cbc7b7af0b17f787f1b8f256df4de1074f770", "c2f65ecb7a932cb26b1ce79319fd853278a0f570", "c36d41dddec07b97ea229a02eb29c5a558de5793", "678c75f3ce52a31f1df4ad8e33f91958d0a4df07"]
+            },
+            {
+                "description": "Add start and end CLI commands",
+                "commits": ["20f0923a85b6cf29887d762cf396c13be1cdc24e"]
+            },
+            {
+                "description": "Fix systems not being repaired on report body start",
+                "commits": ["https://github.com/SkeldJS/SkeldJS/tree/98db395abf04145cc3a8a96ae548d1847f29f24d"]
+            },
+            {
+                "description": "Fix meetings ending instantly when voting time set to 0",
+                "commits": ["https://github.com/SkeldJS/SkeldJS/commit/92127090344924a88821b40a3bd50fbc77c5e7a4"]
+            }
+        ]
+    },
     "1.1.21": {
         "version": "1.1.21",
         "contributors": ["edward"],

@@ -244,8 +244,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     decoder: PacketDecoder<Connection|undefined>;
 
-    protected finishedActingHostHandshakeRoutine: boolean;
-    protected handshakeRoutineTempNetId: number;
+    protected finishedActingHostTransactionRoutine: boolean;
+    protected transactionRoutineTempNetId: number;
 
     protected roomNameOverride: string;
     protected eventTargets: EventTarget[];
@@ -295,8 +295,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.reactorRpcs = new Map;
         this.chatCommandHandler = new ChatCommandHandler(this);
 
-        this.finishedActingHostHandshakeRoutine = false;
-        this.handshakeRoutineTempNetId = -1;
+        this.finishedActingHostTransactionRoutine = false;
+        this.transactionRoutineTempNetId = -1;
         this.roomNameOverride = "";
         this.eventTargets = [];
 
@@ -321,7 +321,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     for (const actingHostId of this.actingHostIds) {
                         const actingHostConn = this.connections.get(actingHostId);
                         if (actingHostConn) {
-                            if (!this.finishedActingHostHandshakeRoutine && !flag) {
+                            if (!this.finishedActingHostTransactionRoutine && !flag) {
                                 await actingHostConn.sendPacket(
                                     new ReliablePacket(
                                         actingHostConn.getNextNonce(),
@@ -457,9 +457,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.decoder.on(RpcMessage, async (message, _direction, sender) => {
-            if (message.netId === this.handshakeRoutineTempNetId && message.data instanceof SyncSettingsMessage) {
+            if (message.netId === this.transactionRoutineTempNetId && message.data instanceof SyncSettingsMessage) {
                 this.logger.info("Got initial settings, acting host handshake complete");
-                this.finishedActingHostHandshakeRoutine = true;
+                this.finishedActingHostTransactionRoutine = true;
                 this.settings.patch(message.data.settings);
                 return;
             }
@@ -494,7 +494,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     ),
                 ]);
 
-                this.handshakeRoutineTempNetId = message.components[0].netId;
+                this.transactionRoutineTempNetId = message.components[0].netId;
                 this._incrNetId = message.components[message.components.length - 1].netId;
                 return;
             }

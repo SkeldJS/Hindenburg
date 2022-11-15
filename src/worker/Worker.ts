@@ -1334,17 +1334,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     if (child.canceled)
                         continue;
 
-                    if (!reliable && child.messageTag === GameDataMessageTag.Data && !playerPov) {
-                        const dataMessage = child as DataMessage;
-                        if (dataMessage.data.byteLength === 10) {
-                            const component = sender.room?.netobjects.get(dataMessage.netId);
-                            if (component instanceof CustomNetworkTransform) {
-                                await sender.room?.broadcastMovement(component, dataMessage.data);
-                                continue;
-                            }
-                        }
-                    }
-
                     notCanceled.push(child);
                 }
 

@@ -245,7 +245,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
     decoder: PacketDecoder<Connection|undefined>;
 
     protected finishedActingHostTransactionRoutine: boolean;
-    protected transactionRoutineTempNetId: number;
 
     protected roomNameOverride: string;
     protected eventTargets: EventTarget[];
@@ -296,7 +295,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.finishedActingHostTransactionRoutine = false;
-        this.transactionRoutineTempNetId = -1;
         this.roomNameOverride = "";
         this.eventTargets = [];
 
@@ -457,7 +455,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.decoder.on(RpcMessage, async (message, _direction, sender) => {
-            if (message.netId === this.transactionRoutineTempNetId && message.data instanceof SyncSettingsMessage) {
+            if (this.host && this.host.clientId === sender?.clientId && !this.finishedActingHostTransactionRoutine && message.data instanceof SyncSettingsMessage) {
                 this.logger.info("Got initial settings, acting host handshake complete");
                 this.finishedActingHostTransactionRoutine = true;
                 this.settings.patch(message.data.settings);
@@ -494,7 +492,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     ),
                 ]);
 
-                this.transactionRoutineTempNetId = message.components[0].netId;
                 this._incrNetId = message.components[message.components.length - 1].netId;
                 return;
             }
@@ -578,6 +575,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                             );
 
                             if (this.host && this.host.clientId !== message.clientId) {
+                                console.log("Syncing settings..");
                                 this.host?.control?.syncSettings(this.settings);
                             }
                         }

@@ -1302,7 +1302,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(GameDataToMessage, async (message, direction, { sender, reliable }) => {
+        this.decoder.on(GameDataToMessage, async (message, direction, { sender }) => {
             const player = sender.getPlayer();
 
             if (!sender.room || !player)

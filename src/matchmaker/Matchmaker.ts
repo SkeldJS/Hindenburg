@@ -159,6 +159,14 @@ export class Matchmaker {
             next();
         });
 
+        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+            for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
+                const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
+
+                httpServer[method](route, body.bind(loadedPlugin.pluginInstance) as any);
+            }
+        }
+
         httpServer.post("/api/user", (req, res) => {
             if (req.headers["content-type"] !== "application/json") {
                 this.worker.logger.warn("Client failed to get a matchmaker token: Invalid Content-Type header (%s)", req.headers["content-type"]);
@@ -333,14 +341,6 @@ export class Matchmaker {
 
             res.status(200).json(topResults.map(([ , gameListing ]) => gameListing));
         });
-
-        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
-            for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
-                const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
-
-                httpServer[method](route, body.bind(loadedPlugin.pluginInstance) as any);
-            }
-        }
 
         return httpServer;
     }

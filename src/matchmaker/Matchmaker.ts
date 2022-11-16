@@ -1,21 +1,11 @@
 import chalk from "chalk";
 import polka from "polka";
+import crypto, { verify } from "crypto";
 import { Platform } from "@skeldjs/constant";
 import { json } from "../util/jsonBodyParser";
 import { Worker } from "../worker";
 import { VersionInfo } from "@skeldjs/util";
-
-// This mmtoken will be invalid instantly because:
-// The ClientVersion is set to 0 and the expires at is set to Jan 1st 1970
-const mmTokenPayload = {
-    Content: {
-        Puid: "",
-        ClientVersion: 0,
-        ExpiresAt: "1970-01-01T00:00:00.000Z"
-    },
-    Hash: ""
-};
-const mmToken = Buffer.from(JSON.stringify(mmTokenPayload), "utf8").toString("base64");
+import { Logger } from "../logger";
 
 export interface GameListingJson {
     IP: number;
@@ -32,10 +22,33 @@ export interface GameListingJson {
     Language: number;
 }
 
-export class Matchmaker {
-    httpServer?: polka.Polka;
+export interface MatchmakerTokenPayload {
+    Content: {
+        Puid: string;
+        ClientVersion: number;
+        ExpiresAt: string;
+    };
+    Hash: string;
+}
 
-    constructor(protected readonly worker: Worker) {}
+function safeJsonParse(jsonString: string) {
+    try {
+        return JSON.parse(jsonString);
+    } catch (e) {
+        return undefined;
+    }
+}
+
+export class Matchmaker {
+    logger: Logger;
+
+    httpServer?: polka.Polka;
+    privateKey: Buffer;
+
+    constructor(protected readonly worker: Worker) {
+        this.logger = new Logger("Matchmaker", this.worker.vorpal);
+        this.privateKey = crypto.randomBytes(128);
+    }
 
     get port() {
         return typeof this.worker.config.matchmaker === "boolean" ? 80 : this.worker.config.matchmaker.port;
@@ -44,6 +57,96 @@ export class Matchmaker {
     getRandomWorkerPort() {
         const allPorts = [this.worker.config.socket.port, ...this.worker.config.socket.additionalPorts];
         return allPorts[~~(Math.random() * allPorts.length)];
+    }
+
+    generateMatchmakerToken(puid: string, clientVersion: number) {
+        const payloadContent = {
+            Puid: puid,
+            ClientVersion: clientVersion,
+            ExpiresAt: new Date().toISOString()
+        };
+
+        const payloadString = JSON.stringify(payloadContent);
+        const computedHash = crypto.createHmac("sha256", this.privateKey).update(payloadString).digest();
+
+        const payload = {
+            Content: payloadContent,
+            Hash: computedHash.toString("base64")
+        };
+
+        return Buffer.from(JSON.stringify(payload), "utf8").toString("base64");
+    }
+
+    verifyMatchmakerToken(token: string) {
+        const decodedToken = Buffer.from(token, "base64").toString("utf8");
+        const json = safeJsonParse(decodedToken) as MatchmakerTokenPayload;
+
+        if (!json)
+            return new TypeError("Invalid JSON");
+
+        if (!json.Hash)
+            return new TypeError("No payload content hash");
+
+        if (typeof json.Hash !== "string")
+            return new TypeError("Invalid payload content hash");
+
+        if (!json.Content)
+            return new TypeError("No payload content");
+
+        if (typeof json.Content !== "object")
+            return new TypeError("Invalid payload content");
+
+        if (!json.Content.Puid || typeof json.Content.Puid !== "string")
+            return new TypeError("Invalid Puid");
+
+        if (!json.Content.ClientVersion || typeof json.Content.ClientVersion !== "number")
+            return new TypeError("Invalid ClientVersion");
+
+        if (!json.Content.ExpiresAt || typeof json.Content.ExpiresAt !== "string")
+            return new TypeError("Invalid ExpiresAt");
+
+        const payloadString = JSON.stringify(json.Content);
+        const computedHash = crypto.createHmac("sha256", this.privateKey).update(payloadString).digest();
+
+        const providedHash = Buffer.from(json.Hash, "base64");
+
+        if (crypto.timingSafeEqual(providedHash, computedHash))
+            return true;
+
+        return new Error("Invalid payload content hash ");
+    }
+
+    verifyRequest(req: any) {
+        const authorization = req.headers.authorization;
+
+        if (!authorization)
+            return false;
+
+        const [ tokenType, token ] = authorization.split(" ");
+
+        if (!tokenType || !token || tokenType !== "Bearer")
+            return false;
+
+        const verifyToken = this.verifyMatchmakerToken(token);
+        if (verifyToken instanceof Error) {
+            if (this.worker.config.logging.hideSensitiveInfo) {
+                this.logger.warn("Invalid request to %s: %s",
+                    req.originalUrl, verifyToken.message);
+            } else {
+                const address = req.socket.address();
+
+                if ("port" in address) {
+                    this.logger.warn("Invalid request to %s from %s:%s: %s",
+                        req.originalUrl, address.address, address.port, verifyToken.message);
+                } else {
+                    this.logger.warn("Invalid request to %s: %s",
+                        req.originalUrl, verifyToken.message);
+                }
+            }
+            return false;
+        }
+
+        return true;
     }
 
     protected createHttpServer() {
@@ -96,10 +199,14 @@ export class Matchmaker {
                 this.worker.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(req.body.Username), chalk.grey(req.body.Puid));
             }
 
+            const mmToken = this.generateMatchmakerToken(req.body.Puid, req.body.ClientVersion);
             res.status(200).end(mmToken);
         });
 
         httpServer.post("/api/games", (req, res) => {
+            if (!this.verifyRequest(req))
+                return res.status(401).end("");
+
             if (!req.query.gameId) {
                 this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
                 return res.status(400).end("");
@@ -114,6 +221,9 @@ export class Matchmaker {
         });
 
         httpServer.put("/api/games", (req, res) => {
+            if (!this.verifyRequest(req))
+                return res.status(401).end("");
+
             const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
 
             res.status(200).json({
@@ -123,6 +233,9 @@ export class Matchmaker {
         });
 
         httpServer.get("/api/games", (req, res) => {
+            if (!this.verifyRequest(req))
+                return res.status(401).end("");
+
             if (!req.query.mapId) {
                 this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
                 return res.status(400).end("");

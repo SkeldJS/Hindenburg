@@ -71,7 +71,118 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<p>This page is a stub, <a href="https://github.com/skeldjs/Hindenburg/issues/new">bug me to write it</a></p>
+				<p>If you have a mod, it might be of interest to create custom protocol messages to communicate additional information between your client and the server.</p>
+				<blockquote>
+					<p>See <a href="Receiving Protocol Messages.html">Receiving Protocol Messages</a> for information on actaully receiving your messages from the client. This page is just to declare them.</p>
+				</blockquote>
+				<a href="#message-types" id="message-types" style="color: inherit; text-decoration: none;">
+					<h2>Message Types</h2>
+				</a>
+				<p>As per how the Among Us protocol is structured, messages can be declared on certain levels and as children of certain parent messages. For example, messages that are identified by the first byte are called <em>option</em> packets, although you most likely won&#39;t be using these as they&#39;re part of <a href="https://github.com/willardf/Hazel-Networking">Hazel</a> itself.</p>
+				<p>With that in mind, you can declare messages by extending the relevant class:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Type</th>
+							<th>Description</th>
+							<th>Identifier</th>
+							<th>Parent message</th>
+							<th>Base class</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><strong>Root</strong></td>
+							<td>Used for reliable/unreliable messages, related to stateless communication between the client and the server.</td>
+							<td><code>root</code></td>
+							<td><a href="../../classes/ReliablePacket.html">ReliablePacket</a>/<a href="../../classes/UnreliablePacket.html">UnreliablePacket</a></td>
+							<td><code>BaseRootMessage</code></td>
+						</tr>
+						<tr>
+							<td><strong>GameData</strong></td>
+							<td>Used for messages that are related to the game, and communicate with a little bit of state involved.</td>
+							<td><code>gamedata</code></td>
+							<td><a href="../../classes/GameDataMessage.html">GameDataMessage</a></td>
+							<td><code>BaseGameDataMessage</code></td>
+						</tr>
+						<tr>
+							<td><strong>Rpc</strong></td>
+							<td>(Remote Procedure Call) Used for messages in games that communicate directly to objects, and are heavily based on recording state.</td>
+							<td><code>rpc</code></td>
+							<td><a href="../../classes/RpcMessage.html">RpcMessage</a></td>
+							<td><code>BaseRpcMessage</code></td>
+						</tr>
+				</tbody></table>
+				<a href="#message-class" id="message-class" style="color: inherit; text-decoration: none;">
+					<h2>Message Class</h2>
+				</a>
+				<blockquote>
+					<p>Check out the <a href="https://github.com/SkeldJS/SkeldJS/tree/master/packages/protocol/lib/packets">SkeldJS source</a> for full, proper examples.</p>
+				</blockquote>
+				<p>Check the <a href="#message-types">table above</a> to know which base class your message class should extend.</p>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h3>Example</h3>
+				</a>
+				<pre><code class="language-ts"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">SayHelloMessage</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">BaseRootMessage</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #001080">messageTag</span><span style="color: #000000"> = </span><span style="color: #098658">60</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">messageTag</span><span style="color: #000000"> = </span><span style="color: #098658">60</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #0000FF">readonly</span><span style="color: #000000"> </span><span style="color: #001080">message</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">super</span><span style="color: #000000">();</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #795E26">Deserialize</span><span style="color: #000000">(</span><span style="color: #001080">reader</span><span style="color: #000000">: </span><span style="color: #267F99">HazelReader</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">message</span><span style="color: #000000"> = </span><span style="color: #001080">reader</span><span style="color: #000000">.</span><span style="color: #795E26">string</span><span style="color: #000000">();</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MyRootMessage</span><span style="color: #000000">(</span><span style="color: #001080">message</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #795E26">Serialize</span><span style="color: #000000">(</span><span style="color: #001080">writer</span><span style="color: #000000">: </span><span style="color: #267F99">HazelWriter</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #001080">writer</span><span style="color: #000000">.</span><span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">message</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #795E26">clone</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">MyRootMessage</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">message</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#message-tag" id="message-tag" style="color: inherit; text-decoration: none;">
+					<h3>Message tag</h3>
+				</a>
+				<p>The <code>messageTag</code> property should be any unused integer, as long as it&#39;s the same as the tag that the client sends. This is just used to identfiy your message and decode it when it&#39;s encountered.</p>
+				<blockquote>
+					<p>The <code>messageTag</code> should generally be between <code>0-255</code>, especially for official Among Us message types.</p>
+				</blockquote>
+				<blockquote>
+					<p>Note that other mods may have their own message tags, so make sure that other mods that you use don&#39;t conflict with your message tags.</p>
+				</blockquote>
+				<a href="#registering-custom-messages" id="registering-custom-messages" style="color: inherit; text-decoration: none;">
+					<h2>Registering custom messages</h2>
+				</a>
+				<p>Use the <a href="../../modules.html#RegisterMessage">RegisterMessage</a> decorator to register your custom message to be recognised by Hindenburg:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">RegisterMessage</span><span style="color: #000000">(</span><span style="color: #001080">SayHelloMessage</span><span style="color: #000000">)</span>
+<span style="color: #000000">@</span><span style="color: #795E26">HindenburgPlugin</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;hbplugin-mouse-messager-plugin&quot;</span><span style="color: #000000">)</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">MouseMessagerPlugin</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">WorkerPlugin</span><span style="color: #000000"> {</span>
+
+<span style="color: #000000">}</span>
+</code></pre>
+				<blockquote>
+					<p>Note that custom messages can <em>only</em> be instantiated and used on a <a href="Worker and Room Plugins.html">worker plugin</a>.</p>
+				</blockquote>
+				<blockquote>
+					<p>Check out {@link Receiving Protocol Messages} to learn how to handle your custom messages sent by clients.</p>
+				</blockquote>
+				<a href="#sending-custom-messages" id="sending-custom-messages" style="color: inherit; text-decoration: none;">
+					<h2>Sending custom messages</h2>
+				</a>
+				<p>Sending custom messages in Hindenburg is just as simple as instantiating the class, for example:</p>
+				<pre><code class="language-ts"><span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">sendPacket</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ReliablePacket</span><span style="color: #000000">(</span>
+<span style="color: #000000">        </span><span style="color: #001080">connection</span><span style="color: #000000">.</span><span style="color: #795E26">getNextNonce</span><span style="color: #000000">(),</span>
+<span style="color: #000000">        [</span>
+<span style="color: #000000">            </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">SayHelloMessage</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;there&#039;s a mouse! where? there on the stair, right there!&quot;</span><span style="color: #000000">)</span>
+<span style="color: #000000">        ]</span>
+<span style="color: #000000">    )</span>
+<span style="color: #000000">);</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

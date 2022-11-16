@@ -1,9 +1,8 @@
 While the SkeldJS API covers almost every aspect of Among Us, it might still be necessary to go even further down. This is where instead of listening to events that are emitted by SkeldJS for things that happen, you can listen directly for messages received via the Among Us protocol.
 
-> You can only override messages on worker plugins.
+> You can only override and create messages handlers on worker plugins.
 
-## Custom RPCs
-If you're writing custom innernet objects with custom Rpc methods, check out the {@page Handling Custom RPCs} page for a much more suitable API.
+> If you're writing custom innernet objects with custom Rpc methods, check out the {@page Handling Custom RPCs} page for a much more suitable API.
 
 ## Attaching Listeners
 The {@link MessageHandler | `MessageHandler`} decorator can be used with a method to denote it as being used to listen for messages.

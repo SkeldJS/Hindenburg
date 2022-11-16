@@ -61,7 +61,7 @@ export class MouseMessagerPlugin extends WorkerPlugin {
 
 > Note that custom messages can _only_ be instantiated and used on a {@page Worker and Room Plugins | worker plugin}.
 
-> Check out {@link Receiving Protocol Messages} to learn how to handle your custom messages sent by clients.
+> Check out {@page Receiving Protocol Messages} to learn how to handle your custom messages sent by clients.
 
 ## Sending custom messages
 Sending custom messages in Hindenburg is just as simple as instantiating the class, for example:

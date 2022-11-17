@@ -70,4 +70,4 @@ SkeldJS has some built-in end games that you can cancel:
 | `players disconnect` | {@link AmongUsEndGames.PlayersDisconnect} | Registered when a player disconnects and there aren't enough players on either side to continue the game | {@link PlayersDisconnectEndgameMetadata} |
 | `players vote out` | {@link AmongUsEndGames.PlayersVoteOut} | Registered when a player is voted out and there aren't enough players on either side to continue the game | {@link PlayersVoteOutEndgameMetadata} |
 | `players kill` | {@link AmongUsEndGames.PlayersKill} | Registered when a player is killed and there aren't enough players on either side to continue the game | {@link PlayersKillEndgameMetadata} |
-| `tasks complete` | {@link AmongUsEndGames.TasksComplete} | Registered when the crewmates have completed all of their tasks | {@link TasksCompleteEndGameMetadata}
+| `tasks complete` | {@link AmongUsEndGames.TasksComplete} | Registered when the crewmates have completed all of their tasks | {@link TasksCompleteEndgameMetadata}

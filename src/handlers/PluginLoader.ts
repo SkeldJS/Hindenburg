@@ -587,6 +587,18 @@ export class PluginLoader {
             const dependencyOptions = dependencies[pluginId];
 
             if (!pluginInGraph) {
+                if (node.isRoomPlugin()) {
+                    const importedPlugin = this.importedPlugins.get(pluginId);
+                    if (importedPlugin && importedPlugin.isWorkerPlugin()) {
+                        const loadedPlugin = this.worker.loadedPlugins.get(pluginId);
+                        if (loadedPlugin)
+                            continue;
+
+                        await this.loadPlugin(importedPlugin);
+                    }
+                }
+
+
                 if (typeof dependencyOptions === "object" && dependencyOptions.optional)
                     continue; // if it's optional then we can just skip
 

@@ -1,8 +1,10 @@
 import chalk from "chalk";
-import polka from "polka";
-import crypto, { verify } from "crypto";
+import Koa from "koa";
+import http from "http";
+import KoaRouter from "@koa/router";
+import koaBody from "koa-body";
+import crypto from "crypto";
 import { Platform } from "@skeldjs/constant";
-import { json } from "../util/jsonBodyParser";
 import { Worker } from "../worker";
 import { VersionInfo } from "@skeldjs/util";
 import { Logger } from "../logger";
@@ -42,7 +44,7 @@ function safeJsonParse(jsonString: string) {
 export class Matchmaker {
     logger: Logger;
 
-    httpServer?: polka.Polka;
+    httpServer?: http.Server;
     privateKey: Buffer;
 
     constructor(protected readonly worker: Worker) {
@@ -116,8 +118,8 @@ export class Matchmaker {
         return new Error("Invalid payload content hash ");
     }
 
-    verifyRequest(req: any) {
-        const authorization = req.headers.authorization;
+    verifyRequest(ctx: Koa.Context) {
+        const authorization = ctx.headers.authorization;
 
         if (!authorization)
             return false;
@@ -131,16 +133,16 @@ export class Matchmaker {
         if (verifyToken instanceof Error) {
             if (this.worker.config.logging.hideSensitiveInfo) {
                 this.logger.warn("Invalid request to %s: %s",
-                    req.originalUrl, verifyToken.message);
+                    ctx.originalUrl, verifyToken.message);
             } else {
-                const address = req.socket.address();
+                const address = ctx.socket.address();
 
                 if ("port" in address) {
                     this.logger.warn("Invalid request to %s from %s:%s: %s",
-                        req.originalUrl, address.address, address.port, verifyToken.message);
+                        ctx.originalUrl, address.address, address.port, verifyToken.message);
                 } else {
                     this.logger.warn("Invalid request to %s: %s",
-                        req.originalUrl, verifyToken.message);
+                        ctx.originalUrl, verifyToken.message);
                 }
             }
             return false;
@@ -149,127 +151,144 @@ export class Matchmaker {
         return true;
     }
 
-    protected createHttpServer() {
-        const httpServer = polka();
+    protected createKoaServer() {
+        const koaServer = new Koa;
+        koaServer.use(koaBody());
 
-        httpServer.use(json() as any);
-        httpServer.use((req, res, next) => {
-            res.status = res.sendStatus = x => (res.statusCode = x, res);
-            res.json = (body: any) => (res.setHeader("Content-Type", "application/json"), res.end(JSON.stringify(body)), res);
-            next();
-        });
-
+        const router = new KoaRouter;
         for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
                 const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
 
-                httpServer[method](route, body.bind(loadedPlugin.pluginInstance) as any);
+                router[method](route, body.bind(loadedPlugin.pluginInstance) as any);
             }
         }
 
-        httpServer.post("/api/user", (req, res) => {
-            if (req.headers["content-type"] !== "application/json") {
-                this.worker.logger.warn("Client failed to get a matchmaker token: Invalid Content-Type header (%s)", req.headers["content-type"]);
-                return res.status(400).end("");
+        router.post("/api/user", async (ctx) => {
+            if (ctx.req.headers["content-type"] !== "application/json") {
+                this.worker.logger.warn("Client failed to get a matchmaker token: Invalid Content-Type header (%s)", ctx.headers["content-type"]);
+                ctx.status = 400;
+                return;
             }
 
-            if (typeof req.body.Puid !== "string") {
+            if (typeof ctx.request.body.Puid !== "string") {
                 this.worker.logger.warn("Client failed to get a matchmaker token: No 'Puid' provided in body");
-                return res.status(400).end("");
+                ctx.status = 400;
+                return;
             }
 
-            if (typeof req.body.Username !== "string") {
+            if (typeof ctx.request.body.Username !== "string") {
                 this.worker.logger.warn("Client failed to get a matchmaker token: No 'Username' provided in body");
-                return res.status(400).end("");
+                ctx.status = 400;
+                return;
             }
 
-            if (typeof req.body.ClientVersion !== "number") {
-                this.worker.logger.warn("Client %s failed to get a matchmaker token: No 'ClientVersion' provided in body", chalk.blue(req.body.Username));
-                return res.status(400).end("");
+            if (typeof ctx.request.body.ClientVersion !== "number") {
+                this.worker.logger.warn("Client %s failed to get a matchmaker token: No 'ClientVersion' provided in body", chalk.blue(ctx.request.body.Username));
+                ctx.status = 400;
+                ctx.body = "";
+                return;
             }
 
-            if (!this.worker.isVersionAccepted(req.body.ClientVersion)) {
+            if (!this.worker.isVersionAccepted(ctx.request.body.ClientVersion)) {
                 this.worker.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
-                    chalk.blue(req.body.Username), VersionInfo.from(req.body.ClientVersion).toString(), chalk.grey("(" + req.body.ClientVersion + ")"));
-                return res.status(400).end("");
+                    chalk.blue(ctx.request.body.Username), VersionInfo.from(ctx.request.body.ClientVersion).toString(), chalk.grey("(" + ctx.request.body.ClientVersion + ")"));
+                ctx.status = 400;
+                return;
             }
 
 
-            if (typeof req.body.Language !== "number") {
+            if (typeof ctx.request.body.Language !== "number") {
                 this.worker.logger.warn("Client failed to get a matchmaker token: No 'Language' provided in body");
-                return res.status(400).end("");
+                ctx.status = 400;
+                return;
             }
 
             // todo: record matchmaking tokens used
             if (this.worker.config.logging.hideSensitiveInfo) {
-                this.worker.logger.info("Client %s got a matchmaker token", chalk.blue(req.body.Username));
+                this.worker.logger.info("Client %s got a matchmaker token", chalk.blue(ctx.request.body.Username));
             } else {
-                this.worker.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(req.body.Username), chalk.grey(req.body.Puid));
+                this.worker.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(ctx.request.body.Username), chalk.grey(ctx.request.body.Puid));
             }
 
-            const mmToken = this.generateMatchmakerToken(req.body.Puid, req.body.ClientVersion);
-            res.status(200).end(mmToken);
+            const mmToken = this.generateMatchmakerToken(ctx.request.body.Puid, ctx.request.body.ClientVersion);
+            ctx.status = 200;
+            ctx.body = mmToken;
         });
 
-        httpServer.post("/api/games", (req, res) => {
-            if (!this.verifyRequest(req))
-                return res.status(401).end("");
-
-            if (!req.query.gameId) {
-                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
-                return res.status(400).end("");
+        router.post("/api/games", ctx => {
+            if (!this.verifyRequest(ctx)) {
+                ctx.status = 401;
+                return;
             }
 
-            const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
+            if (!ctx.query.gameId) {
+                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
+                ctx.status = 400;
+                return;
+            }
 
-            res.status(200).json({
+            const listingIp = ctx.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
+
+            ctx.status = 200;
+            ctx.body = {
                 Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
                 Port: this.getRandomWorkerPort()
-            });
+            };
         });
 
-        httpServer.put("/api/games", (req, res) => {
-            if (!this.verifyRequest(req))
-                return res.status(401).end("");
-
-            const listingIp = req.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
-
-            res.status(200).json({
-                Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                Port: this.getRandomWorkerPort()
-            });
-        });
-
-        httpServer.get("/api/games", (req, res) => {
-            if (!this.verifyRequest(req))
-                return res.status(401).end("");
-
-            if (!req.query.mapId) {
-                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
-                return res.status(400).end("");
+        router.put("/api/games", ctx => {
+            if (!this.verifyRequest(ctx)) {
+                ctx.status = 401;
+                return;
             }
 
-            if (!req.query.lang) {
+            const listingIp = ctx.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
+
+            ctx.status = 200;
+            ctx.body = {
+                Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
+                Port: this.getRandomWorkerPort()
+            };
+        });
+
+        router.get("/api/games", ctx => {
+            if (!this.verifyRequest(ctx)) {
+                ctx.status = 401;
+                return;
+            }
+
+            if (!ctx.query.mapId) {
+                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
+                ctx.status = 400;
+                return;
+            }
+
+            if (!ctx.query.lang) {
                 this.worker.logger.warn("Client failed to find host for room: No 'lang' provided in query parameters");
-                return res.status(400).end("");
+                ctx.status = 400;
+                return;
             }
 
-            if (!req.query.quickChat) {
+            if (!ctx.query.quickChat) {
                 this.worker.logger.warn("Client failed to find host for room: No 'quickChat' provided in query parameters");
-                return res.status(400).end("");
+                ctx.status = 400;
+                return;
             }
 
-            if (!req.query.platformFlags) {
+            if (!ctx.query.platformFlags) {
                 this.worker.logger.warn("Client failed to find host for room: No 'platformFlags' provided in query parameters");
-                return res.status(400).end("");
+                ctx.status = 400;
+                return;
             }
 
-            if (!req.query.numImpostors) {
+            if (!ctx.query.numImpostors) {
                 this.worker.logger.warn("Client failed to find host for room: No 'numImpostors' provided in query parameters");
-                return res.status(400).end("");
+                ctx.status = 400;
+                return;
             }
 
-            const listingIp = req.socket.remoteAddress === "127.0.0.1" || req.socket.remoteAddress === "::ffff:127.0.0.1"
+            const listingIp = ctx.socket.remoteAddress === "127.0.0.1" || ctx.socket.remoteAddress === "::ffff:127.0.0.1"
                 ? "127.0.0.1"
                 : this.worker.config.socket.ip;
 
@@ -309,10 +328,10 @@ export class Matchmaker {
 
                 const relevancy = this.worker.getRoomRelevancy(
                     room,
-                    parseInt(req.query.numImpostors as string),
-                    parseInt(req.query.lang as string),
-                    parseInt(req.query.mapId as string),
-                    req.query.quickChat as string,
+                    parseInt(ctx.query.numImpostors as string),
+                    parseInt(ctx.query.lang as string),
+                    parseInt(ctx.query.mapId as string),
+                    ctx.query.quickChat as string,
                     this.worker.config.gameListing.requirePefectMatches,
                     ignoreSearchTerms
                 );
@@ -339,26 +358,29 @@ export class Matchmaker {
                 ? sortedResults
                 : sortedResults.slice(0, this.worker.config.gameListing.maxResults);
 
-            res.status(200).json(topResults.map(([ , gameListing ]) => gameListing));
+            ctx.status = 200;
+            ctx.body = topResults.map(([ , gameListing ]) => gameListing);
         });
 
-        return httpServer;
+        koaServer.use(router.routes());
+
+        return koaServer;
     }
 
     listen() {
         if (this.httpServer)
             throw new Error("Http server already running; cannot listen on socket");
 
-        this.httpServer = this.createHttpServer();
-        this.httpServer.listen(this.port);
+        const koaServer = this.createKoaServer();
+        this.httpServer = koaServer.listen(this.port);
         this.worker.logger.info("HTTP matchmaker on *:%s", this.port);
     }
 
     destroy() {
-        if (!this.httpServer || !this.httpServer.server)
+        if (!this.httpServer)
             throw new Error("No http server running; cannot destroy matchmaker");
 
-        this.httpServer.server.close();
+        this.httpServer.close();
         this.httpServer = undefined;
     }
 
@@ -366,7 +388,7 @@ export class Matchmaker {
         if (this.httpServer)
             this.destroy();
 
-        this.httpServer = this.createHttpServer();
-        this.httpServer.listen(this.port);
+        const koaServer = this.createKoaServer();
+        this.httpServer = koaServer.listen(this.port);
     }
 }

@@ -71,6 +71,111 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
+				<p>End game intents are notifications to Hindenburg/the lobby that the game should end given some condition.</p>
+				<p>They&#39;re used instead of simply calling <a href="../../classes/BaseRoom.html#endGame">BaseRoom.endGame</a> as you can pass metadata and are cancelable by listening for the <a href="../../classes/RoomEndGameIntentEvent.html"><code>room.endgameintent</code></a> event.</p>
+				<p>Using them also prevents race conditions where two events end the game at the same time, thus throwing errors or causing issues for end clients.</p>
+				<p>If you&#39;re making your own gamemode, it&#39;ll be useful to create your own end game intents to specify when the game should end.</p>
+				<a href="#registering-an-end-game-intent" id="registering-an-end-game-intent" style="color: inherit; text-decoration: none;">
+					<h2>Registering an end game intent</h2>
+				</a>
+				<p>To register an end game intents means requesting for SkeldJS to end the game, which you can do so with the <a href="../../classes/BaseRoom.html#registerEndGameIntent">BaseRoom.registerEndGameIntent</a> method.</p>
+				<p>For example, the <a href="../../classes/MeetingHud.html">MeetingHud</a> uses:</p>
+				<pre><code class="language-ts"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">registerEndGameIntent</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">EndGameIntent</span><span style="color: #000000">(</span>
+<span style="color: #000000">        </span><span style="color: #001080">AmongUsEndGames</span><span style="color: #000000">.</span><span style="color: #001080">PlayersVoteOut</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">GameOverReason</span><span style="color: #000000">.</span><span style="color: #001080">HumansByVote</span><span style="color: #000000">,</span>
+<span style="color: #000000">        {}</span>
+<span style="color: #000000">    )</span>
+<span style="color: #000000">);</span>
+</code></pre>
+				<p>You can pass metadata into the end game intent constructor:</p>
+				<pre><code class="language-ts"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">registerEndGameIntent</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">EndGameIntent</span><span style="color: #000000">(</span>
+<span style="color: #000000">        </span><span style="color: #A31515">&quot;someone was blown up&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">GameOverReason</span><span style="color: #000000">.</span><span style="color: #001080">HumansByVote</span><span style="color: #000000">,</span>
+<span style="color: #000000">        {</span>
+<span style="color: #000000">            </span><span style="color: #001080">explodedPlayer:</span><span style="color: #000000"> </span><span style="color: #001080">player</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    )</span>
+<span style="color: #000000">);</span>
+</code></pre>
+				<blockquote>
+					<p>Note that the <a href="../../classes/EndGameIntent.html#reason">EndGameIntent.reason</a> must be a valid <a href="../../enums/GameOverReason.html">GameOverReason</a>, otherwise Among Us will display everyone as being defeated. Check out the {@oage Custom End Game Screens} guide to be able to show any players as winners or losers.</p>
+				</blockquote>
+				<a href="#canceling-end-game-intents" id="canceling-end-game-intents" style="color: inherit; text-decoration: none;">
+					<h2>Canceling end game intents</h2>
+				</a>
+				<p>As noted, end game intents are helpful to give other areas of your code or other plugins the opportunity to cancel your game end. This can be done through the <a href="../../classes/RoomEndGameIntentEvent.html"><code>room.endgameintent</code></a> event:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;room.endgameintent&quot;</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onEndGameIntent</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #001080">RoomEndGameIntentEvent</span><span style="color: #000000">&lt;</span><span style="color: #001080">Room</span><span style="color: #000000">&gt;) {</span>
+<span style="color: #000000">    ...</span>
+
+<span style="color: #000000">    </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #795E26">cancel</span><span style="color: #000000">();</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>For example, if you want to prevent the meeting from ending the game when an impostor is voted out:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;room.endgameintent&quot;</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onEndGameIntent</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #001080">RoomEndGameIntent</span><span style="color: #000000">&lt;</span><span style="color: #001080">Room</span><span style="color: #000000">&gt;) {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">intentName</span><span style="color: #000000"> === </span><span style="color: #001080">AmongUsEndGames</span><span style="color: #000000">.</span><span style="color: #001080">PlayerVoteOut</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">metadata</span><span style="color: #000000">.</span><span style="color: #001080">aliveImpostors</span><span style="color: #000000"> === </span><span style="color: #098658">0</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #795E26">cancel</span><span style="color: #000000">();</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<blockquote>
+					<p>Note that the metadata in the event will be untyped, although you can cast with <code>const metadata = ev.metadata as MyMetadataType</code> to get types.</p>
+				</blockquote>
+				<a href="#built-in-end-games" id="built-in-end-games" style="color: inherit; text-decoration: none;">
+					<h2>Built-in end games</h2>
+				</a>
+				<p>SkeldJS has some built-in end games that you can cancel:</p>
+				<table>
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Enum</th>
+							<th>Description</th>
+							<th>Metadata</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><code>o2 sabotage</code></td>
+							<td><a href="../../enums/AmongUsEndGames.html#O2Sabotage">AmongUsEndGames.O2Sabotage</a></td>
+							<td>Registered when the oxygen/life support system timer reaches 0 after sabotage</td>
+							<td><code>n/a</code></td>
+						</tr>
+						<tr>
+							<td><code>reactor sabotage</code></td>
+							<td><a href="../../enums/AmongUsEndGames.html#ReactorSabotage">AmongUsEndGames.ReactorSabotage</a></td>
+							<td>Registered when the reactor system timer reaches 0 after sabotage</td>
+							<td><code>n/a</code></td>
+						</tr>
+						<tr>
+							<td><code>players disconnect</code></td>
+							<td><a href="../../enums/AmongUsEndGames.html#PlayersDisconnect">AmongUsEndGames.PlayersDisconnect</a></td>
+							<td>Registered when a player disconnects and there aren&#39;t enough players on either side to continue the game</td>
+							<td><a href="../../interfaces/PlayersDisconnectEndgameMetadata.html">PlayersDisconnectEndgameMetadata</a></td>
+						</tr>
+						<tr>
+							<td><code>players vote out</code></td>
+							<td><a href="../../enums/AmongUsEndGames.html#PlayersVoteOut">AmongUsEndGames.PlayersVoteOut</a></td>
+							<td>Registered when a player is voted out and there aren&#39;t enough players on either side to continue the game</td>
+							<td><a href="../../interfaces/PlayersVoteOutEndgameMetadata.html">PlayersVoteOutEndgameMetadata</a></td>
+						</tr>
+						<tr>
+							<td><code>players kill</code></td>
+							<td><a href="../../enums/AmongUsEndGames.html#PlayersKill">AmongUsEndGames.PlayersKill</a></td>
+							<td>Registered when a player is killed and there aren&#39;t enough players on either side to continue the game</td>
+							<td><a href="../../interfaces/PlayersKillEndgameMetadata.html">PlayersKillEndgameMetadata</a></td>
+						</tr>
+						<tr>
+							<td><code>tasks complete</code></td>
+							<td><a href="../../enums/AmongUsEndGames.html#TasksComplete">AmongUsEndGames.TasksComplete</a></td>
+							<td>Registered when the crewmates have completed all of their tasks</td>
+							<td>{@link TasksCompleteEndGameMetadata}</td>
+						</tr>
+				</tbody></table>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

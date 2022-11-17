@@ -95,6 +95,10 @@
                     "source": "./pages/Plugins/Worker and Room Plugins.md"
                 },
                 {
+                    "title": "Dependencies",
+                    "source": "./pages/Plugins/Dependencies.md"
+                },
+                {
                     "title": "Lifecycle Methods",
                     "source": "./pages/Plugins/Lifecycle Methods.md"
                 },

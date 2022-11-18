@@ -13,9 +13,11 @@ onAddCommand(ctx: ChatCommandContext, args: any) {
         return ctx.reply("Expected a number for 'first' and 'second'");
 
     const result = first + second;
-    ctx.reply(first + " + " + second + " = " + result);
+    ctx.reply("%s + %s = %s", first, second, result);
 }
 ```
+
+> Note that you can pass `%s` for formatting options, where they are replaced by each next argument passed into the method.
 
 ![image](https://user-images.githubusercontent.com/60631511/143774107-36468587-b1a6-4523-bca7-17cd07c77a52.png)
 

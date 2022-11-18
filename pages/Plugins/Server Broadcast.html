@@ -71,6 +71,60 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
+				<p>A common way of conveying information to players is through the chat box - specifically, broadcasting messages sent by the server (or sent only to a single player), where you can choose the cosmetics of the player.</p>
+				<blockquote>
+					<p>See <a href="../Using Hindenburg/Chat Commands.html">Chat Commands</a> for examples on how to respond to chat commands</p>
+				</blockquote>
+				<a href="#send-chat-message" id="send-chat-message" style="color: inherit; text-decoration: none;">
+					<h2>Send chat message</h2>
+				</a>
+				<p>You can use the <a href="../../classes/BaseRoom.html#sendChat">BaseRoom.sendChat</a> method for various</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.syncsettings&quot;</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onSettingsUpdate</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #001080">PlayerSyncSettingsEvent</span><span style="color: #000000">&lt;</span><span style="color: #001080">Room</span><span style="color: #000000">&gt;) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Updated settings!&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#custom-appearance" id="custom-appearance" style="color: inherit; text-decoration: none;">
+					<h2>Custom appearance</h2>
+				</a>
+				<p>The appearance of the chat message, by default, is determined by the <a href="https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Configuration.html#roomsserverplayer">server&#39;s config</a>.</p>
+				<p>However, you can pass in values for the <code>sendChat</code> to set cosmetics:</p>
+				<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">EventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;player.murder&quot;</span><span style="color: #000000">)</span>
+<span style="color: #795E26">onPlayerMurder</span><span style="color: #000000">(</span><span style="color: #001080">ev</span><span style="color: #000000">: </span><span style="color: #001080">PlayerMurderEvent</span><span style="color: #000000">&lt;</span><span style="color: #001080">Room</span><span style="color: #000000">&gt;) {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (!</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">playerInfo</span><span style="color: #000000"> || !</span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">victim</span><span style="color: #000000">.</span><span style="color: #001080">playerInfo</span><span style="color: #000000">)</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">message</span><span style="color: #000000"> = </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">player</span><span style="color: #000000">.</span><span style="color: #001080">playerInfo</span><span style="color: #000000">.</span><span style="color: #001080">defaultOutfit</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; killed &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">victim</span><span style="color: #000000">.</span><span style="color: #001080">playerInfo</span><span style="color: #000000">.</span><span style="color: #001080">defaultOutfit</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #001080">ev</span><span style="color: #000000">.</span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #001080">message</span><span style="color: #000000">, {</span>
+<span style="color: #000000">        </span><span style="color: #001080">color:</span><span style="color: #000000"> </span><span style="color: #001080">Color</span><span style="color: #000000">.</span><span style="color: #001080">Red</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">hatId:</span><span style="color: #000000"> </span><span style="color: #001080">Hat</span><span style="color: #000000">.</span><span style="color: #001080">WizardHat</span>
+<span style="color: #000000">    });</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#align-message" id="align-message" style="color: inherit; text-decoration: none;">
+					<h2>Align message</h2>
+				</a>
+				<p>Aligning your message to either the left or the right of the chat box can be done with <code>side: MessageSide.*</code> in your <code>sendChat</code> options:</p>
+				<pre><code class="language-ts"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #001080">message</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #001080">side:</span><span style="color: #000000"> </span><span style="color: #001080">MessageSide</span><span style="color: #000000">.</span><span style="color: #001080">Left</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<p><em>or</em></p>
+				<pre><code class="language-ts"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #001080">message</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #001080">side:</span><span style="color: #000000"> </span><span style="color: #001080">MessageSide</span><span style="color: #000000">.</span><span style="color: #001080">Right</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<blockquote>
+					<p>Because of technical limitations, you can only send messages on the left if there is more than one player in the room.</p>
+				</blockquote>
+				<a href="#recipients" id="recipients" style="color: inherit; text-decoration: none;">
+					<h2>Recipients</h2>
+				</a>
+				<p>You don&#39;t have to use <a href="Player Perspectives.html">Player Perspectives</a> to only show chat commands for certain players from the server, just pass an array of recipients in the <code>targets: []</code> array in your <code>sendChat</code> options, for example:</p>
+				<pre><code class="language-ts"><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #795E26">sendChat</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;experiencing life through he postmodern lens&quot;</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #001080">targets:</span><span style="color: #000000"> [ </span><span style="color: #001080">room</span><span style="color: #000000">.</span><span style="color: #001080">host</span><span style="color: #000000"> ]</span>
+<span style="color: #000000">})</span>
+</code></pre>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

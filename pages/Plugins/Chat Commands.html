@@ -83,9 +83,12 @@
 <span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Expected a number for &#039;first&#039; and &#039;second&#039;&quot;</span><span style="color: #000000">);</span>
 
 <span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">result</span><span style="color: #000000"> = </span><span style="color: #001080">first</span><span style="color: #000000"> + </span><span style="color: #001080">second</span><span style="color: #000000">;</span>
-<span style="color: #000000">    </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #001080">first</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; + &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">second</span><span style="color: #000000"> + </span><span style="color: #A31515">&quot; = &quot;</span><span style="color: #000000"> + </span><span style="color: #001080">result</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">ctx</span><span style="color: #000000">.</span><span style="color: #795E26">reply</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;%s + %s = %s&quot;</span><span style="color: #000000">, </span><span style="color: #001080">first</span><span style="color: #000000">, </span><span style="color: #001080">second</span><span style="color: #000000">, </span><span style="color: #001080">result</span><span style="color: #000000">);</span>
 <span style="color: #000000">}</span>
 </code></pre>
+				<blockquote>
+					<p>Note that you can pass <code>%s</code> for formatting options, where they are replaced by each next argument passed into the method.</p>
+				</blockquote>
 				<p><img src="https://user-images.githubusercontent.com/60631511/143774107-36468587-b1a6-4523-bca7-17cd07c77a52.png" alt="image"></p>
 				<p><img src="https://user-images.githubusercontent.com/60631511/143774137-a97f8a30-8635-4b56-a425-b11e382c6266.png" alt="image"></p>
 				<a href="#the-decorator" id="the-decorator" style="color: inherit; text-decoration: none;">

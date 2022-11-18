@@ -1,4 +1,4 @@
-import polka from "polka";
+import koa from "koa";
 import { Plugin } from "../../handlers";
 import { MethodDecorator } from "../types";
 
@@ -9,11 +9,11 @@ export type HttpMethod = "get"|"post"|"put"|"patch"|"delete";
 export interface PluginRegisteredMatchmakerEndpoint {
     method: HttpMethod;
     route: string;
-    body: (req: polka.Request, res: Response) => any;
+    body: (ctx: koa.Context) => any;
 }
 
 function RegisterMatchmakerEndpoint(method: HttpMethod, route: string) {
-    return function (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(req: polka.Request, res: Response) => any>) {
+    return function (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: koa.Context) => any>) {
         const cachedEndpoints: PluginRegisteredMatchmakerEndpoint[] = Reflect.getMetadata(hindenburgMatchmakerEndpointsKey, target);
         const endpoints = cachedEndpoints || [];
         if (!cachedEndpoints)
@@ -35,23 +35,23 @@ export class MatchmakerEndpoint {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
-    static Get(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
+    static Get(route: string): MethodDecorator<(ctx: koa.Context) => any> {
         return RegisterMatchmakerEndpoint("get", route);
     }
 
-    static Post(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
+    static Post(route: string): MethodDecorator<(ctx: koa.Context) => any> {
         return RegisterMatchmakerEndpoint("post", route);
     }
 
-    static Put(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
+    static Put(route: string): MethodDecorator<(ctx: koa.Context) => any> {
         return RegisterMatchmakerEndpoint("put", route);
     }
 
-    static Patch(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
+    static Patch(route: string): MethodDecorator<(ctx: koa.Context) => any> {
         return RegisterMatchmakerEndpoint("patch", route);
     }
 
-    static Delete(route: string): MethodDecorator<(req: polka.Request, res: Response) => any> {
+    static Delete(route: string): MethodDecorator<(ctx: koa.Context) => any> {
         return RegisterMatchmakerEndpoint("delete", route);
     }
 }

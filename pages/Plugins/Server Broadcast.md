@@ -21,7 +21,7 @@ onPlayerMurder(ev: PlayerMurderEvent<Room>) {
     if (!ev.player.playerInfo || !ev.victim.playerInfo)
         return;
 
-    const message = ev.player.playerInfo.defaultOutfit.name + " killed " = ev.victim.playerInfo.defaultOutfit.name;
+    const message = ev.player.playerInfo.defaultOutfit.name + " killed " + ev.victim.playerInfo.defaultOutfit.name;
     ev.room.sendChat(message, {
         color: Color.Red,
         hatId: Hat.WizardHat

@@ -37,7 +37,7 @@ export interface SendChatOptions {
      *     return;
      *
      *   ev.room.sendChat("<color=red>Potential cheater detected: " + ev.player.info.name + "</color>", {
-     *     targets: [ ev.room.players.host ]
+     *     targets: [ ev.room.host ]
      *   });
      * }
      * ```

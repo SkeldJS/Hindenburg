@@ -1,9 +1,9 @@
 There are a few lifecycle methods that you can override in your plugins to listen for specific events.
 
-> If you're looking to listen for game and worker events, check out the {@page Event Listeners} guide.
+> If you're looking to listen for game and worker events, check out the {@page ./api/event-listeners.md} guide.
 
 ## Constructor
-Depending on whether you're writing a {@page Worker and Room Plugins | worker or a room} plugin, the constructor may be different to override.
+Depending on whether you're writing a {@page ./worker-and-room-plugins.md worker or a room} plugin, the constructor may be different to override.
 
 
 For example, a worker plugin constructor:

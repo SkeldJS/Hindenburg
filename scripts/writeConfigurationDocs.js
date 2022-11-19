@@ -208,5 +208,5 @@ for (const [ propertyName, propertyDetails ] of entries) {
 }
 
 (async () => {
-    await fs.writeFile(path.resolve(__dirname, "../pages/Getting Started/Configuration.md"), baseDocs)
+    await fs.writeFile(path.resolve(__dirname, "../pages/getting-started/configuration.md"), baseDocs)
 })();

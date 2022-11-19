@@ -1,6 +1,6 @@
 > This is an _advanced_ topic. Adequate understand of Hindenburg & the Among Us protocol is recommended.
 
-> This is a Server-as-a-Host _only_ topic, and although may work to a degree without it, is highily discouraged. See {@page Server-as-a-Host}.
+> This is a Server-as-a-Host _only_ topic, and although may work to a degree without it, is highily discouraged. See {@page ../../getting-started/using-hindenburg/server-as-a-host.md}.
 
 Perspectives in Hindenburg allow you to create a virtual "playground" world to isolate players and isolate events. They allow you to run separate, but connected, games that diverge from the main game.
 
@@ -175,7 +175,7 @@ perspective.on("player.setname", ev => {
 });
 ```
 
-Always note that perspectives, if synced with the main room, will generally fire the same events, {@page Object Ownership Guards | with some exceptions}, so attaching listeners may just be as simple for you as `perspective.on("player.setname", this.onPlayerSetName)` if you have a plugin event listener listening on a room and want to also listen to the same event on a perspective.
+Always note that perspectives, if synced with the main room, will generally fire the same events, {@page ../topics/object-ownership-guards.md with some exceptions}, so attaching listeners may just be as simple for you as `perspective.on("player.setname", this.onPlayerSetName)` if you have a plugin event listener listening on a room and want to also listen to the same event on a perspective.
 
 ### Event Targets
 A nicer and more formatted way to attach listeners is using the exported `EventTarget` class, and using the `@EventListener` decorator:
@@ -195,9 +195,9 @@ const eventTarget = new MyPerspectiveEventTarget;
 perspective.registerEventTarget(eventTarget);
 ```
 
-> See {@page Event Targets} for more information.
+> See {@page ../api/event-targets.md} for more information.
 
-> This topic may or may not require knowledge of {@page Object Ownership Guards}, a reading of that is recommended for advanced usages of perspectives.
+> This topic may or may not require knowledge of {@page ../topics/object-ownership-guards.md}, a reading of that is recommended for advanced usages of perspectives.
 
 ## API
 ### Get player in perspective from original room

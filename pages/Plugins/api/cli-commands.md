@@ -2,7 +2,7 @@ Hindenburg has an interactive CLI for server owners to interact with their serve
 
 The actual API is a light layer on top of [Vorpal](http://vorpal.js.org/), which is used for the actual interface.
 
-> Check out the {@page Interactive CLI} page for more information.
+> Check out the {@page ../../getting-started/using-hindenburg/interactive-cli.md} page for more information.
 
 ## Custom Commands
 Use the {@link CliCommand} decorator to appoint a method body as the callback for a CLI command.

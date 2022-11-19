@@ -1,6 +1,6 @@
 Innernet objects (INOs, or _components_) in Among Us allow you to netwok state between clients. There are many different INOs that are spawned with prefabs, which define a set of innernet objects to spawn as part of a group.
 
-Some INOs can belong to individual players, and some can belong to the room itself - which can only be controlled by the host (or if in {@page Server-as-a-Host | SaaH}, the server).
+Some INOs can belong to individual players, and some can belong to the room itself - which can only be controlled by the host (or if in {@page ../../getting-started/using-hindenburg/server-as-a-host.md}, the server).
 
 ## Server-side only
 _Note_ that objects defined and registered on Hindenburg _only_ apply to server-side logic, and aren't by default handled on the client in any meaningful way - they'll just be discarded; the client doesn't know what to do with them.

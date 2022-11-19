@@ -2,21 +2,21 @@ To a degree, it is possible to create entire roles using entirely server code, m
 
 This guide will outline and explain the (general) steps you should take to create your own role.
 
-> Note that this guide _requires_ {@page Server-as-a-Host} to be enabled.
+> Note that this guide _requires_ {@page ../../getting-started/using-hindenburg/server-as-a-host.md} to be enabled.
 
 Specifically, we'll be creating the reasonably basic Jester role, and we'll be going through how you can analyse the game's code for yourself to bypass restrictions.
 
 > Only very basic knowledge of programming is required for this guide, although the concepts do get somewhat complicated.
 
 ## Create the plugin
-Obviously, you'll need to actually create the plugin. See {@page Creating a Plugin} to get started, or you can just run `yarn plugins create my-jester-mod` in your Hindenburg directory for a quick-start.
+Obviously, you'll need to actually create the plugin. See {@page ../creating-a-plugin.md} to get started, or you can just run `yarn plugins create my-jester-mod` in your Hindenburg directory for a quick-start.
 
 > In this guide we'll be using [TypeScript](https://typescriptlang.org), so make sure you enable that while creating your plugin.
 
 ## Create the role class
 We can use SkeldJS' role implementation to create a role _dummy_ of sorts, that acts as a placeholder for simply stating that the player _is_ the Jester; the role class itself won't do any logic.
 
-> See {@link Custom Roles} for more information.
+> See {@page ../advanced/custom-roles.md} for more information.
 
 This is as simple as the following (in a new file, probably):
 ```ts
@@ -58,7 +58,7 @@ onAssignRoles(ev: RoomAssignRolesEvent<Room>) {
 }
 ```
 
-> See the page on {@link Event Listeners} for more information.
+> See the page on {@page ../api/event-listeners.md} for more information.
 
 > Note the `<Room>` generic is required to notify SkeldJS' type system that this event should come from one of Hindenburg's rooms.
 
@@ -161,7 +161,7 @@ export class BgGamemodesJesterPlugin extends RoomPlugin {
 A crucial part of having a custom role is for the player to be able to identify that they have been assigned that role, and since we don't have access to the client to create a mod, we'll have to manually set cosmetics that give the appearance of a jester to make it obvious. More notably, we can set the name _with colours_ to create a "tag" or "role" system in the players' names, for instance `[Jester] weakeyes`.
 
 ### Creating the perspective
-We can use Hindenburg's {@page Player Perspectives} to create an environment where only the Jester can see their cosmetics, and everyone else sees them as normal. This gives the same effect as how only the Impostor can see their names as red, whereas everyone else sees it as white.
+We can use Hindenburg's {@page ../advanced/player-perspectives.md} to create an environment where only the Jester can see their cosmetics, and everyone else sees them as normal. This gives the same effect as how only the Impostor can see their names as red, whereas everyone else sees it as white.
 
 First, we'll need to create a `jesterPerspective` property on the class so we can store the perspective and destroy it later, when the jester gets voted out and the game ends:
 ```ts
@@ -203,7 +203,7 @@ this.jesterPerspective = this.room.createPerspective(this.jester, [], [ PresetFi
 
 The _outgoing filter_ `PresetFilter.GameDataUpdates` is used to prevent the Jester's cosmetics and tagged name from being updated on the other players' screens.
 
-> Reading the page on {@page Player Perspectives} is recommended here.
+> Reading the page on {@page ../advanced/player-perspectives.md} is recommended here.
 
 ### Setting the cosmetics
 Still in your `onSetRole` method, we can simply get the jesters' player in the room and set all of their cosmetics using SkeldJS' API.
@@ -230,7 +230,7 @@ This bug is simply something we didn't consider with our perspective and its fil
 
 > Overriding GameData won't immediately update the player, hence why it only shows after-the-fact in meetings. The {@link SetNameMessage}, {@link SetColorMessage}, {@link SetHatMessage}, {@link SetPetMessage}, {@link SetSkinMessage} can be used for immediate updates.
 
-> For more information on how innernet objects keep state, see {@link Custom Innernet Objects}.
+> For more information on how innernet objects keep state, see {@page ../advanced/custom-innernet-objects.md}.
 
 To fix this, we have to create our own _incoming filter_ to prevent this exact thing.
 
@@ -301,7 +301,7 @@ if (flag) {
 ## Jester getting voted out
 Now, things from here start to get a bit more tricky and specific. Luckily, the Jester has fairly simple gameplay changes - just check if a jester gets ejected after a meeting.
 
-From what we know in {@link Object Ownership Guards} and {@link Event Targets}, we'll have to create event listeners on both the _main room_ and the _Jester's perspective_ to listen for meetings.
+From what we know in {@page ../topics/object-ownership-guards.md} and {@page ../api/event-targets.md}, we'll have to create event listeners on both the _main room_ and the _Jester's perspective_ to listen for meetings.
 
 > This is because, if the meeting is started by the Jester, then the meeting is said to _belong_ to the perspective, whereas if the meeting is started by another player, then the meeting _belongs_ to the main room.
 

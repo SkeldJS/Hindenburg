@@ -80,4 +80,4 @@ Joining clients must have the _exact_ same mods (including exact versions) as th
 ## Plugin Support
 Hindenburg also works great with client-side mods made with Reactor, as it provides a native reactor rpc API for plugins, allowing them to communicate directly with mods of specific players, or to entire rooms.
 
-> Check out the {@page Working with Reactor} page to develop plugins to work with Reactor modded clients.
+> Check out the {@page ../../plugins/advanced/reactor-integration.md} page to develop plugins to work with Reactor modded clients.

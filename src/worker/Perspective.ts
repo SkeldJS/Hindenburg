@@ -40,7 +40,8 @@ import {
     HeliSabotageSystem,
     Platform,
     PlayerDataResolvable,
-    Networkable
+    Networkable,
+    SpawnType
 } from "@skeldjs/core";
 
 import {
@@ -1181,8 +1182,10 @@ export class Perspective extends BaseRoom {
      */
     disownObject(netObject: Networkable) {
         const ownership = this.parentRoom.ownershipGuards.get(netObject.netId);
-        if (!ownership || ownership !== this)
+        if (!ownership || ownership !== this) {
+            console.log(SpawnType[netObject.spawnType], netObject.netId);
             throw new Error("Cannot disown object; an object with that network id isn't owned by this room");
+        }
 
         this.parentRoom.ownershipGuards.delete(netObject.netId);
     }

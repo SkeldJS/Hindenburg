@@ -108,12 +108,12 @@ Mostly, this is used to define standard information for publishing your package 
 #### `loadOrder`
 Defines in which order your plugin should be loaded in compared to every other plugin to be loaded when the server starts.
 
-> See the {@page Load Ordering} page for more information.
+> See the {@page ./load-ordering.md} page for more information.
 
 #### `defaultConfig`
 Creates default configuration values to base server owner's configs off.
 
-> See the {@page Configuration} page for more information.
+> See the {@page ./configuration.md} page for more information.
 
 ### `README.md`
 You can use the README as an opportunity to write either a short or extensive documentation use for your plugin, including installation instructions and configuration explanations.

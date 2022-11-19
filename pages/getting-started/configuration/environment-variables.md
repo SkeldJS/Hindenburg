@@ -23,7 +23,7 @@ You can set the `HINDENBURG_CONFIG` variable to the location of a `config.json` 
 
 > Note that the location has to be **absolute**, meaning that it must begin with either `Drive:/` on windows or `/` on linux, and be the complete path to the file.
 
-> Check out the {@page Configuration} page for information on configuring Hindenburg
+> Check out the {@page ../configuration.md} page for information on configuring Hindenburg
 
 For example, if you downloaded a `config.json` into your downloads directory, you could set `HINDENBURG_CONFIG` to `C:/Users/essma/Downloads/config.json` and Hindenburg would use that.
 

@@ -3,7 +3,7 @@ Hindenburg allows you to choose in which order your plugin is ordered when it lo
 This can be helpful if you have an important message handler or event that must be registered before any other plugins, or if you're overriding the plugin loader's behaviour and want to affect any later-loaded plugins.
 
 ## Dependencies
-> Check out the {@page Dependencies} page for more information.
+> Check out the {@page ./dependencies.md} page for more information.
 
 Due to technical limitations and potential paradoxes, the load ordering won't be taken into account if your plugin is dependended on by another plugin, as it will be overriden by whatever order the plugin has its dependencies listed in.
 

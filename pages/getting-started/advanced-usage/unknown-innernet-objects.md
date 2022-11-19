@@ -9,7 +9,7 @@ Each prefab is identified by a hard-coded spawn type.
 ## Custom Objects
 Hindenburg does, however, allow you to run your server to support any custom objects that clients may use.
 
-> Note that since objects are a host-operation, you will need to disable {@page Server-as-a-Host} for this. Alternatively, check out the {@page Custom Innernet Objects} to be able to write your own host-logic for your objects on the server.
+> Note that since objects are a host-operation, you will need to disable {@page ../using-hindenburg/server-as-a-host.md} for this. Alternatively, check out the {@page ../../plugins/advanced/custom-innernet-objects.md} to be able to write your own host-logic for your objects on the server.
 
 Through the {@link AdvancedRoomOptions} room configuration:
 ```json
@@ -43,4 +43,4 @@ or alternatively, the general:
 ## Plugins
 As these objects will be incompatible with Server-as-a-Host, Hindenburg also allows you (or plugin developers) to write the host logic for custom/modded objects on the server, allowing Server-as-a-Host to function correctly.
 
-Check out the {@page Custom Innernet Objects} page for more information.
+Check out the {@page ../../plugins/advanced/custom-innernet-objects.md} page for more information.

@@ -14,7 +14,7 @@ The "fake text" effect works by abusing two facts of Among Us:
 In particular, the names can follow [TextMeshPro](http://digitalnativestudios.com/textmeshpro/docs/rich-text/#page), meaning we can add some styles to the text, like in the screenshot above.
 
 ## Create the plugin
-Of course, you'll need to create a plugin to write your code. Have a look at the {@page Creating a Plugin} page to get started.
+Of course, you'll need to create a plugin to write your code. Have a look at the {@page ../creating-a-plugin.md} page to get started.
 
 Or, in your Hindenburg directory, just write `yarn plugins create floating-text` in a command prompt.
 

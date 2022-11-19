@@ -1,6 +1,6 @@
 Creating a custom role in Hindenburg is a surprisingly light concept, although that's only because most of your role logic (abilities, buttons, etc.) is done in the {@link PlayerControl} innernet object, such as the {@link PlayerControl.shapeshift} method.
 
-> Check out the {@page Custom Innernet Objects} or {@page Handling Custom RPCs} for more information.
+> Check out the {@page ./custom-innernet-objects.md} or {@page ./handling-custom-rpcs.md} for more information.
 
 ## Notes for Modders
 Note that this is _only_ a server-side construct, custom roles must also be added to each client using a client mod.
@@ -31,7 +31,7 @@ export class FunThingsPlugin extends WorkerPlugin {
 ```
 
 ## Role Abilities
-As noted above, you will have to implement role abilities/buttons either by extending the {@link PlayerControl} Innernet Object with your own {@page Custom Innernet Object | Custom PlayerControl object), or by hooking into RPCs recieved with {@page Handling Custom RPCs} and sending yourself.
+As noted above, you will have to implement role abilities/buttons either by extending the {@link PlayerControl} Innernet Object with your own {@page ./custom-innernet-objects.md Custom PlayerControl object), or by hooking into RPCs recieved with {@page ./handling-custom-rpcs.md} and sending yourself.
 
 If you're making a full mod and not intending on having any other mods with conflicting roles, you should extend {@link PlayerControl} and implement your own rpc handlers and methods.
 

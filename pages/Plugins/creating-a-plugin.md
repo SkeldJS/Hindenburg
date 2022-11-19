@@ -8,7 +8,7 @@ Hindenburg can quickly generate a plugin template with the `yarn plugins create`
 
 ![plugin template creation gif](https://user-images.githubusercontent.com/60631511/144479766-bb8ff4fc-e922-4c00-93b5-364ab219beab.gif)
 
-> You can change where plugins are created with the {@page Environment Variables | `HINDENBURG_PLUGINS`} environment variable.
+> You can change where plugins are created with the {@page ../getting-started/configuration/environment-variables.md `HINDENBURG_PLUGINS`} environment variable.
 
 ### TypeScript
 It's highly recommended to use TypeScript in your plugins. Both SkeldJS and Hindenburg are built with TypeScript, and while it is possible to use JavaScript, you will not have nearly the same developer experience with the types and information that Typescript can provide you.
@@ -30,7 +30,7 @@ Probably best to use Git if you plan on publishing your plugin, especially if yo
 ### Plugin Type
 Hindenburg has 2 types of plugins, Worker plugins and Room plugins. Worker plugins are global across all rooms, while Room plugins are instantiated per room and are scoped, only receiving events from that specific room.
 
-> Learn more about different plugin types and find out which one you're looking for with the {@page Worker and Room Plugins} page.
+> Learn more about different plugin types and find out which one you're looking for with the {@page ./worker-and-room-plugins.md} page.
 
 ## Development
-See the page on {@page Developing Plugins} for information on developing plugins.
+See the page on {@page ./developing-plugins.md} for information on developing plugins.

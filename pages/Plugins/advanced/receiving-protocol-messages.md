@@ -2,7 +2,7 @@ While the SkeldJS API covers almost every aspect of Among Us, it might still be 
 
 > You can only override and create messages handlers on worker plugins.
 
-> If you're writing custom innernet objects with custom Rpc methods, check out the {@page Handling Custom RPCs} page for a much more suitable API.
+> If you're writing custom innernet objects with custom Rpc methods, check out the {@page ./handling-custom-rpcs.md} page for a much more suitable API.
 
 ## Attaching Listeners
 The {@link MessageHandler | `MessageHandler`} decorator can be used with a method to denote it as being used to listen for messages.
@@ -20,7 +20,7 @@ export class FunThingsPlugin extends WorkerPlugin {
 
 You can pass in [any valid protocol message class](https://skeld.js.org/modules/protocol.html) as the first argument.
 
-> If you're using custom protocol messages, you may have to register them with Hindenburg; check out the {@page Custom Protocol Messages} page.
+> If you're using custom protocol messages, you may have to register them with Hindenburg; check out the {@page ./custom-protocol-messages.md} page.
 
 The body of your method can be marked as [_async_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function), and takes in 2 parameters:
 #### `message`
@@ -51,7 +51,7 @@ export class FunThingsPlugin extends WorkerPlugin {
 
 This will clear any other previously attached listeners before attaching, and provide you with those in the method via the additional `originalListeners` argument.
 
-> Note that this will also override any listeners from other plugins; including those that were overrides themselves. If you want to make sure that yours reigns supreme and is not overriden, make sure your {@page Load Ordering | plugin load ordering} is on "last". To be curteous to those plugins, however, please call them using the `originalListeners` argument.
+> Note that this will also override any listeners from other plugins; including those that were overrides themselves. If you want to make sure that yours reigns supreme and is not overriden, make sure your {@page ../load-ordering.md plugin load ordering} is on "last". To be curteous to those plugins, however, please call them using the `originalListeners` argument.
 
 ### `originalListeners`
 An array containing every other previous listener before they were overriden by your method.

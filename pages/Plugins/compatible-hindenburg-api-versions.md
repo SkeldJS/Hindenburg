@@ -13,7 +13,7 @@ You can set which versions of Hindenburg that your plugin is compatible with in 
 
 This allows you to specify exactly which versions of Hindenburg will work with your plugin.
 
-By default, if you're using the {@page Creating a Plugin | template creator} script, this will be set to whichever version of Hindenburg you're currently running with the last segment (the [patch](https://semver.org/) version) replaced with a wildcard `*`. This runs under the assumption that Hindenburg's API should remainly relatively stable throughout each patch, whereas it might change more drastically between each minor update.
+By default, if you're using the {@page ./creating-a-plugin.md template creator} script, this will be set to whichever version of Hindenburg you're currently running with the last segment (the [patch](https://semver.org/) version) replaced with a wildcard `*`. This runs under the assumption that Hindenburg's API should remainly relatively stable throughout each patch, whereas it might change more drastically between each minor update.
 
 ## Specific Versions
 If you know _exactly_ which versions of Hindenburg your plugin supports, you can get creative with the glob pattern:

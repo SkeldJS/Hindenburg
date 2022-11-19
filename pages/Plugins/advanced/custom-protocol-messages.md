@@ -1,6 +1,6 @@
 If you have a mod, it might be of interest to create custom protocol messages to communicate additional information between your client and the server.
 
-> See {@page Receiving Protocol Messages} for information on actaully receiving your messages from the client. This page is just to declare them.
+> See {@page ./receiving-protocol-messages.md} for information on actaully receiving your messages from the client. This page is just to declare them.
 
 ## Message Types
 As per how the Among Us protocol is structured, messages can be declared on certain levels and as children of certain parent messages. For example, messages that are identified by the first byte are called _option_ packets, although you most likely won't be using these as they're part of [Hazel](https://github.com/willardf/Hazel-Networking) itself.
@@ -59,9 +59,9 @@ export class MouseMessagerPlugin extends WorkerPlugin {
 }
 ```
 
-> Note that custom messages can _only_ be instantiated and used on a {@page Worker and Room Plugins | worker plugin}.
+> Note that custom messages can _only_ be instantiated and used on a {@page ../worker-and-room-plugins.md worker plugin}.
 
-> Check out {@page Receiving Protocol Messages} to learn how to handle your custom messages sent by clients.
+> Check out {@page ./receiving-protocol-messages.md} to learn how to handle your custom messages sent by clients.
 
 ## Sending custom messages
 Sending custom messages in Hindenburg is just as simple as instantiating the class, for example:

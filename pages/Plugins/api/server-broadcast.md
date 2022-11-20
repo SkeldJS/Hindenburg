@@ -1,6 +1,6 @@
 A common way of conveying information to players is through the chat box - specifically, broadcasting messages sent by the server (or sent only to a single player), where you can choose the cosmetics of the player.
 
-> See {@page Chat Commands} for examples on how to respond to chat commands
+> See {@page ./chat-commands.md} for examples on how to respond to chat commands
 
 ## Send chat message
 You can use the {@link BaseRoom.sendChat} method for various
@@ -46,7 +46,7 @@ room.sendChat(message, {
 > Because of technical limitations, you can only send messages on the left if there is more than one player in the room.
 
 ## Recipients
-You don't have to use {@page Player Perspectives} to only show chat commands for certain players from the server, just pass an array of recipients in the `targets: []` array in your `sendChat` options, for example:
+You don't have to use {@page ../advanced/player-perspectives.md} to only show chat commands for certain players from the server, just pass an array of recipients in the `targets: []` array in your `sendChat` options, for example:
 ```ts
 room.sendChat("experiencing life through he postmodern lens", {
     targets: [ room.host ]

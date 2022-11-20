@@ -14,15 +14,14 @@ import {
     SendOption,
     QuickChatMode,
     Platform,
-    GameDataMessageTag,
     GameOverReason
 } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
     AlterGameMessage,
+    BaseGameDataMessage,
     BaseRootPacket,
-    DataMessage,
     DisconnectPacket,
     EndGameMessage,
     GameDataMessage,
@@ -42,7 +41,6 @@ import {
     ReliablePacket,
     RpcMessage,
     StartGameMessage,
-    UnknownGameDataMessage,
     UnknownRootMessage
 } from "@skeldjs/protocol";
 
@@ -61,7 +59,7 @@ import {
     ReactorModDeclarationMessage
 } from "@skeldjs/reactor";
 
-import { CustomNetworkTransform, Networkable } from "@skeldjs/core";
+import {  Networkable } from "@skeldjs/core";
 
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
@@ -1221,197 +1219,119 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
         });
 
-        this.decoder.on(GameDataMessage, async (message, direction, { sender, reliable }) => {
+        this.decoder.on(GameDataMessage, async (message, _direction, { sender, reliable }) => {
             const player = sender.getPlayer();
 
-            if (!player)
+            if (!player || !sender.room)
                 return;
 
-            const notCanceled = [];
-            // 'player' will be a player object in the perspective, see Connection.getPlayer
-            const playerPov = player.room instanceof Perspective
-                ? player.room
-                : undefined;
+            if (player.room instanceof Perspective) {
+                const notCanceled: BaseGameDataMessage[] = [];
+                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, sender);
 
-            for (let i = 0; i < message.children.length; i++) {
-                const child = message.children[i];
+                if (notCanceled.length > 0)
+                    await player.room.broadcastMessages(notCanceled, [], undefined, [ sender ], reliable);
 
-                if (child.canceled)
-                    continue;
+                const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message.children, MessageDirection.Serverbound, sender);
 
-                // don't broadcast it if it's unknown
-                if (!this.config.socket.acceptUnknownGameData && child instanceof UnknownGameDataMessage)
-                    continue;
+                const notCanceledRoom: BaseGameDataMessage[] = [];
+                await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, sender);
 
-                // send message to the player's perspective or their room
-                if (playerPov) {
-                    await playerPov.decoder.emitDecoded(child, direction, sender);
-                } else {
-                    await sender.room!.decoder.emitDecoded(child, direction, sender);
+                if (notCanceledRoom.length > 0)
+                    await player.room.parentRoom.broadcastMessages(notCanceledRoom, [], undefined, [ sender ], reliable);
+
+                for (let i = 0; i < player.room.parentRoom.activePerspectives.length; i++) {
+                    const activePerspective: Perspective = player.room.parentRoom.activePerspectives[i];
+                    if (activePerspective === player.room)
+                        continue;
+
+                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, sender);
+                    const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
+                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
+
+                    if (notCanceledPerspectiveGameData.length > 0) {
+                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ sender ], reliable);
+                    }
                 }
+            } else {
+                for (let i = 0; i < player.room.activePerspectives.length; i++) {
+                    const activePerspective: Perspective = player.room.activePerspectives[i];
 
-                if (child.canceled)
-                    continue;
+                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message.children, MessageDirection.Serverbound, sender);
+                    const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
+                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
 
-                if (!reliable && child.messageTag === GameDataMessageTag.Data && !playerPov) {
-                    const dataMessage = child as DataMessage;
-                    if (dataMessage.data.byteLength === 10) {
-                        const component = sender.room?.netobjects.get(dataMessage.netId);
-                        if (component instanceof CustomNetworkTransform) {
-                            await sender.room?.broadcastMovement(component, dataMessage.data);
-                            continue;
-                        }
+                    if (notCanceledPerspectiveGameData.length > 0) {
+                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ sender ], reliable);
                     }
                 }
 
-                notCanceled.push(child);
-            }
+                const notCanceled: BaseGameDataMessage[] = [];
+                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, sender);
 
-            if (playerPov) {
-                // match messages against the perspective's outgoing filter and broadcast those messages to the base room (outgoing perspective -> room)
-                const povNotCanceled = [];
-                for (let i = 0; i < notCanceled.length; i++) {
-                    const child = notCanceled[i];
-
-                    (child as any)._canceled = false; // child._canceled is private
-                    await playerPov.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, playerPov);
-
-                    if (child.canceled)
-                        continue;
-
-                    povNotCanceled.push(child);
-                }
-
-                if (povNotCanceled.length) {
-                    // broadcast messages to the room that matched against the outgoing filter
-                    await sender.room?.broadcastMessages(povNotCanceled, [], undefined, [sender], reliable);
-                    await sender.room?.broadcastToPerspectives(sender, povNotCanceled, reliable);
-                }
-
-                if (notCanceled.length) {
-                    // broadcast messages to the player's pov that weren't canceled above
-                    await playerPov.broadcastMessages(notCanceled, [], undefined, [sender], reliable);
-                }
-            } else {
-                await sender.room?.broadcastToPerspectives(sender, notCanceled, reliable);
-
-                if (notCanceled.length) {
-                    // broadcast all messages normally
-                    await sender.room?.broadcastMessages(notCanceled, [], undefined, [sender], reliable);
-                }
+                if (notCanceled.length > 0)
+                    await player.room.broadcastMessages(notCanceled, [], undefined, [ sender ], reliable);
             }
         });
 
-        this.decoder.on(GameDataToMessage, async (message, direction, { sender }) => {
+        this.decoder.on(GameDataToMessage, async (message, _direction, { sender, reliable }) => {
             const player = sender.getPlayer();
 
             if (!sender.room || !player)
                 return;
 
-            const notCanceled = [];
-            if (message.recipientid === SpecialClientId.Server && sender.room.config.serverAsHost) {
-                const playerPov = player.room instanceof Perspective
-                    ? player.room
-                    : undefined;
+            if (message.recipientid === SpecialClientId.Server) {
+                if (player.room instanceof Perspective) {
+                    const notCanceled: BaseGameDataMessage[] = [];
+                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, sender);
 
-                for (let i = 0; i < message._children.length; i++) {
-                    const child = message._children[i];
+                    const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message._children, MessageDirection.Serverbound, sender);
 
-                    if (child.canceled)
-                        continue;
+                    const notCanceledRoom: BaseGameDataMessage[] = [];
+                    await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, sender);
 
-                    // don't broadcast it if it's unknown
-                    if (!this.config.socket.acceptUnknownGameData && child instanceof UnknownGameDataMessage)
-                        continue;
-
-                    // send message to the player's perspective or their room
-                    if (playerPov) {
-                        await playerPov.decoder.emitDecoded(child, direction, sender);
-                    } else {
-                        await sender.room.decoder.emitDecoded(child, direction, sender);
-                    }
-
-                    if (child.canceled)
-                        continue;
-
-                    notCanceled.push(child);
-                }
-
-                if (playerPov) {
-                    for (let i = 0; i < notCanceled.length; i++) {
-                        const child = notCanceled[i];
-
-                        (child as any)._canceled = false; // reset the message's canceled state
-
-                        // match the message against the perspective's outgoing decoder to check whether it should get sent to the main room
-                        await playerPov.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, sender);
-
-                        if (child.canceled) {
-                            (child as any)._canceled = false;
-                            continue;
-                        }
-
-                        // send message to the room
-                        await playerPov.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, sender);
-
-                        if (child.canceled) {
-                            (child as any)._canceled = false;
-                            continue;
-                        }
-                    }
-                } else {
-                    for (let i = 0; i < player.room!.activePerspectives.length; i++) {
-                        const activePerspective = player.room.activePerspectives[i];
-
-                        if (!activePerspective)
-                            continue;
-
+                    for (let i = 0; i < player.room.parentRoom.activePerspectives.length; i++) {
+                        const activePerspective: Perspective = player.room.parentRoom.activePerspectives[i];
                         if (activePerspective === player.room)
                             continue;
 
-                        // get this player's player object in the perspective in question
-                        const povPlayer = activePerspective.players.get(player.clientId);
+                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, sender);
+                        const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
+                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
+                    }
+                } else {
+                    const notCanceled: BaseGameDataMessage[] = [];
+                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, sender);
 
-                        if (!povPlayer) // if the sender is already in this perspective, we can skip
+                    for (let i = 0; i < player.room.activePerspectives.length; i++) {
+                        const activePerspective: Perspective = player.room.activePerspectives[i];
+                        if (activePerspective === player.room)
                             continue;
 
-                        for (let i = 0; i < notCanceled.length; i++) {
-                            const child = notCanceled[i];
-
-                            (child as any)._canceled = false; // reset the message's canceled state
-
-                            // match the message against the perspective's incoming decoder to check whether it should get sent there
-                            await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, povPlayer);
-
-                            if (child.canceled) {
-                                (child as any)._canceled = false;
-                                continue;
-                            }
-
-                            // send message to the perspective
-                            await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, sender);
-
-                            if (child.canceled) {
-                                (child as any)._canceled = false;
-                                continue;
-                            }
-                        }
+                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message._children, MessageDirection.Serverbound, sender);
+                        const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
+                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
                     }
                 }
                 return;
             }
 
-            const recipientConnection = sender.room!.connections.get(message.recipientid);
+            if (player.room.config.serverAsHost && message.recipientid !== SpecialClientId.Temp) {
+                const client = player.room.players.get(message.recipientid);
+                player.room.logger.warn("Got recipient of game data from %s to %s despite room being in Server-as-a-Host",
+                    sender, client || "id " + message.recipientid);
+            }
 
-            if (!recipientConnection)
+            const connection = player.room.connections.get(message.recipientid);
+            if (!connection) {
+                if (!(message.recipientid in SpecialClientId)) {
+                    player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
+                        sender, message.recipientid);
+                }
                 return;
+            }
 
-            const recipientPlayer = recipientConnection.getPlayer();
-
-            if (!recipientPlayer)
-                return;
-
-            await player.room.broadcast(message._children, [], [ recipientPlayer ]);
+            await player.room.broadcastMessages(message._children, [], [ connection ], undefined, reliable);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, { sender }) => {

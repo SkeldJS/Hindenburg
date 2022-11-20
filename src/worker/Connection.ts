@@ -19,7 +19,7 @@ import { fmtCode } from "../util/fmtCode";
 import { fmtConfigurableLog } from "../util/fmtLogFormat";
 
 import { Worker } from "./Worker";
-import { Room } from "./Room";
+import { BaseRoom } from "./BaseRoom";
 
 export class ClientMod {
     constructor(
@@ -205,7 +205,7 @@ export class Connection {
     /**
      * The room that this client is in.
      */
-    room?: Room;
+    room?: BaseRoom;
 
     constructor(
         /**

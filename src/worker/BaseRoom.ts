@@ -20,6 +20,7 @@ import {
 import {
     AlterGameMessage,
     BaseGameDataMessage,
+    BaseMessage,
     BaseRootMessage,
     ComponentSpawnData,
     DataMessage,
@@ -987,7 +988,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             if (clientsToExclude.has(connection))
                 continue;
 
-            if (this.playerPerspectives?.has(connection.clientId))
+            if (this.playerPerspectives.has(connection.clientId))
                 continue;
 
             const ev = await this.emit(
@@ -1118,83 +1119,49 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     async broadcast(
-        gamedata: BaseGameDataMessage[],
+        gameData: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],
         include?: PlayerDataResolvable[],
         exclude?: PlayerDataResolvable[],
         reliable = true
     ) {
-        const includeConnections = include ? this.getRealConnections(include) : undefined;
+        const includedConnections = include ? this.getRealConnections(include) : undefined;
         const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
-        const promises = [];
+        this.broadcastMessages(gameData, payloads, includedConnections, excludedConnections, reliable);
 
-        if (!this.worker.config.optimizations.disablePerspectives) {
-            for (let i = 0; i < this.activePerspectives.length; i++) {
-                const activePerspective = this.activePerspectives[i];
+        for (let i = 0; i < this.activePerspectives.length; i++) {
+            const otherPerspective = this.activePerspectives[i];
 
-                const gamedataNotCanceled = [];
-                const payloadsNotCanceled = [];
-                for (let i = 0; i < gamedata.length; i++) {
-                    const child = gamedata[i];
+            const notCanceledOtherIncomingGameData = await otherPerspective.getNotCanceledIncoming(gameData, MessageDirection.Clientbound, undefined);
+            const notCanceledOtherIncomingPayloads = await otherPerspective.getNotCanceledIncoming(payloads, MessageDirection.Clientbound, undefined);
 
-                    if (activePerspective.messageNonce.has(child)) {
-                        activePerspective.messageNonce.delete(child);
-                        continue;
-                    }
+            const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
+            const notCanceledPerspectivePayloads: BaseRootMessage[] = [];
+            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, undefined);
+            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, undefined);
 
-                    (child as any)._canceled = false; // child._canceled is private
-                    await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                    if (child.canceled) {
-                        (child as any)._canceled = false;
-                        continue;
-                    }
-
-                    if (!includeConnections && !excludedConnections) {
-                        await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                        if (child.canceled) {
-                            (child as any)._canceled = false;
-                            continue;
-                        }
-                    }
-
-                    gamedataNotCanceled.push(child);
-                }
-
-                for (let i = 0; i < payloads.length; i++) {
-                    const child = payloads[i];
-
-                    (child as any)._canceled = false; // child._canceled is private
-                    await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                    if (child.canceled) {
-                        (child as any)._canceled = false;
-                        continue;
-                    }
-
-                    if (!includeConnections && !excludedConnections) {
-                        await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                        if (child.canceled) {
-                            (child as any)._canceled = false;
-                            continue;
-                        }
-                    }
-
-                    payloadsNotCanceled.push(child);
-                }
-
-                if (gamedataNotCanceled.length || payloadsNotCanceled.length) {
-                    promises.push(activePerspective.broadcastMessages(gamedataNotCanceled, payloadsNotCanceled, includeConnections, excludedConnections, reliable));
-                }
+            if (notCanceledPerspectiveGameData.length > 0 || notCanceledPerspectivePayloads.length > 0) {
+                otherPerspective.broadcastMessages(notCanceledPerspectiveGameData, notCanceledPerspectivePayloads, includedConnections, excludedConnections, reliable);
             }
         }
+    }
 
-        promises.push(this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable));
+    async processMessagesAndGetNotCanceled(messages: BaseMessage[], notCanceled: BaseMessage[], sender: Connection|undefined) {
+        for (const message of messages) {
+            const canceledBefore = message["_canceled"];
+            message["_canceled"] = false;
 
-        await Promise.all(promises);
+            await this.decoder.emit(message, MessageDirection.Clientbound, sender);
+
+            if (message["_canceled"]) {
+                message["_canceled"] = canceledBefore;
+                continue;
+            }
+            message["_canceled"] = canceledBefore;
+
+            notCanceled.push(message);
+        }
     }
 
     async setCode(code: number|string): Promise<void> {
@@ -2227,11 +2194,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[]): Perspective {
-        throw new Error("Method not implemented on base room");
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
         throw new Error("Method not implemented on base room");
     }
 

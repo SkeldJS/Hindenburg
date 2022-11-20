@@ -56,7 +56,7 @@ import {
     GameDataMessage,
     GameSettings,
     JoinGameMessage,
-    MessageDirection,
+    BaseMessage,
     PlatformSpecificData,
     ReliablePacket,
     RemovePlayerMessage,
@@ -73,7 +73,8 @@ import {
     SetVisorMessage,
     SnapToMessage,
     SpawnMessage,
-    SyncSettingsMessage
+    SyncSettingsMessage,
+    MessageDirection
 } from "@skeldjs/protocol";
 
 import { HazelReader, HazelWriter, Vector2 } from "@skeldjs/util";
@@ -86,6 +87,7 @@ import { Logger } from "../logger";
 
 import { Worker } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
+import { Connection } from "./Connection";
 
 export type AllSystems = Map<SystemType, SystemStatus<any, any>>;
 
@@ -175,7 +177,7 @@ export class PerspectiveFilter extends MasketDecoder {
  * ```
  */
 export class Perspective extends BaseRoom {
-    messageNonce: Set<BaseGameDataMessage>;
+    messageNonce: Set<BaseMessage>;
 
     /**
      * @internal
@@ -649,133 +651,118 @@ export class Perspective extends BaseRoom {
     }
 
     async broadcast(
-        gamedata: BaseGameDataMessage[],
+        gameData: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],
         include?: PlayerDataResolvable[],
         exclude?: PlayerDataResolvable[],
         reliable = true
     ) {
-        const includeConnections = include ? this.getRealConnections(include) : undefined;
+        const includedConnections = include ? this.getRealConnections(include) : undefined;
         const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
-        const povNotCanceledGamedata = [];
-        for (let i = 0; i < gamedata.length; i++) {
-            const child = gamedata[i];
+        const notCanceledOutgoingGameData = await this.getNotCanceledOutgoing(gameData, MessageDirection.Clientbound, undefined);
+        const notCanceledOutgoingPayloads = await this.getNotCanceledOutgoing(payloads, MessageDirection.Clientbound, undefined);
 
-            (child as any)._canceled = false; // child._canceled is private
-            await this.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
+        this.broadcastMessages(gameData, payloads, includedConnections, excludedConnections, reliable);
 
-            if (child.canceled) {
-                (child as any)._canceled = false; // child._canceled is private
+        if (notCanceledOutgoingGameData.length > 0 && notCanceledOutgoingPayloads.length > 0) {
+            const notCanceledRoomGameData: BaseGameDataMessage[] = [];
+            const notCanceledRoomPayloads: BaseRootMessage[] = [];
+            await this.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoingGameData, notCanceledRoomGameData, undefined);
+            await this.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoingPayloads, notCanceledRoomPayloads, undefined);
+
+            if (notCanceledRoomGameData.length > 0 || notCanceledRoomPayloads.length > 0)
+                this.parentRoom.broadcastMessages(notCanceledRoomGameData, notCanceledRoomPayloads, includedConnections, excludedConnections, reliable);
+
+            for (let i = 0; i < this.parentRoom.activePerspectives.length; i++) {
+                const otherPerspective = this.parentRoom.activePerspectives[i];
+                if (otherPerspective === this)
+                    continue;
+
+                const notCanceledOtherIncomingGameData = await otherPerspective.getNotCanceledIncoming(notCanceledOutgoingGameData, MessageDirection.Clientbound, undefined);
+                const notCanceledOtherIncomingPayloads = await otherPerspective.getNotCanceledIncoming(notCanceledOutgoingPayloads, MessageDirection.Clientbound, undefined);
+
+                const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
+                const notCanceledPerspectivePayloads: BaseRootMessage[] = [];
+                await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, undefined);
+                await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, undefined);
+
+                if (notCanceledPerspectiveGameData.length > 0 || notCanceledPerspectivePayloads.length > 0) {
+                    otherPerspective.broadcastMessages(notCanceledPerspectiveGameData, notCanceledPerspectivePayloads, includedConnections, excludedConnections, reliable);
+                }
+            }
+        }
+    }
+
+    async getNotCanceledIncoming(messages: BaseMessage[], direction: MessageDirection, sender?: Connection) {
+        const notCanceled = [];
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
+
+            if (this.messageNonce.has(message)) {
+                this.messageNonce.delete(message);
                 continue;
             }
 
-            if (!includeConnections && !excludedConnections) {
-                await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                if (child.canceled) {
-                    (child as any)._canceled = false; // child._canceled is private
-                    continue;
-                }
-            }
-
-            povNotCanceledGamedata.push(child);
-        }
-
-        const povNotCanceledPayload = [];
-        for (let i = 0; i < payloads.length; i++) {
-            const child = payloads[i];
-
-            (child as any)._canceled = false; // child._canceled is private
-            await this.outgoingFilter.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-            if (child.canceled) {
-                (child as any)._canceled = false; // child._canceled is private
+            if (await this.isCanceledIncoming(message, direction, sender))
                 continue;
-            }
 
-            if (!includeConnections && !excludedConnections) {
-                await this.parentRoom.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
+            notCanceled.push(message);
+        }
+        return notCanceled;
+    }
 
-                if (child.canceled) {
-                    (child as any)._canceled = false; // child._canceled is private
-                    continue;
-                }
-            }
+    async getNotCanceledOutgoing(messages: BaseMessage[], direction: MessageDirection, sender?: Connection) {
+        const notCanceled = [];
+        for (let i = 0; i < messages.length; i++) {
+            const message = messages[i];
 
-            povNotCanceledPayload.push(child);
+            if (this.messageNonce.has(message))
+                continue;
+
+            if (await this.isCanceledOutgoing(message, direction, sender))
+                continue;
+
+            notCanceled.push(message);
+        }
+        return notCanceled;
+    }
+
+    async isCanceledIncoming(message: BaseMessage, direction: MessageDirection, sender?: Connection): Promise<boolean> {
+        if (message instanceof RpcMessage) {
+            return this.isCanceledIncoming(message.data, direction, sender);
         }
 
-        const promises = [];
+        const canceledBefore = message["_canceled"];
+        message["_canceled"] = false;
 
-        if (povNotCanceledGamedata.length > 0 || povNotCanceledPayload.length > 0) {
-            const alreadySentIn: Set<Perspective> = new Set;
+        await this.incomingFilter.emit(message, direction, sender);
 
-            if (includeConnections) {
-                for (const recipient of includeConnections) {
-                    if (recipient && recipient.room !== this) {
-                        if (recipient.room instanceof Perspective) { // match messages against the recipient player's perspective's incoming filter
-                            if (alreadySentIn.has(recipient.room))
-                                continue;
-
-                            const extraNotCanceledGamedata = [];
-                            const extraNotCanceledPayload = [];
-
-                            for (let i = 0; i < povNotCanceledGamedata.length; i++) {
-                                const child = povNotCanceledGamedata[i];
-
-                                (child as any)._canceled = false; // child._canceled is private
-                                await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
-
-                                if (child.canceled) {
-                                    (child as any)._canceled = false; // child._canceled is private
-                                    continue;
-                                }
-
-                                await recipient.room.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                                if (child.canceled) {
-                                    (child as any)._canceled = false; // child._canceled is private
-                                    continue;
-                                }
-
-                                extraNotCanceledGamedata.push(child);
-                            }
-
-                            for (let i = 0; i < povNotCanceledPayload.length; i++) {
-                                const child = povNotCanceledPayload[i];
-
-                                (child as any)._canceled = false; // child._canceled is private
-                                await recipient.room.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, recipient);
-
-                                if (child.canceled) {
-                                    (child as any)._canceled = false; // child._canceled is private
-                                    continue;
-                                }
-
-                                await recipient.room.decoder.emitDecoded(child, MessageDirection.Serverbound, undefined);
-
-                                if (child.canceled) {
-                                    (child as any)._canceled = false; // child._canceled is private
-                                    continue;
-                                }
-
-                                extraNotCanceledPayload.push(child);
-                            }
-
-                            promises.push(recipient.room.broadcastMessages(extraNotCanceledGamedata, extraNotCanceledPayload, [ recipient ], undefined, reliable));
-                            alreadySentIn.add(recipient.room);
-                        }
-                    }
-                }
-            }
+        if (message["_canceled"]) {
+            message["_canceled"] = canceledBefore;
+            return true;
         }
 
-        promises.push(this.broadcastMessages(gamedata, payloads, includeConnections, excludedConnections, reliable));
-        if (povNotCanceledGamedata.length > 0 || povNotCanceledPayload.length > 0) {
-            promises.push(this.parentRoom.broadcastMessages(povNotCanceledGamedata, povNotCanceledPayload, undefined, undefined, reliable));
+        return false;
+    }
+
+    async isCanceledOutgoing(message: BaseMessage, direction: MessageDirection, sender?: Connection): Promise<boolean> {
+        if (message instanceof RpcMessage) {
+            return this.isCanceledOutgoing(message.data, direction, sender);
         }
-        await Promise.all(promises);
+
+        const canceledBefore = message["_canceled"];
+        message["_canceled"] = false;
+
+        await this.outgoingFilter.emit(message, direction, sender);
+
+        if (message["_canceled"]) {
+            message["_canceled"] = canceledBefore;
+            return true;
+        }
+        message["_canceled"] = canceledBefore;
+
+        return false;
     }
 
     /**

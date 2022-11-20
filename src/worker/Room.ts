@@ -1,9 +1,5 @@
 import { Networkable, PlayerData } from "@skeldjs/core";
-import {
-    BaseGameDataMessage,
-    GameSettings,
-    MessageDirection
-} from "@skeldjs/protocol";
+import { GameSettings } from "@skeldjs/protocol";
 
 import chalk from "chalk";
 
@@ -12,7 +8,6 @@ import { RoomsConfig } from "../interfaces";
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
 import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
-import { Connection } from "./Connection";
 import { Logger } from "../logger";
 import { fmtCode } from "../util/fmtCode";
 
@@ -117,72 +112,6 @@ export class Room extends BaseRoom {
         this.logger.info("Created perspective: %s", perspective);
 
         return perspective;
-    }
-
-    /**
-     * Broadcast gamedata messages to each active perspective, respecting their
-     * incoming filter. As a necessecity, this also broadcasts these messages to
-     * players in the perpsectives whereas they would not normally have received
-     * them.
-     * @param connection The connection that sent these messages.
-     * @param messages The messages in question.
-     * @param reliable Whether these messages should be sent reliably (i.e. movement packets would be unreliable.
-     */
-    async broadcastToPerspectives(connection: Connection, messages: BaseGameDataMessage[], reliable: boolean) {
-        if (this.worker.config.optimizations.disablePerspectives) {
-            return;
-        }
-
-        const player = connection.getPlayer();
-
-        if (!player)
-            return;
-
-        for (let i = 0; i < connection.room!.activePerspectives.length; i++) {
-            const activePerspective = connection.room?.activePerspectives[i];
-
-            if (!activePerspective)
-                continue;
-
-            if (activePerspective === player.room)
-                continue;
-
-            // get this player's player object in the perspective in question
-            const povPlayer = activePerspective.players.get(player.clientId);
-
-            if (!povPlayer) // if the sender is already in this perspective, we can skip
-                continue;
-
-            const povNotCanceled = [];
-            for (let i = 0; i < messages.length; i++) {
-                const child = messages[i];
-
-                (child as any)._canceled = false; // reset the message's canceled state
-
-                // match the message against the perspective's incoming decoder to check whether it should get sent there
-                await activePerspective.incomingFilter.emitDecoded(child, MessageDirection.Serverbound, povPlayer);
-
-                if (child.canceled) {
-                    (child as any)._canceled = false;
-                    continue;
-                }
-
-                // send message to the perspective
-                await activePerspective.decoder.emitDecoded(child, MessageDirection.Serverbound, connection);
-
-                if (child.canceled) {
-                    (child as any)._canceled = false;
-                    continue;
-                }
-
-                povNotCanceled.push(child);
-            }
-
-            if (povNotCanceled.length) {
-                // broadcast all messages that weren't canceled to connections in this perspective
-                await activePerspective.broadcastMessages(povNotCanceled, [], undefined, [connection], reliable);
-            }
-        }
     }
 
     /**

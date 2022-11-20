@@ -19,30 +19,8 @@
                         "source": "installation.md"
                     },
                     {
-                        "title": "Configuration",
-                        "source": "configuration.md"
-                    },
-                    {
-                        "title": "Contributing",
-                        "source": "contributing.md"
-                    },
-                    {
-                        "title": "Comparison with Impostor",
-                        "source": "comparison-with-impostor.md"
-                    },
-                    {
-                        "title": "Advanced Usage",
-                        "childrenDir": "advanced-usage",
-                        "children": [
-                            {
-                                "title": "Unknown Innernet Objects",
-                                "source": "unknown-innernet-objects.md"
-                            },
-                            {
-                                "title": "Message Ordering",
-                                "source": "message-ordering.md"
-                            }
-                        ]
+                        "title": "Connecting to your server",
+                        "source": "connecting-to-your-server.md"
                     },
                     {
                         "title": "Configuration",
@@ -68,23 +46,45 @@
                         "childrenDir": "using-hindenburg",
                         "children": [
                             {
-                                "title": "Chat Commands",
-                                "source": "chat-commands.md"
-                            },
-                            {
-                                "title": "Interactive CLI",
-                                "source": "interactive-cli.md"
-                            },
-                            {
                                 "title": "Installing Plugins",
                                 "source": "installing-plugins.md"
                             },
                             {
                                 "title": "Server-as-a-Host",
                                 "source": "server-as-a-host.md"
+                            },
+                            {
+                                "title": "Interactive CLI",
+                                "source": "interactive-cli.md"
+                            },
+                            {
+                                "title": "Chat Commands",
+                                "source": "chat-commands.md"
                             }
                         ]
                     },
+                    {
+                        "title": "Advanced Usage",
+                        "childrenDir": "advanced-usage",
+                        "children": [
+                            {
+                                "title": "Unknown Innernet Objects",
+                                "source": "unknown-innernet-objects.md"
+                            },
+                            {
+                                "title": "Message Ordering",
+                                "source": "message-ordering.md"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Contributing",
+                        "source": "contributing.md"
+                    },
+                    {
+                        "title": "Comparison with Impostor",
+                        "source": "comparison-with-impostor.md"
+                    }
                 ]
             },
             {
@@ -100,20 +100,20 @@
                         "source": "developing-plugins.md"
                     },
                     {
-                        "title": "Compatible Hindenburg API Versions",
-                        "source": "compatible-hindenburg-api-versions.md"
-                    },
-                    {
                         "title": "Publishing Plugins",
                         "source": "publishing-plugins.md"
                     },
                     {
-                        "title": "Load Ordering",
-                        "source": "load-ordering.md"
+                        "title": "Compatible Hindenburg API Versions",
+                        "source": "compatible-hindenburg-api-versions.md"
                     },
                     {
                         "title": "Worker and Room Plugins",
                         "source": "worker-and-room-plugins.md"
+                    },
+                    {
+                        "title": "Load Ordering",
+                        "source": "load-ordering.md"
                     },
                     {
                         "title": "Dependencies",
@@ -126,6 +126,40 @@
                     {
                         "title": "Lifecycle Methods",
                         "source": "lifecycle-methods.md"
+                    },
+                    {
+                        "title": "API",
+                        "childrenDir": "api",
+                        "children": [
+                            {
+                                "title": "Event Listeners",
+                                "source": "event-listeners.md"
+                            },
+                            {
+                                "title": "Chat Commands",
+                                "source": "chat-commands.md"
+                            },
+                            {
+                                "title": "CLI Commands",
+                                "source": "cli-commands.md"
+                            },
+                            {
+                                "title": "Event Targets",
+                                "source": "event-targets.md"
+                            },
+                            {
+                                "title": "End Game Intents",
+                                "source": "end-game-intents.md"
+                            },
+                            {
+                                "title": "Server Broadcast",
+                                "source": "server-broadcast.md"
+                            },
+                            {
+                                "title": "Game Codes",
+                                "source": "game-codes.md"
+                            }
+                        ]
                     },
                     {
                         "title": "Advanced",
@@ -144,54 +178,20 @@
                                 "source": "custom-protocol-messages.md"
                             },
                             {
-                                "title": "Custom Roles",
-                                "source": "custom-roles.md"
+                                "title": "Receiving Protocol Messages",
+                                "source": "receiving-protocol-messages.md"
                             },
                             {
-                                "title": "Reactor Integration",
-                                "source": "reactor-integration.md"
+                                "title": "Custom Roles",
+                                "source": "custom-roles.md"
                             },
                             {
                                 "title": "Player Perspectives",
                                 "source": "player-perspectives.md"
                             },
                             {
-                                "title": "Receiving Protocol Messages",
-                                "source": "receiving-protocol-messages.md"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "API",
-                        "childrenDir": "api",
-                        "children": [
-                            {
-                                "title": "Event Listeners",
-                                "source": "event-listeners.md"
-                            },
-                            {
-                                "title": "Chat Commands",
-                                "source": "chat-commands.md"
-                            },
-                            {
-                                "title": "Event Targets",
-                                "source": "event-targets.md"
-                            },
-                            {
-                                "title": "End Game Intents",
-                                "source": "end-game-intents.md"
-                            },
-                            {
-                                "title": "Server Broadcast",
-                                "source": "server-broadcast.md"
-                            },
-                            {
-                                "title": "CLI Commands",
-                                "source": "cli-commands.md"
-                            },
-                            {
-                                "title": "Game Codes",
-                                "source": "game-codes.md"
+                                "title": "Reactor Integration",
+                                "source": "reactor-integration.md"
                             }
                         ]
                     },
@@ -200,12 +200,12 @@
                         "childrenDir": "guides",
                         "children": [
                             {
-                                "title": "New Roles",
-                                "source": "new-roles.md"
+                                "title": "How to create a custom role",
+                                "source": "how-to-create-a-custom-role.md"
                             },
                             {
-                                "title": "Floating Text",
-                                "source": "floating-text.md"
+                                "title": "How to display floating text",
+                                "source": "how-to-display-floating-text.md"
                             }
                         ]
                     },

@@ -115,7 +115,7 @@ export type ReliableSerializable = BaseRootPacket & { nonce: number };
  */
 export interface PacketContext {
     /**
-     * The clent who sent the packet.
+     * The client who sent the packet.
      */
     sender: Connection,
     /**

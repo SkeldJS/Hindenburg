@@ -39,7 +39,7 @@ import {
     getPluginChatCommands,
     getPluginCliCommands,
     getPluginEventListeners,
-    getPluginMessageHandlers,
+    getPerspectiveFilterMessageFilters,
     getPluginReactorRpcHandlers,
     getPluginRegisteredMessages,
     isHindenburgPlugin,
@@ -51,7 +51,7 @@ import {
     getPluginRegisteredPrefabs,
     getPluginMatchmakerEndpoints,
     PluginRegisteredMatchmakerEndpoint,
-    PluginRegisteredMessageHandlerInfo,
+    PerspectiveFilterRegisteredMessageFilterInfo,
     RegisteredPrefab
 } from "../api";
 
@@ -203,7 +203,7 @@ export class LoadedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerPlu
      * All protocol message handlers that were loaded into the worker, created with
      * {@link MessageHandler}.
      */
-    loadedMessageHandlers: PluginRegisteredMessageHandlerInfo[];
+    loadedMessageHandlers: PerspectiveFilterRegisteredMessageFilterInfo[];
     /**
       * All reactor rpc message handlers that were loaded into the worker, created with
       * {@link ReactorRpcHandler}.
@@ -848,7 +848,7 @@ export class PluginLoader {
 
         for (const [, loadedPlugin] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
-                const { messageClass: messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
+                const { messageClass: messageCtr, filter: handler, options } = loadedPlugin.loadedMessageHandlers[i];
                 const method = handler.bind(loadedPlugin.pluginInstance);
                 if (options.override) {
                     const key = `${messageCtr.messageType}:${messageCtr.messageTag}` as const;
@@ -976,7 +976,7 @@ export class PluginLoader {
 
         if (loadedPlugin.isWorkerPlugin()) {
             const cliCommands = getPluginCliCommands(initPlugin);
-            const messageHandlers = getPluginMessageHandlers(initPlugin);
+            const messageHandlers = getPerspectiveFilterMessageFilters(initPlugin);
             const registeredMatchmakerEndpoints = getPluginMatchmakerEndpoints(initPlugin);
             const registeredMessages = getPluginRegisteredMessages(importedPlugin.pluginCtr);
 

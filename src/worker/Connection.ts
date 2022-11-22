@@ -3,7 +3,7 @@ import chalk from "chalk";
 
 import { DisconnectReason, Language, Platform, QuickChatMode } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
-import { ModPluginSide } from "@skeldjs/reactor";
+import { ModPluginSide } from "@skeldjs/reactor/v2";
 import { VersionInfo } from "@skeldjs/util";
 
 import {

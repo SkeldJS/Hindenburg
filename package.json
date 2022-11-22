@@ -1,7 +1,8 @@
 {
     "name": "@skeldjs/hindenburg",
-    "version": "1.1.22",
+    "version": "1.1.23",
     "main": "./dist/src/index",
+    "typings": "./src/index.ts",
     "bin": "./dist/bin/pkg.js",
     "license": "GPL-3.0-only",
     "scripts": {

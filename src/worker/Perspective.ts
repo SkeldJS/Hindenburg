@@ -61,7 +61,7 @@ import {
     ReliablePacket,
     RemovePlayerMessage,
     RpcMessage,
-    SendChatMessage,
+    Serializable,
     SetColorMessage,
     SetHatMessage,
     SetInfectedMessage,
@@ -71,13 +71,11 @@ import {
     SetSkinMessage,
     SetStartCounterMessage,
     SetVisorMessage,
-    SnapToMessage,
-    SpawnMessage,
     SyncSettingsMessage,
     MessageDirection
 } from "@skeldjs/protocol";
 
-import { HazelReader, HazelWriter, Vector2 } from "@skeldjs/util";
+import { HazelWriter, Vector2 } from "@skeldjs/util";
 
 import { chunkArr } from "../util/chunkArr";
 import { MasketDecoder } from "../util/MasketDecoder";
@@ -85,9 +83,10 @@ import { fmtCode } from "../util/fmtCode";
 
 import { Logger } from "../logger";
 
-import { Worker } from "./Worker";
+import { PacketContext } from "./Worker";
 import { BaseRoom, SpecialClientId } from "./BaseRoom";
 import { Connection } from "./Connection";
+import { getPerspectiveFilterMessageFilters, MessageFilterDirection, PerspectiveFilter } from "../api";
 
 export type AllSystems = Map<SystemType, SystemStatus<any, any>>;
 
@@ -125,16 +124,6 @@ export enum PresetFilter {
      * * {@link DespawnMessage}
      */
     ObjectUpdates
-}
-
-/**
- * Syntactic sugar for a {@link MasketDecoder}, used in perspectives as a way
- * to filter incoming and outgoing packets, see {@link Perspective.incomingFilter}.
- */
-export class PerspectiveFilter extends MasketDecoder {
-    constructor(worker: Worker) {
-        super(worker.decoder);
-    }
 }
 
 /**
@@ -179,6 +168,9 @@ export class PerspectiveFilter extends MasketDecoder {
 export class Perspective extends BaseRoom {
     messageNonce: Set<BaseMessage>;
 
+    protected incomingFilter: MasketDecoder;
+    protected outgoingFilter: MasketDecoder;
+
     /**
      * @internal
      */
@@ -192,42 +184,15 @@ export class Perspective extends BaseRoom {
          * player object is from the original {@link Room} object, rather than
          * this perspective object.
          */
-        public readonly playersPov: PlayerData[],
-        /**
-         * Filter for packets making their way into the perspective. See {@link Perspective.outgoingFilter}
-         * for handling outgoing packets.
-         *
-         * @example
-         * ```ts
-         * perspective.incomingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
-         *   message.cancel();
-         * });
-         * ```
-         */
-        public incomingFilter: PerspectiveFilter,
-        /**
-         * Filter for packets making their way out of the perspective into the room.
-         * See {@link Perspective.incomingFilter} to handle incoming packets.
-         *
-         * By default, this is different from the incoming filter. You can manually
-         * re-assign it to {@link incomingFilter} to have the same filters for
-         * both incoming and outgoing packets.
-         *
-         * @example
-         * ```ts
-         * perspective.outgoingFilter = perspective.incomingFilter;
-         *
-         * perspective.outgoingFilter.on([ SetColorMessage, SetNameMessage, SetSkinMessage, SetPetMessage, SetHatMessage ], message => {
-         *   message.cancel();
-         * });
-         * ```
-         */
-        public outgoingFilter: PerspectiveFilter
+        public readonly playersPov: PlayerData[]
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings);
 
         this.playerJoinedFlag = true; // prevent room closing due to inactivity
         this.messageNonce = new Set;
+
+        this.incomingFilter = new MasketDecoder(parentRoom.worker.decoder);
+        this.outgoingFilter = new MasketDecoder(parentRoom.worker.decoder);
 
         this.logger = new Logger(() => {
             if (this.playersPov.length === 1) {
@@ -547,107 +512,6 @@ export class Perspective extends BaseRoom {
 
     getNextNetId() {
         return this.parentRoom.getNextNetId();
-    }
-
-    static applyPerspectiveFilter(perspective: Perspective, decoder: PerspectiveFilter, filters: PresetFilter[], direction: "incoming"|"outgoing") {
-        for (let i = 0; i < filters.length; i++) {
-            const filter = filters[i];
-            if (filter === PresetFilter.GameDataUpdates) {
-                decoder.on([ SetNameMessage, SetColorMessage, SetSkinMessage, SetPetMessage, SetHatMessage, SetVisorMessage, SetNameplateMessage, DataMessage ], message => {
-                    if (message instanceof DataMessage) {
-                        const netobject = perspective.netobjects.get(message.netId);
-
-                        if (!(netobject instanceof GameData)) {
-                            return;
-                        }
-
-                        // The following code allows the flags of "dead", "impostor" and "disconnect" to still be synced between perspectives and rooms.
-                        const updatedPlayerIds = [];
-                        const reader = HazelReader.from(message.data);
-                        while (reader.left) {
-                            const [ playerId ] = reader.message();
-                            updatedPlayerIds.push(playerId);
-                        }
-                        if (perspective.gameData && perspective.parentRoom.gameData) {
-                            if (direction === "incoming") {
-                                for (const updatedPlayerId of updatedPlayerIds) {
-                                    const destPlayerInfo = perspective.gameData.players.get(updatedPlayerId);
-                                    const srcPlayerInfo = perspective.parentRoom.gameData.players.get(updatedPlayerId);
-
-                                    if (!srcPlayerInfo ||  !destPlayerInfo)
-                                        continue;
-
-                                    destPlayerInfo.setFlags(srcPlayerInfo.flags);
-                                }
-
-                                perspective.gameData.PreSerialize();
-                                const writer = HazelWriter.alloc(1024);
-                                if (perspective.gameData.Serialize(writer, false)) {
-                                    writer.realloc(writer.cursor);
-                                    const dataMessage = new DataMessage(perspective.gameData.netId, writer.buffer);
-                                    perspective.messageNonce.add(dataMessage);
-                                    perspective.messageStream.push(dataMessage);
-                                }
-                                perspective.gameData.dirtyBit = 0;
-                            } else if (direction === "outgoing") {
-                                for (const updatedPlayerId of updatedPlayerIds) {
-                                    const srcPlayerInfo = perspective.gameData.players.get(updatedPlayerId);
-                                    const destPlayerInfo = perspective.parentRoom.gameData.players.get(updatedPlayerId);
-
-                                    if (!srcPlayerInfo ||  !destPlayerInfo)
-                                        continue;
-
-                                    destPlayerInfo.setFlags(srcPlayerInfo.flags);
-                                }
-
-                                perspective.parentRoom.gameData.PreSerialize();
-                                const writer = HazelWriter.alloc(1024);
-                                if (perspective.parentRoom.gameData.Serialize(writer, false)) {
-                                    writer.realloc(writer.cursor);
-                                    const dataMessage = new DataMessage(perspective.parentRoom.gameData.netId, writer.buffer);
-                                    perspective.messageNonce.add(dataMessage);
-                                    perspective.parentRoom.messageStream.push(dataMessage);
-                                }
-                                perspective.parentRoom.gameData.dirtyBit = 0;
-                            }
-                        }
-                    }
-
-                    message.cancel();
-                });
-            } else if (filter === PresetFilter.PositionUpdates) {
-                decoder.on([ SnapToMessage ], message => {
-                    message.cancel();
-                });
-
-                decoder.on([ DataMessage ], message => {
-                    if (message.data.byteLength !== 10)
-                        return;
-
-                    const netobject = perspective.netobjects.get(message.netId);
-
-                    if (netobject instanceof CustomNetworkTransform) {
-                        message.cancel();
-                    }
-                });
-            } else if (filter === PresetFilter.SettingsUpdates) {
-                decoder.on([ SyncSettingsMessage ], message => {
-                    message.cancel();
-                });
-            } else if (filter === PresetFilter.ChatMessages) {
-                decoder.on([ SendChatMessage ], message => {
-                    message.cancel();
-                });
-            } else if (filter === PresetFilter.ObjectUpdates) {
-                decoder.on([ SpawnMessage ], message => {
-                    message.cancel();
-                });
-
-                decoder.on([ DespawnMessage ], message => {
-                    message.cancel();
-                });
-            }
-        }
     }
 
     async broadcast(
@@ -1119,6 +983,40 @@ export class Perspective extends BaseRoom {
         }
 
         this.parentRoom.activePerspectives.splice(this.parentRoom.activePerspectives.indexOf(this), 1);
+    }
+
+    getDecoder(direction: MessageFilterDirection) {
+        switch (direction) {
+        case MessageFilterDirection.Incoming: return this.incomingFilter;
+        case MessageFilterDirection.Outgoing: return this.outgoingFilter;
+        }
+    }
+
+    registerFilter(direction: MessageFilterDirection, filter: PerspectiveFilter) {
+        const filterClass = Object.getPrototypeOf(filter);
+
+        if (filterClass === null)
+            throw new Error("Invalid event observer");
+
+        const filterDecoder = this.getDecoder(direction);
+
+        const messageFilters = getPerspectiveFilterMessageFilters(filterClass);
+        for (const messageFilter of messageFilters) {
+            const fn = (message: Serializable, _direction: MessageDirection, ctx: PacketContext) =>
+                messageFilter.handler.call(filter, message, this, direction, ctx);
+
+            filterDecoder.on(messageFilter.messageClass, fn);
+
+            filter.getFilters().push({ messageClass: messageFilter.messageClass, handler: fn });
+        }
+    }
+
+    removeFilter(direction: MessageFilterDirection, filter: PerspectiveFilter) {
+        const filterDecoder = this.getDecoder(direction);
+
+        for (const messageFilter of filter.getFilters()) {
+            filterDecoder.off(messageFilter.messageClass, messageFilter.handler);
+        }
     }
 
     createPerspective(): Perspective {

@@ -1,10 +1,10 @@
-import { Deserializable, Serializable } from "@skeldjs/protocol";
-import { MessageFilterCallback } from "../hooks";
+import { Deserializable, MessageListener, Serializable } from "@skeldjs/protocol";
+import { PacketContext } from "../../worker";
 
 export class PerspectiveFilter {
     private loadedFilters: {
         messageClass: Deserializable;
-        filter: MessageFilterCallback<Serializable>;
+        handler: MessageListener<Serializable, PacketContext>;
     }[];
 
     constructor() {

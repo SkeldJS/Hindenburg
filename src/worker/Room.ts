@@ -7,7 +7,7 @@ import { RoomsConfig } from "../interfaces";
 
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
-import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
+import { Perspective } from "./Perspective";
 import { Logger } from "../logger";
 import { fmtCode } from "../util/fmtCode";
 
@@ -39,51 +39,23 @@ export class Room extends BaseRoom {
     }
 
     /**
-     * Create a {@link Perspective} object for this room, with preset filters to
-     * use.
+     * Create a {@link Perspective} object for this room.
      *
      * This function is relatively slow as it needs to clone the entire room.
      * It shouldn't really be used in loops or any events that get fired a lot.
      *
      * @param players The player, or players, to create this perspective for.
-     * @param filters Preset filters to use for both incoming and outgoing
-     * filters.
      * @returns The created perspective.
      */
     createPerspective(
-        players: PlayerData|PlayerData[],
-        filters?: PresetFilter[]
-    ): Perspective;
-    /**
-     * Create a {@link Perspective} object for this room, with preset filters to
-     * use.
-     *
-     * This function is relatively slow as it needs to clone the entire room.
-     * It shouldn't really be used in loops or any events that get fired a lot.
-     *
-     * @param players The player, or players, to create this perspective for.
-     * @param incomingFilters Preset filters to use for incoming packets making
-     * their way into the perspective..
-     * @param outgoingFilters Preset filters to use for outgoing packets from the
-     * perspective to the room. By default, same as the incoming filters.
-     * @returns The created perspective.
-     */
-    createPerspective(
-        players: PlayerData|PlayerData[],
-        incomingFilters: PresetFilter[],
-        outgoingFilters: PresetFilter[]
-    ): Perspective;
-    createPerspective(
-        players: PlayerData|PlayerData[],
-        incomingFilters: PresetFilter[] = [],
-        outgoingFilters: PresetFilter[] = incomingFilters
+        players: PlayerData|PlayerData[]
     ): Perspective {
         if (this.worker.config.optimizations.disablePerspectives) {
             throw new Error("Perspectives are disabled, set 'optimisations.disablePerspectives' to false to re-enable perspectives");
         }
 
         if (!Array.isArray(players)) {
-            return this.createPerspective([ players ], incomingFilters, outgoingFilters);
+            return this.createPerspective([ players ]);
         }
 
         for (let i = 0; i < players.length; i++) {
@@ -96,13 +68,7 @@ export class Room extends BaseRoom {
             }
         }
 
-        const incomingFilter = new PerspectiveFilter(this.worker);
-        const outgoingFilter = new PerspectiveFilter(this.worker);
-
-        const perspective = new Perspective(this, players, incomingFilter, outgoingFilter);
-
-        Perspective.applyPerspectiveFilter(perspective, incomingFilter, incomingFilters, "incoming");
-        Perspective.applyPerspectiveFilter(perspective, outgoingFilter, outgoingFilters, "outgoing");
+        const perspective = new Perspective(this, players);
 
         this.activePerspectives.push(perspective);
         for (let i = 0; i < players.length; i++) {

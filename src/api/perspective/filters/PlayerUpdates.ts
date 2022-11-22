@@ -10,7 +10,7 @@ import { MessageFilter, MessageFilterDirection } from "../../hooks";
 import { PerspectiveFilter } from "../PerspectiveFilter";
 
 /**
- * An enum for bitfield values to select what to allow/disallow for the {@link PlayerInfoPerspectiveFilter}
+ * An enum for bitfield values to select what to allow/disallow for the {@link PlayerUpdatesPerspectiveFilter}
  * with {@link Perspective}s.
  *
  * @example
@@ -25,7 +25,7 @@ import { PerspectiveFilter } from "../PerspectiveFilter";
  * perspective.unsetPlayerInfoAllowed(player.playerId, PlayerInfoGuard.Flags);
  * ```
  */
-export enum PlayerInfoFilterFlag {
+export enum PlayerUpdatesFilterFlag {
     /**
      * Allow a player's name to be synced in a perspective.
      */
@@ -67,8 +67,8 @@ export enum PlayerInfoFilterFlag {
      */
     Impostor = 1 << 9,
     /**
-     * Combines {@link PlayerInfoFilterFlag.Dead}, {@link PlayerInfoFilterFlag.Disconnected}
-     * and {@link PlayerInfoFilterFlag.Impostor}.
+     * Combines {@link PlayerUpdatesFilterFlag.Dead}, {@link PlayerUpdatesFilterFlag.Disconnected}
+     * and {@link PlayerUpdatesFilterFlag.Impostor}.
      *
      * More often than not, this'll be used to prevent player's cosmetics from
      * synced whille preventing the game from having issues where players would
@@ -80,7 +80,7 @@ export enum PlayerInfoFilterFlag {
      * perspective.unsetPlayerInfoAllowed(player.playerId, PlayerInfoGuard.Flags);
      * ```
      */
-    Flags = PlayerInfoFilterFlag.Dead | PlayerInfoFilterFlag.Disconnected | PlayerInfoFilterFlag.Impostor
+    Flags = PlayerUpdatesFilterFlag.Dead | PlayerUpdatesFilterFlag.Disconnected | PlayerUpdatesFilterFlag.Impostor
 }
 
 /**
@@ -97,7 +97,7 @@ export enum PlayerInfoFilterFlag {
  * you might use this filter to block cosmetics from being synced, but allow state
  * such as the player being dead or disconnected to sync.
  */
-export class PlayerInfoPerspectiveFilter extends PerspectiveFilter {
+export class PlayerUpdatesPerspectiveFilter extends PerspectiveFilter {
     protected _defaultAllowed: number;
     protected _playerInfoAllowed: Map<number, number>;
 
@@ -118,6 +118,10 @@ export class PlayerInfoPerspectiveFilter extends PerspectiveFilter {
 
     setAllAllowed() {
         this._defaultAllowed = 0xfff;
+    }
+
+    unsetAllAllowed() {
+        return this.unsetAllowed(0xfff);
     }
 
     getAllowed() {
@@ -145,28 +149,32 @@ export class PlayerInfoPerspectiveFilter extends PerspectiveFilter {
         return this.setPlayerInfoAllowed(playerId, 0xfff);
     }
 
+    unsetAllPlayerInfoAllowed(playerId: number) {
+        return this.unsetPlayerInfoAllowed(playerId, 0xfff);
+    }
+
     calculatePlayerInfoAllowed(playerId: number) {
         const playerInfoAllowed = this.getPlayerInfoAllowed(playerId);
 
-        // todo
+        return playerInfoAllowed | this._defaultAllowed;
     }
 
     protected _applyAllowedInfo(allowedBitfield: number, srcPlayerInfo: PlayerInfo, destPlayerInfo: PlayerInfo) {
-        if ((allowedBitfield & PlayerInfoFilterFlag.Name) > 0) destPlayerInfo.setName(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.name);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Color) > 0) destPlayerInfo.setColor(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.color);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Hat) > 0) destPlayerInfo.setHat(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.hatId);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Skin) > 0) destPlayerInfo.setSkin(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.skinId);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Pet) > 0) destPlayerInfo.setPet(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.petId);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Visor) > 0) destPlayerInfo.setVisor(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.visorId);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Nameplate) > 0) destPlayerInfo.setNameplate(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.nameplateId);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Dead) > 0) destPlayerInfo.setDead(srcPlayerInfo.isDead);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Disconnected) > 0) destPlayerInfo.setDisconnected(srcPlayerInfo.isDisconnected);
-        if ((allowedBitfield & PlayerInfoFilterFlag.Impostor) > 0) destPlayerInfo.setImpostor(srcPlayerInfo.isImpostor);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Name) > 0) destPlayerInfo.setName(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.name);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Color) > 0) destPlayerInfo.setColor(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.color);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Hat) > 0) destPlayerInfo.setHat(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.hatId);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Skin) > 0) destPlayerInfo.setSkin(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.skinId);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Pet) > 0) destPlayerInfo.setPet(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.petId);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Visor) > 0) destPlayerInfo.setVisor(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.visorId);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Nameplate) > 0) destPlayerInfo.setNameplate(PlayerOutfitType.Default, srcPlayerInfo.defaultOutfit.nameplateId);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Dead) > 0) destPlayerInfo.setDead(srcPlayerInfo.isDead);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Disconnected) > 0) destPlayerInfo.setDisconnected(srcPlayerInfo.isDisconnected);
+        if ((allowedBitfield & PlayerUpdatesFilterFlag.Impostor) > 0) destPlayerInfo.setImpostor(srcPlayerInfo.isImpostor);
     }
 
     @MessageFilter(DataMessage)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onDataMessage(message: DataMessage, perspective: Perspective, direction: MessageFilterDirection, _context: PacketContext) {
+    onDataMessage(message: DataMessage, perspective: Perspective, direction: MessageFilterDirection, context: PacketContext) {
         const netobject = perspective.netobjects.get(message.netId);
 
         if (!(netobject instanceof GameData))
@@ -181,7 +189,7 @@ export class PlayerInfoPerspectiveFilter extends PerspectiveFilter {
         if (perspective.gameData && perspective.parentRoom.gameData) {
             if (direction === MessageFilterDirection.Incoming) {
                 for (const updatedPlayerId of updatedPlayerIds) {
-                    const playerInfoAllowed = this.getPlayerInfoAllowed(updatedPlayerId);
+                    const playerInfoAllowed = this.calculatePlayerInfoAllowed(updatedPlayerId);
 
                     if (!playerInfoAllowed)
                         continue;
@@ -206,7 +214,7 @@ export class PlayerInfoPerspectiveFilter extends PerspectiveFilter {
                 perspective.gameData.dirtyBit = 0;
             } else if (direction === MessageFilterDirection.Outgoing) {
                 for (const updatedPlayerId of updatedPlayerIds) {
-                    const playerInfoAllowed = this.getPlayerInfoAllowed(updatedPlayerId);
+                    const playerInfoAllowed = this.calculatePlayerInfoAllowed(updatedPlayerId);
 
                     if (!playerInfoAllowed)
                         continue;
@@ -249,19 +257,19 @@ export class PlayerInfoPerspectiveFilter extends PerspectiveFilter {
 
             if (component instanceof PlayerControl) {
                 const playerId = component.playerId;
-                const playerInfoAllowed = this.getPlayerInfoAllowed(playerId);
+                const playerInfoAllowed = this.calculatePlayerInfoAllowed(playerId);
 
                 if (!playerInfoAllowed)
                     return;
 
                 switch (message.data.messageTag) {
-                case RpcMessageTag.SetName: if ((playerInfoAllowed & PlayerInfoFilterFlag.Name) === 0) message.cancel(); break;
-                case RpcMessageTag.SetColor: if ((playerInfoAllowed & PlayerInfoFilterFlag.Color) === 0) message.cancel(); break;
-                case RpcMessageTag.SetHat: if ((playerInfoAllowed & PlayerInfoFilterFlag.Hat) === 0) message.cancel(); break;
-                case RpcMessageTag.SetSkin: if ((playerInfoAllowed & PlayerInfoFilterFlag.Skin) === 0) message.cancel(); break;
-                case RpcMessageTag.SetPet: if ((playerInfoAllowed & PlayerInfoFilterFlag.Pet) === 0) message.cancel(); break;
-                case RpcMessageTag.SetVisor: if ((playerInfoAllowed & PlayerInfoFilterFlag.Visor) === 0) message.cancel(); break;
-                case RpcMessageTag.SetNameplate: if ((playerInfoAllowed & PlayerInfoFilterFlag.Nameplate) === 0) message.cancel(); break;
+                case RpcMessageTag.SetName: if ((playerInfoAllowed & PlayerUpdatesFilterFlag.Name) === 0) message.cancel(); break;
+                case RpcMessageTag.SetColor: if ((playerInfoAllowed & PlayerUpdatesFilterFlag.Color) === 0) message.cancel(); break;
+                case RpcMessageTag.SetHat: if ((playerInfoAllowed & PlayerUpdatesFilterFlag.Hat) === 0) message.cancel(); break;
+                case RpcMessageTag.SetSkin: if ((playerInfoAllowed & PlayerUpdatesFilterFlag.Skin) === 0) message.cancel(); break;
+                case RpcMessageTag.SetPet: if ((playerInfoAllowed & PlayerUpdatesFilterFlag.Pet) === 0) message.cancel(); break;
+                case RpcMessageTag.SetVisor: if ((playerInfoAllowed & PlayerUpdatesFilterFlag.Visor) === 0) message.cancel(); break;
+                case RpcMessageTag.SetNameplate: if ((playerInfoAllowed & PlayerUpdatesFilterFlag.Nameplate) === 0) message.cancel(); break;
                 }
             }
         }

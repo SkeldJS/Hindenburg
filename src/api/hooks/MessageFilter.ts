@@ -30,7 +30,7 @@ export type MessageFilterCallback<Message extends Serializable> = (
 
 export interface PerspectiveFilterRegisteredMessageFilterInfo {
     messageClass: Deserializable;
-    filter: MessageFilterCallback<Serializable>;
+    handler: MessageFilterCallback<Serializable>;
 }
 
 export function MessageFilter<T extends Deserializable>(messageClass: T): MethodDecorator<MessageFilterCallback<GetSerialized<T>>> {
@@ -50,7 +50,7 @@ export function MessageFilter<T extends Deserializable>(messageClass: T): Method
 
         messageFilters.push({
             messageClass: messageClass as T,
-            filter: descriptor.value
+            handler: descriptor.value
         });
     };
 }

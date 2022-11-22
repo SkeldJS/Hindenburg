@@ -111,7 +111,7 @@ import { Logger } from "../logger";
 
 import { Connection, logLanguages, logPlatforms } from "./Connection";
 import { Worker } from "./Worker";
-import { Perspective, PresetFilter } from "./Perspective";
+import { Perspective } from "./Perspective";
 import { UnknownComponent } from "../components";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
@@ -2193,7 +2193,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    createPerspective(players: PlayerData|PlayerData[], filters: PresetFilter[]): Perspective {
+    createPerspective(players: PlayerData|PlayerData[]): Perspective {
         throw new Error("Method not implemented on base room");
     }
 

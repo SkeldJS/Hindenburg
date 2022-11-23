@@ -1,5 +1,16 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.25": {
+        "version": "1.1.25",
+        "contributors": ["edward"],
+        "date": "2022-11-23",
+        "notes": [
+            {
+                "description": "Fix invalid imports",
+                "commits": ["d768e5a3f0f48e3405810d2a6e025b17d1c11680"]
+            }
+        ]
+    },
     "1.1.24": {
         "version": "1.1.24",
         "contributors": ["edward"],

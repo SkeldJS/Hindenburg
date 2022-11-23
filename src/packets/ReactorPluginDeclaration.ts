@@ -1,4 +1,4 @@
-import { BaseReactorMessage, ReactorMessageTag, ReactorMod, ReactorModDeclarationMessage } from "@skeldjs/reactor/v2";
+import { BaseReactorMessage, ReactorMessageTag, ReactorMod, ReactorModDeclarationMessage } from "@skeldjs/reactor";
 import { HazelReader, HazelWriter } from "@skeldjs/util";
 
 export class ReactorPluginDeclarationMessage extends BaseReactorMessage {

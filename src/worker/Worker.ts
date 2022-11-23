@@ -57,7 +57,7 @@ import {
     ReactorMessageTag,
     ReactorMod,
     ReactorModDeclarationMessage
-} from "@skeldjs/reactor/v2";
+} from "@skeldjs/reactor";
 
 import {  Networkable } from "@skeldjs/core";
 

@@ -90,8 +90,10 @@ export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlug
 async function getPackageInfo(pluginsDirectory: string, packageName: string, logger: Logger) {
     const pluginInfoSpinner = new Spinner("Fetching plugin information.. %s").start();
     try {
-        const packageInfoData = await queryRegistry.getPackument({ name: packageName });
-        const packageJsonData = await queryRegistry.getPackageManifest({ name: packageName });
+        const withoutVersion = packageName.replace(/@.+/, "");
+        const packageInfoData = await queryRegistry.getPackument({ name: withoutVersion });
+        const packageJsonData = await queryRegistry.getPackageManifest({ name: withoutVersion });
+        console.log(packageJsonData);
         pluginInfoSpinner.success();
         return { ...packageInfoData, ...packageJsonData };
     } catch (e) {
@@ -704,7 +706,9 @@ async function runInstallPlugin() {
     if (!packageInfoJson)
         return;
 
-    let installingText = "Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + packageInfoJson.version);
+    const version = pluginName.split("@")[1];
+
+    let installingText = "Installing " + chalk.green(packageInfoJson.name) + chalk.gray("@v" + version);
     if (packageInfoJson.maintainers?.[0]) {
         installingText += " by " + packageInfoJson.maintainers[0].name;
     }
@@ -712,7 +716,7 @@ async function runInstallPlugin() {
 
     const installingSpinner = new Spinner(installingText).start();
     try {
-        await runCommandInDir(pluginsDirectory, yarnCommand + " add " + packageInfoJson.name + "@" + packageInfoJson.version + " --json");
+        await runCommandInDir(pluginsDirectory, yarnCommand + " add " + packageInfoJson.name + "@" + version + " --json");
         installingSpinner.success();
     } catch (e) {
         installingSpinner.fail();

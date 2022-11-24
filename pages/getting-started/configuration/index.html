@@ -354,79 +354,6 @@
 <p><strong>Type</strong>: string</p>
 <p>Any of the following: <code>&quot;id&quot;</code>, <code>&quot;ishost&quot;</code>, <code>&quot;language&quot;</code>, <code>&quot;level&quot;</code>, <code>&quot;mods&quot;</code>, <code>&quot;ping&quot;</code>, <code>&quot;platform&quot;</code></p>
 
-<a href="#reactor" id="reactor" style="color: inherit; text-decoration: none;">
-  <h2>reactor</h2>
-</a>
-<p><strong>Type</strong>: boolean</p>
-<p><em>or</em></p>
-<p><strong>Type</strong>: object</p>
-
-<a href="#reactorblockclientsideonly" id="reactorblockclientsideonly" style="color: inherit; text-decoration: none;">
-  <h3><strong>reactor.blockClientSideOnly</strong></h3>
-</a>
-<p>Whether to block reactor RPCs from mods that are declared as being client-side-only.</p>
-<p><strong>Type</strong>: boolean</p>
-<p><strong>Default</strong>: <code>true</code></p>
-
-<a href="#reactormods" id="reactormods" style="color: inherit; text-decoration: none;">
-  <h3><strong>reactor.mods</strong></h3>
-</a>
-<p>Individual configuration for each mod in regards to how Hindenburg should treat them.</p>
-<p><strong>Type</strong>: object</p>
-
-<a href="#reactormods-1" id="reactormods-1" style="color: inherit; text-decoration: none;">
-  <h4><strong>reactor.mods.*</strong></h4>
-</a>
-<p><strong>Type</strong>: boolean</p>
-<p><em>or</em></p>
-<p><strong>Type</strong>: object</p>
-
-<a href="#reactormodsoptional" id="reactormodsoptional" style="color: inherit; text-decoration: none;">
-  <h5><strong>reactor.mods.*.optional</strong></h5>
-</a>
-<p>Whether this mod is optional, and clients can connect without it.</p>
-<p><strong>Type</strong>: boolean</p>
-
-<a href="#reactormodsbanned" id="reactormodsbanned" style="color: inherit; text-decoration: none;">
-  <h5><strong>reactor.mods.*.banned</strong></h5>
-</a>
-<p>Whether clients with this mod cannot connect.</p>
-<p><strong>Type</strong>: boolean</p>
-
-<a href="#reactormodsversion" id="reactormodsversion" style="color: inherit; text-decoration: none;">
-  <h5><strong>reactor.mods.*.version</strong></h5>
-</a>
-<p>Enforce a specific version glob for this mod.</p>
-<p><strong>Type</strong>: string</p>
-<p><strong>Default</strong>: <code>&quot;*&quot;</code></p>
-
-<a href="#reactormodsdonetworking" id="reactormodsdonetworking" style="color: inherit; text-decoration: none;">
-  <h5><strong>reactor.mods.*.doNetworking</strong></h5>
-</a>
-<p>Whether to broadcast messages sent by this mod.</p>
-<p><strong>Type</strong>: boolean</p>
-<p><strong>Default</strong>: <code>true</code></p>
-
-<a href="#reactorallowextramods" id="reactorallowextramods" style="color: inherit; text-decoration: none;">
-  <h3><strong>reactor.allowExtraMods</strong></h3>
-</a>
-<p>Whether to allow extra mods aside from those in &#39;mods&#39; which would still be used to enforce certain version of mods, and to require certain mods.</p>
-<p><strong>Type</strong>: boolean</p>
-<p><strong>Default</strong>: <code>true</code></p>
-
-<a href="#reactorallownormalclients" id="reactorallownormalclients" style="color: inherit; text-decoration: none;">
-  <h3><strong>reactor.allowNormalClients</strong></h3>
-</a>
-<p>Whether to allow normal clients to connect.</p>
-<p><strong>Type</strong>: boolean</p>
-
-<a href="#reactorrequirehostmods" id="reactorrequirehostmods" style="color: inherit; text-decoration: none;">
-  <h3><strong>reactor.requireHostMods</strong></h3>
-</a>
-<p>Whether or not to require joining clients to have the same mods as the host.</p>
-<p><strong>Type</strong>: boolean</p>
-<p><strong>Default</strong>: <code>true</code></p>
-
 <a href="#rooms" id="rooms" style="color: inherit; text-decoration: none;">
   <h2>rooms</h2>
 </a>
@@ -834,7 +761,6 @@
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/BaseGameDataMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Base<wbr/>Game<wbr/>Data<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/BaseMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Base<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/BaseQuickChatMessageData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Base<wbr/>Quick<wbr/>Chat<wbr/>Message<wbr/>Data</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/BaseReactorRpcMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Base<wbr/>Reactor<wbr/>Rpc<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/BaseRole.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Base<wbr/>Role</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/BaseRoom.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Base<wbr/>Room</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/BaseRootMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Base<wbr/>Root<wbr/>Message</a></li>
@@ -866,7 +792,6 @@
 <li class="tsd-kind-interface"><a href="../../../interfaces/ClientEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Client<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ClientInfoMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Client<wbr/>Info<wbr/>Message</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/ClientLeaveEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Client<wbr/>Leave<wbr/>Event</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/ClientMod.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Client<wbr/>Mod</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ClimbLadderMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Climb<wbr/>Ladder<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/CloseDoorsOfTypeMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Close<wbr/>Doors<wbr/>Of<wbr/>Type<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/CloseMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Close<wbr/>Message</a></li>
@@ -1017,6 +942,7 @@
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/MeetingHudVotingCompleteEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Meeting<wbr/>Hud<wbr/>Voting<wbr/>Complete<wbr/>Event</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/MessageDirection.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Message<wbr/>Direction</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/MessageHandler.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>Message<wbr/>Handler</a></li>
+<li class="tsd-kind-enum"><a href="../../../enums/MessageHandlerAttach.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Message<wbr/>Handler<wbr/>Attach</a></li>
 <li class="tsd-kind-type-alias"><a href="../../../types/MessageHandlerCallback.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Message<wbr/>Handler<wbr/>Callback</a></li>
 <li class="tsd-kind-type-alias"><a href="../../../types/MessageHandlerCallbackOriginalListeners.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Message<wbr/>Handler<wbr/>Callback<wbr/>Original<wbr/>Listeners</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/MessageHandlerOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Message<wbr/>Handler<wbr/>Options</a></li>
@@ -1029,7 +955,6 @@
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/MiraHQVents.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>MiraHQVents</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/MiraShipStatus.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Mira<wbr/>Ship<wbr/>Status</a></li>
 <li class="tsd-kind-type-alias tsd-is-external"><a href="../../../types/MissingPackets.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Missing<wbr/>Packets</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/ModdedHelloPacket.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Modded<wbr/>Hello<wbr/>Packet</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/MovementOptimizations.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Movement<wbr/>Optimizations</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/MovingPlatformEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Moving<wbr/>Platform<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/MovingPlatformPlayerUpdateEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Moving<wbr/>Platform<wbr/>Player<wbr/>Update<wbr/>Event</a></li>
@@ -1047,7 +972,6 @@
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/O2ConsolesClearEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>O2<wbr/>Consoles<wbr/>Clear<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/O2ConsolesCompleteEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>O2<wbr/>Consoles<wbr/>Complete<wbr/>Event</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/O2Event.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>O2<wbr/>Event</a></li>
-<li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/OfficialServers.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Official<wbr/>Servers</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/OptimizationsConfig.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Optimizations<wbr/>Config</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/PacketContext.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Packet<wbr/>Context</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PacketDecoder.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Packet<wbr/>Decoder</a></li>
@@ -1132,7 +1056,6 @@
 <li class="tsd-kind-interface"><a href="../../../interfaces/PluginRegisteredEventListenerInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Plugin<wbr/>Registered<wbr/>Event<wbr/>Listener<wbr/>Info</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/PluginRegisteredMatchmakerEndpoint.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Plugin<wbr/>Registered<wbr/>Matchmaker<wbr/>Endpoint</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/PluginRegisteredMessageHandlerInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Plugin<wbr/>Registered<wbr/>Message<wbr/>Handler<wbr/>Info</a></li>
-<li class="tsd-kind-interface"><a href="../../../interfaces/PluginRegisteredRpcHandlerInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Plugin<wbr/>Registered<wbr/>Rpc<wbr/>Handler<wbr/>Info</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PolusShipStatus.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Polus<wbr/>Ship<wbr/>Status</a></li>
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/PolusTasks.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>Polus<wbr/>Tasks</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/PolusVent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Polus<wbr/>Vent</a></li>
@@ -1149,16 +1072,10 @@
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/QuickChatPhraseMessageData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Quick<wbr/>Chat<wbr/>Phrase<wbr/>Message<wbr/>Data</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/QuickChatPlayerMessageData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Quick<wbr/>Chat<wbr/>Player<wbr/>Message<wbr/>Data</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/QuickChatSentenceMessageData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Quick<wbr/>Chat<wbr/>Sentence<wbr/>Message<wbr/>Data</a></li>
-<li class="tsd-kind-interface"><a href="../../../interfaces/ReactorConfig.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Reactor<wbr/>Config</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ReactorConsoleAddEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Reactor<wbr/>Console<wbr/>Add<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ReactorConsoleRemoveEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Reactor<wbr/>Console<wbr/>Remove<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ReactorConsolesResetEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Reactor<wbr/>Consoles<wbr/>Reset<wbr/>Event</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/ReactorEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Reactor<wbr/>Event</a></li>
-<li class="tsd-kind-interface"><a href="../../../interfaces/ReactorModConfig.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Reactor<wbr/>Mod<wbr/>Config</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/ReactorPluginDeclarationMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Reactor<wbr/>Plugin<wbr/>Declaration<wbr/>Message</a></li>
-<li class="tsd-kind-type-alias"><a href="../../../types/ReactorRpcConstructor.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Reactor<wbr/>Rpc<wbr/>Constructor</a></li>
-<li class="tsd-kind-function"><a href="../../../functions/ReactorRpcHandler.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>Reactor<wbr/>Rpc<wbr/>Handler</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/ReactorRpcMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Reactor<wbr/>Rpc<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ReactorSystem.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Reactor<wbr/>System</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/ReactorSystemData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Reactor<wbr/>System<wbr/>Data</a></li>
 <li class="tsd-kind-type-alias tsd-is-external"><a href="../../../types/ReactorSystemEvents.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Reactor<wbr/>System<wbr/>Events</a></li>
@@ -1281,7 +1198,6 @@
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/TheSkeldVent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>The<wbr/>Skeld<wbr/>Vent</a></li>
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/TheSkeldVents.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>The<wbr/>Skeld<wbr/>Vents</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/UnknownGameDataMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Unknown<wbr/>Game<wbr/>Data<wbr/>Message</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/UnknownReactorRpcMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Unknown<wbr/>Reactor<wbr/>Rpc<wbr/>Message</a></li>
 <li class="tsd-kind-function tsd-is-external"><a href="../../../functions/UnknownRole.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>Unknown<wbr/>Role</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/UnknownRootMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Unknown<wbr/>Root<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/UnknownRpc.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Unknown<wbr/>Rpc</a></li>
@@ -1316,7 +1232,6 @@
 <li class="tsd-kind-function"><a href="../../../functions/getPluginEventListeners.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Event<wbr/>Listeners</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginMatchmakerEndpoints.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Matchmaker<wbr/>Endpoints</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginMessageHandlers.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Message<wbr/>Handlers</a></li>
-<li class="tsd-kind-function"><a href="../../../functions/getPluginReactorRpcHandlers.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Reactor<wbr/>Rpc<wbr/>Handlers</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginRegisteredMessages.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Registered<wbr/>Messages</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginRegisteredPrefabs.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Registered<wbr/>Prefabs</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginRegisteredRoles.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Registered<wbr/>Roles</a></li>

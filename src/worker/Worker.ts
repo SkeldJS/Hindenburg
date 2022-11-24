@@ -1,7 +1,6 @@
 import dgram from "dgram";
 import vorpal from "vorpal";
 import chalk from "chalk";
-import minimatch from "minimatch";
 
 import {
     DisconnectReason,
@@ -29,6 +28,7 @@ import {
     GameListing,
     GameSettings,
     GetGameListMessage,
+    HelloPacket,
     HostGameMessage,
     JoinGameMessage,
     KickPlayerMessage,
@@ -39,7 +39,6 @@ import {
     PlatformSpecificData,
     QueryPlatformIdsMessage,
     ReliablePacket,
-    RpcMessage,
     StartGameMessage,
     UnknownRootMessage
 } from "@skeldjs/protocol";
@@ -50,29 +49,16 @@ import {
     VersionInfo
 } from "@skeldjs/util";
 
-import {
-    ModPluginSide,
-    ReactorHandshakeMessage,
-    ReactorMessage,
-    ReactorMessageTag,
-    ReactorMod,
-    ReactorModDeclarationMessage
-} from "@skeldjs/reactor";
-
-import {  Networkable } from "@skeldjs/core";
-
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 
 import { recursiveAssign } from "../util/recursiveAssign";
 import { recursiveCompare } from "../util/recursiveCompare";
 import { recursiveClone } from "../util/recursiveClone";
 import { fmtCode } from "../util/fmtCode";
-import { chunkArr } from "../util/chunkArr";
 
 import { HindenburgConfig, RoomsConfig, MessageSide, ValidSearchTerm } from "../interfaces";
-import { ModdedHelloPacket } from "../packets/ModdedHelloPacket";
 
-import { Connection, ClientMod, SentPacket } from "./Connection";
+import { Connection, SentPacket } from "./Connection";
 import { Room } from "./Room";
 import { Perspective } from "./Perspective";
 import { RoomEvents, SpecialClientId } from "./BaseRoom";
@@ -85,15 +71,10 @@ import {
     RoomBeforeCreateEvent,
     WorkerBeforeJoinEvent,
     WorkerGetGameListEvent,
-    BaseReactorRpcMessage
+    WorkerLoadPluginEvent
 } from "../api";
 
 import { LoadedPlugin, PluginLoader, WorkerPlugin } from "../handlers";
-
-import {
-    ReactorRpcMessage,
-    ReactorPluginDeclarationMessage
-} from "../packets";
 
 import i18n from "../i18n";
 import { Logger } from "../logger";
@@ -117,7 +98,7 @@ export interface PacketContext {
     /**
      * The clent who sent the packet.
      */
-    sender: Connection,
+    sender?: Connection,
     /**
      * Whether or not the packet was sent reliably.
      */
@@ -131,7 +112,8 @@ export type WorkerEvents = RoomEvents
         ClientDisconnectEvent,
         RoomBeforeCreateEvent,
         WorkerBeforeJoinEvent,
-        WorkerGetGameListEvent
+        WorkerGetGameListEvent,
+        WorkerLoadPluginEvent
     ]>;
 
 export class Worker extends EventEmitter<WorkerEvents> {
@@ -153,7 +135,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
     pluginLoader: PluginLoader;
 
     loadedPlugins: Map<string, LoadedPlugin<typeof WorkerPlugin>>;
-    reactorRpcHandlers: Map<`${string}:${number}`, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
 
     /**
      * A map of ports to UDP sockets that clients can connect to.
@@ -221,7 +202,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.pluginLoader = new PluginLoader(this, pluginDirectories);
         this.loadedPlugins = new Map;
-        this.reactorRpcHandlers = new Map;
 
         this.listenSockets = new Map;
 
@@ -542,31 +522,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                     this.pluginLoader.loadPlugin(args["plugin id"]);
                 }
-            });
-
-        this.vorpal
-            .command("list mods <client id>", "List all of a client's mods.")
-            .alias("lsm")
-            .autocomplete({
-                data: async () => {
-                    return [...this.connections.values()].map(cl => ""+cl.clientId);
-                }
-            })
-            .action(async args => {
-                for (const [ , connection ] of this.connections) {
-                    if (
-                        connection.clientId === args["client id"]
-                    ) {
-                        this.logger.info("%s has %s mod(s)", connection, connection.mods.size);
-                        const mods = [...connection.mods];
-                        for (let i = 0; i < mods.length; i++) {
-                            const [ , mod ] = mods[i];
-                            this.logger.info("%s) %s", i + 1, mod);
-                        }
-                        return;
-                    }
-                }
-                this.logger.error("Couldn't find client with id: " + args["client id"]);
             });
 
         this.vorpal
@@ -909,15 +864,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     }
 
     registerMessages() {
-        this.decoder.register(
-            ModdedHelloPacket,
-            ReactorMessage,
-            ReactorHandshakeMessage,
-            ReactorModDeclarationMessage,
-            ReactorPluginDeclarationMessage,
-            ReactorRpcMessage,
-            GameDataMessage
-        );
+        this.decoder.register(GameDataMessage);
     }
 
     isVersionAccepted(version: VersionInfo|number): boolean {
@@ -931,7 +878,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
     registerPacketHandlers() {
         this.decoder.listeners.clear();
 
-        this.decoder.on(ModdedHelloPacket, async (message, _direction, { sender }) => {
+        this.decoder.on(HelloPacket, async (message, _direction, { sender }) => {
+            if (!sender)
+                return;
+
             if (sender.hasIdentified)
                 return;
 
@@ -946,17 +896,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
 
             sender.hasIdentified = true;
-            sender.usingReactor = !message.isNormalHello();
             sender.username = message.username;
             sender.chatMode = message.chatMode;
             sender.language = message.language;
             sender.clientVersion = message.clientVer;
             sender.platform = message.platform;
             sender.playerLevel = 0;
-
-            if (sender.usingReactor) {
-                sender.numMods = message.modCount!;
-            }
 
             if (!this.isVersionAccepted(sender.clientVersion)) {
                 this.logger.warn("%s connected with invalid client version: %s",
@@ -968,90 +913,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
             this.logger.info("%s connected, language: %s",
                 sender, Language[sender.language] || "Unknown");
 
-            if (sender.usingReactor) {
-                if (!this.config.reactor) {
-                    sender.disconnect(i18n.reactor_not_enabled_on_server);
-                    return;
-                }
-
-                await sender.sendPacket(
-                    new ReliablePacket(
-                        sender.getNextNonce(),
-                        [
-                            new ReactorMessage(
-                                new ReactorHandshakeMessage("Hindenburg", "1.0.0", this.loadedPlugins.size)
-                            )
-                        ]
-                    )
-                );
-
-                const entries = [...this.loadedPlugins];
-                const chunkedPlugins = chunkArr(entries, 4);
-                for (let i = 0; i < chunkedPlugins.length; i++) {
-                    const chunk = chunkedPlugins[i];
-
-                    sender.sendPacket(
-                        new ReliablePacket(
-                            sender.getNextNonce(),
-                            chunk.map(([ , plugin ]) =>
-                                new ReactorMessage(
-                                    new ReactorPluginDeclarationMessage(
-                                        i,
-                                        new ReactorMod(
-                                            plugin.pluginInstance.meta.id,
-                                            plugin.pluginInstance.meta.version,
-                                            ModPluginSide.Both
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    );
-                }
-            } else {
-                if (this.config.reactor) {
-                    if (this.config.reactor === true || !this.config.reactor.allowNormalClients) {
-                        sender.disconnect(i18n.reactor_required_on_server);
-                        return;
-                    }
-                }
-            }
-
             await this.emit(
                 new ClientConnectEvent(sender)
             );
         });
 
-        this.decoder.on(ReactorModDeclarationMessage, async (message, _direction, { sender }) => {
-            if (sender.mods.size >= sender.numMods)
+        this.decoder.on(DisconnectPacket, async (message, _direciton, { sender }) => {
+            if (!sender)
                 return;
 
-            const clientMod = new ClientMod(
-                message.netId,
-                message.mod.modId,
-                message.mod.version,
-                message.mod.networkSide
-            );
-
-            sender.mods.set(clientMod.modId, clientMod);
-
-            if (sender.mods.size === 4) {
-                this.logger.info("... Got more mods from %s, use '%s' to see more",
-                    sender, chalk.green("list mods " + sender.clientId));
-            } else if (sender.mods.size < 4) {
-                this.logger.info("Got mod from %s: %s",
-                    sender, clientMod);
-            }
-
-            if (sender.mods.size >= sender.numMods) {
-                if (sender.awaitingToJoin) {
-                    await this.attemptJoin(sender, sender.awaitingToJoin);
-                    sender.awaitingToJoin = 0;
-                }
-            }
-        });
-
-        this.decoder.on(DisconnectPacket, async (message, _direciton, { sender }) => {
             if (!sender.sentDisconnect)
                 await sender.disconnect(message.reason || DisconnectReason.ExitGame);
 
@@ -1059,6 +929,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(AcknowledgePacket, (message, _direction, { sender }) => {
+            if (!sender)
+                return;
+
             for (const sentPacket of sender.sentPackets) {
                 if (sentPacket.nonce === message.nonce) {
                     sentPacket.acked = true;
@@ -1069,6 +942,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(HostGameMessage, async (message, _direction, { sender }) => {
+            if (!sender)
+                return;
+
             if (sender.room)
                 return;
 
@@ -1101,6 +977,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(JoinGameMessage, async (message, _direction, { sender }) => {
+            if (!sender)
+                return;
+
             if (
                 sender.room &&
                 sender.room.gameState !== GameState.Ended &&
@@ -1108,20 +987,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
             )
                 return;
 
-            if (sender.mods.size < sender.numMods) {
-                this.logger.info("Didn't get all mods from %s, waiting before joining %s",
-                    sender, fmtCode(message.code));
-                sender.awaitingToJoin = message.code;
-                return;
-            }
-
-            if (!this.checkClientMods(sender))
-                return;
-
             await this.attemptJoin(sender, message.code);
         });
 
         this.decoder.on(QueryPlatformIdsMessage, async (message, _direction, { sender }) => {
+            if (!sender)
+                return;
+
             const room = this.rooms.get(message.gameCode);
             const playersPlatformSpecificData: PlatformSpecificData[] = [];
 
@@ -1141,176 +1013,104 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(RpcMessage, async (message, _direction, { sender }) => {
-            const player = sender.getPlayer();
-            if (!player)
+        this.decoder.on(GameDataMessage, async (message, _direction, ctx) => {
+            if (!ctx.sender)
                 return;
 
-            const reactorRpcMessage = message.data as unknown as ReactorRpcMessage;
-            if (reactorRpcMessage.messageTag === 0xff) {
-                message.cancel();
-                const componentNetId = message.netId;
-                const modNetId = reactorRpcMessage.modNetId;
+            const player = ctx.sender.getPlayer();
 
-                const component = sender.room?.netobjects.get(componentNetId);
-                const senderMod = sender.getModByNetId(modNetId);
-
-                if (!component) {
-                    this.logger.warn("Got reactor rpc from %s for unknown component with netid %s",
-                        sender, componentNetId);
-                    return;
-                }
-
-                if (!senderMod) {
-                    this.logger.warn("Got reactor rpc from %s for unknown mod with netid %s",
-                        sender, modNetId);
-                    return;
-                }
-
-                if (senderMod.networkSide === ModPluginSide.Clientside) {
-                    if (this.config.reactor && (this.config.reactor === true || this.config.reactor.blockClientSideOnly)) {
-                        this.logger.warn("Got reactor rpc from %s for client-side-only reactor mod %s",
-                            sender, senderMod);
-
-                        return;
-                    }
-                }
-
-                const reactorRpc = player.room.reactorRpcs.get(`${senderMod.modId}:${reactorRpcMessage.customRpc.messageTag}`);
-
-                if (reactorRpc) {
-                    const rpcHandlers = player.room.reactorRpcHandlers.get(reactorRpc);
-                    if (rpcHandlers) {
-                        for (let i = 0; i < rpcHandlers.length; i++) {
-                            const handler = rpcHandlers[i];
-                            handler(component, reactorRpcMessage.customRpc);
-                        }
-                    }
-                }
-
-                if (typeof this.config.reactor !== "boolean") {
-                    const modConfig = this.config.reactor.mods[senderMod.modId];
-                    if (typeof modConfig === "object") {
-                        if (modConfig.doNetworking === false) { // doNetworking can be undefined and is defaulted to true
-                            return false;
-                        }
-                    }
-                }
-
-                for (const [ , receiverClient ] of sender.room!.connections) {
-                    if (receiverClient === sender)
-                        continue;
-
-                    const receiverMod = receiverClient.mods.get(senderMod.modId);
-
-                    if (!receiverMod)
-                        continue;
-
-                    sender.room!.broadcastMessages([
-                        new RpcMessage(
-                            message.netId,
-                            new ReactorRpcMessage(
-                                receiverMod.netId,
-                                reactorRpcMessage.customRpc
-                            )
-                        )
-                    ], undefined, [ receiverClient ]);
-                }
-            }
-        });
-
-        this.decoder.on(GameDataMessage, async (message, _direction, { sender, reliable }) => {
-            const player = sender.getPlayer();
-
-            if (!player || !sender.room)
+            if (!player || !ctx.sender.room)
                 return;
 
             if (player.room instanceof Perspective) {
                 const notCanceled: BaseGameDataMessage[] = [];
-                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, sender);
+                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
 
                 if (notCanceled.length > 0)
-                    await player.room.broadcastMessages(notCanceled, [], undefined, [ sender ], reliable);
+                    await player.room.broadcastMessages(notCanceled, [], undefined, [ ctx.sender ], ctx.reliable);
 
-                const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message.children, MessageDirection.Serverbound, sender);
+                const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message.children, MessageDirection.Serverbound, ctx.sender);
 
                 const notCanceledRoom: BaseGameDataMessage[] = [];
-                await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, sender);
+                await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, ctx);
 
                 if (notCanceledRoom.length > 0)
-                    await player.room.parentRoom.broadcastMessages(notCanceledRoom, [], undefined, [ sender ], reliable);
+                    await player.room.parentRoom.broadcastMessages(notCanceledRoom, [], undefined, [ ctx.sender ], ctx.reliable);
 
                 for (let i = 0; i < player.room.parentRoom.activePerspectives.length; i++) {
                     const activePerspective: Perspective = player.room.parentRoom.activePerspectives[i];
                     if (activePerspective === player.room)
                         continue;
 
-                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, sender);
+                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, ctx.sender);
                     const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
+                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
 
                     if (notCanceledPerspectiveGameData.length > 0) {
-                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ sender ], reliable);
+                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ ctx.sender ], ctx.reliable);
                     }
                 }
             } else {
                 for (let i = 0; i < player.room.activePerspectives.length; i++) {
                     const activePerspective: Perspective = player.room.activePerspectives[i];
 
-                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message.children, MessageDirection.Serverbound, sender);
+                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message.children, MessageDirection.Serverbound, ctx.sender);
                     const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
+                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
 
                     if (notCanceledPerspectiveGameData.length > 0) {
-                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ sender ], reliable);
+                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ ctx.sender ], ctx.reliable);
                     }
                 }
 
                 const notCanceled: BaseGameDataMessage[] = [];
-                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, sender);
+                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
 
                 if (notCanceled.length > 0)
-                    await player.room.broadcastMessages(notCanceled, [], undefined, [ sender ], reliable);
+                    await player.room.broadcastMessages(notCanceled, [], undefined, [ ctx.sender ], ctx.reliable);
             }
         });
 
-        this.decoder.on(GameDataToMessage, async (message, _direction, { sender, reliable }) => {
-            const player = sender.getPlayer();
+        this.decoder.on(GameDataToMessage, async (message, _direction, ctx) => {
+            if (!ctx.sender)
+                return;
 
-            if (!sender.room || !player)
+            const player = ctx.sender.getPlayer();
+
+            if (!ctx.sender.room || !player)
                 return;
 
             if (message.recipientid === SpecialClientId.Server) {
                 if (player.room instanceof Perspective) {
                     const notCanceled: BaseGameDataMessage[] = [];
-                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, sender);
+                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, ctx);
 
-                    const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message._children, MessageDirection.Serverbound, sender);
+                    const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message._children, MessageDirection.Serverbound, ctx.sender);
 
                     const notCanceledRoom: BaseGameDataMessage[] = [];
-                    await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, sender);
+                    await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, ctx);
 
                     for (let i = 0; i < player.room.parentRoom.activePerspectives.length; i++) {
                         const activePerspective: Perspective = player.room.parentRoom.activePerspectives[i];
                         if (activePerspective === player.room)
                             continue;
 
-                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, sender);
+                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, ctx.sender);
                         const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
+                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
                     }
                 } else {
                     const notCanceled: BaseGameDataMessage[] = [];
-                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, sender);
+                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, ctx);
 
                     for (let i = 0; i < player.room.activePerspectives.length; i++) {
                         const activePerspective: Perspective = player.room.activePerspectives[i];
                         if (activePerspective === player.room)
                             continue;
 
-                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message._children, MessageDirection.Serverbound, sender);
+                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message._children, MessageDirection.Serverbound, ctx.sender);
                         const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, sender);
+                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
                     }
                 }
                 return;
@@ -1319,64 +1119,76 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (player.room.config.serverAsHost && message.recipientid !== SpecialClientId.Temp) {
                 const client = player.room.players.get(message.recipientid);
                 player.room.logger.warn("Got recipient of game data from %s to %s despite room being in Server-as-a-Host",
-                    sender, client || "id " + message.recipientid);
+                    ctx.sender, client || "id " + message.recipientid);
             }
 
             const connection = player.room.connections.get(message.recipientid);
             if (!connection) {
                 if (!(message.recipientid in SpecialClientId)) {
                     player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
-                        sender, message.recipientid);
+                        ctx.sender, message.recipientid);
                 }
                 return;
             }
 
-            await player.room.broadcastMessages(message._children, [], [ connection ], undefined, reliable);
+            await player.room.broadcastMessages(message._children, [], [ connection ], undefined, ctx.reliable);
         });
 
-        this.decoder.on(AlterGameMessage, async (message, direction, { sender }) => {
-            const player = sender.getPlayer();
+        this.decoder.on(AlterGameMessage, async (message, direction, ctx) => {
+            if (!ctx.sender)
+                return;
+
+            const player = ctx.sender.getPlayer();
             if (!player)
                 return;
 
             if (!player.isHost) {
                 // todo: proper anti-cheat config
-                return sender.disconnect(DisconnectReason.Hacking);
+                return ctx.sender.disconnect(DisconnectReason.Hacking);
             }
 
-            sender.room?.decoder.emitDecoded(message, direction, sender);
-            await sender.room?.broadcast([], [
-                new AlterGameMessage(sender.room.code, message.alterTag, message.value)
+            ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
+            await ctx.sender.room?.broadcast([], [
+                new AlterGameMessage(ctx.sender.room.code, message.alterTag, message.value)
             ]);
         });
 
-        this.decoder.on(StartGameMessage, async (message, direction, { sender }) => {
-            const player = sender.getPlayer();
+        this.decoder.on(StartGameMessage, async (message, direction, ctx) => {
+            if (!ctx.sender)
+                return;
+
+            const player = ctx.sender.getPlayer();
             if (!player)
                 return;
 
             if (!player.isHost) {
                 // todo: proper anti-cheat config
-                return sender.disconnect(DisconnectReason.Hacking);
+                return ctx.sender.disconnect(DisconnectReason.Hacking);
             }
 
-            sender.room?.decoder.emitDecoded(message, direction, sender);
+            ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
         });
 
-        this.decoder.on(EndGameMessage, async (message, direction, { sender }) => {
-            const player = sender.getPlayer();
+        this.decoder.on(EndGameMessage, async (message, direction, ctx) => {
+            if (!ctx.sender)
+                return;
+
+            const player = ctx.sender.getPlayer();
             if (!player)
                 return;
 
             if (!player.isHost) {
                 // todo: proper anti-cheat config
-                return sender.disconnect(DisconnectReason.Hacking);
+                return ctx.sender.disconnect(DisconnectReason.Hacking);
             }
 
-            sender.room?.decoder.emitDecoded(message, direction, sender);
+            ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
         });
 
         this.decoder.on(KickPlayerMessage, async (message, _direction, { sender }) => {
+            if (!sender)
+                return;
+
             const player = sender.getPlayer();
             if (!player || !sender.room)
                 return;
@@ -1399,6 +1211,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
         });
 
         this.decoder.on(GetGameListMessage, async (message, _direction, { sender }) => {
+            if (!sender)
+                return;
+
             const listingIp = sender.remoteInfo.address === "127.0.0.1"
                 ? "127.0.0.1"
                 : this.config.socket.ip;
@@ -1645,77 +1460,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         recursiveAssign(this.config, newConfig);
     }
 
-    checkClientMods(connection: Connection) {
-        if (!connection.usingReactor)
-            return true;
-
-        if (connection.mods.size < connection.numMods) {
-            connection.disconnect(i18n.havent_received_all_mods);
-            return false;
-        }
-
-        if (!this.config.reactor) {
-            connection.disconnect(i18n.reactor_not_enabled_on_server);
-            return false;
-        }
-
-        if (this.config.reactor === true)
-            return true;
-
-        const configEntries = Object.entries(this.config.reactor.mods);
-        for (const [ modId, modConfig ] of configEntries) {
-            const clientMod = connection.mods.get(modId);
-
-            if (!clientMod) {
-                if (modConfig === false) {
-                    return;
-                }
-
-                if (modConfig === true || !modConfig.optional) {
-                    connection.disconnect(i18n.missing_required_mod,
-                        modId, modConfig !== true && modConfig.version
-                            ? "v" + modConfig.version : "any");
-                }
-
-                continue;
-            }
-
-            if (modConfig === false) {
-                connection.disconnect(i18n.mod_banned_on_server, modId);
-                return false;
-            }
-
-            if (typeof modConfig === "object") {
-                if (modConfig.banned) {
-                    connection.disconnect(i18n.mod_banned_on_server, modId);
-                    return false;
-                }
-
-                if (modConfig.version) {
-                    if (!minimatch(clientMod.modVersion, modConfig.version)) {
-                        connection.disconnect(i18n.bad_mod_version,
-                            modId, "v" + clientMod.modVersion, "v" + modConfig.version);
-                        return false;
-                    }
-                }
-            }
-        }
-
-        if (!this.config.reactor.allowExtraMods) {
-            for (const [ , clientMod ] of connection.mods) {
-                const modConfig = this.config.reactor.mods[clientMod.modId];
-
-                if (!modConfig) {
-                    connection.disconnect(i18n.mod_not_recognised,
-                        clientMod.modId);
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     sendRawPacket(listenSocket: dgram.Socket, remote: dgram.RemoteInfo, buffer: Buffer) {
         return new Promise((resolve, reject) => {
             listenSocket.send(buffer, remote.port, remote.address, (err, bytes) => {
@@ -1826,34 +1570,34 @@ export class Worker extends EventEmitter<WorkerEvents> {
                          * Patches a bug with reactor whereby the nonce sent for the mod declaration is 0,
                          * this fixes TOU as well.
                          */
-                        const isBadReactor = parsedReliable.messageTag === SendOption.Reliable
-                            && parsedReliable.nonce === 0
-                            && (parsedReliable as ReliablePacket)
-                                .children.every(child => {
-                                    return child instanceof ReactorMessage
-                                        && child.children[0].messageTag === ReactorMessageTag.ModDeclaration;
-                                });
+                        // const isBadReactor = parsedReliable.messageTag === SendOption.Reliable
+                        //     && parsedReliable.nonce === 0
+                        //     && (parsedReliable as ReliablePacket)
+                        //         .children.every(child => {
+                        //             return child instanceof ReactorMessage
+                        //                 && child.children[0].messageTag === ReactorMessageTag.ModDeclaration;
+                        //         });
 
-                        if (!isBadReactor && parsedReliable.nonce < cachedConnection.nextExpectedNonce - 1) {
-                            this.logger.warn("%s is behind (got %s, last nonce was %s)",
-                                cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce - 1);
-                            return;
-                        }
+                        // if (!isBadReactor && parsedReliable.nonce < cachedConnection.nextExpectedNonce - 1) {
+                        //     this.logger.warn("%s is behind (got %s, last nonce was %s)",
+                        //         cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce - 1);
+                        //     return;
+                        // }
 
-                        if (!isBadReactor && parsedReliable.nonce !== cachedConnection.nextExpectedNonce && this.config.socket.messageOrdering) {
-                            this.logger.warn("%s holding packet with nonce %s, expected %s",
-                                cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce);
+                        // if (!isBadReactor && parsedReliable.nonce !== cachedConnection.nextExpectedNonce && this.config.socket.messageOrdering) {
+                        //     this.logger.warn("%s holding packet with nonce %s, expected %s",
+                        //         cachedConnection, parsedReliable.nonce, cachedConnection.nextExpectedNonce);
 
-                            if (!cachedConnection.unorderedMessageMap.has(parsedReliable.nonce)) {
-                                cachedConnection.unorderedMessageMap.set(parsedReliable.nonce, parsedReliable);
-                            }
+                        //     if (!cachedConnection.unorderedMessageMap.has(parsedReliable.nonce)) {
+                        //         cachedConnection.unorderedMessageMap.set(parsedReliable.nonce, parsedReliable);
+                        //     }
 
-                            return;
-                        }
+                        //     return;
+                        // }
 
-                        if (!isBadReactor) {
-                            cachedConnection.nextExpectedNonce++;
-                        }
+                        // if (!isBadReactor) {
+                        //     cachedConnection.nextExpectedNonce++;
+                        // }
                     }
 
                     await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
@@ -2014,63 +1758,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     this.logger.warn("%s attempted to join %s with the wrong chat mode (the room was on quick-chat only)",
                         ev.client, ev.alteredRoom);
                     return connection.disconnect(i18n.invalid_quick_chat_mode_quick_chat);
-                }
-            }
-        }
-
-        if (this.config.reactor !== false && (
-            this.config.reactor === true ||
-            this.config.reactor.requireHostMods
-        ) && roomHost) {
-            const hostConnection = ev.alteredRoom.connections.get(roomHost.clientId);
-            if (hostConnection) {
-                if (hostConnection.usingReactor && !connection.usingReactor) {
-                    return connection.disconnect(i18n.reactor_required_for_room);
-                }
-
-                if (!hostConnection.usingReactor && connection.usingReactor) {
-                    return connection.disconnect(i18n.reactor_not_enabled_for_room);
-                }
-
-                for (const [ hostModId, hostMod ] of hostConnection.mods) {
-                    if (
-                        hostMod.networkSide === ModPluginSide.Clientside &&
-                        (
-                            this.config.reactor === true ||
-                            this.config.reactor.blockClientSideOnly
-                        )
-                    )
-                        continue;
-
-                    const clientMod = connection.mods.get(hostModId);
-
-                    if (!clientMod) {
-                        return connection.disconnect(i18n.missing_required_mod,
-                            hostMod.modId, hostMod.modVersion);
-                    }
-
-                    if (clientMod.modVersion !== hostMod.modVersion) {
-                        return connection.disconnect(i18n.bad_mod_version,
-                            clientMod.modId, clientMod.modVersion, hostMod.modVersion);
-                    }
-                }
-
-                for (const [ clientModId, clientMod ] of connection.mods) {
-                    if (
-                        clientMod.networkSide === ModPluginSide.Clientside &&
-                        (
-                            this.config.reactor === true ||
-                            this.config.reactor.blockClientSideOnly
-                        )
-                    )
-                        continue;
-
-                    const hostMod = hostConnection.mods.get(clientModId);
-
-                    if (!hostMod) {
-                        return connection.disconnect(i18n.mod_not_recognised,
-                            clientMod.modId);
-                    }
                 }
             }
         }

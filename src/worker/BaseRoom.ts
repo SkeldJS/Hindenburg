@@ -77,7 +77,6 @@ import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
 import { GameCode, HazelReader, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
 
 import {
-    BaseReactorRpcMessage,
     ClientLeaveEvent,
     ClientBroadcastEvent,
     RoomBeforeDestroyEvent,
@@ -110,7 +109,7 @@ import { fmtConfigurableLog } from "../util/fmtLogFormat";
 import { Logger } from "../logger";
 
 import { Connection, logLanguages, logPlatforms } from "./Connection";
-import { Worker } from "./Worker";
+import { PacketContext, Worker } from "./Worker";
 import { Perspective, PresetFilter } from "./Perspective";
 import { UnknownComponent } from "../components";
 
@@ -126,7 +125,6 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
             {
                 id: this.clientId,
                 ping: connection ? connection.roundTripPing + "ms" : undefined,
-                mods: connection ? connection.numMods + " mod" + (connection.numMods === 1 ? "" : "s") : undefined,
                 level: connection ? "level " + connection.playerLevel : undefined,
                 ishost: isHost ? "host" : isActingHost ? "acting host" : undefined,
                 platform: connection ? (logPlatforms as any)[connection.platform.platformTag] : undefined,
@@ -229,21 +227,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     loadedPlugins: Map<string, LoadedPlugin<typeof RoomPlugin>>;
     /**
-     * All reactor rpc handlers in the room, mapped by reactor message to an array of handlers for that message.
-     */
-    reactorRpcHandlers: Map<typeof BaseReactorRpcMessage, ((component: Networkable, rpc: BaseReactorRpcMessage) => any)[]>;
-    /**
-     * All reactor rpcs registered on the room, mapped by modId:reactorTag to the reactor rpc class.
-     */
-    reactorRpcs: Map<`${string}:${number}`, typeof BaseReactorRpcMessage>;
-    /**
      * The chat command handler in the room.
      */
     chatCommandHandler: ChatCommandHandler;
     /**
      * A packet decoder for the room to decode and handle incoming packets.
      */
-    decoder: PacketDecoder<Connection|undefined>;
+    decoder: PacketDecoder<PacketContext>;
 
     protected finishedActingHostTransactionRoutine: boolean;
 
@@ -291,8 +281,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.workerPlugins = new Map;
         this.loadedPlugins = new Map;
-        this.reactorRpcHandlers = new Map;
-        this.reactorRpcs = new Map;
         this.chatCommandHandler = new ChatCommandHandler(this);
 
         this.finishedActingHostTransactionRoutine = false;
@@ -406,6 +394,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 ev.newPrivacy);
         });
 
+        this.registerPacketHandlers();
+    }
+
+    registerPacketHandlers() {
         this.decoder.on(EndGameMessage, message => {
             this.handleEnd(message.reason);
         });
@@ -443,7 +435,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         });
 
-        this.decoder.on(DataMessage, (message, _direction, sender) => {
+        this.decoder.on(DataMessage, (message, _direction, { sender }) => {
             if (message.netId === this.gameData?.netId && this.config.serverAsHost && sender?.clientId === this.host?.clientId)
                 return;
 
@@ -455,7 +447,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         });
 
-        this.decoder.on(RpcMessage, async (message, _direction, sender) => {
+        this.decoder.on(RpcMessage, async (message, _direction, { sender }) => {
             if (this.host && this.host.clientId === sender?.clientId && !this.finishedActingHostTransactionRoutine && message.data instanceof SyncSettingsMessage) {
                 this.logger.info("Got initial settings, acting host handshake complete");
                 this.finishedActingHostTransactionRoutine = true;
@@ -477,7 +469,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         });
 
-        this.decoder.on(SpawnMessage, async (message, _direction, sender) => {
+        this.decoder.on(SpawnMessage, async (message, _direction, { sender }) => {
             const ownerClient = this.players.get(message.ownerid);
 
             if (this.hostIsMe && message.ownerid === SpecialClientId.Temp) {
@@ -576,7 +568,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
                             );
 
                             if (this.host && this.host.clientId !== message.clientId) {
-                                console.log("Syncing settings..");
                                 this.host?.control?.syncSettings(this.settings);
                             }
                         }
@@ -1138,8 +1129,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
             const notCanceledPerspectivePayloads: BaseRootMessage[] = [];
-            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, undefined);
-            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, undefined);
+            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, { reliable });
+            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, { reliable });
 
             if (notCanceledPerspectiveGameData.length > 0 || notCanceledPerspectivePayloads.length > 0) {
                 otherPerspective.broadcastMessages(notCanceledPerspectiveGameData, notCanceledPerspectivePayloads, includedConnections, excludedConnections, reliable);
@@ -1147,12 +1138,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
     }
 
-    async processMessagesAndGetNotCanceled(messages: BaseMessage[], notCanceled: BaseMessage[], sender: Connection|undefined) {
+    async processMessagesAndGetNotCanceled(messages: BaseMessage[], notCanceled: BaseMessage[], ctx: PacketContext) {
         for (const message of messages) {
             const canceledBefore = message["_canceled"];
             message["_canceled"] = false;
 
-            await this.decoder.emit(message, MessageDirection.Clientbound, sender);
+            await this.decoder.emit(message, MessageDirection.Clientbound, ctx);
 
             if (message["_canceled"]) {
                 message["_canceled"] = canceledBefore;

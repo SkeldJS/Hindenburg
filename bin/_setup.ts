@@ -140,13 +140,6 @@ export default (async (useDefault: boolean) => {
 
         const defaultConfig = createDefaultConfig();
 
-        const { reactorSupport } = await prompts({
-            type: "confirm",
-            name: "reactorSupport",
-            message: "Support for Reactor modded clients?",
-            initial: true
-        });
-
         const { enableSaaH } = await prompts({
             type: "confirm",
             name: "enableSaaH",
@@ -167,10 +160,6 @@ export default (async (useDefault: boolean) => {
             message: "Hide sensitive logging info?",
             initial: true
         });
-
-        if (!reactorSupport) {
-            defaultConfig.reactor = false;
-        }
 
         if (enableSaaH) {
             defaultConfig.rooms.serverAsHost = true;

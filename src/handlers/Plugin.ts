@@ -1,12 +1,7 @@
 import chalk from "chalk";
 
-import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
-import { RpcMessage } from "@skeldjs/protocol";
-
 import { Logger } from "../logger";
 import { Room, Worker } from "../worker";
-import { BaseReactorRpcMessage } from "../api";
-import { ReactorRpcMessage } from "../packets";
 import { fmtCode } from "../util/fmtCode";
 import { PluginPackageJson } from "./PluginLoader";
 
@@ -56,26 +51,7 @@ export interface PluginMetadata {
 }
 
 // this function can't be private on Plugin because HindenburgPlugin starts crying.
-async function _sendReactorRpc(this: Plugin, component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, player: PlayerData) {
-    const playerConnection = component.room.connections.get(player.clientId);
 
-    if (playerConnection) {
-        const targetMod = playerConnection.mods.get(rpc.modId);
-
-        if (!targetMod)
-            return;
-
-        await player.room.broadcast([
-            new RpcMessage(
-                component.netId,
-                new ReactorRpcMessage(
-                    targetMod.netId,
-                    rpc
-                )
-            )
-        ], undefined, [ player ]);
-    }
-}
 
 export type PluginInstanceType<K extends typeof WorkerPlugin|typeof RoomPlugin> = K extends { createInstance(...args: any[]): infer X }
     ? X
@@ -196,44 +172,6 @@ export abstract class Plugin {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     onConfigUpdate(oldConfig: any, newConfig: any): any {}
-
-    /**
-     * Send a reactor rpc from a component to a room or to a specific player.
-     * @param component The component that the rpc should be sent from.
-     * @param rpc The reactor rpc to send.
-     * @param target Player to send
-     * @returns Returns an empty promise.
-     * @throws If the reactor rpc is invalid.
-     */
-    async sendReactorRpc(component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, targets?: PlayerData[]): Promise<void> {
-        if (!rpc.modId)
-            throw new TypeError("Bad reactor rpc: expected modId property.");
-
-        if (typeof component.room.worker.config.reactor !== "boolean") {
-            const modConfig = component.room.worker.config.reactor.mods[rpc.modId];
-            if (typeof modConfig === "object") {
-                if (modConfig.doNetworking === false) { // doNetworking can be undefined and is defaulted to true
-                    return;
-                }
-            }
-        }
-
-        const sendReactorRpc = _sendReactorRpc.bind(this);
-
-        const promises = [];
-
-        if (targets) {
-            for (const target of targets) {
-                promises.push(sendReactorRpc(component, rpc, target));
-            }
-        }
-
-        for (const [ , player ] of component.room.players) {
-            promises.push(sendReactorRpc(component, rpc, player));
-        }
-
-        await Promise.all(promises);
-    }
 
     getDependency(pluginId: string): Plugin;
     getDependency<K extends typeof Plugin>(plugin: K): WorkerPlugin|RoomPlugin;

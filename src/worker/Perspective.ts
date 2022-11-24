@@ -668,8 +668,8 @@ export class Perspective extends BaseRoom {
         if (notCanceledOutgoingGameData.length > 0 && notCanceledOutgoingPayloads.length > 0) {
             const notCanceledRoomGameData: BaseGameDataMessage[] = [];
             const notCanceledRoomPayloads: BaseRootMessage[] = [];
-            await this.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoingGameData, notCanceledRoomGameData, undefined);
-            await this.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoingPayloads, notCanceledRoomPayloads, undefined);
+            await this.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoingGameData, notCanceledRoomGameData, { reliable });
+            await this.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoingPayloads, notCanceledRoomPayloads, { reliable });
 
             if (notCanceledRoomGameData.length > 0 || notCanceledRoomPayloads.length > 0)
                 this.parentRoom.broadcastMessages(notCanceledRoomGameData, notCanceledRoomPayloads, includedConnections, excludedConnections, reliable);
@@ -684,8 +684,8 @@ export class Perspective extends BaseRoom {
 
                 const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
                 const notCanceledPerspectivePayloads: BaseRootMessage[] = [];
-                await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, undefined);
-                await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, undefined);
+                await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, { reliable });
+                await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, { reliable });
 
                 if (notCanceledPerspectiveGameData.length > 0 || notCanceledPerspectivePayloads.length > 0) {
                     otherPerspective.broadcastMessages(notCanceledPerspectiveGameData, notCanceledPerspectivePayloads, includedConnections, excludedConnections, reliable);
@@ -729,9 +729,8 @@ export class Perspective extends BaseRoom {
     }
 
     async isCanceledIncoming(message: BaseMessage, direction: MessageDirection, sender?: Connection): Promise<boolean> {
-        if (message instanceof RpcMessage) {
+        if (message instanceof RpcMessage)
             return this.isCanceledIncoming(message.data, direction, sender);
-        }
 
         const canceledBefore = message["_canceled"];
         message["_canceled"] = false;

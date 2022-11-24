@@ -52,13 +52,6 @@ export function createDefaultConfig(): HindenburgConfig {
                 format: ["id", "ping", "ishost"]
             }
         },
-        reactor: {
-            blockClientSideOnly: true,
-            mods: {},
-            allowExtraMods: true,
-            requireHostMods: true,
-            allowNormalClients: true
-        },
         rooms: {
             checkChatMode: false,
             chatCommands: true,

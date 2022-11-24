@@ -3,7 +3,6 @@ import chalk from "chalk";
 
 import { DisconnectReason, Language, Platform, QuickChatMode } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
-import { ModPluginSide } from "@skeldjs/reactor";
 import { VersionInfo } from "@skeldjs/util";
 
 import {
@@ -20,19 +19,6 @@ import { fmtConfigurableLog } from "../util/fmtLogFormat";
 
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
-
-export class ClientMod {
-    constructor(
-        public readonly netId: number,
-        public readonly modId: string,
-        public readonly modVersion: string,
-        public readonly networkSide: ModPluginSide
-    ) {}
-
-    [Symbol.for("nodejs.util.inspect.custom")]() {
-        return chalk.green(this.modId) + chalk.grey("@" + this.modVersion);
-    }
-}
 
 export class SentPacket {
     constructor(
@@ -113,12 +99,6 @@ export class Connection {
     sentDisconnect: boolean;
 
     /**
-     * Whether this client sent a modded Reactor message, and thus is using a
-     * [Reactor](https://reactor.gg) modded client.
-     */
-    usingReactor: boolean;
-
-    /**
      * The username that this client identified with. Sent with the {@link Connection.hasIdentified identify}
      * packet.
      */
@@ -149,26 +129,6 @@ export class Connection {
      * This client's level/rank.
      */
     playerLevel: number;
-
-    /**
-     * The number of mods that the client said that they had loaded. Available
-     * if the client is using a Reactor modded client.
-     */
-    numMods: number;
-
-    /**
-     * The mods that the client has loaded. Not necessarily complete, see
-     * {@link Connection.numMods} to compare the list size whether
-     * it is complete.
-     */
-    mods: Map<string, ClientMod>;
-
-    /**
-     * The game that the client is waiting to join. Used internally to allow
-     * Hindenburg to wait for all mods to be received from the client before
-     * allowing them to join a game.
-     */
-    awaitingToJoin: number;
 
     /**
      * The last nonce that was received by this client.
@@ -227,17 +187,12 @@ export class Connection {
     ) {
         this.hasIdentified = false;
         this.sentDisconnect = false;
-        this.usingReactor = false;
         this.username = "";
         this.chatMode = QuickChatMode.FreeChat;
         this.language = Language.English;
         this.clientVersion = new VersionInfo(2021, 11, 9);
         this.platform = new PlatformSpecificData(Platform.Unknown, "Unknown");
         this.playerLevel = 0;
-
-        this.numMods = 0;
-        this.mods = new Map;
-        this.awaitingToJoin = 0;
 
         this.nextExpectedNonce = 0;
         this._incrNonce = 0;
@@ -259,7 +214,6 @@ export class Connection {
                     : this.remoteInfo.address,
                 ping: this.roundTripPing + "ms",
                 room: this.room ? fmtCode(this.room.code) : undefined,
-                mods: this.numMods + " mods",
                 level: "level " + this.playerLevel,
                 version: this.clientVersion.toString(),
                 platform: (logPlatforms as any)[this.platform.platformTag],
@@ -402,14 +356,11 @@ export class Connection {
 
         this.sentDisconnect = true;
         this.hasIdentified = false;
-        this.usingReactor = false;
         this.username = "";
         this.language = Language.English;
         this.clientVersion = new VersionInfo(2021, 11, 9);
         this.platform = new PlatformSpecificData(Platform.Unknown, "Unknown");
         this.playerLevel = 0;
-        this.numMods = 0;
-        this.mods = new Map;
 
         this.worker.removeConnection(this);
 
@@ -452,14 +403,5 @@ export class Connection {
         );
         await this.room?.handleRemoteLeave(this, reason);
         this.room = undefined;
-    }
-
-    getModByNetId(netId: number) {
-        for (const [ , clientMod ] of this.mods) {
-            if (clientMod.netId === netId) {
-                return clientMod;
-            }
-        }
-        return undefined;
     }
 }

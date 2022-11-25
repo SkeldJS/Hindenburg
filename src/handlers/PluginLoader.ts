@@ -7,6 +7,7 @@ import { CoreProperties as PackageJson } from "@schemastore/package";
 import resolvePkg from "resolve-pkg";
 import chalk from "chalk";
 import minimatch from "minimatch";
+import vorpal from "vorpal";
 
 import {
     AirshipStatus,
@@ -60,7 +61,6 @@ import { recursiveAssign } from "../util/recursiveAssign";
 
 import { getPluginDependencies, PluginDependencyDeclaration } from "../api/hooks/Dependency";
 import { PluginInstanceType, RoomPlugin, SomePluginCtr, WorkerPlugin } from "./Plugin";
-import vorpal from "vorpal";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
 
@@ -103,9 +103,11 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerP
         if (!packageJson)
             throw new Error("No package.json for plugin found");
 
-        if (packageJson.engines && packageJson.engines.hindenburg)
-            if (!minimatch(Worker.serverVersion, packageJson.engines.hindenburg))
-                throw new Error("Built for an incompatible version of hindenburg");
+        if (packageJson.engines && packageJson.engines.hindenburg) {
+            if (!minimatch(Worker.serverVersion, packageJson.engines.hindenburg)) {
+                pluginLoader.worker.logger.warn("Plugin %s build for an incompatible version of Hindenburg; loading anyway", packageJson.name);
+            }
+        }
 
         try {
             delete require.cache[require.resolve(pluginPath)];

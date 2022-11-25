@@ -1,12 +1,7 @@
 import chalk from "chalk";
 
-import { Networkable, NetworkableEvents, PlayerData } from "@skeldjs/core";
-import { RpcMessage } from "@skeldjs/protocol";
-
 import { Logger } from "../logger";
 import { Room, Worker } from "../worker";
-import { BaseReactorRpcMessage } from "../api";
-import { ReactorRpcMessage } from "../packets";
 import { fmtCode } from "../util/fmtCode";
 import { PluginPackageJson } from "./PluginLoader";
 
@@ -56,26 +51,7 @@ export interface PluginMetadata {
 }
 
 // this function can't be private on Plugin because HindenburgPlugin starts crying.
-async function _sendReactorRpc(this: Plugin, component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, player: PlayerData) {
-    const playerConnection = component.room.connections.get(player.clientId);
 
-    if (playerConnection) {
-        const targetMod = playerConnection.mods.get(rpc.modId);
-
-        if (!targetMod)
-            return;
-
-        await player.room.broadcast([
-            new RpcMessage(
-                component.netId,
-                new ReactorRpcMessage(
-                    targetMod.netId,
-                    rpc
-                )
-            )
-        ], undefined, [ player ]);
-    }
-}
 
 export type PluginInstanceType<K extends typeof WorkerPlugin|typeof RoomPlugin> = K extends { createInstance(...args: any[]): infer X }
     ? X
@@ -198,47 +174,13 @@ export abstract class Plugin {
     onConfigUpdate(oldConfig: any, newConfig: any): any {}
 
     /**
-     * Send a reactor rpc from a component to a room or to a specific player.
-     * @param component The component that the rpc should be sent from.
-     * @param rpc The reactor rpc to send.
-     * @param target Player to send
-     * @returns Returns an empty promise.
-     * @throws If the reactor rpc is invalid.
+     * Get a plugin
+     * @param pluginId
      */
-    async sendReactorRpc(component: Networkable<unknown, NetworkableEvents, Room>, rpc: BaseReactorRpcMessage, targets?: PlayerData[]): Promise<void> {
-        if (!rpc.modId)
-            throw new TypeError("Bad reactor rpc: expected modId property.");
-
-        if (typeof component.room.worker.config.reactor !== "boolean") {
-            const modConfig = component.room.worker.config.reactor.mods[rpc.modId];
-            if (typeof modConfig === "object") {
-                if (modConfig.doNetworking === false) { // doNetworking can be undefined and is defaulted to true
-                    return;
-                }
-            }
-        }
-
-        const sendReactorRpc = _sendReactorRpc.bind(this);
-
-        const promises = [];
-
-        if (targets) {
-            for (const target of targets) {
-                promises.push(sendReactorRpc(component, rpc, target));
-            }
-        }
-
-        for (const [ , player ] of component.room.players) {
-            promises.push(sendReactorRpc(component, rpc, player));
-        }
-
-        await Promise.all(promises);
-    }
-
-    getDependency(pluginId: string): Plugin;
-    getDependency<K extends typeof Plugin>(plugin: K): WorkerPlugin|RoomPlugin;
+    getDependencyUnsafe(pluginId: string): Plugin;
+    getDependencyUnsafe<K extends typeof Plugin>(plugin: K): WorkerPlugin|RoomPlugin;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getDependency(plugin: any): Plugin {
+    getDependencyUnsafe(plugin: any): Plugin {
         throw new Error("Method not implemented");
     }
 }
@@ -281,13 +223,37 @@ export class RoomPlugin extends Plugin {
         this.logger = new Logger(() => `${chalk.yellow(fmtCode(this.room.code))} ${this.meta.id}`, this.worker.vorpal);
     }
 
-    getDependency(pluginId: string): RoomPlugin;
-    getDependency<K extends typeof RoomPlugin>(plugin: K): PluginInstanceType<K>
-    getDependency(plugin: typeof RoomPlugin|string): RoomPlugin {
-        if (typeof plugin !== "string")
-            return this.getDependency(plugin.meta.id);
+    getDependencyUnsafe(pluginId: string): WorkerPlugin|RoomPlugin;
+    getDependencyUnsafe(pluginId: string, location: "worker"): WorkerPlugin;
+    getDependencyUnsafe(pluginId: string, location: "room"): RoomPlugin;
+    getDependencyUnsafe<K extends SomePluginCtr>(plugin: K): PluginInstanceType<K>
+    getDependencyUnsafe(pluginId: SomePluginCtr|string, location?: "worker"|"room"): WorkerPlugin|RoomPlugin;
+    getDependencyUnsafe(pluginId: SomePluginCtr|string, location?: "worker"|"room"): WorkerPlugin|RoomPlugin {
+        if (typeof pluginId !== "string")
+            return this.getDependencyUnsafe(pluginId.meta.id);
 
-        return this.room.loadedPlugins.get(plugin)!.pluginInstance;
+        if (location === "worker") {
+            return this.worker.loadedPlugins.get(pluginId)!.pluginInstance;
+        }
+
+        if (location === "room") {
+            return this.room.loadedPlugins.get(pluginId)!.pluginInstance;
+        }
+
+        return this.getDependencyUnsafe(pluginId, "room") || this.getDependencyUnsafe(pluginId, "worker");
+    }
+
+    assertDependency(pluginId: string): WorkerPlugin|RoomPlugin;
+    assertDependency(pluginId: string, location: "worker"): WorkerPlugin;
+    assertDependency(pluginId: string, location: "room"): RoomPlugin;
+    assertDependency<K extends SomePluginCtr>(plugin: K): PluginInstanceType<K>
+    assertDependency(pluginId: SomePluginCtr|string, location?: "worker"|"room"): WorkerPlugin|RoomPlugin {
+        const possibleDependency = this.getDependencyUnsafe(pluginId, location);
+
+        if (!possibleDependency)
+            throw new Error("Tried to get depenency " + (typeof pluginId === "string" ? pluginId : pluginId.meta.id) + " but it was either not loaded or non-existent");
+
+        return possibleDependency;
     }
 }
 
@@ -323,13 +289,26 @@ export class WorkerPlugin extends Plugin {
         this.logger = new Logger(() => this.meta.id, this.worker.vorpal);
     }
 
-    getDependency(pluginId: string): WorkerPlugin;
-    getDependency<K extends typeof WorkerPlugin>(plugin: K): PluginInstanceType<K>
-    getDependency(plugin: typeof WorkerPlugin|string): WorkerPlugin {
-        if (typeof plugin !== "string")
-            return this.getDependency(plugin.meta.id);
 
-        return this.worker.loadedPlugins.get(plugin)!.pluginInstance;
+    getDependencyUnsafe(pluginId: string): WorkerPlugin;
+    getDependencyUnsafe<K extends typeof WorkerPlugin>(plugin: K): PluginInstanceType<K>;
+    getDependencyUnsafe(pluginId: typeof WorkerPlugin|string): WorkerPlugin;
+    getDependencyUnsafe(pluginId: typeof WorkerPlugin|string): WorkerPlugin {
+        if (typeof pluginId !== "string")
+            return this.getDependencyUnsafe(pluginId.meta.id);
+
+        return this.worker.loadedPlugins.get(pluginId)!.pluginInstance;
+    }
+
+    assertDependency(pluginId: string): WorkerPlugin;
+    assertDependency<K extends typeof WorkerPlugin>(plugin: K): PluginInstanceType<K>;
+    assertDependency(pluginId: typeof WorkerPlugin|string): WorkerPlugin {
+        const possibleDependency = this.getDependencyUnsafe(pluginId);
+
+        if (!possibleDependency)
+            throw new Error("Tried to get depenency " + (typeof pluginId === "string" ? pluginId : pluginId.meta.id) + " but it was either not loaded or non-existent");
+
+        return possibleDependency;
     }
 }
 

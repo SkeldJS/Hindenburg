@@ -21,7 +21,6 @@ import {
     LobbyBehaviour,
     MeetingHud,
     MiraShipStatus,
-    Networkable,
     PlayerControl,
     PlayerPhysics,
     PolusShipStatus,
@@ -33,16 +32,16 @@ import {
     VoteBanSystem
 } from "@skeldjs/core";
 
+import { Deserializable, MessageDirection, Serializable } from "@skeldjs/protocol";
+
 import { RoomEvents, Room, Worker, WorkerEvents, PacketContext } from "../worker";
 
 import {
     getPluginChatCommands,
     getPluginCliCommands,
     getPluginEventListeners,
-    getPluginReactorRpcHandlers,
     getPluginRegisteredMessages,
     isHindenburgPlugin,
-    BaseReactorRpcMessage,
     shouldPreventLoading,
     getPluginRegisteredRoles,
     WorkerImportPluginEvent,
@@ -52,7 +51,8 @@ import {
     PluginRegisteredMatchmakerEndpoint,
     RegisteredPrefab,
     PluginRegisteredMessageHandlerInfo,
-    getPluginMessageHandlers
+    getPluginMessageHandlers,
+    MessageHandlerAttach
 } from "../api";
 
 import { recursiveClone } from "../util/recursiveClone";
@@ -60,7 +60,6 @@ import { recursiveAssign } from "../util/recursiveAssign";
 
 import { getPluginDependencies, PluginDependencyDeclaration } from "../api/hooks/Dependency";
 import { PluginInstanceType, RoomPlugin, SomePluginCtr, WorkerPlugin } from "./Plugin";
-import { Deserializable, MessageDirection, Serializable } from "@skeldjs/protocol";
 import vorpal from "vorpal";
 
 export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
@@ -205,14 +204,6 @@ export class LoadedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerPlu
      */
     loadedMessageHandlers: PluginRegisteredMessageHandlerInfo[];
     /**
-      * All reactor rpc message handlers that were loaded into the worker, created with
-      * {@link ReactorRpcHandler}.
-      */
-    loadedReactorRpcHandlers: {
-        reactorRpc: typeof BaseReactorRpcMessage,
-        handler: (component: Networkable, rpc: BaseReactorRpcMessage) => any
-    }[];
-    /**
      * All registered http endpoints to be hosted on the http matchmaker, created with
      * {@link MatchmakerEndpoint}.
      */
@@ -236,7 +227,6 @@ export class LoadedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerPlu
         this.loadedCliCommands = [];
         this.loadedEventListeners = [];
         this.loadedMessageHandlers = [];
-        this.loadedReactorRpcHandlers = [];
         this.loadedMatchmakerEndpoints = [];
         this.loadedRegisteredMessages = [];
         this.registeredPrefabs = [];
@@ -683,8 +673,8 @@ export class PluginLoader {
             }
         }
         this.applyChatCommands(room);
-        this.applyReactorRpcHandlers(room);
         this.applyRegisteredPrefabs(room);
+        this.applyMessageHandlers(room);
     }
 
     /**
@@ -754,31 +744,6 @@ export class PluginLoader {
         }
     }
 
-    private getReactorRpcHandlers(room: Room, reactorRpc: typeof BaseReactorRpcMessage) {
-        const cachedHandlers = room.reactorRpcHandlers.get(reactorRpc);
-        const handlers = cachedHandlers || [];
-        if (!cachedHandlers) {
-            room.reactorRpcs.set(`${reactorRpc.modId}:${reactorRpc.messageTag}`, reactorRpc);
-            room.reactorRpcHandlers.set(reactorRpc, handlers);
-        }
-        return handlers;
-    }
-
-    private applyReactorRpcHandlers(room: Room) {
-        room.reactorRpcHandlers.clear();
-        for (const [, loadedPlugin] of room.workerPlugins) {
-            for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
-                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin.pluginInstance));
-            }
-        }
-
-        for (const [, loadedPlugin] of room.loadedPlugins) {
-            for (const reactorRpcHandlerInfo of loadedPlugin.loadedReactorRpcHandlers) {
-                this.getReactorRpcHandlers(room, reactorRpcHandlerInfo.reactorRpc).push(reactorRpcHandlerInfo.handler.bind(loadedPlugin.pluginInstance));
-            }
-        }
-    }
-
     private applyRegisteredPrefabs(room: Room) {
         room.registeredPrefabs = new Map([
             [SpawnType.SkeldShipStatus, [SkeldShipStatus]],
@@ -842,28 +807,59 @@ export class PluginLoader {
         }
     }
 
-    private applyMessageHandlers() {
-        this.worker.decoder.listeners.clear();
-        this.worker.registerPacketHandlers();
+    private applyMessageHandlersPlugin(loadedPlugin: LoadedPlugin, room?: Room) {
+        for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
+            const { messageClass: messageCtr, handler, options } = loadedPlugin.loadedMessageHandlers[i];
+            const fn = handler.bind(loadedPlugin.pluginInstance);
+            if (options.override) {
+                const key = `${messageCtr.messageType}:${messageCtr.messageTag}` as const;
 
-        for (const [, loadedPlugin] of this.worker.loadedPlugins) {
-            for (let i = 0; i < loadedPlugin.loadedMessageHandlers.length; i++) {
-                const { messageClass: messageCtr, handler: handler, options } = loadedPlugin.loadedMessageHandlers[i];
-                const method = handler.bind(loadedPlugin.pluginInstance);
-                if (options.override) {
-                    const key = `${messageCtr.messageType}:${messageCtr.messageTag}` as const;
+                if (options.attachTo === MessageHandlerAttach.Room && room) {
+                    const listeners = room.decoder.listeners.get(key) || [];
+                    room.decoder.listeners.delete(key);
+
+                    room.decoder.on(messageCtr, (message, direction, ctx) => {
+                        fn(message, ctx, listeners.map(x => {
+                            return (message: Serializable, ctx: PacketContext) => x(message, MessageDirection.Serverbound, ctx);
+                        }));
+                    });
+                } else if (options.attachTo === MessageHandlerAttach.Worker) {
                     const listeners = this.worker.decoder.listeners.get(key) || [];
                     this.worker.decoder.listeners.delete(key);
 
                     this.worker.decoder.on(messageCtr, (message, direction, ctx) => {
-                        method(message, ctx, listeners.map(x => {
+                        fn(message, ctx, listeners.map(x => {
                             return (message: Serializable, ctx: PacketContext) => x(message, MessageDirection.Serverbound, ctx);
                         }));
                     });
-                    continue;
                 }
+                continue;
+            }
 
-                this.worker.decoder.on(messageCtr, (message, direction, ctx) => (method as any)(message, ctx));
+            if (room) {
+                room.decoder.on(messageCtr, (message, direction, ctx) => (fn as any)(message, ctx));
+            } else {
+                this.worker.decoder.on(messageCtr, (message, direction, ctx) => (fn as any)(message, ctx));
+            }
+        }
+    }
+
+    private applyMessageHandlers(room?: Room) {
+        if (room) {
+            room.decoder.listeners.clear();
+            room.registerPacketHandlers();
+        } else {
+            this.worker.decoder.listeners.clear();
+            this.worker.registerPacketHandlers();
+        }
+
+        for (const [, loadedPlugin ] of this.worker.loadedPlugins) {
+            this.applyMessageHandlersPlugin(loadedPlugin, room);
+        }
+
+        if (room) {
+            for (const [, loadedPlugin ] of room.loadedPlugins) {
+                this.applyMessageHandlersPlugin(loadedPlugin, room);
             }
         }
     }
@@ -920,7 +916,7 @@ export class PluginLoader {
      * await this.worker.pluginLoader.loadPlugin("hbplugin-what-the-hell", this.room); // !! Plugin with ID 'hbplugin-what-the-hell' not imported
      * ```
      */
-    async loadPlugin(pluginCtr: string | ImportedPlugin<typeof RoomPlugin>, room?: Room): Promise<RoomPlugin>;
+    async loadPlugin(pluginCtr: string | ImportedPlugin<typeof RoomPlugin>, room: Room): Promise<RoomPlugin>;
     async loadPlugin(importedPlugin: string | ImportedPlugin, room?: Room): Promise<WorkerPlugin | RoomPlugin> {
         if (typeof importedPlugin === "string") {
             const _importedPlugin = this.importedPlugins.get(importedPlugin);
@@ -929,7 +925,7 @@ export class PluginLoader {
                 throw new Error("Plugin with ID '" + importedPlugin + "' not imported");
             }
             if (_importedPlugin.isRoomPlugin()) {
-                return await this.loadPlugin(_importedPlugin, room);
+                return await this.loadPlugin(_importedPlugin, room as Room);
             } else if (_importedPlugin.isWorkerPlugin()) {
                 return await this.loadPlugin(_importedPlugin);
             }
@@ -956,18 +952,18 @@ export class PluginLoader {
 
         const loadedPlugin = new LoadedPlugin(importedPlugin, initPlugin);
 
-        const reactorRpcHandlers = getPluginReactorRpcHandlers(initPlugin);
+        const messageHandlers = getPluginMessageHandlers(initPlugin);
         const registeredPrefabs = getPluginRegisteredPrefabs(importedPlugin.pluginCtr);
         const registeredRoles = getPluginRegisteredRoles(importedPlugin.pluginCtr);
 
-        loadedPlugin.loadedReactorRpcHandlers = [...reactorRpcHandlers];
+        loadedPlugin.loadedMessageHandlers = [...messageHandlers];
         loadedPlugin.registeredPrefabs = [...registeredPrefabs];
         loadedPlugin.registeredRoles = [...registeredRoles];
 
         if (loadedPlugin.isRoomPlugin() && room) {
             room.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, loadedPlugin);
             this.applyChatCommands(room);
-            this.applyReactorRpcHandlers(room);
+            this.applyMessageHandlers(room);
             this.applyRegisteredPrefabs(room);
             this.applyRegisteredRoles(room);
 
@@ -976,7 +972,6 @@ export class PluginLoader {
 
         if (loadedPlugin.isWorkerPlugin()) {
             const cliCommands = getPluginCliCommands(initPlugin);
-            const messageHandlers = getPluginMessageHandlers(initPlugin);
             const registeredMatchmakerEndpoints = getPluginMatchmakerEndpoints(initPlugin);
             const registeredMessages = getPluginRegisteredMessages(importedPlugin.pluginCtr);
 
@@ -996,7 +991,6 @@ export class PluginLoader {
                 loadedPlugin.loadedCliCommands.push(command);
             }
 
-            loadedPlugin.loadedMessageHandlers = [...messageHandlers];
             loadedPlugin.loadedMatchmakerEndpoints = [...registeredMatchmakerEndpoints];
             loadedPlugin.loadedRegisteredMessages = [...registeredMessages];
 

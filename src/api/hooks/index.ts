@@ -4,7 +4,6 @@ export * from "./Dependency";
 export * from "./EventListener";
 export * from "./HindenburgPlugin";
 export * from "./MatchmakerEndpoint";
-export * from "./ReactorRpcHandler";
 export * from "./MessageFilter";
 export * from "./MessageHandler";
 export * from "./RegisterMessage";

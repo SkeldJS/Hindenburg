@@ -103,9 +103,9 @@ export interface AnticheatRuleConfig {
     rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
 }
 
-export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"mods"|"level"|"version"|"platform"|"language";
+export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"level"|"version"|"platform"|"language";
 export type RoomFormatOptions = "players"|"map"|"issaah"|"privacy";
-export type PlayerFormatOptions = "id"|"ping"|"mods"|"level"|"ishost"|"platform"|"language";
+export type PlayerFormatOptions = "id"|"ping"|"level"|"ishost"|"platform"|"language";
 
 export interface LoggingConfig {
     /**
@@ -226,63 +226,6 @@ export interface GameListingConfig {
      * @default false
      */
     requirePefectMatches: boolean;
-}
-
-export interface ReactorModConfig {
-    /**
-     * Whether this mod is optional, and clients can connect without it. If the
-     * client does have this mod, then it still must be the same version as the
-     * one specified in {@link ReactorModConfig.version}.
-     * @default false
-     */
-    optional: boolean;
-    /**
-     * Whether this mod is banned, only really applies when {@link ReactorConfig.allowExtraMods}
-     * is enabled, as otherwise, only mods in the {@link ReactorConfig.mods} would
-     * be accepted anyway.
-     * @default false
-     */
-    banned: boolean;
-    /**
-     * Enforce a specific version glob for this mod.
-     * @default *
-     */
-    version: string;
-    /**
-     * Whether to broadcast messages sent by this mod.
-     * @default true
-     */
-    doNetworking: boolean;
-}
-
-export interface ReactorConfig {
-    /**
-     * Whether to block reactor RPCs from mods that are declared as being client-side-only.
-     * @default true
-     */
-    blockClientSideOnly: boolean;
-    /**
-     * Individual configuration for each mod in regards to how Hindenburg should
-     * treat them.
-     */
-    mods: Record<string, ReactorModConfig|boolean>;
-    /**
-     * Whether to allow extra mods aside from those in {@link ReactorConfig.mods},
-     * which would still be used to enforce certain version of mods, and to require
-     * certain mods.
-     * @default true
-     */
-    allowExtraMods: boolean;
-    /**
-     * Whether to allow normal clients to connect.
-     * @default false
-     */
-    allowNormalClients: boolean;
-    /**
-     * Whether or not to require joining clients to have the same mods as the host.
-     * @default true
-     */
-    requireHostMods: boolean;
 }
 
 export interface ChatCommandConfig {
@@ -512,12 +455,6 @@ export interface HindenburgConfig {
      * Options for logging.
      */
     logging: LoggingConfig;
-    /**
-     * Options for Hindenburg's reactor integration. Set to `true` to force
-     * reactor, allow any mods and require clients joining a room to have the
-     * same mods as the host.
-     */
-    reactor: ReactorConfig|boolean;
     /**
      * Configuration for rooms, such as enabling/disabling features
      */

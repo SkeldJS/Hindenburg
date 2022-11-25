@@ -10,6 +10,7 @@ import { BaseRoom } from "./BaseRoom";
 import { Perspective } from "./Perspective";
 import { Logger } from "../logger";
 import { fmtCode } from "../util/fmtCode";
+import { Connection } from "./Connection";
 
 export class Room extends BaseRoom {
     /**
@@ -26,9 +27,10 @@ export class Room extends BaseRoom {
     constructor(
         public readonly worker: Worker,
         public readonly config: RoomsConfig,
-        settings: GameSettings
+        settings: GameSettings,
+        public readonly createdBy: Connection|undefined
     ) {
-        super(worker, config, settings);
+        super(worker, config, settings, createdBy);
 
         this.logger = new Logger(() => chalk.yellow(fmtCode(this.code)), this.worker.vorpal);
 
@@ -68,7 +70,7 @@ export class Room extends BaseRoom {
             }
         }
 
-        const perspective = new Perspective(this, players);
+        const perspective = new Perspective(this, players, this.createdBy);
 
         this.activePerspectives.push(perspective);
         for (let i = 0; i < players.length; i++) {

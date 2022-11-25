@@ -2,7 +2,6 @@ export * from "./api";
 export * from "./handlers";
 export * from "./interfaces";
 export * from "./logger";
-export * from "./packets";
 
 export * from "./worker";
 

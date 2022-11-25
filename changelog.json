@@ -1,5 +1,61 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.1.26": {
+        "version": "1.1.26",
+        "contributors": ["edward"],
+        "date": "2022-11-24",
+        "notes": [
+            {
+                "description": "Remove Reactor support from base Hindenburg",
+                "commits": ["472924aa5a98847d461ecee49af36e62b23bdc00"]
+            }
+        ]
+    },
+    "1.1.25": {
+        "version": "1.1.25",
+        "contributors": ["edward"],
+        "date": "2022-11-23",
+        "notes": [
+            {
+                "description": "Fix invalid imports",
+                "commits": ["d768e5a3f0f48e3405810d2a6e025b17d1c11680"]
+            }
+        ]
+    },
+    "1.1.24": {
+        "version": "1.1.24",
+        "contributors": ["edward"],
+        "date": "2022-11-22",
+        "notes": [
+            {
+                "description": "Remove bad typings field from package.json",
+                "commits": ["3e556022269c1ad5864fe18222a194438892e0ee"]
+            }
+        ]
+    },
+    "1.1.23": {
+        "version": "1.1.23",
+        "contributors": ["edward"],
+        "date": "2022-11-22",
+        "notes": [
+            {
+                "description": "Hash matchmaker tokens to the client so that clients must go through the matchmaker for a token",
+                "commits": ["84cf206265159a0a28489277b6c3a6486d4ffa96"]
+            },
+            {
+                "description": "Fix not being able to override http endpoints",
+                "commits": ["bb0eb10bb2371f751e43121a170c21c87286cc7e"]
+            },
+            {
+                "description": "Fix room plugins have dependencies on worker plugins",
+                "commits": ["c3ca7569d5e886be08015142de501f245adc479f"]
+            },
+            {
+                "description": "Update matchmaker to use Koa",
+                "commits": ["a842b8b2f69eca1d7c24b5e5e7c0346433305035"]
+            }
+        ]
+    },
     "1.1.22": {
         "version": "1.1.22",
         "contributors": ["edward"],

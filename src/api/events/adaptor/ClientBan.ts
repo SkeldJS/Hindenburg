@@ -4,10 +4,7 @@ import { Connection } from "../../../worker";
 import { ClientEvent } from "../client";
 
 /**
- * Emitted when a client should be banned. This event is emitted specifically to
- * be handled by a [ban handler plugin](https://skeldjs.github.io/Hindenburg/pages/Setting%20Up/Ban%20Handling).
- *
- * Often sent because of the Anti-Cheat.
+ * Emitted when a client should be banned.
  */
 export class ClientBanEvent extends BasicEvent implements ClientEvent {
     static eventName = "client.ban" as const;

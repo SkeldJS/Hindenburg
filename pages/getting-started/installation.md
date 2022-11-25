@@ -66,7 +66,7 @@ If you want to run Hindenburg in production (i.e. You're not planning on doing a
 If you're developing with Hindenburg (e.g. plugins or Hindenburg itself), you can run `yarn dev`. This will compile all of the typescript files on the fly so you don't have to worry about building all the time.
 
 ### Updating
-> Enable [auto-updating](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Configuration.html#configautoupdate) in your `config.json` to automatically update Hindenburg when you start your server.
+> Enable [auto-updating](https://hindenburg.js.org/pages/getting-started/configuration/index.html#autoupdate) in your `config.json` to automatically update Hindenburg when you start your server.
 
 Hindenburg will of course need updating frequently! Run the following commands to get Hindenburg updated to the latest version:
 

@@ -2,7 +2,7 @@ The Among Us protocol stores game codes as integers, as converts them into their
 
 SkeldJS also uses game codes as integers throughout its API, see the [conversion](#conversion) section to read them as a formatting string.
 
-> If you're a server owner looking to set which version of game codes to use, see [Configuration#rooms.gameCodes](https://skeldjs.github.io/Hindenburg/Getting%20Started/Configuration.html#roomsgamecodes).
+> If you're a server owner looking to set which version of game codes to use, see [Configuration#rooms.gameCodes](https://hindenburg.js.org/pages/getting-started/configuration/index.html#roomsgamecodes).
 
 ## Versions
 There are two versions of games codes used in Among Us:

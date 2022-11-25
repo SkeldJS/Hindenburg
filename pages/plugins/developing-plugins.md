@@ -183,7 +183,7 @@ load -h -r hbplugin-customgamecode
 ## Documentation
 For information on specific plugin features, check out the sidebar on these docs.
 
-For information on specific API enums, interfaces, functions, constants, classes, etc., go to the [Exports](https://skeldjs.github.io/Hindenburg/modules.html) section. The searchbar above can also help you look for functions that you need.
+For information on specific API enums, interfaces, functions, constants, classes, etc., go to the Exports section. The searchbar above can also help you look for functions that you need.
 
 > Make sure you have the "Inherited" checkbox checked. If you're looking for Hindenburg-specific classes, make sure the "Externals" checkbox is unchecked.
 

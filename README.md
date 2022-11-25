@@ -33,7 +33,7 @@ docker run \
     hindenburg/hindenburg:latest
 ```
 
-> If you're looking for a full guide, check out the [installation](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Installation.html) page.
+> If you're looking for a full guide, check out the [installation](https://hindenburg.js.org/pages/getting-started/installation.html) page.
 
 ## Features
 ![server as a host](https://github.com/SkeldJS/Hindenburg/raw/master/media/server-as-a-host.png)
@@ -52,9 +52,9 @@ control.
 
 The config is easy to read and understand, and has full auto-complete for supported editors. Plugins can have their own config options that you can pass, even having auto-complete support there too.
 
-> Check out the [configuration](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Configuration.html) guide for more information.
+> Check out the [configuration](https://hindenburg.js.org/pages/getting-started/configuration/index.html) guide for more information.
 
-> Hindenburg also supports some environment variables to fine-tune where Hindenburg looks for your config and plugins, see the [environment variables](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Environment%20Variables.html) guide.
+> Hindenburg also supports some environment variables to fine-tune where Hindenburg looks for your config and plugins, see the [environment variables](https://hindenburg.js.org/pages/getting-started/configuration/environment-variables.html) guide.
 
 The config is live updating, meaning that any changes in your config are _instantly_ reflected in the server and plugins.
 
@@ -67,28 +67,28 @@ giving you a sophisticated and powerful plugin API.
 
 Plugins are easy to install, easy to configure and easy to create.
 
-> If you're a server owner, check out the guide on [setting up plugins](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Installing%20Plugins.html). Documentation can be found [here](https://skeldjs.github.io/Hindenburg/modules.html).
+> If you're a server owner, check out the guide on [setting up plugins](https://hindenburg.js.org/pages/getting-started/using-hindenburg/installing-plugins.html). Documentation can be found [here](https://hindenburg.js.org/index.html).
 
-> If you're looking to develop your own plugin, checkout the guide on [writing your own plugins](https://skeldjs.github.io/Hindenburg/pages/Plugins/Creating%20a%20Plugin.html). Check out the [custom game code](https://github.com/SkeldJS/hbplugin-customgamecode) plugin for an example.
+> If you're looking to develop your own plugin, checkout the guide on [writing your own plugins](https://hindenburg.js.org/pages/plugins/creating-a-plugin.html). Check out the [custom game code](https://github.com/SkeldJS/hbplugin-customgamecode) plugin for an example.
 
 Hindenburg even supports hot plugin reloading, making it more developer-friendly than an alternative such as Impostor, and allowing you to reload your server plugins without downtime.
 
-> Check out a [full, completely unbiased comparison](https://skeldjs.github.io/Hindenburg/pages/Information/Comparison%20with%20Impostor.html).
+> Check out a [full, completely unbiased comparison](https://hindenburg.js.org/pages/getting-started/comparison-with-impostor.html).
 
 Plugins can be attached either directly to the server covering all rooms and server behaviour, or isolated on individual rooms.
 
-> Learn more about the difference [here](https://skeldjs.github.io/Hindenburg/pages/Plugins/Worker%20and%20Room%20Plugins.html).
+> Learn more about the difference [here](https://hindenburg.js.org/pages/plugins/worker-and-room-plugins.html).
 
 Plugins are great for adding first-class support for client mods to Hindenburg, even allowing you to extend Server-as-a-Host capabilities, allowing you to move your client-side logic to the server, ensuring security and source integrity.
 
 ![reactor support](https://github.com/SkeldJS/Hindenburg/raw/master/media/reactor-support.png)
-Hindenburg has native support for clients using [Reactor](https://reactor.gg), allowing plugins to communicate directly with client-side mods and giving you the ability to leverage the full potential of the Reactor protocol.
+Hindenburg has official plugin support for clients using [Reactor](https://reactor.gg), allowing plugins to communicate directly with client-side mods and giving you the ability to leverage the full potential of the Reactor protocol.
 
 With the ability to ban, require or require specific versions of mods, you can be sure that clients are connecting to your servers with the _exact_ mods that your modpack requires.
 
-> Check out the page on [Reactor support](https://skeldjs.github.io/Hindenburg/pages/Information/Reactor%20Support.html) for more information.
+> Check out the page on [Reactor support](https://hindenburg.js.org/pages/getting-started/configuration/reactor-support.html) for more information.
 
-Combined with Hindenburg's [Server-as-a-Host](https://skeldjs.github.io/Hindenburg/pages/Information/Server-as-a-Host.html) technology and excellent [plugin support](https://skeldjs.github.io/Hindenburg/pages/Information/Plugins.html), the full stack of Hindenburg _and_ Reactor is certain to create a great experience for players, server owners and plugin developers all-round.
+Combined with Hindenburg's [Server-as-a-Host](https://hindenburg.js.org/pages/getting-started/using-hindenburg/server-as-a-host.html) technology and excellent plugin support, the full stack of Hindenburg _and_ Reactor is certain to create a great experience for players, server owners and plugin developers all-round.
 
 ## Issues
 For issues regarding bugs that you encounter while using Hindenburg, please create

@@ -227,7 +227,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--username, -u <username>", "username of the client(s) to disconnect")
             .option("--address, -a <ip address>", "ip address of the client(s) to disconnect")
             .option("--room, -c <room code>", "room code of the client(s) to disconnect")
-            .option("--reason, -r <reason>", "reason for why to disconnect the client, see https://skeldjs.github.io/Hindenburg/enums/DisconnectReason.html")
+            .option("--reason, -r <reason>", "reason for why to disconnect the client, see https://hindenburg.js.org/enums/DisconnectReason.html")
             .option("--ban, -b [duration]", "ban this client, duration in seconds")
             .action(async args => {
                 const reason = (!isNaN(parseInt(args.options.reason))
@@ -271,7 +271,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("destroy <room code>", "Destroy and remove a room from the server.")
-            .option("--reason, -r <reason>", "reason to destroy this room, see https://skeldjs.github.io/Hindenburg/enums/DisconnectReason.html")
+            .option("--reason, -r <reason>", "reason to destroy this room, see https://hindenburg.js.org/enums/DisconnectReason.html")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
@@ -327,7 +327,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         this.vorpal
             .command("end <room code>", "End a currently playing match.")
-            .option("--reason, -r <reason>", "reason to end the match, see https://skeldjs.github.io/Hindenburg/enums/GameOverReason.html")
+            .option("--reason, -r <reason>", "reason to end the match, see https://hindenburg.js.org/enums/GameOverReason.html")
             .autocomplete({
                 data: async () => {
                     return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());

@@ -49,4 +49,4 @@ Use the `"defaultConfig"` in the `"plugin"` object in your plugin's `package.jso
 ## Listen for config updates
 As the config for Hindenburg can be modified during runtime, it may be of interest to _listen_ for changes as they come through, maybe to re-listen on another port.
 
-See the [Lifecycle Methods](https://skeldjs.github.io/Hindenburg/pages/Plugins/Lifecycle%20Methods.html#onconfigupdateoldconfig-any-newconfig-any) page for the API reference.
+See the [Lifecycle Methods](https://hindenburg.js.org/pages/plugins/lifecycle-methods.html#onconfigupdateoldconfig-any-newconfig-any) page for the API reference.

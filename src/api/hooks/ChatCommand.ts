@@ -15,7 +15,7 @@ export interface PluginRegisteredChatCommandInfo {
 
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -25,7 +25,7 @@ export interface PluginRegisteredChatCommandInfo {
 export function ChatCommand(usage: string, description?: string): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -36,7 +36,7 @@ export function ChatCommand(usage: string, description?: string): MethodDecorato
 export function ChatCommand(usage: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -48,7 +48,7 @@ export function ChatCommand(usage: string, accessCheck: AccessCheckFn): MethodDe
 export function ChatCommand(usage: string, description: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -59,7 +59,7 @@ export function ChatCommand(usage: string, description: string, accessCheck: Acc
 export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -71,7 +71,7 @@ export function ChatCommand(pluginClass: SomePluginCtr, usage: string, descripti
 export function ChatCommand(pluginClass: SomePluginCtr, usage: string, accessCheck?: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://skeldjs.github.io/Hindenburg/pages/Plugins/Chat%20Commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.

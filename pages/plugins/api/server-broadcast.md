@@ -12,7 +12,7 @@ onSettingsUpdate(ev: PlayerSyncSettingsEvent<Room>) {
 ```
 
 ## Custom appearance
-The appearance of the chat message, by default, is determined by the [server's config](https://skeldjs.github.io/Hindenburg/pages/Getting%20Started/Configuration.html#roomsserverplayer).
+The appearance of the chat message, by default, is determined by the [server's config](https://hindenburg.js.org/pages/getting-started/configuration/index.html#roomsserverplayer).
 
 However, you can pass in values for the `sendChat` to set cosmetics:
 ```ts

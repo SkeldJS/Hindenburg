@@ -1130,8 +1130,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
             const notCanceledPerspectivePayloads: BaseRootMessage[] = [];
-            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, { reliable });
-            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, { reliable });
+            const ctx: PacketContext = { sender: undefined, reliable, recipients: includedConnections };
+            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, ctx);
+            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, ctx);
 
             if (notCanceledPerspectiveGameData.length > 0 || notCanceledPerspectivePayloads.length > 0) {
                 otherPerspective.broadcastMessages(notCanceledPerspectiveGameData, notCanceledPerspectivePayloads, includedConnections, excludedConnections, reliable);

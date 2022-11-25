@@ -173,10 +173,14 @@ export abstract class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     onConfigUpdate(oldConfig: any, newConfig: any): any {}
 
-    getDependency(pluginId: string): Plugin;
-    getDependency<K extends typeof Plugin>(plugin: K): WorkerPlugin|RoomPlugin;
+    /**
+     * Get a plugin
+     * @param pluginId
+     */
+    getDependencyUnsafe(pluginId: string): Plugin;
+    getDependencyUnsafe<K extends typeof Plugin>(plugin: K): WorkerPlugin|RoomPlugin;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getDependency(plugin: any): Plugin {
+    getDependencyUnsafe(plugin: any): Plugin {
         throw new Error("Method not implemented");
     }
 }
@@ -219,13 +223,37 @@ export class RoomPlugin extends Plugin {
         this.logger = new Logger(() => `${chalk.yellow(fmtCode(this.room.code))} ${this.meta.id}`, this.worker.vorpal);
     }
 
-    getDependency(pluginId: string): RoomPlugin;
-    getDependency<K extends typeof RoomPlugin>(plugin: K): PluginInstanceType<K>
-    getDependency(plugin: typeof RoomPlugin|string): RoomPlugin {
-        if (typeof plugin !== "string")
-            return this.getDependency(plugin.meta.id);
+    getDependencyUnsafe(pluginId: string): WorkerPlugin|RoomPlugin;
+    getDependencyUnsafe(pluginId: string, location: "worker"): WorkerPlugin;
+    getDependencyUnsafe(pluginId: string, location: "room"): RoomPlugin;
+    getDependencyUnsafe<K extends SomePluginCtr>(plugin: K): PluginInstanceType<K>
+    getDependencyUnsafe(pluginId: SomePluginCtr|string, location?: "worker"|"room"): WorkerPlugin|RoomPlugin;
+    getDependencyUnsafe(pluginId: SomePluginCtr|string, location?: "worker"|"room"): WorkerPlugin|RoomPlugin {
+        if (typeof pluginId !== "string")
+            return this.getDependencyUnsafe(pluginId.meta.id);
 
-        return this.room.loadedPlugins.get(plugin)!.pluginInstance;
+        if (location === "worker") {
+            return this.worker.loadedPlugins.get(pluginId)!.pluginInstance;
+        }
+
+        if (location === "room") {
+            return this.room.loadedPlugins.get(pluginId)!.pluginInstance;
+        }
+
+        return this.getDependencyUnsafe(pluginId, "room") || this.getDependencyUnsafe(pluginId, "worker");
+    }
+
+    assertDependency(pluginId: string): WorkerPlugin|RoomPlugin;
+    assertDependency(pluginId: string, location: "worker"): WorkerPlugin;
+    assertDependency(pluginId: string, location: "room"): RoomPlugin;
+    assertDependency<K extends SomePluginCtr>(plugin: K): PluginInstanceType<K>
+    assertDependency(pluginId: SomePluginCtr|string, location?: "worker"|"room"): WorkerPlugin|RoomPlugin {
+        const possibleDependency = this.getDependencyUnsafe(pluginId, location);
+
+        if (!possibleDependency)
+            throw new Error("Tried to get depenency " + (typeof pluginId === "string" ? pluginId : pluginId.meta.id) + " but it was either not loaded or non-existent");
+
+        return possibleDependency;
     }
 }
 
@@ -261,13 +289,26 @@ export class WorkerPlugin extends Plugin {
         this.logger = new Logger(() => this.meta.id, this.worker.vorpal);
     }
 
-    getDependency(pluginId: string): WorkerPlugin;
-    getDependency<K extends typeof WorkerPlugin>(plugin: K): PluginInstanceType<K>
-    getDependency(plugin: typeof WorkerPlugin|string): WorkerPlugin {
-        if (typeof plugin !== "string")
-            return this.getDependency(plugin.meta.id);
 
-        return this.worker.loadedPlugins.get(plugin)!.pluginInstance;
+    getDependencyUnsafe(pluginId: string): WorkerPlugin;
+    getDependencyUnsafe<K extends typeof WorkerPlugin>(plugin: K): PluginInstanceType<K>;
+    getDependencyUnsafe(pluginId: typeof WorkerPlugin|string): WorkerPlugin;
+    getDependencyUnsafe(pluginId: typeof WorkerPlugin|string): WorkerPlugin {
+        if (typeof pluginId !== "string")
+            return this.getDependencyUnsafe(pluginId.meta.id);
+
+        return this.worker.loadedPlugins.get(pluginId)!.pluginInstance;
+    }
+
+    assertDependency(pluginId: string): WorkerPlugin;
+    assertDependency<K extends typeof WorkerPlugin>(plugin: K): PluginInstanceType<K>;
+    assertDependency(pluginId: typeof WorkerPlugin|string): WorkerPlugin {
+        const possibleDependency = this.getDependencyUnsafe(pluginId);
+
+        if (!possibleDependency)
+            throw new Error("Tried to get depenency " + (typeof pluginId === "string" ? pluginId : pluginId.meta.id) + " but it was either not loaded or non-existent");
+
+        return possibleDependency;
     }
 }
 

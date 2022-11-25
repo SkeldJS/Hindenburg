@@ -1013,11 +1013,19 @@ export class Perspective extends BaseRoom {
         }
     }
 
-    registerFilter(direction: MessageFilterDirection, filter: PerspectiveFilter) {
+    registerFilter(filter: PerspectiveFilter): void;
+    registerFilter(filter: PerspectiveFilter, direction?: MessageFilterDirection): void;
+    registerFilter(filter: PerspectiveFilter, direction?: MessageFilterDirection) {
         const filterClass = Object.getPrototypeOf(filter);
 
         if (filterClass === null)
             throw new Error("Invalid event observer");
+
+        if (direction === undefined) {
+            this.registerFilter(filter, MessageFilterDirection.Incoming);
+            this.registerFilter(filter, MessageFilterDirection.Outgoing);
+            return;
+        }
 
         const filterDecoder = this.getDecoder(direction);
 
@@ -1032,7 +1040,15 @@ export class Perspective extends BaseRoom {
         }
     }
 
-    removeFilter(direction: MessageFilterDirection, filter: PerspectiveFilter) {
+    removeFilter(filter: PerspectiveFilter): void;
+    removeFilter(filter: PerspectiveFilter, direction: MessageFilterDirection): void;
+    removeFilter(filter: PerspectiveFilter, direction?: MessageFilterDirection) {
+        if (direction === undefined) {
+            this.removeFilter(filter, MessageFilterDirection.Incoming);
+            this.removeFilter(filter, MessageFilterDirection.Outgoing);
+            return;
+        }
+
         const filterDecoder = this.getDecoder(direction);
 
         for (const messageFilter of filter.getFilters()) {

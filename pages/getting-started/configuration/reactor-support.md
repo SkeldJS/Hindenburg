@@ -1,83 +1,76 @@
-Hindenburg provides native support for [Reactor](https://reactor.gg), a client-side
-modding framework, used by many developers and public mods.
+Hindenburg provides official plugin support for [Reactor](https://reactor.gg), a client-side modding framework, used by many developers and public mods.
 
-## Configuration
-If you're running a server yourself, you'll find that Hindenburg provides great support all-round for Reactor, with configuration options to ensure players are using Reactor, *and* the correct mods, even allowing you to ban certain mods and requiring specific versions for mods that you allow.
+## Plugin
+There's an official SkeldJS plugin for reactor support at https://github.com/SkeldJS/hbplugin-reactor.
 
-To disable reactor and disallow it completely on your server, simply set {@link HindenburgConfig.reactor | `"reactor"`} in your config to `false`:
-```json
-"reactor": false
+This can be installed using the {page ../using-hindenburg/installing-plugins `yarn plugins install`} command:
+```
+yarn plugins install hbplugin-reactor@3
 ```
 
-To enable it, either pass `true` to use default config values:
-```json
-"reactor": true
-```
-Or pass in an object with additional configuration values:
-```json
-"reactor": {
-    "blockClientSideOnly": true,
-    "mods": {},
-    "allowExtraMods": true,
-    "requireHostMods": false,
-    "allowNormalClients": true
-}
-```
+> Install `hbplugin-reactor@2` if your mods are still using the old reactor protocol version.
 
-### `"blockClientSideOnly"`
-Block any mods that are defined as being only on the client (not networked) from sending any messages. This is solely as a measure to make sure that mods correctly define what they do; best to leave this as `true`.
-
-### `"mods"`
-You can pass in an object of mod ids to configuration values in order to allow or outright ban mods - or make them optional.
-
-For example:
+### Configuration
+After installing the plugin, the following should appear in your `config.json` if you have it set up:
 ```json
-"reactor": {
-    "mods": {
-        "com.slushiegoose.townofus": {
-            "optional": false,
-            "banned": false,
-            "version": "3.2.*",
-            "doNetworking": true
+{
+    "plugins": {
+        "hbplugin-reactor": {
+            "enabled": true,
+            "serverAsHostSyncer": false,
+            "blockClientSideOnly": true,
+            "mods": {},
+            "allowExtraMods": true,
+            "requireHostMods": true,
+            "allowNormalClients": true
         }
     }
 }
 ```
 
-> Set the mod to `true` to allow it if [`"allowExtraMods"`](#allowExtraMods) is set to `false`, or `false` to completely ban it.
+### `enabled`
+Whether or not reactor support should be enabled for your server.
 
-#### `"optional"`
-Specifies whether players can play without this mod completely fine. If so, then this config will be used solely to [enforce a specific version](#version) or determine [whether it is allowed to do networking](#doNetworking).
+### `serverAsHostSyncer`
+Whether or not the server should use host-based mod syncing.
 
-#### `"banned"`
-Whether this mod is completely banned from being allowed on this server.
+> This should make virtually no difference to your server.
 
-> Note, that this only particularly applies when [`"allowExtraMods"`](#allowExtraMods) is enabled, as otherwise only mods in [the config](#mods) would be accepted anyway.
+It's recommended to keep this at `false` if you don't know what you're doing.
 
-#### `"version"`
-Specify a version glob to accept specific versions of the mod.
+### `blockClientSideOnly`
+Whether or not to block players from connecting that have mods that are defined as being client-side only.
 
-> Check out the [wikipedia article on glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax) to learn more.
+### `mods`
+An object of configuration for each mod:
+```json
+"my.mod.id": {
+    "optional": false,
+    "banned": false,
+    "version": "1.0.0",
+    "doNetworking": false
+}
+```
 
-#### `"doNetworking"`
-Whether or not this mod is allowed to communicate with other players with this mod.
+#### `optional`
+Whether or not the mod is totally optional for a client to have.
 
-> This could be worth setting to `"false"` if you are not entirely sure on what the mod does, as a security measure.
+#### `banned`
+Whether or not players using this mod should be blocked from playing on the server.
 
-### `"allowExtraMods"`
-Allow users to use any extra mods that they want, aside from those listed in the [`"mods"`](#mods) config.
+#### `version`
+A version glob of the mod to enforce, e.g. `1.0.*` to allow any patch values.
 
-> Note that if this is enabled, configuration listed in [`"mods"`](#mods) will be used for [enforce specific versions of mods](#version), or just to [require](#optional) or [ban](#banned) them.
+> See [Globs on Wikipedia](https://en.wikipedia.org/wiki/Glob_(programming)) for more information on the syntax
 
-### `"allowNormalClients"`
-Whether or not "normal" (non-reactor) clients are allowed to connect to the server.
+#### `doNetworking`
+Whether or not to allow this mod to have networking between clients using the same mod.
 
-### `"requireHostMods"`
-Joining clients must have the _exact_ same mods (including exact versions) as the host of the room.
+### `allowExtraMods`
+Whether or not clients should be allowed to have extra mods aside from those defined in [#mods](#mods)
 
-> This also prevents non-reactor clients from joining reactor rooms, and reactor clients from joining non-reactor rooms.
+### `requireHostMods`
+Whether or not clients connecting to a room should have the _exact_ same mods as the host of that room.
 
-## Plugin Support
-Hindenburg also works great with client-side mods made with Reactor, as it provides a native reactor rpc API for plugins, allowing them to communicate directly with mods of specific players, or to entire rooms.
-
-> Check out the {@page ../../plugins/advanced/reactor-integration.md} page to develop plugins to work with Reactor modded clients.
+### `allowNormalClients`
+Whether or not to allow non-reactor clients to connect to the server.

@@ -15,7 +15,7 @@ based on features, and to help you make your choice:
 | [Anti-cheat](./HACS) | ✔️ | ✔️ |
 | Server logging | ✔️ | ✔️ |
 | [Plugins](./Installing%20Plugins) | ✔️ | ✔️ |
-| [Reactor support](../Using%20Hindenburg/Reactor%20Support) | ✔️ | 🧩 |
+| [Reactor support](../Using%20Hindenburg/Reactor%20Support) | 🧩 | 🧩 |
 ||||
 | **Extra Features** |  |  |
 | [Server-as-a-Host](../Using%20Hindenburg/Server-as-a-Host) | ✔️ | ❌ |

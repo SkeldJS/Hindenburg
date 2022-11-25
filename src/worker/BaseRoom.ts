@@ -1319,11 +1319,27 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * {@link BaseRoom.disableSaaH}.
      * and tell clients the new host (unless they are an acting host.).
      * @param saahEnabled Whether or not SaaH should be enabled.
+     */
+    async setSaaHEnabled(saahEnabled: false): Promise<void>;
+    /**
+     * Set whether SaaH is enabled on this room, calling either {@link BaseRoom.enableSaaH} or
+     * {@link BaseRoom.disableSaaH}.
+     * and tell clients the new host (unless they are an acting host.).
+     * @param saahEnabled Whether or not SaaH should be enabled.
      * @param addActingHost Whether or not to add the current host as an acting host
      */
-    async setSaaHEnabled(saahEnabled: boolean, addActingHost: boolean) {
+    async setSaaHEnabled(saahEnabled: true, addActingHost: boolean): Promise<void>;
+    /**
+     * Set whether SaaH is enabled on this room, calling either {@link BaseRoom.enableSaaH} or
+     * {@link BaseRoom.disableSaaH}.
+     * and tell clients the new host (unless they are an acting host.).
+     * @param saahEnabled Whether or not SaaH should be enabled.
+     * @param addActingHost Whether or not to add the current host as an acting host, if SaaH is being enabled.
+     */
+    async setSaaHEnabled(saahEnabled: boolean, addActingHost: boolean): Promise<void>;
+    async setSaaHEnabled(saahEnabled: boolean, addActingHost?: boolean) {
         if (saahEnabled) {
-            await this.enableSaaH(addActingHost);
+            await this.enableSaaH(addActingHost ?? true);
         } else {
             await this.disableSaaH();
         }

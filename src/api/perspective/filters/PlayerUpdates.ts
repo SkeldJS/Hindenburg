@@ -164,10 +164,17 @@ export class PlayerUpdatesPerspectiveFilter extends PerspectiveFilter {
         return this.unsetAllowed(0xfff);
     }
 
+    /**
+     * Get the bitfield that covers rules for updates for all players.
+     */
     getAllowed() {
         return this._defaultAllowed;
     }
 
+    /**
+     * Get the bitfield that covers rules for updates for a specific player's player id.
+     * @param playerId The ID of the player to get rules for.
+    */
     getPlayerInfoAllowed(playerId: number) {
         const cachedAllowGuards = this._playerInfoAllowed.get(playerId);
         return cachedAllowGuards || 0;
@@ -214,10 +221,10 @@ export class PlayerUpdatesPerspectiveFilter extends PerspectiveFilter {
 
     @MessageFilter(DataMessage)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onDataMessage(message: DataMessage, perspective: Perspective, direction: MessageFilterDirection, context: PacketContext) {
-        const netobject = perspective.netobjects.get(message.netId);
+    protected _onDataMessage(message: DataMessage, perspective: Perspective, direction: MessageFilterDirection, context: PacketContext) {
+        const netObject = perspective.netobjects.get(message.netId);
 
-        if (!(netobject instanceof GameData))
+        if (!(netObject instanceof GameData))
             return;
 
         const updatedPlayerIds = [];
@@ -283,7 +290,7 @@ export class PlayerUpdatesPerspectiveFilter extends PerspectiveFilter {
 
     @MessageFilter(RpcMessage)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    onSetNamemessage(message: RpcMessage, perspective: Perspective, _direction: MessageFilterDirection, _context: PacketContext) {
+    protected _onCosmeticRpc(message: RpcMessage, perspective: Perspective, _direction: MessageFilterDirection, _context: PacketContext) {
         if (
             message.data.messageTag === RpcMessageTag.SetName ||
             message.data.messageTag === RpcMessageTag.SetColor ||

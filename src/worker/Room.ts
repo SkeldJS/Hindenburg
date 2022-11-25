@@ -10,6 +10,7 @@ import { BaseRoom } from "./BaseRoom";
 import { Perspective, PerspectiveFilter, PresetFilter } from "./Perspective";
 import { Logger } from "../logger";
 import { fmtCode } from "../util/fmtCode";
+import { Connection } from "./Connection";
 
 export class Room extends BaseRoom {
     /**
@@ -26,9 +27,10 @@ export class Room extends BaseRoom {
     constructor(
         public readonly worker: Worker,
         public readonly config: RoomsConfig,
-        settings: GameSettings
+        settings: GameSettings,
+        public readonly createdBy: Connection|undefined
     ) {
-        super(worker, config, settings);
+        super(worker, config, settings, createdBy);
 
         this.logger = new Logger(() => chalk.yellow(fmtCode(this.code)), this.worker.vorpal);
 
@@ -99,7 +101,7 @@ export class Room extends BaseRoom {
         const incomingFilter = new PerspectiveFilter(this.worker);
         const outgoingFilter = new PerspectiveFilter(this.worker);
 
-        const perspective = new Perspective(this, players, incomingFilter, outgoingFilter);
+        const perspective = new Perspective(this, players, incomingFilter, outgoingFilter, this.createdBy);
 
         Perspective.applyPerspectiveFilter(perspective, incomingFilter, incomingFilters, "incoming");
         Perspective.applyPerspectiveFilter(perspective, outgoingFilter, outgoingFilters, "outgoing");

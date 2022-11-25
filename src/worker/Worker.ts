@@ -961,7 +961,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (ev.canceled)
                 return;
 
-            const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings);
+            const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings, sender);
 
             this.logger.info("%s created room %s",
                 sender, room);
@@ -1684,9 +1684,10 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * @param code The game code for the room, see {@link Worker.generateRoomCode}
      * to generate one.
      * @param options Game options for the room.
+     * @param createdBy The client who is creating the room, if any.
      * @returns The created room.
      */
-    async createRoom(code: number, options: GameSettings) {
+    async createRoom(code: number, options: GameSettings, createdBy: Connection|undefined) {
         if (this.rooms.has(code))
             throw new Error("A room with code '" + GameCode.convertIntToString(code) + "' already exists.");
 
@@ -1694,7 +1695,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             ...this.config.rooms
         };
 
-        const createdRoom = new Room(this, copyConfiguration, options);
+        const createdRoom = new Room(this, copyConfiguration, options, createdBy);
         await createdRoom.setCode(code);
         createdRoom.workerPlugins = new Map(this.loadedPlugins.entries());
         await this.pluginLoader.loadAllRoomPlugins(createdRoom);

@@ -252,7 +252,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         /**
          * The game settings for the room.
          */
-        settings: GameSettings
+        settings: GameSettings,
+        public readonly createdBy: Connection|undefined
     ) {
         super({ doFixedUpdate: true });
 

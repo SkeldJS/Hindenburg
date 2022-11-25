@@ -222,9 +222,10 @@ export class Perspective extends BaseRoom {
          * });
          * ```
          */
-        public outgoingFilter: PerspectiveFilter
+        public outgoingFilter: PerspectiveFilter,
+        public readonly createdBy: Connection|undefined
     ) {
-        super(parentRoom.worker, parentRoom.config, parentRoom.settings);
+        super(parentRoom.worker, parentRoom.config, parentRoom.settings, createdBy);
 
         this.playerJoinedFlag = true; // prevent room closing due to inactivity
         this.messageNonce = new Set;

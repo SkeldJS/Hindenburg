@@ -1,5 +1,42 @@
 {
     "$schema": "./misc/changelog.schema.json",
+    "1.2.0": {
+        "version": "1.2.0",
+        "contributors": ["edward"],
+        "date": "2022-11-25",
+        "notes": [
+            {
+                "description": "New perspective API for filters",
+                "commits": [
+                    "77a6e23be3239ebe497d3ce57407a62a64ca2729",
+                    "1113bd6644ac16fb4f845f49b5129479b7a91def",
+                    "d21fca6891fd364b2b35e10ac6a38ce3ede5aa3f",
+                    "6dc6a1631b326442b98d593b32f15957339f27ef",
+                    "5cd94184d739b7b9720b379d3c825b35968c832c"
+                ]
+            },
+            {
+                "description": "Add createdBy property to room",
+                "commits": ["592b9e1c8dd293bd63c5569f2601c9a3d551b73e"]
+            },
+            {
+                "description": "Fix disableSaaH and enableSaaH not actually setting server as a host",
+                "commits": ["24ad5aa83a26412bf2bef9a9db6c25a542297bf4"]
+            },
+            {
+                "description": "Add `getDependencyUnsafe` and `assertDependency` methods",
+                "commits": ["ce1fefecdd98f87060213f50e71e44fd416913db"]
+            },
+            {
+                "description": "Fix dependency decorator types",
+                "commits": ["f3b561c441e9b7515f445d59eb9921b2d5eddeea"]
+            },
+            {
+                "description": "Fix plugin version specifier",
+                "commits": ["74a47e84d22b5df1b6651be1af2a15c42a2db2b8"]
+            }
+        ]
+    },
     "1.1.26": {
         "version": "1.1.26",
         "contributors": ["edward"],

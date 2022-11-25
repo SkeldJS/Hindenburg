@@ -594,8 +594,19 @@ export class Perspective extends BaseRoom {
     }
 
     async isCanceledIncoming(message: BaseMessage, direction: MessageDirection, sender?: Connection): Promise<boolean> {
-        if (message instanceof RpcMessage)
-            return this.isCanceledIncoming(message.data, direction, sender);
+        if (message instanceof RpcMessage) {
+            const canceledBefore = message.data["_canceled"];
+            message.data["_canceled"] = false;
+
+            await this.incomingFilter.emit(message, direction, sender);
+
+            if (message.data["_canceled"]) {
+                message.data["_canceled"] = canceledBefore;
+                return true;
+            }
+
+            return false;
+        }
 
         const canceledBefore = message["_canceled"];
         message["_canceled"] = false;
@@ -612,7 +623,17 @@ export class Perspective extends BaseRoom {
 
     async isCanceledOutgoing(message: BaseMessage, direction: MessageDirection, sender?: Connection): Promise<boolean> {
         if (message instanceof RpcMessage) {
-            return this.isCanceledOutgoing(message.data, direction, sender);
+            const canceledBefore = message.data["_canceled"];
+            message.data["_canceled"] = false;
+
+            await this.outgoingFilter.emit(message, direction, sender);
+
+            if (message.data["_canceled"]) {
+                message.data["_canceled"] = canceledBefore;
+                return true;
+            }
+
+            return false;
         }
 
         const canceledBefore = message["_canceled"];

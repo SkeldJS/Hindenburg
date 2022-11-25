@@ -52,105 +52,71 @@ To destroy a perspective, Hindenburg must revert all of the changes done in the 
 ## Creating perspectives
 Creating perspectives can range from being as easy as a single line to being lots more depending on what you need.
 
-For very simple perspectives, such as the one above, you can use the {@link PresetFilter} enum to select one or more aspects of the game to isolate:
-```ts
-const perspective = room.createPerspective(player, [ PresetFilter.* ]);
-```
-
-You can also omit the filters from the list if you plan to write your own, or if you want to create a dummy perspective:
+Simply use the {@link Room.createPerspective} method to create a new perspective:
 ```ts
 const perspective = room.createPerspective(player);
 ```
 
-_{@link Room.createPerspective | See the documentation on `Room.createPerspective`}_.
+> Note that _by default_ there are _no_ filters, meaning that the players in the perspective will experience no difference.
+
+### Multiple Players
+Perspectives can group together any number of players in their own isolated bubble, just pass an array of players into the first parameter:
+```ts
+const perspective = room.createPerspective([ player1, player2, player3 ]);
+```
+
+## Filters
+Filters in perspectives allow you to control the flow of updates between clients, meaning you can create desync between what each client sees or how they behave.
 
 ### Preset filters
-#### `PresetFilter.GameDataUpdates`
-Isolate all updates related to cosmetics, used in the example above.
+There are some built-in preset filters to make your life easier using Perspectives, without having to write your own filters:
 
-#### `PresetFilter.PositionUpdates`
-Isolate all updates related to movement for players.
+* {@link PlayerUpdatesPerspectiveFilter} - Player information such as name, colour, hat, pet, skin, role, disconnected, dead, etc.
+* {@link ChatMessagesPerspectiveFilter} - Whether or not chat messages should be synced between clients in and out of the perspective.
+* {@link PositionUpdatesPerspectiveFilter} - Players' movement through walking and teleporting (i.e. vents, airship spawn)
+* {@link SettingsUpdatesPerspectiveFilter} - Game settings (i.e. player vision, speed, etc.)
 
-For example, you could make a mode where impostors, upon killing a player, gain the ability to seemingly teleport to a location.
+### Register filters
+To register a filter to be used in a perspective, you must first instantiate it and then use the {@link Perspective.registerFilter} method, passing in the instantiated filter, for example:
+```ts
+const perspective = ctx.room.createPerspective(ctx.player);
+const gameDataFilter = new PlayerUpdatesPerspectiveFilter;
 
-#### `PresetFilter.SettingsUpdates`
-Isolate settings updates, allowing some players to have different settings to other players. Helpful for changing individual players' movement speeds, or the number of emergency meetings they can call.
+perspective.registerFilter(gameDataFilter);
+```
 
-#### `PresetFilter.ChatMessages`
-Isolate chat messages.
+You can also make them unidirectional by passing in a {@link MessageFilterDirection}:
+```ts
+perspective.registerFilter(gameDataFilter, MessageFilterDirection.Outgoing); // or MessageFilterDirection.Incoming
+```
 
-#### `PresetFilter.ObjectUpdates` _(advanced)_
-Isolate updates related to spawning or despawning innernet objects.
+### Unregister filters
+If you've had enough with a filter, you can unregister it simply with:
+```ts
+prespective.removeFilter(gameDataFilter);
+```
 
-### Unidirectional filters
-You can also pass another argument to distinguish between _incoming_ filters and _outgoing_ filters.
+> You can also pass a direction, e.g. `perspective.removeFilter(gameDataFilter, MessageFilterDirection.Outgoing);`
+
+### Custom filters
+Sometimes, the preset filters won't do, so you'll have to fine-tune your filters by extending Hindenburg's {@link PerspectiveFilter} class and using {@link MessageFilter} decorators.
 
 #### Example
 ```ts
-const perspective = room.createPerspective(player, [ ], [ PresetFilter.PositionUpdates, PresetFilter.ChatMessages ]);
-```
-_Acts as a "shadow ban" for players, so that their movements and chat messages aren't seen by other players._
-
-## Multiple Players
-Perspectives can group together any number of players in their own isolated bubble, just pass an array of players into the first parameter:
-
-```ts
-const perspective = new room.createPerspective([ player1, player2, player3 ], [ ...filters ]);
-```
-
-### Advanced filters
-Sometimes, the preset filters won't do, so you'll have to fine-tune your filters using SkeldJS' {@link PacketDecoder} API.
-
-You can use the {@link Perspective.incomingFilter} and {@link Perspective.outgoingFilter} separately.
-
-> If you want to use  the same incoming filter as outgoing, simply run `perspective.incomingFilter = perspective.outgoingFilter`.
-
-#### Example
-```ts
-const perspective = room.createPerspective(player, [ ]); // use no preset filters
-
-perspective.outgoingFilter.on(DataMessage, message => { // prevent players in original room see movement from the player in the perspective
-    if (message.data.byteLength !== 10)
-        return;
-
-    const netobject = perspective.netobjects.get(message.netId);
-
-    if (netobject && netobject instanceof CustomNetworkTransform && netobject.ownerId === ctx.player.clientId) {
+export class MovingPlatformPerspectiveFilter extends PerspectiveFilter {
+    @MessageFilter(UsePlatformMessage)
+    protected _onMovingPlatformUpdate(message: UsePlatformMessage, perspective: Perspective, direction: MessageFilterDirection, context: PacketContext) {
         message.cancel();
     }
-});
-
-perspective.outgoingFilter.on(SyncSettingsMessage, message => { // prevent player speed from affecting the original room
-    message.cancel();
-});
-
-perspective.on("player.syncsettings", ev => { // prevent original room from overriding player speed
-    if (ev.settings.playerSpeed !== 4) {
-        ev.setSettings({ playerSpeed: 4 });
-    }
-});
-
-const povPlayer = perspective.resolvePlayer(ctx.player); // get player object in the perspective
-
-perspective.incomingFilter.on(RpcMessage, message => {
-    if (message.data instanceof SnapToMessage && message.netId === povPlayer!.transform!.netId) { // don't let player in perspective see that they've been moved far away
-        message.cancel();
-    }
-});
-
-ctx.player.transform?.snapTo(new Vector2(20, 20), true); // move the player far away for the players in the original room
-
-povPlayer!.control!.syncSettings(new GameSettings({ // update the perspective's player speed
-    ...perspective.settings,
-    playerSpeed: 4
-}));
-
-await sleep(7500);
-
-ctx.player.transform?.snapTo(povPlayer!.transform!.position, true); // move the player to their new spot on the original room
-
-await perspective.destroyPerspective(); // destroy the perspective, and "move" the player back to the original room
+}
 ```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `message` | {@link UsePlatformMessage} | The message that was received and needs to be considered by the filter |
+| `perspective` | {@link Perspective} | The perspective that this message is either incoming to or outgoing from |
+| `direction` | {@link MessageFilterDirection} | The direction that the message is going in, either incoming from the main room to the perspective, or outgoing from the perspective to the room |
+| `context` | {@link PacketContext} | Basic information about the packet such as the sender and whether or not the message was sent reliably |
 
 ## Destroying the perspective
 Destroying a perspective is as simple as calling its {@link Perspective.destroyPerspective} method:

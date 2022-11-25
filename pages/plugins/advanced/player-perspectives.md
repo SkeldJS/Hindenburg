@@ -40,6 +40,7 @@ Creating perspectives work in Hindenburg by first creating an identical, but sep
 From then on, this player is considered to be in their own room on the server, completely separate from the original one - however, it retains a reference to it. This reference is used to pass non-isolated data through the use of "filters" that determine what is isolated and what isn't.
 
 This awful diagram shows roughly how this works:
+
 ![image](https://user-images.githubusercontent.com/60631511/200020038-7ba97b4e-d941-4551-a4ad-954b4e199a28.png)
 
 For example, you might have a filter that prevents movement packets being shared between the two distinct rooms, thereby not allowing player in the perspective to see any movement updates from players in the original room, and no players in the original room to see any movement packets from players in the perspective.

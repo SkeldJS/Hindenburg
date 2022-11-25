@@ -61,77 +61,95 @@
   <h2>Creating perspectives</h2>
 </a>
 <p>Creating perspectives can range from being as easy as a single line to being lots more depending on what you need.</p>
-<p>For very simple perspectives, such as the one above, you can use the <a href="../../../enums/PresetFilter.html">PresetFilter</a> enum to select one or more aspects of the game to isolate:</p>
-<pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">perspective</span><span class="hl-0"> = </span><span class="hl-4">room</span><span class="hl-0">.</span><span class="hl-1">createPerspective</span><span class="hl-0">(</span><span class="hl-4">player</span><span class="hl-0">, [ </span><span class="hl-4">PresetFilter</span><span class="hl-0">.* ]);</span>
-</code></pre>
-<p>You can also omit the filters from the list if you plan to write your own, or if you want to create a dummy perspective:</p>
+<p>Simply use the <a href="../../../classes/Room.html#createPerspective">createPerspective</a> method to create a new perspective:</p>
 <pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">perspective</span><span class="hl-0"> = </span><span class="hl-4">room</span><span class="hl-0">.</span><span class="hl-1">createPerspective</span><span class="hl-0">(</span><span class="hl-4">player</span><span class="hl-0">);</span>
 </code></pre>
-<p><em><a href="../../../classes/Room.html#createPerspective">See the documentation on <code>Room.createPerspective</code></a></em>.</p>
+<blockquote>
+<p>Note that <em>by default</em> there are <em>no</em> filters, meaning that the players in the perspective will experience no difference.</p>
+</blockquote>
+
+<a href="#multiple-players" id="multiple-players" style="color: inherit; text-decoration: none;">
+  <h3>Multiple Players</h3>
+</a>
+<p>Perspectives can group together any number of players in their own isolated bubble, just pass an array of players into the first parameter:</p>
+<pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">perspective</span><span class="hl-0"> = </span><span class="hl-4">room</span><span class="hl-0">.</span><span class="hl-1">createPerspective</span><span class="hl-0">([ </span><span class="hl-4">player1</span><span class="hl-0">, </span><span class="hl-4">player2</span><span class="hl-0">, </span><span class="hl-4">player3</span><span class="hl-0"> ]);</span>
+</code></pre>
+
+<a href="#filters" id="filters" style="color: inherit; text-decoration: none;">
+  <h2>Filters</h2>
+</a>
+<p>Filters in perspectives allow you to control the flow of updates between clients, meaning you can create desync between what each client sees or how they behave.</p>
 
 <a href="#preset-filters" id="preset-filters" style="color: inherit; text-decoration: none;">
   <h3>Preset filters</h3>
 </a>
+<p>There are some built-in preset filters to make your life easier using Perspectives, without having to write your own filters:</p>
+<ul>
+<li><a href="../../../classes/PlayerUpdatesPerspectiveFilter.html">PlayerUpdatesPerspectiveFilter</a> - Player information such as name, colour, hat, pet, skin, role, disconnected, dead, etc.</li>
+<li>ChatMessagesPerspectiveFilter - Whether or not chat messages should be synced between clients in and out of the perspective.</li>
+<li>PositionUpdatesPerspectiveFilter - Players&#39; movement through walking and teleporting (i.e. vents, airship spawn)</li>
+<li>SettingsUpdatesPerspectiveFilter - Game settings (i.e. player vision, speed, etc.)</li>
+</ul>
 
-<a href="#presetfiltergamedataupdates" id="presetfiltergamedataupdates" style="color: inherit; text-decoration: none;">
-  <h4><code>PresetFilter.GameDataUpdates</code></h4>
+<a href="#register-filters" id="register-filters" style="color: inherit; text-decoration: none;">
+  <h3>Register filters</h3>
 </a>
-<p>Isolate all updates related to cosmetics, used in the example above.</p>
+<p>To register a filter to be used in a perspective, you must first instantiate it and then use the <a href="../../../classes/Perspective.html#registerFilter">registerFilter</a> method, passing in the instantiated filter, for example:</p>
+<pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">perspective</span><span class="hl-0"> = </span><span class="hl-4">ctx</span><span class="hl-0">.</span><span class="hl-4">room</span><span class="hl-0">.</span><span class="hl-1">createPerspective</span><span class="hl-0">(</span><span class="hl-4">ctx</span><span class="hl-0">.</span><span class="hl-4">player</span><span class="hl-0">);</span><br/><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">gameDataFilter</span><span class="hl-0"> = </span><span class="hl-5">new</span><span class="hl-0"> </span><span class="hl-4">PlayerUpdatesPerspectiveFilter</span><span class="hl-0">;</span><br/><br/><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-1">registerFilter</span><span class="hl-0">(</span><span class="hl-4">gameDataFilter</span><span class="hl-0">);</span>
+</code></pre>
+<p>You can also make them unidirectional by passing in a <a href="../../../enums/MessageFilterDirection.html">MessageFilterDirection</a>:</p>
+<pre><code class="language-ts"><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-1">registerFilter</span><span class="hl-0">(</span><span class="hl-4">gameDataFilter</span><span class="hl-0">, </span><span class="hl-4">MessageFilterDirection</span><span class="hl-0">.</span><span class="hl-4">Outgoing</span><span class="hl-0">); </span><span class="hl-2">// or MessageFilterDirection.Incoming</span>
+</code></pre>
 
-<a href="#presetfilterpositionupdates" id="presetfilterpositionupdates" style="color: inherit; text-decoration: none;">
-  <h4><code>PresetFilter.PositionUpdates</code></h4>
+<a href="#unregister-filters" id="unregister-filters" style="color: inherit; text-decoration: none;">
+  <h3>Unregister filters</h3>
 </a>
-<p>Isolate all updates related to movement for players.</p>
-<p>For example, you could make a mode where impostors, upon killing a player, gain the ability to seemingly teleport to a location.</p>
+<p>If you&#39;ve had enough with a filter, you can unregister it simply with:</p>
+<pre><code class="language-ts"><span class="hl-4">prespective</span><span class="hl-0">.</span><span class="hl-1">removeFilter</span><span class="hl-0">(</span><span class="hl-4">gameDataFilter</span><span class="hl-0">);</span>
+</code></pre>
+<blockquote>
+<p>You can also pass a direction, e.g. <code>perspective.removeFilter(gameDataFilter, MessageFilterDirection.Outgoing);</code></p>
+</blockquote>
 
-<a href="#presetfiltersettingsupdates" id="presetfiltersettingsupdates" style="color: inherit; text-decoration: none;">
-  <h4><code>PresetFilter.SettingsUpdates</code></h4>
+<a href="#custom-filters" id="custom-filters" style="color: inherit; text-decoration: none;">
+  <h3>Custom filters</h3>
 </a>
-<p>Isolate settings updates, allowing some players to have different settings to other players. Helpful for changing individual players&#39; movement speeds, or the number of emergency meetings they can call.</p>
-
-<a href="#presetfilterchatmessages" id="presetfilterchatmessages" style="color: inherit; text-decoration: none;">
-  <h4><code>PresetFilter.ChatMessages</code></h4>
-</a>
-<p>Isolate chat messages.</p>
-
-<a href="#presetfilterobjectupdates-advanced" id="presetfilterobjectupdates-advanced" style="color: inherit; text-decoration: none;">
-  <h4><code>PresetFilter.ObjectUpdates</code> <em>(advanced)</em></h4>
-</a>
-<p>Isolate updates related to spawning or despawning innernet objects.</p>
-
-<a href="#unidirectional-filters" id="unidirectional-filters" style="color: inherit; text-decoration: none;">
-  <h3>Unidirectional filters</h3>
-</a>
-<p>You can also pass another argument to distinguish between <em>incoming</em> filters and <em>outgoing</em> filters.</p>
+<p>Sometimes, the preset filters won&#39;t do, so you&#39;ll have to fine-tune your filters by extending Hindenburg&#39;s <a href="../../../classes/PerspectiveFilter.html">PerspectiveFilter</a> class and using <a href="../../../functions/MessageFilter.html">MessageFilter</a> decorators.</p>
 
 <a href="#example" id="example" style="color: inherit; text-decoration: none;">
   <h4>Example</h4>
 </a>
-<pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">perspective</span><span class="hl-0"> = </span><span class="hl-4">room</span><span class="hl-0">.</span><span class="hl-1">createPerspective</span><span class="hl-0">(</span><span class="hl-4">player</span><span class="hl-0">, [ ], [ </span><span class="hl-4">PresetFilter</span><span class="hl-0">.</span><span class="hl-4">PositionUpdates</span><span class="hl-0">, </span><span class="hl-4">PresetFilter</span><span class="hl-0">.</span><span class="hl-4">ChatMessages</span><span class="hl-0"> ]);</span>
+<pre><code class="language-ts"><span class="hl-3">export</span><span class="hl-0"> </span><span class="hl-5">class</span><span class="hl-0"> </span><span class="hl-10">MovingPlatformPerspectiveFilter</span><span class="hl-0"> </span><span class="hl-5">extends</span><span class="hl-0"> </span><span class="hl-10">PerspectiveFilter</span><span class="hl-0"> {</span><br/><span class="hl-0">    @</span><span class="hl-1">MessageFilter</span><span class="hl-0">(</span><span class="hl-4">UsePlatformMessage</span><span class="hl-0">)</span><br/><span class="hl-0">    </span><span class="hl-5">protected</span><span class="hl-0"> </span><span class="hl-1">_onMovingPlatformUpdate</span><span class="hl-0">(</span><span class="hl-4">message</span><span class="hl-0">: </span><span class="hl-10">UsePlatformMessage</span><span class="hl-0">, </span><span class="hl-4">perspective</span><span class="hl-0">: </span><span class="hl-10">Perspective</span><span class="hl-0">, </span><span class="hl-4">direction</span><span class="hl-0">: </span><span class="hl-10">MessageFilterDirection</span><span class="hl-0">, </span><span class="hl-4">context</span><span class="hl-0">: </span><span class="hl-10">PacketContext</span><span class="hl-0">) {</span><br/><span class="hl-0">        </span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-1">cancel</span><span class="hl-0">();</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">}</span>
 </code></pre>
-<p><em>Acts as a &quot;shadow ban&quot; for players, so that their movements and chat messages aren&#39;t seen by other players.</em></p>
-
-<a href="#multiple-players" id="multiple-players" style="color: inherit; text-decoration: none;">
-  <h2>Multiple Players</h2>
-</a>
-<p>Perspectives can group together any number of players in their own isolated bubble, just pass an array of players into the first parameter:</p>
-<pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">perspective</span><span class="hl-0"> = </span><span class="hl-5">new</span><span class="hl-0"> </span><span class="hl-4">room</span><span class="hl-0">.</span><span class="hl-1">createPerspective</span><span class="hl-0">([ </span><span class="hl-4">player1</span><span class="hl-0">, </span><span class="hl-4">player2</span><span class="hl-0">, </span><span class="hl-4">player3</span><span class="hl-0"> ], [ ...</span><span class="hl-4">filters</span><span class="hl-0"> ]);</span>
-</code></pre>
-
-<a href="#advanced-filters" id="advanced-filters" style="color: inherit; text-decoration: none;">
-  <h3>Advanced filters</h3>
-</a>
-<p>Sometimes, the preset filters won&#39;t do, so you&#39;ll have to fine-tune your filters using SkeldJS&#39; <a href="../../../classes/PacketDecoder.html">PacketDecoder</a> API.</p>
-<p>You can use the <a href="../../../classes/Perspective.html#incomingFilter">incomingFilter</a> and <a href="../../../classes/Perspective.html#outgoingFilter">outgoingFilter</a> separately.</p>
-<blockquote>
-<p>If you want to use  the same incoming filter as outgoing, simply run <code>perspective.incomingFilter = perspective.outgoingFilter</code>.</p>
-</blockquote>
-
-<a href="#example-1" id="example-1" style="color: inherit; text-decoration: none;">
-  <h4>Example</h4>
-</a>
-<pre><code class="language-ts"><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">perspective</span><span class="hl-0"> = </span><span class="hl-4">room</span><span class="hl-0">.</span><span class="hl-1">createPerspective</span><span class="hl-0">(</span><span class="hl-4">player</span><span class="hl-0">, [ ]); </span><span class="hl-2">// use no preset filters</span><br/><br/><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-4">outgoingFilter</span><span class="hl-0">.</span><span class="hl-1">on</span><span class="hl-0">(</span><span class="hl-4">DataMessage</span><span class="hl-0">, </span><span class="hl-4">message</span><span class="hl-0"> </span><span class="hl-5">=&gt;</span><span class="hl-0"> { </span><span class="hl-2">// prevent players in original room see movement from the player in the perspective</span><br/><span class="hl-0">    </span><span class="hl-3">if</span><span class="hl-0"> (</span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-4">data</span><span class="hl-0">.</span><span class="hl-4">byteLength</span><span class="hl-0"> !== </span><span class="hl-6">10</span><span class="hl-0">)</span><br/><span class="hl-0">        </span><span class="hl-3">return</span><span class="hl-0">;</span><br/><br/><span class="hl-0">    </span><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">netobject</span><span class="hl-0"> = </span><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-4">netobjects</span><span class="hl-0">.</span><span class="hl-1">get</span><span class="hl-0">(</span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-4">netId</span><span class="hl-0">);</span><br/><br/><span class="hl-0">    </span><span class="hl-3">if</span><span class="hl-0"> (</span><span class="hl-4">netobject</span><span class="hl-0"> &amp;&amp; </span><span class="hl-4">netobject</span><span class="hl-0"> </span><span class="hl-5">instanceof</span><span class="hl-0"> </span><span class="hl-10">CustomNetworkTransform</span><span class="hl-0"> &amp;&amp; </span><span class="hl-4">netobject</span><span class="hl-0">.</span><span class="hl-4">ownerId</span><span class="hl-0"> === </span><span class="hl-4">ctx</span><span class="hl-0">.</span><span class="hl-4">player</span><span class="hl-0">.</span><span class="hl-4">clientId</span><span class="hl-0">) {</span><br/><span class="hl-0">        </span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-1">cancel</span><span class="hl-0">();</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">});</span><br/><br/><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-4">outgoingFilter</span><span class="hl-0">.</span><span class="hl-1">on</span><span class="hl-0">(</span><span class="hl-4">SyncSettingsMessage</span><span class="hl-0">, </span><span class="hl-4">message</span><span class="hl-0"> </span><span class="hl-5">=&gt;</span><span class="hl-0"> { </span><span class="hl-2">// prevent player speed from affecting the original room</span><br/><span class="hl-0">    </span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-1">cancel</span><span class="hl-0">();</span><br/><span class="hl-0">});</span><br/><br/><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-1">on</span><span class="hl-0">(</span><span class="hl-7">&quot;player.syncsettings&quot;</span><span class="hl-0">, </span><span class="hl-4">ev</span><span class="hl-0"> </span><span class="hl-5">=&gt;</span><span class="hl-0"> { </span><span class="hl-2">// prevent original room from overriding player speed</span><br/><span class="hl-0">    </span><span class="hl-3">if</span><span class="hl-0"> (</span><span class="hl-4">ev</span><span class="hl-0">.</span><span class="hl-4">settings</span><span class="hl-0">.</span><span class="hl-4">playerSpeed</span><span class="hl-0"> !== </span><span class="hl-6">4</span><span class="hl-0">) {</span><br/><span class="hl-0">        </span><span class="hl-4">ev</span><span class="hl-0">.</span><span class="hl-1">setSettings</span><span class="hl-0">({ </span><span class="hl-4">playerSpeed:</span><span class="hl-0"> </span><span class="hl-6">4</span><span class="hl-0"> });</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">});</span><br/><br/><span class="hl-5">const</span><span class="hl-0"> </span><span class="hl-8">povPlayer</span><span class="hl-0"> = </span><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-1">resolvePlayer</span><span class="hl-0">(</span><span class="hl-4">ctx</span><span class="hl-0">.</span><span class="hl-4">player</span><span class="hl-0">); </span><span class="hl-2">// get player object in the perspective</span><br/><br/><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-4">incomingFilter</span><span class="hl-0">.</span><span class="hl-1">on</span><span class="hl-0">(</span><span class="hl-4">RpcMessage</span><span class="hl-0">, </span><span class="hl-4">message</span><span class="hl-0"> </span><span class="hl-5">=&gt;</span><span class="hl-0"> {</span><br/><span class="hl-0">    </span><span class="hl-3">if</span><span class="hl-0"> (</span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-4">data</span><span class="hl-0"> </span><span class="hl-5">instanceof</span><span class="hl-0"> </span><span class="hl-10">SnapToMessage</span><span class="hl-0"> &amp;&amp; </span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-4">netId</span><span class="hl-0"> === </span><span class="hl-4">povPlayer</span><span class="hl-0">!.</span><span class="hl-4">transform</span><span class="hl-0">!.</span><span class="hl-4">netId</span><span class="hl-0">) { </span><span class="hl-2">// don&#39;t let player in perspective see that they&#39;ve been moved far away</span><br/><span class="hl-0">        </span><span class="hl-4">message</span><span class="hl-0">.</span><span class="hl-1">cancel</span><span class="hl-0">();</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">});</span><br/><br/><span class="hl-4">ctx</span><span class="hl-0">.</span><span class="hl-4">player</span><span class="hl-0">.</span><span class="hl-4">transform</span><span class="hl-0">?.</span><span class="hl-1">snapTo</span><span class="hl-0">(</span><span class="hl-5">new</span><span class="hl-0"> </span><span class="hl-1">Vector2</span><span class="hl-0">(</span><span class="hl-6">20</span><span class="hl-0">, </span><span class="hl-6">20</span><span class="hl-0">), </span><span class="hl-5">true</span><span class="hl-0">); </span><span class="hl-2">// move the player far away for the players in the original room</span><br/><br/><span class="hl-4">povPlayer</span><span class="hl-0">!.</span><span class="hl-4">control</span><span class="hl-0">!.</span><span class="hl-1">syncSettings</span><span class="hl-0">(</span><span class="hl-5">new</span><span class="hl-0"> </span><span class="hl-1">GameSettings</span><span class="hl-0">({ </span><span class="hl-2">// update the perspective&#39;s player speed</span><br/><span class="hl-0">    ...</span><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-4">settings</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-4">playerSpeed:</span><span class="hl-0"> </span><span class="hl-6">4</span><br/><span class="hl-0">}));</span><br/><br/><span class="hl-3">await</span><span class="hl-0"> </span><span class="hl-1">sleep</span><span class="hl-0">(</span><span class="hl-6">7500</span><span class="hl-0">);</span><br/><br/><span class="hl-4">ctx</span><span class="hl-0">.</span><span class="hl-4">player</span><span class="hl-0">.</span><span class="hl-4">transform</span><span class="hl-0">?.</span><span class="hl-1">snapTo</span><span class="hl-0">(</span><span class="hl-4">povPlayer</span><span class="hl-0">!.</span><span class="hl-4">transform</span><span class="hl-0">!.</span><span class="hl-4">position</span><span class="hl-0">, </span><span class="hl-5">true</span><span class="hl-0">); </span><span class="hl-2">// move the player to their new spot on the original room</span><br/><br/><span class="hl-3">await</span><span class="hl-0"> </span><span class="hl-4">perspective</span><span class="hl-0">.</span><span class="hl-1">destroyPerspective</span><span class="hl-0">(); </span><span class="hl-2">// destroy the perspective, and &quot;move&quot; the player back to the original room</span>
-</code></pre>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>message</code></td>
+<td><a href="../../../classes/UsePlatformMessage.html">UsePlatformMessage</a></td>
+<td>The message that was received and needs to be considered by the filter</td>
+</tr>
+<tr>
+<td><code>perspective</code></td>
+<td><a href="../../../classes/Perspective.html">Perspective</a></td>
+<td>The perspective that this message is either incoming to or outgoing from</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td><a href="../../../enums/MessageFilterDirection.html">MessageFilterDirection</a></td>
+<td>The direction that the message is going in, either incoming from the main room to the perspective, or outgoing from the perspective to the room</td>
+</tr>
+<tr>
+<td><code>context</code></td>
+<td><a href="../../../interfaces/PacketContext.html">PacketContext</a></td>
+<td>Basic information about the packet such as the sender and whether or not the message was sent reliably</td>
+</tr>
+</tbody></table>
 
 <a href="#destroying-the-perspective" id="destroying-the-perspective" style="color: inherit; text-decoration: none;">
   <h2>Destroying the perspective</h2>
@@ -272,6 +290,7 @@
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/AirshipVent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Airship<wbr/>Vent</a></li>
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/AirshipVents.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>Airship<wbr/>Vents</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/AllGameSettings.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>All<wbr/>Game<wbr/>Settings</a></li>
+<li class="tsd-kind-type-alias"><a href="../../../types/AllParamsOptional.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>All<wbr/>Params<wbr/>Optional</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/AllRoleSettings.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>All<wbr/>Role<wbr/>Settings</a></li>
 <li class="tsd-kind-type-alias"><a href="../../../types/AllSystems.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>All<wbr/>Systems</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/AlterGameMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Alter<wbr/>Game<wbr/>Message</a></li>
@@ -304,6 +323,7 @@
 <li class="tsd-kind-class"><a href="../../../classes/ChatCommandHandler.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Chat<wbr/>Command<wbr/>Handler</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/ChatCommandParameter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Chat<wbr/>Command<wbr/>Parameter</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/ChatCommandUsage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Chat<wbr/>Command<wbr/>Usage</a></li>
+<li class="tsd-kind-class"><a href="../../../classes/ChatMessagesPositionFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Chat<wbr/>Messages<wbr/>Position<wbr/>Filter</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/ChatNoteType.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Chat<wbr/>Note<wbr/>Type</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/CheckColorMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Check<wbr/>Color<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/CheckMurderMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Check<wbr/>Murder<wbr/>Message</a></li>
@@ -470,6 +490,9 @@
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/MeetingHudVoteCastEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Meeting<wbr/>Hud<wbr/>Vote<wbr/>Cast<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/MeetingHudVotingCompleteEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Meeting<wbr/>Hud<wbr/>Voting<wbr/>Complete<wbr/>Event</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/MessageDirection.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Message<wbr/>Direction</a></li>
+<li class="tsd-kind-function"><a href="../../../functions/MessageFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>Message<wbr/>Filter</a></li>
+<li class="tsd-kind-type-alias"><a href="../../../types/MessageFilterCallback.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Message<wbr/>Filter<wbr/>Callback</a></li>
+<li class="tsd-kind-enum"><a href="../../../enums/MessageFilterDirection.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Message<wbr/>Filter<wbr/>Direction</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/MessageHandler.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>Message<wbr/>Handler</a></li>
 <li class="tsd-kind-enum"><a href="../../../enums/MessageHandlerAttach.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Message<wbr/>Handler<wbr/>Attach</a></li>
 <li class="tsd-kind-type-alias"><a href="../../../types/MessageHandlerCallback.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Message<wbr/>Handler<wbr/>Callback</a></li>
@@ -507,6 +530,7 @@
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/PacketDecoderConfig.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Packet<wbr/>Decoder<wbr/>Config</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/Perspective.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Perspective</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/PerspectiveFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Perspective<wbr/>Filter</a></li>
+<li class="tsd-kind-interface"><a href="../../../interfaces/PerspectiveFilterRegisteredMessageFilterInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Perspective<wbr/>Filter<wbr/>Registered<wbr/>Message<wbr/>Filter<wbr/>Info</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/Pet.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Pet</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PingPacket.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Ping<wbr/>Packet</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/Platform.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Platform</a></li>
@@ -566,6 +590,8 @@
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PlayerSpawnEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Player<wbr/>Spawn<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PlayerStartMeetingEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Player<wbr/>Start<wbr/>Meeting<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PlayerSyncSettingsEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Player<wbr/>Sync<wbr/>Settings<wbr/>Event</a></li>
+<li class="tsd-kind-enum"><a href="../../../enums/PlayerUpdatesFilterFlag.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Player<wbr/>Updates<wbr/>Filter<wbr/>Flag</a></li>
+<li class="tsd-kind-class"><a href="../../../classes/PlayerUpdatesPerspectiveFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Player<wbr/>Updates<wbr/>Perspective<wbr/>Filter</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PlayerUseMovingPlatformEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Player<wbr/>Use<wbr/>Moving<wbr/>Platform<wbr/>Event</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PlayerVoteArea.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Player<wbr/>Vote<wbr/>Area</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/PlayerVoteState.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Player<wbr/>Vote<wbr/>State</a></li>
@@ -589,6 +615,7 @@
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/PolusTasks.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>Polus<wbr/>Tasks</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/PolusVent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Polus<wbr/>Vent</a></li>
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/PolusVents.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>Polus<wbr/>Vents</a></li>
+<li class="tsd-kind-class"><a href="../../../classes/PositionUpdatesPositionFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Position<wbr/>Updates<wbr/>Position<wbr/>Filter</a></li>
 <li class="tsd-kind-enum"><a href="../../../enums/PresetFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Preset<wbr/>Filter</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/PreventLoad.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>Prevent<wbr/>Load</a></li>
 <li class="tsd-kind-type-alias tsd-is-external"><a href="../../../types/PrivacyType.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Privacy<wbr/>Type</a></li>
@@ -686,6 +713,7 @@
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/SetStartCounterMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Set<wbr/>Start<wbr/>Counter<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/SetTasksMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Set<wbr/>Tasks<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/SetVisorMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Set<wbr/>Visor<wbr/>Message</a></li>
+<li class="tsd-kind-class"><a href="../../../classes/SettingsUpdatesPositionFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Settings<wbr/>Updates<wbr/>Position<wbr/>Filter</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ShapeshiftMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Shapeshift<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ShapeshifterRole.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Shapeshifter<wbr/>Role</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/ShipStatusData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Ship<wbr/>Status<wbr/>Data</a></li>
@@ -755,6 +783,7 @@
 <li class="tsd-kind-class"><a href="../../../classes/WorkerImportPluginEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Worker<wbr/>Import<wbr/>Plugin<wbr/>Event</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/WorkerLoadPluginEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Worker<wbr/>Load<wbr/>Plugin<wbr/>Event</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/WorkerPlugin.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Worker<wbr/>Plugin</a></li>
+<li class="tsd-kind-function"><a href="../../../functions/getPerspectiveFilterMessageFilters.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Perspective<wbr/>Filter<wbr/>Message<wbr/>Filters</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginChatCommands.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Chat<wbr/>Commands</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginCliCommands.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Cli<wbr/>Commands</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/getPluginDependencies.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>Plugin<wbr/>Dependencies</a></li>

@@ -108,18 +108,58 @@ export class PlayerUpdatesPerspectiveFilter extends PerspectiveFilter {
         this._playerInfoAllowed = new Map;
     }
 
+    /**
+     * Create a global rule for all players to allow some player update flag to sync/pass through.
+     * @param guardBitfield A bitfield of {@link PlayerUpdatesFilterFlag}s to allow to sync/pass through.
+     * @example
+     * ```ts
+     * playerUpdatesFilter.setAllowed(PlayerUpdatesFilterFlag.Flags | PlayerUpdatesFilterFlag.Color);
+     * ```
+     */
     setAllowed(guardBitfield: number) {
         this._defaultAllowed |= guardBitfield;
     }
 
+    /**
+     * Remove a global rule for all players to prevent some player update flag from being synced/passed through.
+     *
+     * Note that this does not override player rules created with {@link PlayerUpdatesPerspectiveFilter.setPlayerInfoAllowed}.
+     * @param guardBitfield A bitfiedl of {@link PlayerUpdatesFilterFlag}s to prevent from being synced/passed through.
+     * @example
+     * ```ts
+     * playerUpdatesFilter.setAllAllowed();
+     *
+     * playerUpdatesFilter.unsetAllowed(PlayerUpdatesFilterFlag.Name);
+     * ```
+     */
     unsetAllowed(guardBitfield: number) {
         this._defaultAllowed &= ~guardBitfield;
     }
 
+    /**
+     * Create a rule to allow all updates for players to be synced/passed through.
+     *
+     * Note that on its own, this is equivalent to having no player update perspective filter at all,
+     * so more often than not it will be used as a disable/enable toggle or in conjunction
+     * with {@link PlayerUpdatesPerspectiveFilter.unsetAllowed}.
+     * @example
+     * ```ts
+     * playerUpdatesFilter.setAllAllowed();
+     *
+     * playerUpdatesFilter.unsetAllowed(PlayerUpdatesFilterFlag.Name);
+     * ```
+     */
     setAllAllowed() {
         this._defaultAllowed = 0xfff;
     }
 
+    /**
+     * Create a rule to prevent all updates for players from being synced/passed through.
+     * @example
+     * ```ts
+     * playerUpdatesFilter.unsetAllAllowed();
+     * ```
+     */
     unsetAllAllowed() {
         return this.unsetAllowed(0xfff);
     }

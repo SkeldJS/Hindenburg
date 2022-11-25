@@ -17,96 +17,89 @@
 <li><a href="index.html">Configuration</a></li>
 <li><a href="reactor-support.html">Reactor Support</a></li></ul>
 <h1> Reactor Support</h1></div>
-<div class="tsd-panel tsd-typography"><p>Hindenburg provides native support for <a href="https://reactor.gg">Reactor</a>, a client-side
-modding framework, used by many developers and public mods.</p>
+<div class="tsd-panel tsd-typography"><p>Hindenburg provides official plugin support for <a href="https://reactor.gg">Reactor</a>, a client-side modding framework, used by many developers and public mods.</p>
+
+<a href="#plugin" id="plugin" style="color: inherit; text-decoration: none;">
+  <h2>Plugin</h2>
+</a>
+<p>There&#39;s an official SkeldJS plugin for reactor support at <a href="https://github.com/SkeldJS/hbplugin-reactor">https://github.com/SkeldJS/hbplugin-reactor</a>.</p>
+<p>This can be installed using the {page ../using-hindenburg/installing-plugins <code>yarn plugins install</code>} command:</p>
+<pre><code><span class="hl-4">yarn</span><span class="hl-0"> </span><span class="hl-4">plugins</span><span class="hl-0"> </span><span class="hl-4">install</span><span class="hl-0"> </span><span class="hl-4">hbplugin</span><span class="hl-0">-</span><span class="hl-4">reactor</span><span class="hl-0">@</span><span class="hl-6">3</span>
+</code></pre>
+<blockquote>
+<p>Install <code>hbplugin-reactor@2</code> if your mods are still using the old reactor protocol version.</p>
+</blockquote>
 
 <a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
-  <h2>Configuration</h2>
+  <h3>Configuration</h3>
 </a>
-<p>If you&#39;re running a server yourself, you&#39;ll find that Hindenburg provides great support all-round for Reactor, with configuration options to ensure players are using Reactor, <em>and</em> the correct mods, even allowing you to ban certain mods and requiring specific versions for mods that you allow.</p>
-<p>To disable reactor and disallow it completely on your server, simply set HindenburgConfig.reactor | <code>&quot;reactor&quot;</code> in your config to <code>false</code>:</p>
-<pre><code class="language-json"><span class="hl-7">&quot;reactor&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span>
-</code></pre>
-<p>To enable it, either pass <code>true</code> to use default config values:</p>
-<pre><code class="language-json"><span class="hl-7">&quot;reactor&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span>
-</code></pre>
-<p>Or pass in an object with additional configuration values:</p>
-<pre><code class="language-json"><span class="hl-7">&quot;reactor&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;blockClientSideOnly&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;mods&quot;</span><span class="hl-0">: {},</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;allowExtraMods&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;requireHostMods&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;allowNormalClients&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><br/><span class="hl-0">}</span>
+<p>After installing the plugin, the following should appear in your <code>config.json</code> if you have it set up:</p>
+<pre><code class="language-json"><span class="hl-0">{</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;plugins&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">        </span><span class="hl-11">&quot;hbplugin-reactor&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;enabled&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;serverAsHostSyncer&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;blockClientSideOnly&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;mods&quot;</span><span class="hl-0">: {},</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;allowExtraMods&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;requireHostMods&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;allowNormalClients&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">}</span>
 </code></pre>
 
-<a href="#quotblockclientsideonlyquot" id="quotblockclientsideonlyquot" style="color: inherit; text-decoration: none;">
-  <h3><code>&quot;blockClientSideOnly&quot;</code></h3>
+<a href="#enabled" id="enabled" style="color: inherit; text-decoration: none;">
+  <h3><code>enabled</code></h3>
 </a>
-<p>Block any mods that are defined as being only on the client (not networked) from sending any messages. This is solely as a measure to make sure that mods correctly define what they do; best to leave this as <code>true</code>.</p>
+<p>Whether or not reactor support should be enabled for your server.</p>
 
-<a href="#quotmodsquot" id="quotmodsquot" style="color: inherit; text-decoration: none;">
-  <h3><code>&quot;mods&quot;</code></h3>
+<a href="#serverashostsyncer" id="serverashostsyncer" style="color: inherit; text-decoration: none;">
+  <h3><code>serverAsHostSyncer</code></h3>
 </a>
-<p>You can pass in an object of mod ids to configuration values in order to allow or outright ban mods - or make them optional.</p>
-<p>For example:</p>
-<pre><code class="language-json"><span class="hl-7">&quot;reactor&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;mods&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">        </span><span class="hl-11">&quot;com.slushiegoose.townofus&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;optional&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;banned&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;version&quot;</span><span class="hl-0">: </span><span class="hl-7">&quot;3.2.*&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">            </span><span class="hl-11">&quot;doNetworking&quot;</span><span class="hl-0">: </span><span class="hl-5">true</span><br/><span class="hl-0">        }</span><br/><span class="hl-0">    }</span><br/><span class="hl-0">}</span>
+<p>Whether or not the server should use host-based mod syncing.</p>
+<blockquote>
+<p>This should make virtually no difference to your server.</p>
+</blockquote>
+<p>It&#39;s recommended to keep this at <code>false</code> if you don&#39;t know what you&#39;re doing.</p>
+
+<a href="#blockclientsideonly" id="blockclientsideonly" style="color: inherit; text-decoration: none;">
+  <h3><code>blockClientSideOnly</code></h3>
+</a>
+<p>Whether or not to block players from connecting that have mods that are defined as being client-side only.</p>
+
+<a href="#mods" id="mods" style="color: inherit; text-decoration: none;">
+  <h3><code>mods</code></h3>
+</a>
+<p>An object of configuration for each mod:</p>
+<pre><code class="language-json"><span class="hl-7">&quot;my.mod.id&quot;</span><span class="hl-0">: {</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;optional&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;banned&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;version&quot;</span><span class="hl-0">: </span><span class="hl-7">&quot;1.0.0&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">    </span><span class="hl-11">&quot;doNetworking&quot;</span><span class="hl-0">: </span><span class="hl-5">false</span><br/><span class="hl-0">}</span>
 </code></pre>
+
+<a href="#optional" id="optional" style="color: inherit; text-decoration: none;">
+  <h4><code>optional</code></h4>
+</a>
+<p>Whether or not the mod is totally optional for a client to have.</p>
+
+<a href="#banned" id="banned" style="color: inherit; text-decoration: none;">
+  <h4><code>banned</code></h4>
+</a>
+<p>Whether or not players using this mod should be blocked from playing on the server.</p>
+
+<a href="#version" id="version" style="color: inherit; text-decoration: none;">
+  <h4><code>version</code></h4>
+</a>
+<p>A version glob of the mod to enforce, e.g. <code>1.0.*</code> to allow any patch values.</p>
 <blockquote>
-<p>Set the mod to <code>true</code> to allow it if <a href="#allowExtraMods"><code>&quot;allowExtraMods&quot;</code></a> is set to <code>false</code>, or <code>false</code> to completely ban it.</p>
+<p>See <a href="https://en.wikipedia.org/wiki/Glob_(programming)">Globs on Wikipedia</a> for more information on the syntax</p>
 </blockquote>
 
-<a href="#quotoptionalquot" id="quotoptionalquot" style="color: inherit; text-decoration: none;">
-  <h4><code>&quot;optional&quot;</code></h4>
+<a href="#donetworking" id="donetworking" style="color: inherit; text-decoration: none;">
+  <h4><code>doNetworking</code></h4>
 </a>
-<p>Specifies whether players can play without this mod completely fine. If so, then this config will be used solely to <a href="#version">enforce a specific version</a> or determine <a href="#doNetworking">whether it is allowed to do networking</a>.</p>
+<p>Whether or not to allow this mod to have networking between clients using the same mod.</p>
 
-<a href="#quotbannedquot" id="quotbannedquot" style="color: inherit; text-decoration: none;">
-  <h4><code>&quot;banned&quot;</code></h4>
+<a href="#allowextramods" id="allowextramods" style="color: inherit; text-decoration: none;">
+  <h3><code>allowExtraMods</code></h3>
 </a>
-<p>Whether this mod is completely banned from being allowed on this server.</p>
-<blockquote>
-<p>Note, that this only particularly applies when <a href="#allowExtraMods"><code>&quot;allowExtraMods&quot;</code></a> is enabled, as otherwise only mods in <a href="#mods">the config</a> would be accepted anyway.</p>
-</blockquote>
+<p>Whether or not clients should be allowed to have extra mods aside from those defined in <a href="#mods">#mods</a></p>
 
-<a href="#quotversionquot" id="quotversionquot" style="color: inherit; text-decoration: none;">
-  <h4><code>&quot;version&quot;</code></h4>
+<a href="#requirehostmods" id="requirehostmods" style="color: inherit; text-decoration: none;">
+  <h3><code>requireHostMods</code></h3>
 </a>
-<p>Specify a version glob to accept specific versions of the mod.</p>
-<blockquote>
-<p>Check out the <a href="https://en.wikipedia.org/wiki/Glob_(programming)#Syntax">wikipedia article on glob patterns</a> to learn more.</p>
-</blockquote>
+<p>Whether or not clients connecting to a room should have the <em>exact</em> same mods as the host of that room.</p>
 
-<a href="#quotdonetworkingquot" id="quotdonetworkingquot" style="color: inherit; text-decoration: none;">
-  <h4><code>&quot;doNetworking&quot;</code></h4>
+<a href="#allownormalclients" id="allownormalclients" style="color: inherit; text-decoration: none;">
+  <h3><code>allowNormalClients</code></h3>
 </a>
-<p>Whether or not this mod is allowed to communicate with other players with this mod.</p>
-<blockquote>
-<p>This could be worth setting to <code>&quot;false&quot;</code> if you are not entirely sure on what the mod does, as a security measure.</p>
-</blockquote>
-
-<a href="#quotallowextramodsquot" id="quotallowextramodsquot" style="color: inherit; text-decoration: none;">
-  <h3><code>&quot;allowExtraMods&quot;</code></h3>
-</a>
-<p>Allow users to use any extra mods that they want, aside from those listed in the <a href="#mods"><code>&quot;mods&quot;</code></a> config.</p>
-<blockquote>
-<p>Note that if this is enabled, configuration listed in <a href="#mods"><code>&quot;mods&quot;</code></a> will be used for <a href="#version">enforce specific versions of mods</a>, or just to <a href="#optional">require</a> or <a href="#banned">ban</a> them.</p>
-</blockquote>
-
-<a href="#quotallownormalclientsquot" id="quotallownormalclientsquot" style="color: inherit; text-decoration: none;">
-  <h3><code>&quot;allowNormalClients&quot;</code></h3>
-</a>
-<p>Whether or not &quot;normal&quot; (non-reactor) clients are allowed to connect to the server.</p>
-
-<a href="#quotrequirehostmodsquot" id="quotrequirehostmodsquot" style="color: inherit; text-decoration: none;">
-  <h3><code>&quot;requireHostMods&quot;</code></h3>
-</a>
-<p>Joining clients must have the <em>exact</em> same mods (including exact versions) as the host of the room.</p>
-<blockquote>
-<p>This also prevents non-reactor clients from joining reactor rooms, and reactor clients from joining non-reactor rooms.</p>
-</blockquote>
-
-<a href="#plugin-support" id="plugin-support" style="color: inherit; text-decoration: none;">
-  <h2>Plugin Support</h2>
-</a>
-<p>Hindenburg also works great with client-side mods made with Reactor, as it provides a native reactor rpc API for plugins, allowing them to communicate directly with mods of specific players, or to entire rooms.</p>
-<blockquote>
-<p>Check out the <a href="../../plugins/advanced/reactor-integration.html">Reactor Integration</a> page to develop plugins to work with Reactor modded clients.</p>
-</blockquote>
+<p>Whether or not to allow non-reactor clients to connect to the server.</p>
 </div></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
@@ -229,7 +222,7 @@ modding framework, used by many developers and public mods.</p>
 <li class="tsd-kind-class"><a href="../../../classes/ChatCommandHandler.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Chat<wbr/>Command<wbr/>Handler</a></li>
 <li class="tsd-kind-interface"><a href="../../../interfaces/ChatCommandParameter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Chat<wbr/>Command<wbr/>Parameter</a></li>
 <li class="tsd-kind-class"><a href="../../../classes/ChatCommandUsage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Chat<wbr/>Command<wbr/>Usage</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/ChatMessagesPositionFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Chat<wbr/>Messages<wbr/>Position<wbr/>Filter</a></li>
+<li class="tsd-kind-class"><a href="../../../classes/ChatMessagesPerspectiveFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Chat<wbr/>Messages<wbr/>Perspective<wbr/>Filter</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/ChatNoteType.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Chat<wbr/>Note<wbr/>Type</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/CheckColorMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Check<wbr/>Color<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/CheckMurderMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Check<wbr/>Murder<wbr/>Message</a></li>
@@ -521,7 +514,7 @@ modding framework, used by many developers and public mods.</p>
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/PolusTasks.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>Polus<wbr/>Tasks</a></li>
 <li class="tsd-kind-enum tsd-is-external"><a href="../../../enums/PolusVent.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Polus<wbr/>Vent</a></li>
 <li class="tsd-kind-variable tsd-is-external"><a href="../../../variables/PolusVents.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-32-path"></use><use href="#icon-32-text"></use></svg>Polus<wbr/>Vents</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/PositionUpdatesPositionFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Position<wbr/>Updates<wbr/>Position<wbr/>Filter</a></li>
+<li class="tsd-kind-class"><a href="../../../classes/PositionUpdatesPerspectiveFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Position<wbr/>Updates<wbr/>Perspective<wbr/>Filter</a></li>
 <li class="tsd-kind-enum"><a href="../../../enums/PresetFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-8-path"></use><use href="#icon-8-text"></use></svg>Preset<wbr/>Filter</a></li>
 <li class="tsd-kind-function"><a href="../../../functions/PreventLoad.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>Prevent<wbr/>Load</a></li>
 <li class="tsd-kind-type-alias tsd-is-external"><a href="../../../types/PrivacyType.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Privacy<wbr/>Type</a></li>
@@ -619,7 +612,7 @@ modding framework, used by many developers and public mods.</p>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/SetStartCounterMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Set<wbr/>Start<wbr/>Counter<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/SetTasksMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Set<wbr/>Tasks<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/SetVisorMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Set<wbr/>Visor<wbr/>Message</a></li>
-<li class="tsd-kind-class"><a href="../../../classes/SettingsUpdatesPositionFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Settings<wbr/>Updates<wbr/>Position<wbr/>Filter</a></li>
+<li class="tsd-kind-class"><a href="../../../classes/SettingsUpdatesPerspectiveFilter.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Settings<wbr/>Updates<wbr/>Perspective<wbr/>Filter</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ShapeshiftMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Shapeshift<wbr/>Message</a></li>
 <li class="tsd-kind-class tsd-is-external"><a href="../../../classes/ShapeshifterRole.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-128-path"></use><use href="#icon-128-text"></use></svg>Shapeshifter<wbr/>Role</a></li>
 <li class="tsd-kind-interface tsd-is-external"><a href="../../../interfaces/ShipStatusData.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>Ship<wbr/>Status<wbr/>Data</a></li>

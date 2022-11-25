@@ -1249,6 +1249,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param addActingHost Whether or not to add the current host as an acting host
      */
     async enableSaaH(addActingHost: boolean) {
+        this.config.serverAsHost = true;
+
         if (addActingHost && this.hostId !== SpecialClientId.Server) {
             this.actingHostIds.add(this.hostId);
         }
@@ -1279,10 +1281,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
             ? this.connections.get([...this.actingHostIds][0])
             : [...this.connections.values()][0];
 
-        if (!connection) {
-            this.logger.warn("The server is no longer the host, but there's no acting host to take over; set a host manually with 'sethost'");
+        this.config.serverAsHost = false;
+        if (!connection)
             return;
-        }
 
         const ev = await this.emit(new RoomSelectHostEvent(this, false, false, connection));
 
@@ -1320,7 +1321,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param addActingHost Whether or not to add the current host as an acting host
      */
     async setSaaHEnabled(saahEnabled: boolean, addActingHost: boolean) {
-        this.config.serverAsHost = saahEnabled;
         if (saahEnabled) {
             await this.enableSaaH(addActingHost);
         } else {

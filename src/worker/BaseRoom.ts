@@ -1672,7 +1672,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
 
         if (this.config.serverAsHost) {
-            if (this.actingHostIds.size === 0) {
+            if (this.actingHostIds.size === 0 && this.actingHostsEnabled) {
                 const newHostConn = [...this.connections.values()][0];
                 const ev = await this.emit(new RoomSelectHostEvent(this, true, false, newHostConn));
 

@@ -124,7 +124,7 @@ export class Matchmaker {
         if (!authorization)
             return false;
 
-        const [ tokenType, token ] = authorization.split(" ");
+        const [tokenType, token] = authorization.split(" ");
 
         if (!tokenType || !token || tokenType !== "Bearer")
             return false;
@@ -156,7 +156,7 @@ export class Matchmaker {
         koaServer.use(koaBody());
 
         const router = new KoaRouter;
-        for (const [ , loadedPlugin ] of this.worker.loadedPlugins) {
+        for (const [, loadedPlugin] of this.worker.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
                 const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
 
@@ -166,32 +166,32 @@ export class Matchmaker {
 
         router.post("/api/user", async (ctx) => {
             if (ctx.req.headers["content-type"] !== "application/json") {
-                this.worker.logger.warn("Client failed to get a matchmaker token: Invalid Content-Type header (%s)", ctx.headers["content-type"]);
+                this.logger.warn("Client failed to get a matchmaker token: Invalid Content-Type header (%s)", ctx.headers["content-type"]);
                 ctx.status = 400;
                 return;
             }
 
             if (typeof ctx.request.body.Puid !== "string") {
-                this.worker.logger.warn("Client failed to get a matchmaker token: No 'Puid' provided in body");
+                this.logger.warn("Client failed to get a matchmaker token: No 'Puid' provided in body");
                 ctx.status = 400;
                 return;
             }
 
             if (typeof ctx.request.body.Username !== "string") {
-                this.worker.logger.warn("Client failed to get a matchmaker token: No 'Username' provided in body");
+                this.logger.warn("Client failed to get a matchmaker token: No 'Username' provided in body");
                 ctx.status = 400;
                 return;
             }
 
             if (typeof ctx.request.body.ClientVersion !== "number") {
-                this.worker.logger.warn("Client %s failed to get a matchmaker token: No 'ClientVersion' provided in body", chalk.blue(ctx.request.body.Username));
+                this.logger.warn("Client %s failed to get a matchmaker token: No 'ClientVersion' provided in body", chalk.blue(ctx.request.body.Username));
                 ctx.status = 400;
                 ctx.body = "";
                 return;
             }
 
             if (!this.worker.isVersionAccepted(ctx.request.body.ClientVersion)) {
-                this.worker.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
+                this.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
                     chalk.blue(ctx.request.body.Username), VersionInfo.from(ctx.request.body.ClientVersion).toString(), chalk.grey("(" + ctx.request.body.ClientVersion + ")"));
                 ctx.status = 400;
                 return;
@@ -199,16 +199,16 @@ export class Matchmaker {
 
 
             if (typeof ctx.request.body.Language !== "number") {
-                this.worker.logger.warn("Client failed to get a matchmaker token: No 'Language' provided in body");
+                this.logger.warn("Client failed to get a matchmaker token: No 'Language' provided in body");
                 ctx.status = 400;
                 return;
             }
 
             // todo: record matchmaking tokens used
             if (this.worker.config.logging.hideSensitiveInfo) {
-                this.worker.logger.info("Client %s got a matchmaker token", chalk.blue(ctx.request.body.Username));
+                this.logger.info("Client %s got a matchmaker token", chalk.blue(ctx.request.body.Username));
             } else {
-                this.worker.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(ctx.request.body.Username), chalk.grey(ctx.request.body.Puid));
+                this.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(ctx.request.body.Username), chalk.grey(ctx.request.body.Puid));
             }
 
             const mmToken = this.generateMatchmakerToken(ctx.request.body.Puid, ctx.request.body.ClientVersion);
@@ -223,7 +223,7 @@ export class Matchmaker {
             }
 
             if (!ctx.query.gameId) {
-                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
+                this.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
                 ctx.status = 400;
                 return;
             }
@@ -252,38 +252,38 @@ export class Matchmaker {
             };
         });
 
-        router.get("/api/games", ctx => {
+        router.get("/api/games/filtered", ctx => {
             if (!this.verifyRequest(ctx)) {
                 ctx.status = 401;
                 return;
             }
 
             if (!ctx.query.mapId) {
-                this.worker.logger.warn("Client failed to find host for room: No 'gameId' provided in query parameters");
+                this.logger.warn("Client failed to find games: No 'mapId' provided in query parameters");
                 ctx.status = 400;
                 return;
             }
 
             if (!ctx.query.lang) {
-                this.worker.logger.warn("Client failed to find host for room: No 'lang' provided in query parameters");
+                this.logger.warn("Client failed to find games: No 'lang' provided in query parameters");
                 ctx.status = 400;
                 return;
             }
 
             if (!ctx.query.quickChat) {
-                this.worker.logger.warn("Client failed to find host for room: No 'quickChat' provided in query parameters");
+                this.logger.warn("Client failed to find games: No 'quickChat' provided in query parameters");
                 ctx.status = 400;
                 return;
             }
 
             if (!ctx.query.platformFlags) {
-                this.worker.logger.warn("Client failed to find host for room: No 'platformFlags' provided in query parameters");
+                this.logger.warn("Client failed to find games: No 'platformFlags' provided in query parameters");
                 ctx.status = 400;
                 return;
             }
 
             if (!ctx.query.numImpostors) {
-                this.worker.logger.warn("Client failed to find host for room: No 'numImpostors' provided in query parameters");
+                this.logger.warn("Client failed to find games: No 'numImpostors' provided in query parameters");
                 ctx.status = 400;
                 return;
             }
@@ -296,8 +296,8 @@ export class Matchmaker {
                 ? new Set(this.worker.config.gameListing.ignoreSearchTerms)
                 : this.worker.config.gameListing.ignoreSearchTerms;
 
-            const gamesAndRelevance: [ number, GameListingJson ][] = [];
-            for (const [ gameCode, room ] of this.worker.rooms) {
+            const gamesAndRelevance: [number, GameListingJson][] = [];
+            for (const [gameCode, room] of this.worker.rooms) {
                 if (gameCode === 0x20 /* local game */) {
                     continue;
                 }
@@ -322,7 +322,7 @@ export class Matchmaker {
                 };
 
                 if (ignoreSearchTerms === true) {
-                    gamesAndRelevance.push([ 0, gameListing ]);
+                    gamesAndRelevance.push([0, gameListing]);
                     continue;
                 }
 
@@ -359,7 +359,11 @@ export class Matchmaker {
                 : sortedResults.slice(0, this.worker.config.gameListing.maxResults);
 
             ctx.status = 200;
-            ctx.body = topResults.map(([ , gameListing ]) => gameListing);
+            ctx.body = topResults.map(([, gameListing]) => gameListing);
+        });
+
+        router.use((req, res) => {
+            this.logger.info("Bad request to %s", req.url);
         });
 
         koaServer.use(router.routes());
@@ -373,7 +377,7 @@ export class Matchmaker {
 
         const koaServer = this.createKoaServer();
         this.httpServer = koaServer.listen(this.port);
-        this.worker.logger.info("HTTP matchmaker on *:%s", this.port);
+        this.logger.info("HTTP matchmaker on *:%s", this.port);
     }
 
     destroy() {

@@ -2,11 +2,12 @@ import chalk from "chalk";
 import Koa from "koa";
 import http from "http";
 import KoaRouter from "@koa/router";
+import { VersionInfo } from "@skeldjs/util";
 import koaBody from "koa-body";
 import crypto from "crypto";
 import { Platform } from "@skeldjs/constant";
+
 import { Worker } from "../worker";
-import { VersionInfo } from "@skeldjs/util";
 import { Logger } from "../logger";
 
 export interface GameListingJson {
@@ -258,35 +259,37 @@ export class Matchmaker {
                 return;
             }
 
-            if (!ctx.query.mapId) {
-                this.logger.warn("Client failed to find games: No 'mapId' provided in query parameters");
-                ctx.status = 400;
-                return;
-            }
+            // if (!ctx.query.mapId) {
+            //     this.logger.warn("Client failed to find games: No 'mapId' provided in query parameters");
+            //     ctx.status = 400;
+            //     return;
+            // }
 
-            if (!ctx.query.lang) {
-                this.logger.warn("Client failed to find games: No 'lang' provided in query parameters");
-                ctx.status = 400;
-                return;
-            }
+            // if (!ctx.query.lang) {
+            //     this.logger.warn("Client failed to find games: No 'lang' provided in query parameters");
+            //     ctx.status = 400;
+            //     return;
+            // }
 
-            if (!ctx.query.quickChat) {
-                this.logger.warn("Client failed to find games: No 'quickChat' provided in query parameters");
-                ctx.status = 400;
-                return;
-            }
+            // if (!ctx.query.quickChat) {
+            //     this.logger.warn("Client failed to find games: No 'quickChat' provided in query parameters");
+            //     ctx.status = 400;
+            //     return;
+            // }
 
-            if (!ctx.query.platformFlags) {
-                this.logger.warn("Client failed to find games: No 'platformFlags' provided in query parameters");
-                ctx.status = 400;
-                return;
-            }
+            // if (!ctx.query.platformFlags) {
+            //     this.logger.warn("Client failed to find games: No 'platformFlags' provided in query parameters");
+            //     ctx.status = 400;
+            //     return;
+            // }
 
-            if (!ctx.query.numImpostors) {
-                this.logger.warn("Client failed to find games: No 'numImpostors' provided in query parameters");
-                ctx.status = 400;
-                return;
-            }
+            // if (!ctx.query.numImpostors) {
+            //     this.logger.warn("Client failed to find games: No 'numImpostors' provided in query parameters");
+            //     ctx.status = 400;
+            //     return;
+            // }
+
+            // TODO: actually use filter. seems complex in latest among us
 
             const listingIp = ctx.socket.remoteAddress === "127.0.0.1" || ctx.socket.remoteAddress === "::ffff:127.0.0.1"
                 ? "127.0.0.1"
@@ -326,21 +329,23 @@ export class Matchmaker {
                     continue;
                 }
 
-                const relevancy = this.worker.getRoomRelevancy(
-                    room,
-                    parseInt(ctx.query.numImpostors as string),
-                    parseInt(ctx.query.lang as string),
-                    parseInt(ctx.query.mapId as string),
-                    ctx.query.quickChat as string,
-                    this.worker.config.gameListing.requirePefectMatches,
-                    ignoreSearchTerms
-                );
+                // const relevancy = this.worker.getRoomRelevancy(
+                //     room,
+                //     parseInt(ctx.query.numImpostors as string),
+                //     parseInt(ctx.query.lang as string),
+                //     parseInt(ctx.query.mapId as string),
+                //     ctx.query.quickChat as string,
+                //     this.worker.config.gameListing.requirePefectMatches,
+                //     ignoreSearchTerms
+                // );
 
-                if (relevancy === 0 && this.worker.config.gameListing.requirePefectMatches)
-                    continue;
+                // if (relevancy === 0 && this.worker.config.gameListing.requirePefectMatches)
+                //     continue;
+
+                // TODO: actually use filter. seems complex in latest among us
 
                 gamesAndRelevance.push([
-                    relevancy,
+                    0,
                     gameListing
                 ]);
             }
@@ -359,7 +364,13 @@ export class Matchmaker {
                 : sortedResults.slice(0, this.worker.config.gameListing.maxResults);
 
             ctx.status = 200;
-            ctx.body = topResults.map(([, gameListing]) => gameListing);
+            ctx.body = {
+                games: topResults.map(([, gameListing]) => gameListing),
+                metadata: {
+                    allGamesCount: this.worker.rooms.size,
+                    matchingGamesCount: sortedResults.length,
+                }
+            };
         });
 
         router.use((req, res) => {

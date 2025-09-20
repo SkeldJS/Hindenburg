@@ -5,7 +5,7 @@ const child_process = require("child_process");
 function runCommandInDir(dir, command) {
     return new Promise((resolve, reject) => {
         child_process.exec(command, {
-            cwd: dir
+            cwd: dir,
         }, (err, stdout) => {
             if (err) {
                 reject(err);
@@ -43,12 +43,13 @@ async function linkSkeldJs() {
 
     for (const skeldjsPackage of skeldjsPackages) {
         const localInstallationDir = path.resolve(__dirname, "..", "node_modules", "@skeldjs", skeldjsPackage);
-        await fs.rm(localInstallationDir, { recursive: true });
+        await fs.rm(localInstallationDir, { recursive: true, force: true });
         await fs.symlink(path.resolve(baseSkeldjsDirectory, "packages", skeldjsPackage), localInstallationDir, "dir");
     }
 }
 
 async function buildSkeldJs() {
+    await runCommandInDir(baseSkeldjsDirectory, "yarn");
     await runCommandInDir(baseSkeldjsDirectory, "yarn build-all");
 }
 

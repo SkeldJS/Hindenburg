@@ -98,7 +98,7 @@ export interface PacketContext {
     /**
      * The client who sent the packet.
      */
-    sender: Connection|undefined;
+    sender: Connection | undefined;
     /**
      * Whether or not the packet was sent reliably.
      */
@@ -106,7 +106,7 @@ export interface PacketContext {
     /**
      * The recipient of this specific message (not whole packet), if any.
      */
-    recipients: (Connection|"server")[]|undefined;
+    recipients: (Connection | "server")[] | undefined;
 }
 
 export type WorkerEvents = RoomEvents
@@ -245,7 +245,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 let num_disconnected = 0;
 
-                for (const [ , connection ] of this.connections) {
+                for (const [, connection] of this.connections) {
                     if (
                         args["all"] ||
                         (Array.isArray(args.options.clientid)
@@ -371,7 +371,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 this.logger.info("%s client(s)", this.connections.size);
                 const connections = [...this.connections];
                 for (let i = 0; i < connections.length; i++) {
-                    const [ , connection ] = connections[i];
+                    const [, connection] = connections[i];
                     this.logger.info("%s) %s", i + 1, connection);
                 }
             });
@@ -383,7 +383,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 this.logger.info("%s room(s)", this.rooms.size);
                 const rooms = [...this.rooms];
                 for (let i = 0; i < rooms.length; i++) {
-                    const [ , room ] = rooms[i];
+                    const [, room] = rooms[i];
                     this.logger.info("%s) %s", i + 1, room);
                 }
             });
@@ -417,7 +417,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
                 const loadedPlugins = [...extendable.loadedPlugins];
                 for (let i = 0; i < loadedPlugins.length; i++) {
-                    const [ , plugin ] = loadedPlugins[i];
+                    const [, plugin] = loadedPlugins[i];
                     this.logger.info("%s) %s", i + 1, plugin.pluginInstance);
                 }
             });
@@ -444,7 +444,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 if (args["plugin id"] === "all") {
-                    for (const [ pluginId ] of extendable.loadedPlugins) {
+                    for (const [pluginId] of extendable.loadedPlugins) {
                         if (roomName) {
                             this.pluginLoader.unloadPlugin(pluginId, extendable as Room);
                         } else {
@@ -647,7 +647,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     this.logger.info("%s player(s) in %s", room.players.size, room);
                     const players = [...room.players];
                     for (let i = 0; i < players.length; i++) {
-                        const [ , player ] = players[i];
+                        const [, player] = players[i];
                         this.logger.info("%s) %s", i + 1, player);
                     }
                 } else {
@@ -752,7 +752,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 let numPlayers = 0;
-                for (const [ , room ] of this.rooms) {
+                for (const [, room] of this.rooms) {
                     room.sendChat(message, {
                         side: MessageSide.Left
                     });
@@ -871,7 +871,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.decoder.register(GameDataMessage);
     }
 
-    isVersionAccepted(version: VersionInfo|number): boolean {
+    isVersionAccepted(version: VersionInfo | number): boolean {
         if (typeof version !== "number") {
             return this.isVersionAccepted(version.encode());
         }
@@ -965,6 +965,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (ev.canceled)
                 return;
 
+            console.log(message.gameSettings);
+
             const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings, sender);
 
             this.logger.info("%s created room %s",
@@ -1031,7 +1033,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
 
                 if (notCanceled.length > 0)
-                    await player.room.broadcastMessages(notCanceled, [], undefined, [ ctx.sender ], ctx.reliable);
+                    await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
 
                 const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message.children, MessageDirection.Serverbound, ctx.sender);
 
@@ -1039,7 +1041,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, ctx);
 
                 if (notCanceledRoom.length > 0)
-                    await player.room.parentRoom.broadcastMessages(notCanceledRoom, [], undefined, [ ctx.sender ], ctx.reliable);
+                    await player.room.parentRoom.broadcastMessages(notCanceledRoom, [], undefined, [ctx.sender], ctx.reliable);
 
                 for (let i = 0; i < player.room.parentRoom.activePerspectives.length; i++) {
                     const activePerspective: Perspective = player.room.parentRoom.activePerspectives[i];
@@ -1051,7 +1053,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
 
                     if (notCanceledPerspectiveGameData.length > 0) {
-                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ ctx.sender ], ctx.reliable);
+                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ctx.sender], ctx.reliable);
                     }
                 }
             } else {
@@ -1063,7 +1065,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
 
                     if (notCanceledPerspectiveGameData.length > 0) {
-                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ ctx.sender ], ctx.reliable);
+                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ctx.sender], ctx.reliable);
                     }
                 }
 
@@ -1071,7 +1073,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
 
                 if (notCanceled.length > 0)
-                    await player.room.broadcastMessages(notCanceled, [], undefined, [ ctx.sender ], ctx.reliable);
+                    await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
             }
         });
 
@@ -1085,7 +1087,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
 
             if (message.recipientid === SpecialClientId.Server) {
-                const recipientCtx: PacketContext = {...ctx, recipients: [ "server" ]};
+                const recipientCtx: PacketContext = { ...ctx, recipients: ["server"] };
 
                 if (player.room instanceof Perspective) {
                     const notCanceled: BaseGameDataMessage[] = [];
@@ -1137,7 +1139,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
             }
 
-            await player.room.broadcastMessages(message._children, [], [ connection ], undefined, ctx.reliable);
+            await player.room.broadcastMessages(message._children, [], [connection], undefined, ctx.reliable);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, ctx) => {
@@ -1228,8 +1230,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 ? new Set(this.config.gameListing.ignoreSearchTerms)
                 : this.config.gameListing.ignoreSearchTerms;
 
-            const gamesAndRelevance: [ number, GameListing ][] = [];
-            for (const [ gameCode, room ] of this.rooms) {
+            const gamesAndRelevance: [number, GameListing][] = [];
+            for (const [gameCode, room] of this.rooms) {
                 if (gameCode === 0x20 /* local game */) {
                     continue;
                 }
@@ -1255,7 +1257,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 );
 
                 if (ignoreSearchTerms === true) {
-                    gamesAndRelevance.push([ 0, gameListing ]);
+                    gamesAndRelevance.push([0, gameListing]);
                     continue;
                 }
 
@@ -1293,7 +1295,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 ? sortedResults
                 : sortedResults.slice(0, this.config.gameListing.maxResults);
 
-            const results = topResults.map(([ , gameListing ]) => gameListing);
+            const results = topResults.map(([, gameListing]) => gameListing);
 
             const ev = await this.emit(
                 new WorkerGetGameListEvent(
@@ -1324,7 +1326,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
     async pollClientReliability() {
         const promises = [];
         const dateNow = Date.now();
-        for (const [ , connection ] of this.connections) {
+        for (const [, connection] of this.connections) {
             if (connection.sentPackets.length === 8 && connection.sentPackets.every(packet => (dateNow - packet.sentAt) > 1500 && !packet.acked)) {
                 this.logger.warn("%s failed to acknowledge any of the last 8 reliable packets sent, presumed dead",
                     connection);
@@ -1351,7 +1353,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         await Promise.all(promises);
     }
 
-    getRoomRelevancy(room: Room, numImpostors: number, lang: number, mapId: number, quickChat: string, perfectMatches: boolean, ignoreSearchTerms: Set<ValidSearchTerm>|false) {
+    getRoomRelevancy(room: Room, numImpostors: number, lang: number, mapId: number, quickChat: string, perfectMatches: boolean, ignoreSearchTerms: Set<ValidSearchTerm> | false) {
         let relevancy = 0;
 
         if (!ignoreSearchTerms || !ignoreSearchTerms.has("impostors")) {
@@ -1676,7 +1678,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * console.log(roomCode); // => -2007212745
      * ```
      */
-    generateRoomCode(len: 4|6) {
+    generateRoomCode(len: 4 | 6) {
         if (len !== 4 && len !== 6) {
             throw new RangeError("Expected to generate a 4 or 6 digit room code.");
         }
@@ -1696,7 +1698,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      * @param createdBy The client who is creating the room, if any.
      * @returns The created room.
      */
-    async createRoom(code: number, options: GameSettings, createdBy: Connection|undefined) {
+    async createRoom(code: number, options: GameSettings, createdBy: Connection | undefined) {
         if (this.rooms.has(code))
             throw new Error("A room with code '" + GameCode.convertIntToString(code) + "' already exists.");
 

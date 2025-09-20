@@ -18,10 +18,12 @@ import {
     EngineerRole,
     GameData,
     GuardianAngelRole,
+    HideAndSeekManager,
     ImpostorRole,
     LobbyBehaviour,
     MeetingHud,
     MiraShipStatus,
+    NormalGameManager,
     PlayerControl,
     PlayerPhysics,
     PolusShipStatus,
@@ -756,7 +758,9 @@ export class PluginLoader {
             [SpawnType.MiraShipStatus, [MiraShipStatus]],
             [SpawnType.Polus, [PolusShipStatus]],
             [SpawnType.AprilShipStatus, [AprilShipStatus]],
-            [SpawnType.Airship, [AirshipStatus]]
+            [SpawnType.Airship, [AirshipStatus]],
+            [SpawnType.HideAndSeekManager, [HideAndSeekManager]],
+            [SpawnType.NormalGameManager, [NormalGameManager]],
         ]);
 
         for (const [, loadedPlugin] of room.workerPlugins) {
@@ -855,12 +859,12 @@ export class PluginLoader {
             this.worker.registerPacketHandlers();
         }
 
-        for (const [, loadedPlugin ] of this.worker.loadedPlugins) {
+        for (const [, loadedPlugin] of this.worker.loadedPlugins) {
             this.applyMessageHandlersPlugin(loadedPlugin, room);
         }
 
         if (room) {
-            for (const [, loadedPlugin ] of room.loadedPlugins) {
+            for (const [, loadedPlugin] of room.loadedPlugins) {
                 this.applyMessageHandlersPlugin(loadedPlugin, room);
             }
         }

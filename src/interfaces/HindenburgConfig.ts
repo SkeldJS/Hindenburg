@@ -1,5 +1,5 @@
 import { AllGameSettings } from "@skeldjs/protocol";
-import { HostableOptions } from "@skeldjs/core";
+import { HostableConfig } from "@skeldjs/core";
 
 export interface PluginConfig {
     /**
@@ -7,7 +7,7 @@ export interface PluginConfig {
      * @default true
      */
     loadDirectory: boolean;
-    [key: string]: boolean|Record<string, unknown>;
+    [key: string]: boolean | Record<string, unknown>;
 }
 
 export interface MatchmakerConfig {
@@ -55,7 +55,7 @@ export interface AnticheatPenalty {
     /**
      * The action that should be applied on this user for breaking this rule.
      */
-    action?: "disconnect"|"ban"|"ignore";
+    action?: "disconnect" | "ban" | "ignore";
     /**
      * The number of strikes that this user has before they are penalised.
      */
@@ -84,7 +84,7 @@ export interface AnticheatConfig {
     /**
      * Configuration for each individual rule.
      */
-    rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
+    rules: Record<string, AnticheatRuleConfig | string | number | boolean>;
 }
 
 export interface AnticheatRuleConfig {
@@ -96,16 +96,16 @@ export interface AnticheatRuleConfig {
      * The value of this rule, a boolean if it's a simple toggle,
      * or an integer or string if it requires more specific configuration.
      */
-    value: string|number|boolean;
+    value: string | number | boolean;
     /**
      * Configuration for each individual sub-rule.
      */
-    rules: Record<string, AnticheatRuleConfig|string|number|boolean>;
+    rules: Record<string, AnticheatRuleConfig | string | number | boolean>;
 }
 
-export type ConnectionsFormatOptions = "id"|"ip"|"ping"|"room"|"level"|"version"|"platform"|"language";
-export type RoomFormatOptions = "players"|"map"|"issaah"|"privacy";
-export type PlayerFormatOptions = "id"|"ping"|"level"|"ishost"|"platform"|"language";
+export type ConnectionsFormatOptions = "id" | "ip" | "ping" | "room" | "level" | "version" | "platform" | "language";
+export type RoomFormatOptions = "players" | "map" | "issaah" | "privacy";
+export type PlayerFormatOptions = "id" | "ping" | "level" | "ishost" | "platform" | "language";
 
 export interface LoggingConfig {
     /**
@@ -196,7 +196,7 @@ export interface LoggingConfig {
     };
 }
 
-export type ValidSearchTerm = "map"|"impostors"|"chat"|"chatType";
+export type ValidSearchTerm = "map" | "impostors" | "chat" | "chatType";
 
 export interface GameListingConfig {
     /**
@@ -212,13 +212,13 @@ export interface GameListingConfig {
      * to ignore by passing an array.
      * @default false
      */
-    ignoreSearchTerms: boolean|ValidSearchTerm[];
+    ignoreSearchTerms: boolean | ValidSearchTerm[];
     /**
      * The maximum number of results to return to a client at once. Set to `0`
      * or `"all"` for this to be infinite
      * @default 10
      */
-    maxResults: number|"all";
+    maxResults: number | "all";
     /**
      * Whether to only return results that are a perfect match to all of the sort
      * terms. Otherwise, Hindenburg will sort results by relevance to the search
@@ -298,10 +298,10 @@ export interface AdvancedRoomOptions {
      * {@link RoomsConfig.serverAsHost}.
      * @default false
      */
-    unknownObjects: "all"|boolean|(string|number)[];
+    unknownObjects: "all" | boolean | (string | number)[];
 }
 
-export interface RoomsConfig extends HostableOptions {
+export interface RoomsConfig extends HostableConfig {
     /**
      * Whether or not to make sure players have the same chat mode as the host
      * before joining.
@@ -312,7 +312,7 @@ export interface RoomsConfig extends HostableOptions {
      * Whether to allow players to use chat commands.
      * @default true
      */
-    chatCommands: boolean|ChatCommandConfig;
+    chatCommands: boolean | ChatCommandConfig;
     /**
      * The type of game code to generate for rooms, "v1" for a 4-letter code and
      * "v2" for a 6-letter code.
@@ -395,7 +395,7 @@ export interface HindenburgConfig {
     /**
      * Relative or absolute path to other Hindenburg config(s) to base this one off, to extend all values from.
      */
-    extends?: string|string[];
+    extends?: string | string[];
     /**
      * The name of the cluster that this node belongs to.
      * @default "Capybara"
@@ -433,7 +433,7 @@ export interface HindenburgConfig {
     /**
      * Configuration for the included Hindenburg http matchmaker.
      */
-    matchmaker: boolean|MatchmakerConfig;
+    matchmaker: boolean | MatchmakerConfig;
     /**
      * Options regarding the socket that the server listens on.
      */

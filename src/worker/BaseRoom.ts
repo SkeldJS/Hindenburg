@@ -253,7 +253,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
          * The game settings for the room.
          */
         settings: GameSettings,
-        public readonly createdBy: Connection|undefined
+        public readonly createdBy: Connection | undefined
     ) {
         super({ doFixedUpdate: true });
 
@@ -287,6 +287,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.finishedActingHostTransactionRoutine = false;
         this.roomNameOverride = "";
         this.eventTargets = [];
+
+        this._incrNetId = 100000;
 
         this.hostId = this.config.serverAsHost
             ? SpecialClientId.Server
@@ -437,9 +439,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.decoder.on(DataMessage, (message, _direction, { sender }) => {
-            if (message.netId === this.gameData?.netId && this.config.serverAsHost && sender?.clientId === this.host?.clientId)
-                return;
-
             const component = this.netobjects.get(message.netId);
 
             if (component) {
@@ -499,10 +498,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
             if (
                 Array.isArray(this.config.advanced.unknownObjects)
-                    && (
-                        this.config.advanced.unknownObjects.includes(message.spawnType) ||
-                        this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType])
-                    )) {
+                && (
+                    this.config.advanced.unknownObjects.includes(message.spawnType) ||
+                    this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType])
+                )) {
                 return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
             }
 
@@ -511,7 +510,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
                 }
 
-                throw new Error("Cannot spawn object of type: " + message.spawnType + " (not registered, you might need to add this to config.rooms.advanced.unknownObjects)");
+                throw new Error("Cannot spawn object of type: " + message.spawnType + " with " + message.components.length + " components (not registered, you might need to add this to config.rooms.advanced.unknownObjects)");
             }
 
             try {
@@ -555,11 +554,20 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     if (ev.canceled) {
                         player.inScene = false;
                     } else {
+                        const playerInfo = this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
+                            playerId: this.getAvailablePlayerID(),
+                            clientId: player.clientId,
+                            friendCode: player.friendCode,
+                            puid: player.puid,
+                        }], true, true);
+
+                        console.log(playerInfo);
+
                         if (this.hostIsMe) {
                             await this.broadcast(
                                 this.getExistingObjectSpawn(),
                                 undefined,
-                                [ player ]
+                                [player]
                             );
 
                             this.spawnPrefabOfType(
@@ -656,9 +664,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
         return name.replace(/\n/g, "\\n");
     }
 
-    get host(): PlayerData<this>|undefined {
+    get host(): PlayerData<this> | undefined {
         if (this.config.serverAsHost) {
-            return this.players.get(this.actingHostIds[Symbol.iterator]().next().value);
+            if (this.actingHostIds.size === 0) return undefined;
+            return this.players.get([...this.actingHostIds][0]);
         }
 
         return this.players.get(this.hostId);
@@ -867,7 +876,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param connection The connection or the player that should be banned.
      * @param messages The messages in that the banned player gets displayed.
      */
-    banPlayer(connection: Connection|PlayerData, message?: string): void {
+    banPlayer(connection: Connection | PlayerData, message?: string): void {
         if (connection instanceof PlayerData) {
             return this.banPlayer(this.getConnection(connection) as Connection, message);
         }
@@ -1073,7 +1082,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         const promises = [];
 
-        for (const [ clientId, player ] of this.players) {
+        for (const [clientId, player] of this.players) {
             const connection = this.connections.get(clientId);
 
             if (player === sender || !connection)
@@ -1086,7 +1095,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     continue;
             }
 
-            if (this.worker.config.optimizations.movement.deadChecks && sender.playerInfo?.isDead && !player.playerInfo?.isDead)
+            const playerInfo = player.getPlayerInfo();
+            const senderPlayerInfo = sender.getPlayerInfo();
+
+            if (this.worker.config.optimizations.movement.deadChecks && senderPlayerInfo?.isDead && !playerInfo?.isDead)
                 continue;
 
             if (writer) {
@@ -1157,7 +1169,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
     }
 
-    async setCode(code: number|string): Promise<void> {
+    async setCode(code: number | string): Promise<void> {
         if (typeof code === "string") {
             return this.setCode(GameCode.convertStringToInt(code));
         }
@@ -1199,7 +1211,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 DisconnectReason.Error,
                 hostId
             )
-        ], recipient ? [ recipient.getPlayer()! ] : undefined);
+        ], recipient ? [recipient.getPlayer()!] : undefined);
     }
 
     /**
@@ -1234,7 +1246,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             await this._joinOtherClients();
         }
 
-        for (const [ , connection ] of this.connections) {
+        for (const [, connection] of this.connections) {
             if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
                 await this.updateHostForClient(connection.clientId, connection);
             } else {
@@ -1259,7 +1271,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.hostId = SpecialClientId.Server;
 
-        for (const [ , connection ] of this.connections) {
+        for (const [, connection] of this.connections) {
             if (this.actingHostWaitingFor.length === 0 && this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
                 await this.updateHostForClient(connection.clientId, connection);
             } else {
@@ -1306,7 +1318,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             }
         }
 
-        for (const [ , connection ] of this.connections) {
+        for (const [, connection] of this.connections) {
             if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
                 await this.updateHostForClient(connection.clientId, connection);
             } else {
@@ -1350,7 +1362,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * Add another acting host to a Server-As-A-Host room.
      * @param player The player to make host.
      */
-    async addActingHost(player: PlayerData<this>|Connection) {
+    async addActingHost(player: PlayerData<this> | Connection) {
         this.actingHostIds.add(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
@@ -1366,7 +1378,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * Remove an acting host from a Server-As-A-Host room.
      * @param player The player to remove as host.
      */
-    async removeActingHost(player: PlayerData<this>|Connection) {
+    async removeActingHost(player: PlayerData<this> | Connection) {
         this.actingHostIds.delete(player.clientId);
 
         const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
@@ -1536,7 +1548,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         "",
                         ""
                     )
-                ], undefined, [ joiningClient.getPlayer()! ]);
+                ], undefined, [joiningClient.getPlayer()!]);
 
                 await this._joinOtherClients();
             } else {
@@ -1554,7 +1566,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         "",
                         ""
                     )
-                ], undefined, [ joiningClient.getPlayer()! ]);
+                ], undefined, [joiningClient.getPlayer()!]);
 
                 await joiningClient.sendPacket(
                     new ReliablePacket(
@@ -1585,7 +1597,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         joiningClient.clientId,
                         this.hostId,
                         [...this.connections]
-                            .map(([ , client ]) => new PlayerJoinData(
+                            .map(([, client]) => new PlayerJoinData(
                                 client.clientId,
                                 client.username,
                                 client.platform,
@@ -1604,7 +1616,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         );
 
         const promises = [];
-        for (const [ clientId, connection ] of this.connections) {
+        for (const [clientId, connection] of this.connections) {
             if (this.players.has(clientId)) {
                 promises.push(connection.sendPacket(
                     new ReliablePacket(
@@ -1649,10 +1661,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (this.hostIsMe) {
             if (!this.lobbyBehaviour && this.gameState === GameState.NotStarted) {
                 this.spawnPrefabOfType(SpawnType.LobbyBehaviour, -2);
-            }
-
-            if (!this.gameData) {
-                this.spawnPrefabOfType(SpawnType.GameData, -2);
             }
         }
     }
@@ -1719,7 +1727,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
 
         const promises = [];
-        for (const [ , connection ] of this.connections) {
+        for (const [, connection] of this.connections) {
             promises.push(connection.sendPacket(
                 new ReliablePacket(
                     connection.getNextNonce(),
@@ -1751,7 +1759,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     private async _joinOtherClients() {
         await Promise.all(
             [...this.connections]
-                .map(([ clientId, client ]) => {
+                .map(([clientId, client]) => {
                     if (this.waitingForHost.has(client)) {
                         this.waitingForHost.delete(client);
 
@@ -1860,7 +1868,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             ]);
 
             const removes = [];
-            for (const [ clientId, player ] of this.players) {
+            for (const [clientId, player] of this.players) {
                 if (!player.isReady) {
                     this.logger.warn("Player %s failed to ready up, kicking..", player);
                     await this.handleLeave(player);
@@ -1886,11 +1894,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
             this.logger.info("Assigning tasks..");
             await this.shipStatus?.assignTasks();
             this.logger.info("Assigning roles..");
-            await this.shipStatus?.assignRoles();
+
+            await this.gameManager?.onGameStart();
+            await this.shipStatus?.assignTasks();
 
             if (this.shipStatus) {
-                for (const [ , player ] of this.players) {
-                    this.shipStatus.spawnPlayer(player, true);
+                for (const [, player] of this.players) {
+                    this.shipStatus.spawnPlayer(player, true, false);
                 }
             }
         }
@@ -1917,7 +1927,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             await activePerspective.destroyPerspective(false);
         }
 
-        for (const [ , component ] of this.netobjects) {
+        for (const [, component] of this.netobjects) {
             component.despawn();
         }
 
@@ -1939,9 +1949,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
     protected spawnUnknownPrefab(
         spawnType: number,
-        ownerId: number|PlayerData|undefined,
+        ownerId: number | PlayerData | undefined,
         flags: number,
-        componentData: (any|ComponentSpawnData)[],
+        componentData: (any | ComponentSpawnData)[],
         doBroadcast = true,
         doAwake = true
     ) {
@@ -1958,8 +1968,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     private getOtherPlayer(base: PlayerData<this>) {
-        for (const [ , player ] of this.players) {
-            if (player.playerInfo?.defaultOutfit && player.playerInfo.defaultOutfit.color > -1 && player.control && base !== player) {
+        for (const [, player] of this.players) {
+            const playerInfo = player.getPlayerInfo();
+            if (playerInfo?.defaultOutfit && playerInfo.defaultOutfit.color > -1 && player.control && base !== player) {
                 return player;
             }
         }
@@ -1975,10 +1986,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (!sendPlayer.control)
             return;
 
-        if (!sendPlayer.playerInfo)
+        const sendPlayerInfo = sendPlayer.getPlayerInfo();
+
+        if (!sendPlayerInfo)
             return;
 
-        const defaultOutfit = sendPlayer.playerInfo.defaultOutfit;
+        const defaultOutfit = sendPlayerInfo.defaultOutfit;
 
         const oldName = defaultOutfit.name;
         const oldColor = defaultOutfit.color;
@@ -2031,7 +2044,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 sendPlayer.control.netId,
                 new SetVisorMessage(oldVisor)
             )
-        ], undefined, [ player ]);
+        ], undefined, [player]);
     }
 
     /**
@@ -2066,10 +2079,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * ```
      */
     async sendChat(message: string, options: Partial<SendChatOptions> = {}): Promise<boolean> {
-        if (!this.gameData)
-            return false;
-
-        const colorMap = Color as any as {[key: string]: Color};
+        const colorMap = Color as any as { [key: string]: Color };
 
         const defaultOptions: SendChatOptions = {
             side: MessageSide.Left,
@@ -2088,7 +2098,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 promises.push(this._sendChatFor(player as PlayerData<this>, message, defaultOptions));
             }
         } else {
-            for (const [ , player ] of this.players) {
+            for (const [, player] of this.players) {
                 promises.push(this._sendChatFor(player, message, defaultOptions));
             }
         }
@@ -2202,7 +2212,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    createPerspective(players: PlayerData|PlayerData[]): Perspective {
+    createPerspective(players: PlayerData | PlayerData[]): Perspective {
         throw new Error("Method not implemented on base room");
     }
 
@@ -2217,7 +2227,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getOwnerOf(networkable: Networkable): BaseRoom|undefined {
+    getOwnerOf(networkable: Networkable): BaseRoom | undefined {
         throw new Error("Method not implemented on base room");
     }
 }

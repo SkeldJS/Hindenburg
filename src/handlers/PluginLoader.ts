@@ -16,13 +16,13 @@ import {
     CrewmateRole,
     CustomNetworkTransform,
     EngineerRole,
-    GameData,
     GuardianAngelRole,
     HideAndSeekManager,
     ImpostorRole,
     LobbyBehaviour,
     MeetingHud,
     MiraShipStatus,
+    NetworkedPlayerInfo,
     NormalGameManager,
     PlayerControl,
     PlayerPhysics,
@@ -753,7 +753,6 @@ export class PluginLoader {
             [SpawnType.SkeldShipStatus, [SkeldShipStatus]],
             [SpawnType.MeetingHud, [MeetingHud]],
             [SpawnType.LobbyBehaviour, [LobbyBehaviour]],
-            [SpawnType.GameData, [GameData, VoteBanSystem]],
             [SpawnType.Player, [PlayerControl, PlayerPhysics, CustomNetworkTransform]],
             [SpawnType.MiraShipStatus, [MiraShipStatus]],
             [SpawnType.Polus, [PolusShipStatus]],
@@ -761,6 +760,9 @@ export class PluginLoader {
             [SpawnType.Airship, [AirshipStatus]],
             [SpawnType.HideAndSeekManager, [HideAndSeekManager]],
             [SpawnType.NormalGameManager, [NormalGameManager]],
+            [SpawnType.PlayerInfo, [NetworkedPlayerInfo]], // TODO
+            [SpawnType.VoteBanSystem, [VoteBanSystem]],
+            [SpawnType.FungleShipStatus, []], // TODO
         ]);
 
         for (const [, loadedPlugin] of room.workerPlugins) {

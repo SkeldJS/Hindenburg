@@ -561,8 +561,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
                             puid: player.puid,
                         }], true, true);
 
-                        console.log(playerInfo);
-
                         if (this.hostIsMe) {
                             await this.broadcast(
                                 this.getExistingObjectSpawn(),

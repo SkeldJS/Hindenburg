@@ -554,21 +554,21 @@ export class BaseRoom extends Hostable<RoomEvents> {
                     if (ev.canceled) {
                         player.inScene = false;
                     } else {
-                        const playerInfo = this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
-                            playerId: this.getAvailablePlayerID(),
-                            clientId: player.clientId,
-                            friendCode: player.friendCode,
-                            puid: player.puid,
-                        }], true, true);
-
                         if (this.hostIsMe) {
-                            this.spawnNecessaryObjects();
-
                             await this.broadcast(
                                 this.getExistingObjectSpawn(),
                                 undefined,
                                 [player]
                             );
+
+                            this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
+                                playerId: this.getAvailablePlayerID(),
+                                clientId: player.clientId,
+                                friendCode: player.friendCode,
+                                puid: player.puid,
+                            }], true, true);
+
+                            this.spawnNecessaryObjects();
 
                             this.spawnPrefabOfType(
                                 SpawnType.Player,
@@ -579,6 +579,13 @@ export class BaseRoom extends Hostable<RoomEvents> {
                             if (this.host && this.host.clientId !== message.clientId) {
                                 this.host?.control?.syncSettings(this.settings);
                             }
+                        } else {
+                            this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
+                                playerId: this.getAvailablePlayerID(),
+                                clientId: player.clientId,
+                                friendCode: player.friendCode,
+                                puid: player.puid,
+                            }], true, true);
                         }
                     }
                 }
@@ -802,9 +809,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
             new RoomFixedUpdateEvent(
                 this,
                 this.messageStream,
-                delta
+                delta,
             )
         );
+
 
         if (!ev.canceled && this.messageStream.length) {
             const stream = this.messageStream;
@@ -1456,10 +1464,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         const player = new PlayerData(this, joinInfo.clientId, joinInfo.playerName, joinInfo.platform, joinInfo.playerLevel);
         this.players.set(joinInfo.clientId, player);
 
-        if (this.hostIsMe) {
-            this.spawnNecessaryObjects();
-        }
-
         return player;
     }
 
@@ -1486,7 +1490,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 const ev = await this.emit(new RoomSelectHostEvent(this, true, true, joiningClient));
 
                 if (!ev.canceled) {
-                    await this.addActingHost(joiningPlayer);
+                    // await this.addActingHost(joiningPlayer);
                 }
             }
         } else {
@@ -1656,12 +1660,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         if (this.gameState === GameState.Ended) {
             this.gameState = GameState.NotStarted;
-        }
-
-        if (this.hostIsMe) {
-            if (!this.lobbyBehaviour && this.gameState === GameState.NotStarted) {
-                this.spawnPrefabOfType(SpawnType.LobbyBehaviour, -2);
-            }
         }
     }
 

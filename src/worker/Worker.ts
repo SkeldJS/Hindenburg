@@ -344,8 +344,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     ? args.options.reason
                     : GameOverReason[args.options.reason]) || GameOverReason.None;
 
-                console.log(reason);
-
                 const codeId = roomName === "LOCAL"
                     ? 0x20
                     : GameCode.convertStringToInt(roomName);
@@ -964,8 +962,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             if (ev.canceled)
                 return;
-
-            console.log(message.gameSettings);
 
             const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings, sender);
 

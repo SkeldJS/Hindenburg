@@ -185,7 +185,7 @@ export class Perspective extends BaseRoom {
          * this perspective object.
          */
         public readonly playersPov: PlayerData[],
-        public readonly createdBy: Connection|undefined
+        public readonly createdBy: Connection | undefined
     ) {
         super(parentRoom.worker, parentRoom.config, parentRoom.settings, createdBy);
 
@@ -203,7 +203,7 @@ export class Perspective extends BaseRoom {
             }
         }, this.worker.vorpal);
 
-        for (const [ , player ] of parentRoom.players) {
+        for (const [, player] of parentRoom.players) {
             const newPlayer = new PlayerData(this, player.clientId, player.username, player.platform, player.playerLevel);
             this.players.set(player.clientId, newPlayer);
         }
@@ -218,7 +218,7 @@ export class Perspective extends BaseRoom {
             this.connections.set(playerConnection.clientId, playerConnection);
         }
 
-        for (const [ netId, component ] of parentRoom.netobjects) {
+        for (const [netId, component] of parentRoom.netobjects) {
             if (component instanceof AirshipStatus) {
                 const airshipStatus = component as AirshipStatus<this>;
                 const newAs = new AirshipStatus(this, component.spawnType, netId, component.ownerId, component.flags);
@@ -249,7 +249,7 @@ export class Perspective extends BaseRoom {
                 const newGd = new GameData(this, component.spawnType, netId, component.ownerId, component.flags, {
                     players: new Map
                 });
-                for (const [ playerId, playerInfo ] of gameData.players) {
+                for (const [playerId, playerInfo] of gameData.players) {
                     const newPlayerInfo = playerInfo.clone(playerInfo.playerId);
                     (newPlayerInfo as any).gamedata = newGd;
                     newGd.players.set(playerId, newPlayerInfo);
@@ -271,7 +271,7 @@ export class Perspective extends BaseRoom {
                     ? this.players.get(meetingHud.exiled?.clientId)
                     : undefined;
 
-                for (const [ playerId, voteArea ] of meetingHud.voteStates) {
+                for (const [playerId, voteArea] of meetingHud.voteStates) {
                     const newVoteArea = new PlayerVoteArea(meetingHud, playerId, voteArea.votedForId, voteArea.didReport);
                     newMh.voteStates.set(playerId, newVoteArea);
                 }
@@ -330,7 +330,7 @@ export class Perspective extends BaseRoom {
                 const voteBanSystem = component as VoteBanSystem<this>;
                 const newVbs = new VoteBanSystem(this, component.spawnType, netId, component.ownerId, component.flags);
 
-                for (const [ votedId, voters ] of voteBanSystem.voted) {
+                for (const [votedId, voters] of voteBanSystem.voted) {
                     const newVoters = [];
                     for (const voter of voters) {
                         if (voter) {
@@ -340,7 +340,7 @@ export class Perspective extends BaseRoom {
                             newVoters.push(undefined);
                         }
                     }
-                    newVbs.voted.set(votedId, newVoters as [PlayerData<this>|undefined, PlayerData<this>|undefined, PlayerData<this>|undefined]);
+                    newVbs.voted.set(votedId, newVoters as [PlayerData<this> | undefined, PlayerData<this> | undefined, PlayerData<this> | undefined]);
                 }
 
                 this.voteBanSystem = newVbs;
@@ -371,7 +371,7 @@ export class Perspective extends BaseRoom {
     private cloneSystems(ship: InnerShipStatus<this>) {
         const systemsEntries = Object.entries(ship.systems) as unknown as [SystemType, SystemStatus<any, any>][];
         const newSystems: AllSystems = new Map;
-        for (const [ systemType, system ] of systemsEntries) {
+        for (const [systemType, system] of systemsEntries) {
             if (system instanceof AutoDoorsSystem) {
                 const newAd = new AutoDoorsSystem(ship, system.systemType);
 
@@ -701,7 +701,7 @@ export class Perspective extends BaseRoom {
             // prefabs
             //    - solution: despawn every other component in that prefab,
             //    - and respawn the prefab
-            for (const [ netId, netObject ] of this.netobjects) {
+            for (const [netId, netObject] of this.netobjects) {
                 if (!this.parentRoom.netobjects.get(netId)) {
                     messages.push(
                         new DespawnMessage(netId)
@@ -738,7 +738,7 @@ export class Perspective extends BaseRoom {
                 );
             }
 
-            for (const [ clientId ] of this.players) {
+            for (const [clientId] of this.players) {
                 if (!this.parentRoom.players.get(clientId)) {
                     payloads.push(
                         new RemovePlayerMessage(
@@ -751,7 +751,7 @@ export class Perspective extends BaseRoom {
                 }
             }
 
-            for (const [ , player ] of this.parentRoom.players) {
+            for (const [, player] of this.parentRoom.players) {
                 if (!this.players.has(player.clientId)) {
                     payloads.push(
                         new JoinGameMessage(
@@ -789,7 +789,7 @@ export class Perspective extends BaseRoom {
             }
 
             const impostorIds = [];
-            for (const [ , player ] of this.parentRoom.players) {
+            for (const [, player] of this.parentRoom.players) {
                 const defaultOutfit = player.playerInfo?.defaultOutfit;
                 if (!defaultOutfit)
                     continue;
@@ -1010,8 +1010,8 @@ export class Perspective extends BaseRoom {
 
     getDecoder(direction: MessageFilterDirection) {
         switch (direction) {
-        case MessageFilterDirection.Incoming: return this.incomingFilter;
-        case MessageFilterDirection.Outgoing: return this.outgoingFilter;
+            case MessageFilterDirection.Incoming: return this.incomingFilter;
+            case MessageFilterDirection.Outgoing: return this.outgoingFilter;
         }
     }
 
@@ -1071,7 +1071,7 @@ export class Perspective extends BaseRoom {
      * const playerPov = perspective.resolvePlayer(originalPlayer);
      * ```
      */
-    resolvePlayer(player: PlayerDataResolvable): PlayerData<this>|undefined {
+    resolvePlayer(player: PlayerDataResolvable): PlayerData<this> | undefined {
         if (player instanceof PlayerData && player.room === this)
             return player as PlayerData<this>;
 
@@ -1107,7 +1107,6 @@ export class Perspective extends BaseRoom {
     disownObject(netObject: Networkable) {
         const ownership = this.parentRoom.ownershipGuards.get(netObject.netId);
         if (!ownership || ownership !== this) {
-            console.log(SpawnType[netObject.spawnType], netObject.netId);
             throw new Error("Cannot disown object; an object with that network id isn't owned by this room");
         }
 

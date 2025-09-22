@@ -562,6 +562,8 @@ export class BaseRoom extends Hostable<RoomEvents> {
                         }], true, true);
 
                         if (this.hostIsMe) {
+                            this.spawnNecessaryObjects();
+
                             await this.broadcast(
                                 this.getExistingObjectSpawn(),
                                 undefined,

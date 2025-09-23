@@ -925,8 +925,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!sender)
                 return;
 
-            console.log(message);
-
             if (!sender.sentDisconnect)
                 await sender.disconnect(DisconnectReason.ExitGame);
 

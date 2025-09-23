@@ -561,8 +561,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                 [player]
                             );
 
-                            this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
-                                playerId: this.getAvailablePlayerID(),
+                            const playerId = this.getAvailablePlayerID();
+
+                            const obj = this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
+                                playerId: playerId,
                                 clientId: player.clientId,
                                 friendCode: player.friendCode,
                                 puid: player.puid,
@@ -573,7 +575,10 @@ export class BaseRoom extends Hostable<RoomEvents> {
                             this.spawnPrefabOfType(
                                 SpawnType.Player,
                                 player.clientId,
-                                SpawnFlag.IsClientCharacter
+                                SpawnFlag.IsClientCharacter,
+                                [{
+                                    playerId: playerId,
+                                }],
                             );
 
                             if (this.host && this.host.clientId !== message.clientId) {

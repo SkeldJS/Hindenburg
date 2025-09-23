@@ -920,12 +920,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             );
         });
 
-        this.decoder.on(DisconnectPacket, async (message, _direciton, { sender }) => {
+        this.decoder.on(DisconnectPacket, async (message, _direction, { sender }) => {
             if (!sender)
                 return;
 
+            console.log(message);
+
             if (!sender.sentDisconnect)
-                await sender.disconnect(message.reason || DisconnectReason.ExitGame);
+                await sender.disconnect(DisconnectReason.ExitGame);
 
             this.removeConnection(sender);
         });

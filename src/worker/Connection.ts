@@ -26,7 +26,7 @@ export class SentPacket {
         public readonly buffer: Buffer,
         public sentAt: number,
         public acked: boolean
-    ) {}
+    ) { }
 }
 
 export const logLanguages = {

@@ -7,7 +7,7 @@ import {
     Language,
     GameState,
     GameKeyword,
-    TaskBarUpdate,
+    TaskBarMode,
     KillDistance,
     GameMap,
     SendOption,
@@ -722,7 +722,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     this.logger.info("- confirm ejects: %s", room.settings.confirmEjects);
                     this.logger.info("- visual tasks: %s", room.settings.visualTasks);
                     this.logger.info("- anonymous votes: %s", room.settings.anonymousVotes);
-                    this.logger.info("- task bar updates: %s", TaskBarUpdate[room.settings.taskbarUpdates]);
+                    this.logger.info("- task bar updates: %s", TaskBarMode[room.settings.taskbarUpdates]);
+                    // TODO: update for new settings
                 } else {
                     this.logger.error("Couldn't find room: %s", roomName);
                 }

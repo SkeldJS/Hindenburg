@@ -2,12 +2,12 @@ import chalk from "chalk";
 import Koa from "koa";
 import http from "http";
 import KoaRouter from "@koa/router";
-import { VersionInfo } from "@skeldjs/util";
+import { GameCode, HazelWriter, VersionInfo } from "@skeldjs/util";
 import koaBody from "koa-body";
 import crypto from "crypto";
-import { Platform } from "@skeldjs/constant";
+import { DisconnectReason, Platform, StringNames } from "@skeldjs/constant";
 
-import { Worker } from "../worker";
+import { Room, Worker } from "../worker";
 import { Logger } from "../logger";
 
 export interface GameListingJson {
@@ -15,6 +15,7 @@ export interface GameListingJson {
     Port: number;
     GameId: number;
     HostName: string;
+    TrueHostName: string;
     PlayerCount: number;
     Age: number;
     MapId: number;
@@ -23,6 +24,18 @@ export interface GameListingJson {
     Platform: number;
     HostPlatformName: string;
     Language: number;
+    Options: string;
+}
+
+export interface ErrorJson {
+    Reason: keyof typeof DisconnectReason;
+}
+
+export interface GameFoundByCodeJson {
+    Errors: ErrorJson[] | null;
+    Game: GameListingJson | null;
+    Region: number;
+    UntranslatedRegion: string;
 }
 
 export interface MatchmakerTokenPayload {
@@ -150,6 +163,34 @@ export class Matchmaker {
         }
 
         return true;
+    }
+
+    getGameListing(fromAddress: string, room: Room): GameListingJson {
+        const listingIp = fromAddress === "127.0.0.1" || fromAddress === "::ffff:127.0.0.1"
+            ? "127.0.0.1"
+            : this.worker.config.socket.ip;
+
+        const settingsWriter = HazelWriter.alloc(256);
+        settingsWriter.write(room.settings, false, 10);
+
+        const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
+        const gameListing: GameListingJson = {
+            IP: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
+            Port: this.getRandomWorkerPort(),
+            GameId: room.code,
+            HostName: room.roomName,
+            TrueHostName: room.host?.username || "Server",
+            PlayerCount: room.players.size,
+            Age: roomAge,
+            MapId: room.settings.map,
+            NumImpostors: room.settings.numImpostors,
+            MaxPlayers: room.settings.maxPlayers,
+            Platform: room.host?.platform.platformTag || Platform.Unknown,
+            HostPlatformName: room.host?.platform.platformName || "UNKNOWN",
+            Language: room.settings.keywords,
+            Options: settingsWriter.toString("base64"),
+        };
+        return gameListing;
     }
 
     protected createKoaServer() {
@@ -291,10 +332,6 @@ export class Matchmaker {
 
             // TODO: actually use filter. seems complex in latest among us
 
-            const listingIp = ctx.socket.remoteAddress === "127.0.0.1" || ctx.socket.remoteAddress === "::ffff:127.0.0.1"
-                ? "127.0.0.1"
-                : this.worker.config.socket.ip;
-
             const ignoreSearchTerms = Array.isArray(this.worker.config.gameListing.ignoreSearchTerms)
                 ? new Set(this.worker.config.gameListing.ignoreSearchTerms)
                 : this.worker.config.gameListing.ignoreSearchTerms;
@@ -308,21 +345,8 @@ export class Matchmaker {
                 if (!this.worker.config.gameListing.ignorePrivacy && room.privacy === "private")
                     continue;
 
-                const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
-                const gameListing: GameListingJson = {
-                    IP: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                    Port: this.getRandomWorkerPort(),
-                    GameId: room.code,
-                    HostName: room.roomName,
-                    PlayerCount: room.players.size,
-                    Age: roomAge,
-                    MapId: room.settings.map,
-                    NumImpostors: room.settings.numImpostors,
-                    MaxPlayers: room.settings.maxPlayers,
-                    Platform: room.host?.platform.platformTag || Platform.Unknown,
-                    HostPlatformName: room.host?.platform.platformName || "UNKNOWN",
-                    Language: room.settings.keywords
-                };
+
+                const gameListing = this.getGameListing(ctx.socket.remoteAddress || "", room);
 
                 if (ignoreSearchTerms === true) {
                     gamesAndRelevance.push([0, gameListing]);
@@ -371,6 +395,32 @@ export class Matchmaker {
                     matchingGamesCount: sortedResults.length,
                 }
             };
+        });
+
+        router.get("/api/games/:game_id", ctx => {
+            const gameCode = parseInt(ctx.params.game_id);
+            const foundRoom = this.worker.rooms.get(gameCode);
+            if (!foundRoom) {
+                this.logger.info("Client failed to find room, game not found: %s", GameCode.convertIntToString(gameCode));
+                ctx.status = 404;
+                ctx.body = {
+                    Errors: [{ Reason: DisconnectReason[DisconnectReason.GameNotFound] }],
+                    Game: null,
+                    Region: StringNames.NoTranslation,
+                    UntranslatedRegion: this.worker.config.clusterName,
+                } as GameFoundByCodeJson;
+                return;
+            }
+
+            this.logger.info("Client found room: %s", foundRoom);
+
+            ctx.status = 200;
+            ctx.body = {
+                Errors: null,
+                Game: this.getGameListing(ctx.socket.remoteAddress || "", foundRoom),
+                Region: StringNames.NoTranslation,
+                UntranslatedRegion: this.worker.config.clusterName,
+            } as GameFoundByCodeJson;
         });
 
         router.use((req, res) => {

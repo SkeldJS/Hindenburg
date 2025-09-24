@@ -60,7 +60,6 @@ import { HindenburgConfig, RoomsConfig, MessageSide, ValidSearchTerm } from "../
 
 import { Connection, SentPacket } from "./Connection";
 import { Room } from "./Room";
-import { Perspective } from "./Perspective";
 import { RoomEvents, SpecialClientId } from "./BaseRoom";
 
 import {
@@ -654,38 +653,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             });
 
         this.vorpal
-            .command("list pov <room code>", "List all active perspectives in a room.")
-            .alias("lspov")
-            .autocomplete({
-                data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
-                }
-            })
-            .action(async args => {
-                if (this.config.optimizations.disablePerspectives) {
-                    this.logger.warn("Perspectives are disabled");
-                    return;
-                }
-
-                const roomName = args["room code"].toUpperCase();
-                const codeId = roomName === "LOCAL"
-                    ? 0x20
-                    : GameCode.convertStringToInt(roomName);
-
-                const room = this.rooms.get(codeId);
-
-                if (room) {
-                    this.logger.info("%s perspective(s) in %s", room.activePerspectives.length, room);
-                    for (let i = 0; i < room.activePerspectives.length; i++) {
-                        const pov = room.activePerspectives[i];
-                        this.logger.info("%s) %s", i + 1, pov);
-                    }
-                } else {
-                    this.logger.error("Couldn't find room: %s", roomName);
-                }
-            });
-
-        this.vorpal
             .command("settings <room code>", "Get the current game settings for a room.")
             .autocomplete({
                 data: async () => {
@@ -1025,53 +992,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player || !ctx.sender.room)
                 return;
 
-            if (player.room instanceof Perspective) {
-                const notCanceled: BaseGameDataMessage[] = [];
-                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
+            const notCanceled: BaseGameDataMessage[] = [];
+            await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
 
-                if (notCanceled.length > 0)
-                    await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
-
-                const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message.children, MessageDirection.Serverbound, ctx.sender);
-
-                const notCanceledRoom: BaseGameDataMessage[] = [];
-                await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, ctx);
-
-                if (notCanceledRoom.length > 0)
-                    await player.room.parentRoom.broadcastMessages(notCanceledRoom, [], undefined, [ctx.sender], ctx.reliable);
-
-                for (let i = 0; i < player.room.parentRoom.activePerspectives.length; i++) {
-                    const activePerspective: Perspective = player.room.parentRoom.activePerspectives[i];
-                    if (activePerspective === player.room)
-                        continue;
-
-                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, ctx.sender);
-                    const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
-
-                    if (notCanceledPerspectiveGameData.length > 0) {
-                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ctx.sender], ctx.reliable);
-                    }
-                }
-            } else {
-                for (let i = 0; i < player.room.activePerspectives.length; i++) {
-                    const activePerspective: Perspective = player.room.activePerspectives[i];
-
-                    const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message.children, MessageDirection.Serverbound, ctx.sender);
-                    const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                    await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, ctx);
-
-                    if (notCanceledPerspectiveGameData.length > 0) {
-                        await activePerspective.broadcastMessages(notCanceledPerspectiveGameData, [], undefined, [ctx.sender], ctx.reliable);
-                    }
-                }
-
-                const notCanceled: BaseGameDataMessage[] = [];
-                await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
-
-                if (notCanceled.length > 0)
-                    await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
-            }
+            if (notCanceled.length > 0)
+                await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
         });
 
         this.decoder.on(GameDataToMessage, async (message, _direction, ctx) => {
@@ -1085,39 +1010,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             if (message.recipientid === SpecialClientId.Server) {
                 const recipientCtx: PacketContext = { ...ctx, recipients: ["server"] };
-
-                if (player.room instanceof Perspective) {
-                    const notCanceled: BaseGameDataMessage[] = [];
-                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, recipientCtx);
-
-                    const notCanceledOutgoing = await player.room.getNotCanceledOutgoing(message._children, MessageDirection.Serverbound, recipientCtx.sender);
-
-                    const notCanceledRoom: BaseGameDataMessage[] = [];
-                    await player.room.parentRoom.processMessagesAndGetNotCanceled(notCanceledOutgoing, notCanceledRoom, recipientCtx);
-
-                    for (let i = 0; i < player.room.parentRoom.activePerspectives.length; i++) {
-                        const activePerspective: Perspective = player.room.parentRoom.activePerspectives[i];
-                        if (activePerspective === player.room)
-                            continue;
-
-                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(notCanceledOutgoing, MessageDirection.Serverbound, recipientCtx.sender);
-                        const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, recipientCtx);
-                    }
-                } else {
-                    const notCanceled: BaseGameDataMessage[] = [];
-                    await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, recipientCtx);
-
-                    for (let i = 0; i < player.room.activePerspectives.length; i++) {
-                        const activePerspective: Perspective = player.room.activePerspectives[i];
-                        if (activePerspective === player.room)
-                            continue;
-
-                        const notCanceledIncoming = await activePerspective.getNotCanceledIncoming(message._children, MessageDirection.Serverbound, recipientCtx.sender);
-                        const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-                        await activePerspective.processMessagesAndGetNotCanceled(notCanceledIncoming, notCanceledPerspectiveGameData, recipientCtx);
-                    }
-                }
+                const notCanceled: BaseGameDataMessage[] = [];
+                await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, recipientCtx);
                 return;
             }
 

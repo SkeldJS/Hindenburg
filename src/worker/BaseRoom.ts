@@ -104,14 +104,14 @@ import {
     LoadedPlugin
 } from "../handlers";
 
+import { UnknownComponent } from "../components";
+
 import { fmtCode } from "../util/fmtCode";
 import { fmtConfigurableLog } from "../util/fmtLogFormat";
 import { Logger } from "../logger";
 
 import { Connection, logLanguages, logPlatforms } from "./Connection";
 import { PacketContext, Worker } from "./Worker";
-import { Perspective } from "./Perspective";
-import { UnknownComponent } from "../components";
 
 Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: PlayerData<BaseRoom>) {
@@ -186,17 +186,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     waitingForHost: Set<Connection>;
     /**
-     * Player perspectives for each player, mapped by clientId to perspective object.
-     */
-    playerPerspectives: Map<number, Perspective>;
-    /**
      * A map of objects to their respective perspective owner.
      */
     ownershipGuards: Map<number, BaseRoom>;
-    /**
-     * An array of every player perspective created in the room.
-     */
-    activePerspectives: Perspective[];
     /**
      * Whether or not acting hosts are enabled on this room.
      */
@@ -257,9 +249,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
     ) {
         super({ doFixedUpdate: true });
 
-        this.playerPerspectives = new Map;
         this.ownershipGuards = new Map;
-        this.activePerspectives = [];
 
         this.actingHostsEnabled = true;
         this.actingHostIds = new Set;
@@ -952,9 +942,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
             if (clientsToExclude.has(singleClient))
                 return;
 
-            if (this.playerPerspectives.has(singleClient.clientId))
-                return;
-
             const ev = await this.emit(
                 new ClientBroadcastEvent(
                     this,
@@ -1000,9 +987,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
             const connection = clientsToBroadcast[i];
 
             if (clientsToExclude.has(connection))
-                continue;
-
-            if (this.playerPerspectives.has(connection.clientId))
                 continue;
 
             const ev = await this.emit(
@@ -1146,23 +1130,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         const excludedConnections = exclude ? this.getRealConnections(exclude) : undefined;
 
         this.broadcastMessages(gameData, payloads, includedConnections, excludedConnections, reliable);
-
-        for (let i = 0; i < this.activePerspectives.length; i++) {
-            const otherPerspective = this.activePerspectives[i];
-
-            const notCanceledOtherIncomingGameData = await otherPerspective.getNotCanceledIncoming(gameData, MessageDirection.Clientbound, undefined);
-            const notCanceledOtherIncomingPayloads = await otherPerspective.getNotCanceledIncoming(payloads, MessageDirection.Clientbound, undefined);
-
-            const notCanceledPerspectiveGameData: BaseGameDataMessage[] = [];
-            const notCanceledPerspectivePayloads: BaseRootMessage[] = [];
-            const ctx: PacketContext = { sender: undefined, reliable, recipients: includedConnections };
-            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingGameData, notCanceledPerspectiveGameData, ctx);
-            await otherPerspective.processMessagesAndGetNotCanceled(notCanceledOtherIncomingPayloads, notCanceledPerspectivePayloads, ctx);
-
-            if (notCanceledPerspectiveGameData.length > 0 || notCanceledPerspectivePayloads.length > 0) {
-                otherPerspective.broadcastMessages(notCanceledPerspectiveGameData, notCanceledPerspectivePayloads, includedConnections, excludedConnections, reliable);
-            }
-        }
     }
 
     async processMessagesAndGetNotCanceled(messages: BaseMessage[], notCanceled: BaseMessage[], ctx: PacketContext) {
@@ -1926,10 +1893,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        for (const activePerspective of this.activePerspectives) {
-            await activePerspective.destroyPerspective(false);
-        }
-
         for (const [, component] of this.netobjects) {
             component.despawn();
         }
@@ -2212,11 +2175,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         for (const eventHandler of observer.getEventListeners()) {
             this.off(eventHandler.eventName, eventHandler.handler);
         }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    createPerspective(players: PlayerData | PlayerData[]): Perspective {
-        throw new Error("Method not implemented on base room");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

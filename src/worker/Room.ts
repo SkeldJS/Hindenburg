@@ -7,79 +7,22 @@ import { RoomsConfig } from "../interfaces";
 
 import { Worker } from "./Worker";
 import { BaseRoom } from "./BaseRoom";
-import { Perspective } from "./Perspective";
 import { Logger } from "../logger";
 import { fmtCode } from "../util/fmtCode";
 import { Connection } from "./Connection";
 
 export class Room extends BaseRoom {
-    /**
-     * A map of player client IDs to active perspectives in the room. Used as a
-     * short-hand, as well as being faster than searching each active perspective.
-     */
-    playerPerspectives: Map<number, Perspective>;
-
-    /**
-     * A list of perspectives that are currently active in the room, see {@link Room.createPerspective}
-     */
-    activePerspectives: Perspective[];
-
     constructor(
         public readonly worker: Worker,
         public readonly config: RoomsConfig,
         settings: GameSettings,
-        public readonly createdBy: Connection|undefined
+        public readonly createdBy: Connection | undefined
     ) {
         super(worker, config, settings, createdBy);
 
         this.logger = new Logger(() => chalk.yellow(fmtCode(this.code)), this.worker.vorpal);
 
-        this.playerPerspectives = new Map;
-        this.activePerspectives = [];
-
         this.ownershipGuards = new Map;
-    }
-
-    /**
-     * Create a {@link Perspective} object for this room.
-     *
-     * This function is relatively slow as it needs to clone the entire room.
-     * It shouldn't really be used in loops or any events that get fired a lot.
-     *
-     * @param players The player, or players, to create this perspective for.
-     * @returns The created perspective.
-     */
-    createPerspective(
-        players: PlayerData|PlayerData[]
-    ): Perspective {
-        if (this.worker.config.optimizations.disablePerspectives) {
-            throw new Error("Perspectives are disabled, set 'optimisations.disablePerspectives' to false to re-enable perspectives");
-        }
-
-        if (!Array.isArray(players)) {
-            return this.createPerspective([ players ]);
-        }
-
-        for (let i = 0; i < players.length; i++) {
-            if (players[i].room !== this) {
-                throw new TypeError("Tried to create a perspective from a player not in this room.");
-            }
-
-            if (this.playerPerspectives.has(players[i].clientId)) {
-                throw new TypeError("Player already has active perspective.");
-            }
-        }
-
-        const perspective = new Perspective(this, players, this.createdBy);
-
-        this.activePerspectives.push(perspective);
-        for (let i = 0; i < players.length; i++) {
-            this.playerPerspectives.set(players[i].clientId, perspective);
-        }
-
-        this.logger.info("Created perspective: %s", perspective);
-
-        return perspective;
     }
 
     /**

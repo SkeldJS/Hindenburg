@@ -70,7 +70,8 @@ import {
     PlayerSetHostEvent,
     RoomEndGameIntentEvent,
     RoomFixedUpdateEvent,
-    RoomSetPrivacyEvent
+    RoomSetPrivacyEvent,
+    SpecialOwnerId
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
@@ -118,7 +119,7 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
         const connection = this.room.connections.get(this.clientId);
 
         const isHost = this.room.hostId === this.clientId;
-        const isActingHost = !isHost && this.room.actingHostsEnabled && this.room.actingHostIds.has(this.clientId);
+        const isActingHost = false;
 
         const paren = fmtConfigurableLog(
             this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
@@ -139,13 +140,13 @@ Object.defineProperty(PlayerData.prototype, Symbol.for("nodejs.util.inspect.cust
 
 Object.defineProperty(PlayerData.prototype, "isHost", {
     get(this: PlayerData<BaseRoom>) {
-        return this.room.hostId === this.clientId || (this.room.actingHostsEnabled && this.room.actingHostIds.has(this.clientId));
+        return this.room.hostId === this.clientId;
     }
 });
 
 export enum SpecialClientId {
     Nil = 2 ** 31 - 1,
-    Server = 2 ** 31 - 2,
+    ServerAuthority = 2 ** 31 - 2,
     Temp = 2 ** 31 - 3
 }
 
@@ -190,14 +191,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     ownershipGuards: Map<number, BaseRoom>;
     /**
-     * Whether or not acting hosts are enabled on this room.
-     */
-    actingHostsEnabled: boolean;
-    /**
-     * The client IDs of every acting host in the room.
-     */
-    actingHostIds: Set<number>;
-    /**
      * This room's console logger.
      */
     logger!: Logger;
@@ -205,11 +198,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * All IP addresses banned from this room.
      */
     bannedAddresses: Set<string>;
-    /**
-     * Player that the server is waiting to finish joining before resetting all
-     * acting hosts back.
-     */
-    actingHostWaitingFor: PlayerData<this>[];
     /**
      * All plugins loaded and scoped to the worker when this room was created, mapped by plugin id to worker plugin object.
      */
@@ -226,8 +214,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * A packet decoder for the room to decode and handle incoming packets.
      */
     decoder: PacketDecoder<PacketContext>;
-
-    protected finishedActingHostTransactionRoutine: boolean;
 
     protected roomNameOverride: string;
     protected eventTargets: EventTarget[];
@@ -251,9 +237,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
         this.ownershipGuards = new Map;
 
-        this.actingHostsEnabled = true;
-        this.actingHostIds = new Set;
-
         this.createdAt = Date.now();
 
         this.playerJoinedFlag = false;
@@ -268,21 +251,17 @@ export class BaseRoom extends Hostable<RoomEvents> {
         this.settings = settings;
 
         this.gameState = GameState.NotStarted;
-        this.actingHostWaitingFor = [];
 
         this.workerPlugins = new Map;
         this.loadedPlugins = new Map;
         this.chatCommandHandler = new ChatCommandHandler(this);
 
-        this.finishedActingHostTransactionRoutine = false;
         this.roomNameOverride = "";
         this.eventTargets = [];
 
         this._incrNetId = 100000;
 
-        this.hostId = this.config.serverAsHost
-            ? SpecialClientId.Server
-            : 0;
+        this.hostId = 0;
 
         this.on("player.setname", async ev => {
             if (ev.oldName) {
@@ -291,54 +270,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
             } else {
                 this.logger.info("%s set their name to %s",
                     ev.player, this.formatName(ev.newName));
-            }
-        });
-
-        this.on("player.setnameplate", async ev => {
-            if (this.actingHostWaitingFor[0] === ev.player) {
-                if (this.actingHostsEnabled) {
-                    let flag = false;
-                    for (const actingHostId of this.actingHostIds) {
-                        const actingHostConn = this.connections.get(actingHostId);
-                        if (actingHostConn) {
-                            if (!this.finishedActingHostTransactionRoutine && !flag) {
-                                await actingHostConn.sendPacket(
-                                    new ReliablePacket(
-                                        actingHostConn.getNextNonce(),
-                                        [
-                                            new JoinGameMessage(
-                                                this.code,
-                                                SpecialClientId.Temp,
-                                                actingHostConn.clientId,
-                                                "TMP",
-                                                new PlatformSpecificData(Platform.StandaloneSteamPC, "TESTNAME"),
-                                                0,
-                                                "",
-                                                ""
-                                            ),
-                                            new GameDataToMessage(
-                                                this.code,
-                                                actingHostConn.clientId,
-                                                [
-                                                    new SceneChangeMessage(
-                                                        SpecialClientId.Temp,
-                                                        "OnlineGame"
-                                                    )
-                                                ]
-                                            )
-                                        ]
-                                    )
-                                );
-                                flag = true;
-                                continue;
-                            }
-
-                            await this.updateHostForClient(actingHostId, actingHostConn);
-                        }
-                    }
-                }
-
-                this.actingHostWaitingFor = [];
             }
         });
 
@@ -438,13 +369,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
         });
 
         this.decoder.on(RpcMessage, async (message, _direction, { sender }) => {
-            if (this.host && this.host.clientId === sender?.clientId && !this.finishedActingHostTransactionRoutine && message.data instanceof SyncSettingsMessage) {
-                this.logger.info("Got initial settings, acting host handshake complete");
-                this.finishedActingHostTransactionRoutine = true;
-                this.settings.patch(message.data.settings);
-                return;
-            }
-
             const component = this.netobjects.get(message.netId);
 
             if (component) {
@@ -659,7 +583,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",
                 map: logMaps[this.settings.map],
-                issaah: this.config.serverAsHost ? "SaaH" : undefined,
+                issaah: undefined,
                 privacy: this.privacy
             }
         );
@@ -673,30 +597,11 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     get host(): PlayerData<this> | undefined {
-        if (this.config.serverAsHost) {
-            if (this.actingHostIds.size === 0) return undefined;
-            return this.players.get([...this.actingHostIds][0]);
-        }
-
         return this.players.get(this.hostId);
     }
 
-    /**
-     * An array of all acting hosts in the room.
-     */
-    getActingHosts() {
-        const hosts = [];
-        for (const actingHostId of this.actingHostIds) {
-            const player = this.players.get(actingHostId);
-            if (player) {
-                hosts.push(player);
-            }
-        }
-        return hosts;
-    }
-
     get hostIsMe() {
-        return this.hostId === SpecialClientId.Server;
+        return this.hostId === SpecialClientId.ServerAuthority;
     }
 
     /**
@@ -1211,9 +1116,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
      * @param playerResolvable The player to set as the host.
      */
     async setHost(playerResolvable: PlayerDataResolvable) {
-        if (this.config.serverAsHost)
-            throw new Error("Cannot set setHost while in SaaH mode, use addActingHost and removeActingHost");
-
         const resolvedId = this.resolvePlayerClientID(playerResolvable);
 
         if (!resolvedId)
@@ -1239,204 +1141,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         }
 
         for (const [, connection] of this.connections) {
-            if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                await this.updateHostForClient(connection.clientId, connection);
-            } else {
-                await this.updateHostForClient(this.hostId, connection);
-            }
-        }
-    }
-
-    /**
-     * Enable SaaH (Server-as-a-Host) on this room.
-     *
-     * Does nothing particularly special except tell clients that the server is now the host.
-     * @param saahEnabled Whether or not SaaH should be enabled.
-     * @param addActingHost Whether or not to add the current host as an acting host
-     */
-    async enableSaaH(addActingHost: boolean) {
-        this.config.serverAsHost = true;
-
-        if (addActingHost && this.hostId !== SpecialClientId.Server) {
-            this.actingHostIds.add(this.hostId);
-        }
-
-        this.hostId = SpecialClientId.Server;
-
-        for (const [, connection] of this.connections) {
-            if (this.actingHostWaitingFor.length === 0 && this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                await this.updateHostForClient(connection.clientId, connection);
-            } else {
-                await this.updateHostForClient(SpecialClientId.Server, connection);
-            }
-        }
-
-        this.logger.info("The server is now the host");
-    }
-
-    /**
-     * Disable SaaH (Server-as-a-Host) on this room, assigning a new host (the first acting host if available),
-     * and tell clients the new host (unless they are an acting host.).
-     *
-     * Does nothing particularly special except tell clients that the server is now the host.
-     * @param saahEnabled Whether or not SaaH should be enabled.
-     * @param addActingHost Whether or not to add the current host as an acting host
-     */
-    async disableSaaH() {
-        const connection = this.actingHostIds.size > 0
-            ? this.connections.get([...this.actingHostIds][0])
-            : [...this.connections.values()][0];
-
-        this.config.serverAsHost = false;
-        if (!connection)
-            return;
-
-        const ev = await this.emit(new RoomSelectHostEvent(this, false, false, connection));
-
-        if (!ev.canceled) {
-            const player = ev.alteredSelected.getPlayer();
-
-            this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
-            this.actingHostIds.delete(this.hostId);
-            if (player) {
-                await player.emit(new PlayerSetHostEvent(this, player));
-            }
-
-            this.logger.info("The server is no longer the host, new host: %s", player || connection);
-
-            if (this.gameState === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
-                this.gameState = GameState.NotStarted;
-                await this._joinOtherClients();
-            }
-        }
-
-        for (const [, connection] of this.connections) {
-            if (this.actingHostsEnabled && this.actingHostIds.has(connection.clientId)) {
-                await this.updateHostForClient(connection.clientId, connection);
-            } else {
-                await this.updateHostForClient(this.hostId, connection);
-            }
-        }
-    }
-
-    /**
-     * Set whether SaaH is enabled on this room, calling either {@link BaseRoom.enableSaaH} or
-     * {@link BaseRoom.disableSaaH}.
-     * and tell clients the new host (unless they are an acting host.).
-     * @param saahEnabled Whether or not SaaH should be enabled.
-     */
-    async setSaaHEnabled(saahEnabled: false): Promise<void>;
-    /**
-     * Set whether SaaH is enabled on this room, calling either {@link BaseRoom.enableSaaH} or
-     * {@link BaseRoom.disableSaaH}.
-     * and tell clients the new host (unless they are an acting host.).
-     * @param saahEnabled Whether or not SaaH should be enabled.
-     * @param addActingHost Whether or not to add the current host as an acting host
-     */
-    async setSaaHEnabled(saahEnabled: true, addActingHost: boolean): Promise<void>;
-    /**
-     * Set whether SaaH is enabled on this room, calling either {@link BaseRoom.enableSaaH} or
-     * {@link BaseRoom.disableSaaH}.
-     * and tell clients the new host (unless they are an acting host.).
-     * @param saahEnabled Whether or not SaaH should be enabled.
-     * @param addActingHost Whether or not to add the current host as an acting host, if SaaH is being enabled.
-     */
-    async setSaaHEnabled(saahEnabled: boolean, addActingHost: boolean): Promise<void>;
-    async setSaaHEnabled(saahEnabled: boolean, addActingHost?: boolean) {
-        if (saahEnabled) {
-            await this.enableSaaH(addActingHost ?? true);
-        } else {
-            await this.disableSaaH();
-        }
-    }
-
-    /**
-     * Add another acting host to a Server-As-A-Host room.
-     * @param player The player to make host.
-     */
-    async addActingHost(player: PlayerData<this> | Connection) {
-        this.actingHostIds.add(player.clientId);
-
-        const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
-
-        this.logger.info("%s is now an acting host", connection || player);
-
-        if (connection && this.actingHostWaitingFor.length === 0) {
-            await this.updateHostForClient(player.clientId, connection);
-        }
-    }
-
-    /**
-     * Remove an acting host from a Server-As-A-Host room.
-     * @param player The player to remove as host.
-     */
-    async removeActingHost(player: PlayerData<this> | Connection) {
-        this.actingHostIds.delete(player.clientId);
-
-        const connection = player instanceof Connection ? player : this.connections.get(player.clientId);
-
-        this.logger.info("%s is no longer an acting host", connection || player);
-
-        if (connection) {
-            await this.updateHostForClient(SpecialClientId.Server, connection);
-        }
-    }
-
-    /**
-     * Disable acting hosts on the room, leaving either no hosts if the server is
-     * in SaaH mode, or leaving 1 host otherwise. It doesn't clear the list of
-     * acting hosts, just disables them from being in use.
-     *
-     * This function will prevent any acting hosts from being assigned at any point
-     * until enabled again with {@link BaseRoom.enableActingHosts}.
-     */
-    async disableActingHosts() {
-        if (!this.actingHostsEnabled)
-            throw new Error("Acting hosts are already disabled");
-
-        for (const actingHostId of this.actingHostIds) {
-            const connection = this.connections.get(actingHostId);
-            if (connection) {
-                if (this.config.serverAsHost) {
-                    await this.updateHostForClient(SpecialClientId.Server, connection);
-                } else {
-                    await this.updateHostForClient(this.hostId, connection);
-                }
-            }
-        }
-        this.actingHostsEnabled = false;
-        this.logger.info("Disabled acting hosts");
-    }
-
-    /**
-     * Enable acting hosts on the room.
-     */
-    async enableActingHosts() {
-        if (this.actingHostsEnabled)
-            throw new Error("Acting hosts are already enabled");
-
-        if (this.actingHostWaitingFor.length === 0) {
-            for (const actingHostId of this.actingHostIds) {
-                const connection = this.connections.get(actingHostId);
-                if (connection) {
-                    await this.updateHostForClient(connection.clientId, connection);
-                }
-            }
-        }
-        this.actingHostsEnabled = true;
-        this.logger.info("Enabled acting hosts");
-    }
-
-    /**
-     * Set whether or not acting hosts are enabled, calling either {@link BaseRoom.disableActingHosts}
-     * or {@link BaseRoom.enableActingHosts}.
-     * @param actingHostsEnabled Whether or not to enable acting hosts
-     */
-    async setActingHostsEnabled(actingHostsEnabled: boolean) {
-        if (actingHostsEnabled) {
-            await this.enableActingHosts();
-        } else {
-            await this.disableActingHosts();
+            await this.updateHostForClient(this.hostId, connection);
         }
     }
 
@@ -1469,26 +1174,16 @@ export class BaseRoom extends Hostable<RoomEvents> {
         if (!joiningPlayer)
             return;
 
-        if (this.config.serverAsHost) {
-            if (this.actingHostIds.size === 0) {
-                const ev = await this.emit(new RoomSelectHostEvent(this, true, true, joiningClient));
-
-                if (!ev.canceled) {
-                    // await this.addActingHost(joiningPlayer);
-                }
-            }
-        } else {
-            if (!this.host) {
-                const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
-                if (!ev.canceled) {
-                    this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
-                    await joiningPlayer.emit(new PlayerSetHostEvent(this, joiningPlayer));
-                }
+        if (!this.host) {
+            const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
+            if (!ev.canceled) {
+                this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
+                await joiningPlayer.emit(new PlayerSetHostEvent(this, joiningPlayer));
             }
         }
 
         joiningClient.room = this;
-        if (this.gameState === GameState.Ended && !this.config.serverAsHost) {
+        if (this.gameState === GameState.Ended) {
             if (joiningClient.clientId === this.hostId) {
                 this.gameState = GameState.NotStarted;
                 this.connections.set(joiningClient.clientId, joiningClient);
@@ -1571,10 +1266,9 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 this.logger.info("%s joined, waiting for host",
                     joiningPlayer);
             }
+            this.gameState = GameState.NotStarted;
             return;
         }
-
-        this.actingHostWaitingFor.unshift(joiningPlayer);
 
         await joiningClient.sendPacket(
             new ReliablePacket(
@@ -1641,10 +1335,6 @@ export class BaseRoom extends Hostable<RoomEvents> {
             "%s joined the game",
             joiningClient
         );
-
-        if (this.gameState === GameState.Ended) {
-            this.gameState = GameState.NotStarted;
-        }
     }
 
     async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.Error) {
@@ -1659,51 +1349,21 @@ export class BaseRoom extends Hostable<RoomEvents> {
             return;
         }
 
-        if (this.actingHostIds.has(leavingConnection.clientId)) {
-            this.actingHostIds.delete(leavingConnection.clientId);
-        }
+        if (this.hostId === leavingConnection.clientId) {
+            const newHostConn = [...this.connections.values()][0];
+            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, newHostConn));
 
-        if (playerLeft) {
-            const idx = this.actingHostWaitingFor.indexOf(playerLeft);
-            if (idx > -1) {
-                this.actingHostWaitingFor.splice(idx, 1);
-                if (this.actingHostWaitingFor.length === 0 && this.actingHostsEnabled) {
-                    for (const actingHostId of this.actingHostIds) {
-                        const actingHostConn = this.connections.get(actingHostId);
-                        if (actingHostConn) {
-                            await this.updateHostForClient(actingHostId, actingHostConn);
-                        }
-                    }
+            if (!ev.canceled) {
+                const player = ev.alteredSelected.getPlayer();
+
+                this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
+                if (player) {
+                    await player.emit(new PlayerSetHostEvent(this, player));
                 }
-            }
-        }
 
-        if (this.config.serverAsHost) {
-            if (this.actingHostIds.size === 0 && this.actingHostsEnabled) {
-                const newHostConn = [...this.connections.values()][0];
-                const ev = await this.emit(new RoomSelectHostEvent(this, true, false, newHostConn));
-
-                if (!ev.canceled) {
-                    await this.addActingHost(ev.alteredSelected);
-                }
-            }
-        } else {
-            if (this.hostId === leavingConnection.clientId) {
-                const newHostConn = [...this.connections.values()][0];
-                const ev = await this.emit(new RoomSelectHostEvent(this, false, false, newHostConn));
-
-                if (!ev.canceled) {
-                    const player = ev.alteredSelected.getPlayer();
-
-                    this.hostId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
-                    if (player) {
-                        await player.emit(new PlayerSetHostEvent(this, player));
-                    }
-
-                    if (this.gameState === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
-                        this.gameState = GameState.NotStarted;
-                        await this._joinOtherClients();
-                    }
+                if (this.gameState === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
+                    this.gameState = GameState.NotStarted;
+                    await this._joinOtherClients();
                 }
             }
         }
@@ -1718,13 +1378,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                             this.code,
                             leavingConnection.clientId,
                             reason,
-                            this.config.serverAsHost
-                                ? SpecialClientId.Server
-                                : this.actingHostsEnabled
-                                    ? this.actingHostIds.has(connection.clientId)
-                                        ? connection.clientId
-                                        : this.hostId
-                                    : this.hostId
+                            this.hostId
                         )
                     ]
                 )
@@ -1752,11 +1406,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                     new JoinedGameMessage(
                                         this.code,
                                         clientId,
-                                        this.actingHostsEnabled
-                                            ? this.actingHostIds.has(clientId)
-                                                ? clientId
-                                                : this.hostId
-                                            : this.hostId,
+                                        this.hostId,
                                         [...this.connections.values()]
                                             .reduce<PlayerJoinData[]>((prev, cur) => {
                                                 if (cur !== client) {
@@ -1785,29 +1435,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
     }
 
     async handleStart() {
-        if (this.actingHostsEnabled) {
-            for (const actingHostId of this.actingHostIds) {
-                const actingHostConn = this.connections.get(actingHostId);
-                if (actingHostConn) {
-                    await this.updateHostForClient(this.config.serverAsHost ? SpecialClientId.Server : this.hostId, actingHostConn);
-                }
-            }
-        }
-
         this.gameState = GameState.Started;
 
         const ev = await this.emit(new RoomGameStartEvent(this));
 
         if (ev.canceled) {
             this.gameState = GameState.NotStarted;
-            if (this.actingHostsEnabled) {
-                for (const actingHostId of this.actingHostIds) {
-                    const actingHostConn = this.connections.get(actingHostId);
-                    if (actingHostConn) {
-                        await this.updateHostForClient(actingHostId, actingHostConn);
-                    }
-                }
-            }
             return;
         }
 
@@ -1829,7 +1462,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
                 SpawnType.Airship
             ];
 
-            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, -2);
+            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, SpecialOwnerId.Global);
 
             this.logger.info("Waiting for players to ready up..");
 
@@ -1933,7 +1566,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
         doBroadcast = true,
         doAwake = true
     ) {
-        const _ownerId = ownerId === undefined || ownerId === -2 ? this :
+        const _ownerId = ownerId === undefined || ownerId === SpecialOwnerId.Global ? this :
             typeof ownerId === "number"
                 ? this.players.get(ownerId)
                 : ownerId;
@@ -1980,23 +1613,23 @@ export class BaseRoom extends Hostable<RoomEvents> {
         await this.broadcast([
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetNameMessage(options.name)
+                new SetNameMessage(sendPlayer.control.netId, options.name)
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetColorMessage(options.color)
+                new SetColorMessage(sendPlayer.control.netId, options.color)
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetHatMessage(options.hatId)
+                new SetHatMessage(options.hatId, defaultOutfit.nextHatSequenceId())
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetSkinMessage(options.skinId)
+                new SetSkinMessage(options.skinId, defaultOutfit.nextSkinSequenceId())
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetVisorMessage(options.visorId)
+                new SetVisorMessage(options.visorId, defaultOutfit.nextVisorSequenceId())
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
@@ -2004,23 +1637,23 @@ export class BaseRoom extends Hostable<RoomEvents> {
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetNameMessage(oldName)
+                new SetNameMessage(sendPlayer.control.netId, oldName)
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetColorMessage(oldColor)
+                new SetColorMessage(sendPlayer.control.netId, oldColor)
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetHatMessage(oldHat)
+                new SetHatMessage(oldHat, defaultOutfit.nextHatSequenceId())
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetSkinMessage(oldSkin)
+                new SetSkinMessage(oldSkin, defaultOutfit.nextSkinSequenceId())
             ),
             new RpcMessage(
                 sendPlayer.control.netId,
-                new SetVisorMessage(oldVisor)
+                new SetVisorMessage(oldVisor, defaultOutfit.nextVisorSequenceId())
             )
         ], undefined, [player]);
     }
@@ -2120,7 +1753,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
      */
     createFakePlayer(isNew = false, setCosmetics = true, isRecorded = false) {
         const fakePlayer = new PlayerData(this, this.worker.getNextClientId(), "dummy");
-        const playerControl = this.spawnPrefabOfType(SpawnType.Player, -2, undefined, !isNew ? [{ isNew: false }] : undefined, true, isRecorded) as PlayerControl<this>;
+        const playerControl = this.spawnPrefabOfType(SpawnType.Player, SpecialOwnerId.Global, undefined, !isNew ? [{ isNew: false }] : undefined, true, isRecorded) as PlayerControl<this>;
         playerControl.player = fakePlayer;
         fakePlayer.control = playerControl;
 

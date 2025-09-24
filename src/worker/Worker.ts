@@ -525,38 +525,38 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             });
 
-        this.vorpal
-            .command("setsaah <room code> <on/off>", "Change whether a room is in SaaH mode.")
-            .alias("issaah")
-            .autocomplete({
-                data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
-                }
-            })
-            .action(async args => {
-                const roomName = args["room code"].toUpperCase();
-                const codeId = roomName === "LOCAL"
-                    ? 0x20
-                    : GameCode.convertStringToInt(roomName);
+        // this.vorpal
+        //     .command("setsaah <room code> <on/off>", "Change whether a room is in SaaH mode.")
+        //     .alias("issaah")
+        //     .autocomplete({
+        //         data: async () => {
+        //             return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+        //         }
+        //     })
+        //     .action(async args => {
+        //         const roomName = args["room code"].toUpperCase();
+        //         const codeId = roomName === "LOCAL"
+        //             ? 0x20
+        //             : GameCode.convertStringToInt(roomName);
 
-                const room = this.rooms.get(codeId);
+        //         const room = this.rooms.get(codeId);
 
-                if (!room) {
-                    this.logger.error("Couldn't find room: %s", roomName);
-                    return;
-                }
+        //         if (!room) {
+        //             this.logger.error("Couldn't find room: %s", roomName);
+        //             return;
+        //         }
 
-                if (args["on/off"] !== "on" && args["on/off"] !== "off") {
-                    this.logger.error("Expected 'on' or 'off' for whether to enable SaaH on that room or not.");
-                }
+        //         if (args["on/off"] !== "on" && args["on/off"] !== "off") {
+        //             this.logger.error("Expected 'on' or 'off' for whether to enable SaaH on that room or not.");
+        //         }
 
-                room.setSaaHEnabled(args["on/off"] === "on", true);
-            });
+        //         room.setSaaHEnabled(args["on/off"] === "on", true);
+        //     });
 
         this.vorpal
             .command("sethost <room code> <client id>", "Change the host(s) of a room.")
-            .option("--acting, -a", "Add the host as an acting host or 'fake' host.")
-            .option("--remove-acting, -r", "Remove the player as an acting or 'fake' host.")
+            // .option("--acting, -a", "Add the host as an acting host or 'fake' host.")
+            // .option("--remove-acting, -r", "Remove the player as an acting or 'fake' host.")
             .alias("sh")
             .autocomplete({
                 data: async () => {
@@ -589,39 +589,39 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     return;
                 }
 
-                if (args.options.acting) {
-                    if (room.hostId === playerConnection.clientId) {
-                        this.logger.error("%s is already the host.", playerConnection);
-                        return;
-                    }
+                // if (args.options.acting) {
+                //     if (room.hostId === playerConnection.clientId) {
+                //         this.logger.error("%s is already the host.", playerConnection);
+                //         return;
+                //     }
 
-                    if (room.actingHostIds.has(playerConnection.clientId)) {
-                        this.logger.error("%s is already an acting host.", playerConnection);
-                        return;
-                    }
+                //     if (room.actingHostIds.has(playerConnection.clientId)) {
+                //         this.logger.error("%s is already an acting host.", playerConnection);
+                //         return;
+                //     }
 
-                    room.addActingHost(playerConnection);
-                } else if (args.options["remove-acting"]) {
-                    if (!room.actingHostIds.has(playerConnection.clientId)) {
-                        this.logger.error("%s isn't an acting host.", playerConnection);
-                        return;
-                    }
-                    room.removeActingHost(playerConnection);
-                } else {
-                    const player = room.players.get(clientId);
+                //     room.addActingHost(playerConnection);
+                // } else if (args.options["remove-acting"]) {
+                //     if (!room.actingHostIds.has(playerConnection.clientId)) {
+                //         this.logger.error("%s isn't an acting host.", playerConnection);
+                //         return;
+                //     }
+                //     room.removeActingHost(playerConnection);
+                // } else {
+                const player = room.players.get(clientId);
 
-                    if (!player) {
-                        this.logger.error("No player in room with client id: %s", clientId);
-                        return;
-                    }
-
-                    if (room.config.serverAsHost) {
-                        this.logger.error("Can only set acting hosts with a room in SaaH, try run the command again with the --acting or -a flag.");
-                        return;
-                    }
-
-                    room.setHost(player);
+                if (!player) {
+                    this.logger.error("No player in room with client id: %s", clientId);
+                    return;
                 }
+
+                // if (room.config.serverAsHost) {
+                //     this.logger.error("Can only set acting hosts with a room in SaaH, try run the command again with the --acting or -a flag.");
+                //     return;
+                // }
+
+                room.setHost(player);
+                // }
             });
 
         this.vorpal
@@ -1008,19 +1008,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!ctx.sender.room || !player)
                 return;
 
-            if (message.recipientid === SpecialClientId.Server) {
-                const recipientCtx: PacketContext = { ...ctx, recipients: ["server"] };
-                const notCanceled: BaseGameDataMessage[] = [];
-                await player.room.processMessagesAndGetNotCanceled(message._children, notCanceled, recipientCtx);
-                return;
-            }
-
-            if (player.room.config.serverAsHost && message.recipientid !== SpecialClientId.Temp) {
-                const client = player.room.players.get(message.recipientid);
-                player.room.logger.warn("Got recipient of game data from %s to %s despite room being in Server-as-a-Host",
-                    ctx.sender, client || "id " + message.recipientid);
-            }
-
             const connection = player.room.connections.get(message.recipientid);
             if (!connection) {
                 if (!(message.recipientid in SpecialClientId)) {
@@ -1029,6 +1016,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
                 return;
             }
+
+            console.log(message._children);
 
             await player.room.broadcastMessages(message._children, [], [connection], undefined, ctx.reliable);
         });

@@ -553,7 +553,7 @@ export class BaseRoom extends Hostable<RoomEvents> {
 
                             const playerId = this.getAvailablePlayerID();
 
-                            const obj = this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
+                            this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
                                 playerId: playerId,
                                 clientId: player.clientId,
                                 friendCode: player.friendCode,
@@ -575,6 +575,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
                                 this.host?.control?.syncSettings(this.settings);
                             }
                         } else {
+                            await this.broadcast(
+                                this.getServerOwnedObjectSpawn(),
+                                undefined,
+                                [player],
+                            );
+
                             this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
                                 playerId: this.getAvailablePlayerID(),
                                 clientId: player.clientId,
@@ -827,6 +833,12 @@ export class BaseRoom extends Hostable<RoomEvents> {
             this.disownObject(component);
 
         super.despawnComponent(component);
+    }
+
+    getServerOwnedObjectSpawn() {
+        return this.objectList
+            .filter(object => object.ownerId === SpecialOwnerId.Server)
+            .map(object => this.createObjectSpawnMessage(object));
     }
 
     /**

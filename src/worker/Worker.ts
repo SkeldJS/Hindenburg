@@ -551,7 +551,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 if (args["client id"] === "server") {
                     if (room.config.authoritativeServer) {
-                        this.logger.error("Room is already server-authoritative.");
+                        this.logger.error("Room is already server-authoritative");
                         return;
                     }
                     await room.setServerAuthority(true);
@@ -574,24 +574,24 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 if (args.options.acting) {
                     if (room.authorityId === playerConnection.clientId) {
-                        this.logger.error("%s is already the host.", playerConnection);
+                        this.logger.error("%s is already the host", playerConnection);
                         return;
                     }
 
                     if (room.actingHosts.has(playerConnection)) {
-                        this.logger.error("%s is already an acting host.", playerConnection);
+                        this.logger.error("%s is already an acting host", playerConnection);
                         return;
                     }
 
                     await room.addActingHost(playerConnection);
                 } else if (args.options["remove-acting"]) {
                     if (room.authorityId === playerConnection.clientId) {
-                        this.logger.error("%s is an actual host.", playerConnection);
+                        this.logger.error("%s is an actual host", playerConnection);
                         return;
                     }
 
                     if (!room.actingHosts.has(playerConnection)) {
-                        this.logger.error("%s isn't an acting host.", playerConnection);
+                        this.logger.error("%s isn't an acting host", playerConnection);
                         return;
                     }
                     await room.removeActingHost(playerConnection);

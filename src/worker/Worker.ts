@@ -60,7 +60,7 @@ import { HindenburgConfig, RoomsConfig, MessageSide, ValidSearchTerm } from "../
 
 import { Connection, SentPacket } from "./Connection";
 import { Room } from "./Room";
-import { RoomEvents, SpecialClientId } from "./BaseRoom";
+import { RoomEvents, SpecialClientId } from "./Room";
 
 import {
     ClientBanEvent,
@@ -590,7 +590,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 // if (args.options.acting) {
-                //     if (room.hostId === playerConnection.clientId) {
+                //     if (room.authorityId === playerConnection.clientId) {
                 //         this.logger.error("%s is already the host.", playerConnection);
                 //         return;
                 //     }
@@ -1009,17 +1009,22 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 return;
 
             const connection = player.room.connections.get(message.recipientid);
-            if (!connection) {
-                if (!(message.recipientid in SpecialClientId)) {
-                    player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
-                        ctx.sender, message.recipientid);
-                }
-                return;
-            }
 
-            console.log(message._children);
+            console.log(message, ctx.sender, "->", connection);
 
-            await player.room.broadcastMessages(message._children, [], [connection], undefined, ctx.reliable);
+            await player.room.processMessagesAndGetNotCanceled(message._children, [], ctx);
+
+            // if (!connection) {
+            //     if (!(message.recipientid in SpecialClientId)) {
+            //         player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
+            //             ctx.sender, message.recipientid);
+            //     }
+            //     return;
+            // }
+
+            // console.log(message._children);
+
+            // await player.room.broadcastMessages(message._children, [], [connection], undefined, ctx.reliable);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, ctx) => {

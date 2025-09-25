@@ -15,11 +15,11 @@ Once you've created your innernet objects, you can register them to Hindenburg (
 
 For example, if you had a way to spawn buttons using a prefab, you might have 2 components for graphical rendering and handling clicks, i.e. `GraphicRenderer` and `ClickBehaviour`:
 ```ts
-export class GraphicRenderer<RoomType extends Hostable> extends Networkable<RoomType> {
+export class GraphicRenderer<RoomType extends StatefulRoom> extends Networkable<RoomType> {
     ...
 }
 
-export class ClickBehaviour<RoomType extends Hostable> extends Networkable<RoomType> {
+export class ClickBehaviour<RoomType extends StatefulRoom> extends Networkable<RoomType> {
     ...
 }
 

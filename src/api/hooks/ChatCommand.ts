@@ -1,10 +1,10 @@
-import { PlayerData } from "@skeldjs/core";
+import { Player } from "@skeldjs/core";
 import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
 import { MethodDecorator } from "../types";
 
 const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
-export type AccessCheckFn = (player: PlayerData) => any;
+export type AccessCheckFn = (player: Player) => any;
 
 export interface PluginRegisteredChatCommandInfo {
     usage: string;
@@ -30,7 +30,7 @@ export function ChatCommand(usage: string, description?: string): MethodDecorato
  *
  * Can only be used on {@link WorkerPlugin}s.
  * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
- * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * @param accessCheck A small function taking in a {@link Player} object, returning
  * a boolean dictating whether or not the player is allowed to view/use the command.
  */
 export function ChatCommand(usage: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
@@ -42,7 +42,7 @@ export function ChatCommand(usage: string, accessCheck: AccessCheckFn): MethodDe
  * Can only be used on {@link WorkerPlugin}s.
  * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
  * @param description A short description of what the command does and how to use it.
- * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * @param accessCheck A small function taking in a {@link Player} object, returning
  * a boolean dictating whether or not the player is allowed to view/use the command.
  */
 export function ChatCommand(usage: string, description: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
@@ -65,7 +65,7 @@ export function ChatCommand(pluginClass: SomePluginCtr, usage: string, descripti
  * Can only be used on {@link WorkerPlugin}s.
  * @param pluginClass The class of the plugin to add this chat command to.
  * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
- * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * @param accessCheck A small function taking in a {@link Player} object, returning
  * a boolean dictating whether or not the player is allowed to view/use the command.
  */
 export function ChatCommand(pluginClass: SomePluginCtr, usage: string, accessCheck?: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
@@ -78,12 +78,12 @@ export function ChatCommand(pluginClass: SomePluginCtr, usage: string, accessChe
  * @param pluginClass The class of the plugin to add this chat command to.
  * @param usage How to use the command in [standard unix cli format](https://en.wikipedia.org/wiki/Command-line_interface#Command_description_syntax).
  * @param description A short description of what the command does and how to use it.
- * @param accessCheck A small function taking in a {@link PlayerData} object, returning
+ * @param accessCheck A small function taking in a {@link Player} object, returning
  * a boolean dictating whether or not the player is allowed to view/use the command.
  */
 export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 export function ChatCommand(...args: any[]) {
-    return function(
+    return function (
         target: any,
         propertyKey: string,
         descriptor: TypedPropertyDescriptor<ChatCommandCallback>
@@ -95,15 +95,15 @@ export function ChatCommand(...args: any[]) {
             ? target
             : args.shift().prototype;
 
-        const [ usage ] = args;
-        let [ , description, accessCheck ] = args;
+        const [usage] = args;
+        let [, description, accessCheck] = args;
 
         if (typeof description === "function") {
             accessCheck = description;
             description = undefined;
         }
 
-        const cachedSet: PluginRegisteredChatCommandInfo[]|undefined = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
+        const cachedSet: PluginRegisteredChatCommandInfo[] | undefined = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
         const chatCommands = cachedSet || [];
         if (!cachedSet) {
             Reflect.defineMetadata(hindenburgChatCommandKey, chatCommands, actualTarget);
@@ -118,6 +118,6 @@ export function ChatCommand(...args: any[]) {
     };
 }
 
-export function getPluginChatCommands(pluginCtr: typeof Plugin|Plugin): PluginRegisteredChatCommandInfo[] {
+export function getPluginChatCommands(pluginCtr: typeof Plugin | Plugin): PluginRegisteredChatCommandInfo[] {
     return Reflect.getMetadata(hindenburgChatCommandKey, pluginCtr) || [];
 }

@@ -1,6 +1,6 @@
 import util from "util";
 
-import { PlayerData } from "@skeldjs/core";
+import { Player } from "@skeldjs/core";
 
 import { MessageSide } from "../interfaces";
 
@@ -35,7 +35,7 @@ export interface ChatCommandParameter {
     name: string;
 }
 
-export class CommandCallError extends Error {}
+export class CommandCallError extends Error { }
 export class ChatCommandContext {
     constructor(
         /**
@@ -45,12 +45,12 @@ export class ChatCommandContext {
         /**
          * The player that sent the message calling the command.
          */
-        public readonly player: PlayerData<Room>,
+        public readonly player: Player<Room>,
         /**
          * The original message that the player sent (without the leading '/').
          */
         public readonly message: string
-    ) {}
+    ) { }
 
     /**
      * Reply to the message that called this command.
@@ -60,7 +60,7 @@ export class ChatCommandContext {
     async reply(message: string, ...fmt: any) {
         await this.room.sendChat(util.format(message, ...fmt), {
             side: MessageSide.Left,
-            targets: [ this.player ]
+            targets: [this.player]
         });
     }
 }
@@ -68,7 +68,7 @@ export class ChatCommandContext {
 export type ChatCommandCallback = (ctx: ChatCommandContext, args?: any) => any;
 
 export class ChatCommandUsage {
-    constructor(public readonly name: string, public readonly params: ChatCommandParameter[]) {}
+    constructor(public readonly name: string, public readonly params: ChatCommandParameter[]) { }
 
     /**
      * Create a formatted usage of this command, in [standard unix command-line
@@ -89,8 +89,8 @@ export class RegisteredChatCommand {
         public readonly description: string,
         public readonly accessCheck: AccessCheckFn,
         public readonly callback: ChatCommandCallback
-    ) {}
-    
+    ) { }
+
     static parseCommandUsageString(usage: string) {
         // https://github.com/dthree/vorpal/blob/51f5e2b545631b6a86c9781c274a1b0916a67ee8/lib/vorpal.js#L311
         const matchedParams = usage.match(/(\[[^\]]*\]|<[^>]*>)/g) || [];
@@ -148,7 +148,7 @@ export class RegisteredChatCommand {
      * @returns The arguments mapped from parameter name to value of the argument
      * passed.
      */
-    checkArguments(prefix: string, args: string[]): Record<string, string>|CommandCallError {
+    checkArguments(prefix: string, args: string[]): Record<string, string> | CommandCallError {
         const argsCloned = [...args]; // Clone the array to not affect the original arguments array
         const parsed: Record<string, string> = {};
 
@@ -208,7 +208,7 @@ export class ChatCommandHandler {
                 await ctx.reply("Usage: " + command.usage.toString(prefix) + "\n\n" + (command.description || "No description."));
                 return;
             }
-            
+
 
             const availableCommands = this.getAvailableCommandsForPlayer(ctx.player);
 
@@ -316,7 +316,7 @@ export class ChatCommandHandler {
      * @param player The player to get available cmomands for.
      * @returns All commands that {@link player} can use.
      */
-    getAvailableCommandsForPlayer(player: PlayerData) {
+    getAvailableCommandsForPlayer(player: Player) {
         return [...this.registeredCommands.values()].filter(command => command.accessCheck(player));
     }
 }

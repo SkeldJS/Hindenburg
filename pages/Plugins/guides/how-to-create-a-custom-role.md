@@ -82,7 +82,7 @@ Here, it's probably a good idea to store the jester somewhere to reference in ot
 ```ts
 @HindenburgPlugin("hbplugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
-    jester?: PlayerData<Room>;
+    jester?: Player<Room>;
 
     ...
 }
@@ -104,7 +104,7 @@ Another property on the plugin class is needed:
 ```ts
 @HindenburgPlugin("hbplugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
-    jester?: PlayerData<Room>;
+    jester?: Player<Room>;
     originalJesterName: string = "";
 
     ...
@@ -127,7 +127,7 @@ So, our plugin should look _something_ like this:
 ```ts
 @HindenburgPlugin("hbplugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
-    jester?: PlayerData<Room>;
+    jester?: Player<Room>;
     originalJesterName: string = "";
 
     constructor(public readonly room: Room, public config: BgGamemodesJesterPluginConfig) {
@@ -147,7 +147,7 @@ export class BgGamemodesJesterPlugin extends RoomPlugin {
         if (crewmatePool.length === 0)
             return;
 
-        this.jester = crewmatePool[Math.floor(Math.random() * crewmatePool.length)] as PlayerData<Room>;
+        this.jester = crewmatePool[Math.floor(Math.random() * crewmatePool.length)] as Player<Room>;
         this.originalJesterName = this.jester.playerInfo!.currentOutfit.name;
         if (!this.jester)
             return;
@@ -167,7 +167,7 @@ First, we'll need to create a `jesterPerspective` property on the class so we ca
 ```ts
 @HindenburgPlugin("hbplugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
-    jester?: PlayerData<Room>;
+    jester?: Player<Room>;
     jesterPerspective?: Perspective;
     originalJesterName: string = "";
 

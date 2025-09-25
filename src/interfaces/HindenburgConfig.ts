@@ -1,5 +1,5 @@
 import { AllGameSettings } from "@skeldjs/protocol";
-import { HostableConfig } from "@skeldjs/core";
+import { StatefulRoomConfig } from "@skeldjs/core";
 
 export interface PluginConfig {
     /**
@@ -301,7 +301,7 @@ export interface AdvancedRoomOptions {
     unknownObjects: "all" | boolean | (string | number)[];
 }
 
-export interface RoomsConfig extends HostableConfig {
+export interface RoomsConfig extends StatefulRoomConfig {
     /**
      * Whether or not to make sure players have the same chat mode as the host
      * before joining.

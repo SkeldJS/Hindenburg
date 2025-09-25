@@ -24,7 +24,7 @@ const defaultPackageJson = {
     }
 };
 
-const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
+const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [path.resolve(process.cwd(), "./plugins")];
 const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
 
 export default (async (useDefault: boolean) => {
@@ -162,7 +162,7 @@ export default (async (useDefault: boolean) => {
         });
 
         if (enableSaaH) {
-            defaultConfig.rooms.serverAsHost = true;
+            defaultConfig.rooms.authoritativeServer = true;
         }
 
         if (!useChatCommands) {

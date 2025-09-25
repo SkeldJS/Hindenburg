@@ -18,10 +18,10 @@ You can enable/disable SaaH with the `setsaah <room code> <on/off>` command:
 ![](https://i.imgur.com/Z3YZtBz.gif)
 
 ## Configuration
-You can enable/disable Server-as-a-Host either in the interactive setup script, or set the `rooms.serverAsHost` config option:
+You can enable/disable Server-as-a-Host either in the interactive setup script, or set the `rooms.authoritativeServer` config option:
 
 ```
 "rooms": {
-    "serverAsHost": true
+    "authoritativeServer": true
 }
 ```

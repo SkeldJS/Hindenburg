@@ -60,7 +60,7 @@ export function createDefaultConfig(): HindenburgConfig {
             },
             gameCodes: "v2",
             enforceSettings: {},
-            serverAsHost: false,
+            authoritativeServer: false,
             advanced: {
                 unknownObjects: false
             },

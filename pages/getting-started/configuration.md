@@ -573,7 +573,7 @@ Enable the plugin, and also pass in any configuration options that the plugin ac
 
 
 
-### **rooms.serverAsHost**
+### **rooms.authoritativeServer**
 Whether the server should act as the host of the room.
 
 **Type**: boolean

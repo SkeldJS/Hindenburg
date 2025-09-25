@@ -295,7 +295,7 @@ export interface AdvancedRoomOptions {
      * making it useful for custom modded maps or mods that use custom objects that
      * aren't implemented on the server. Note that any of these objects spawned
      * can't be handled by Hindenburg, so they will be incompatible with
-     * {@link RoomsConfig.serverAsHost}.
+     * {@link RoomsConfig.authoritativeServer}.
      * @default false
      */
     unknownObjects: "all" | boolean | (string | number)[];
@@ -331,7 +331,7 @@ export interface RoomsConfig extends StatefulRoomConfig {
      * Whether the server should act as the host of the room. (experimental)
      * @default false
      */
-    serverAsHost: boolean;
+    authoritativeServer: boolean;
     /**
      * Default appearance for a message sent by the server in game chat
      */

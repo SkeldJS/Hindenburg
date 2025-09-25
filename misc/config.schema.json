@@ -96,7 +96,7 @@
           "type": "array",
           "description": "Any additional ports for Hindenburg to listen on.",
           "items": {
-              "type": "number"
+            "type": "number"
           }
         },
         "broadcastUnknownGamedata": {
@@ -122,54 +122,56 @@
       }
     },
     "gameListing": {
-        "type": "object",
-        "description": "Options regarding fine-tuning the results of game listings.",
-        "properties": {
-            "ignorePrivacy": {
-                "type": "boolean",
-                "description": "Whether to ignore the privacy of a room, and return even private ones.",
-                "default": false
+      "type": "object",
+      "description": "Options regarding fine-tuning the results of game listings.",
+      "properties": {
+        "ignorePrivacy": {
+          "type": "boolean",
+          "description": "Whether to ignore the privacy of a room, and return even private ones.",
+          "default": false
+        },
+        "ignoreSearchTerms": {
+          "anyOf": [
+            {
+              "type": "boolean",
+              "description": "Whether to ignore filtering for game listings, and just list every game on the server."
             },
-            "ignoreSearchTerms": {
-                "anyOf": [
-                    {
-                        "type": "boolean",
-                        "description": "Whether to ignore filtering for game listings, and just list every game on the server."
-                    },
-                    {
-                        "type": "array",
-                        "description": "Which search terms to ignore",
-                        "items": {
-                            "enum": [
-                                "map",
-                                "impostors",
-                                "chat",
-                                "chatType"
-                            ]
-                        }
-                    }
+            {
+              "type": "array",
+              "description": "Which search terms to ignore",
+              "items": {
+                "enum": [
+                  "map",
+                  "impostors",
+                  "chat",
+                  "chatType"
                 ]
-            },
-            "maxResults": {
-                "anyOf": [
-                    {
-                        "type": "number"
-                    },
-                    {
-                        "type": "string",
-                        "enum": ["all"]
-                    }
-                ],
-                "type": "boolean",
-                "description": "The maximum number of results to return to a client at once. Set to `0`or `\"all\"` to return all available rooms.",
-                "default": 10
-            },
-            "requirePerfectMatches": {
-                "type": "boolean",
-                "description": "Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Hindenburg will sort results by relevance to the search terms.",
-                "default": false
+              }
             }
+          ]
+        },
+        "maxResults": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "all"
+              ]
+            }
+          ],
+          "type": "boolean",
+          "description": "The maximum number of results to return to a client at once. Set to `0`or `\"all\"` to return all available rooms.",
+          "default": 10
+        },
+        "requirePerfectMatches": {
+          "type": "boolean",
+          "description": "Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Hindenburg will sort results by relevance to the search terms.",
+          "default": false
         }
+      }
     },
     "plugins": {
       "type": "object",
@@ -235,7 +237,11 @@
           "description": "Configuration for each individual sub-rule.",
           "patternProperties": {
             ".+": {
-              "type": [ "boolean", "number", "object" ],
+              "type": [
+                "boolean",
+                "number",
+                "object"
+              ],
               "$ref": "#/properties/anticheat",
               "patternProperties": {
                 ".+": {
@@ -269,7 +275,7 @@
             "format": {
               "type": "array",
               "description": "Custom formatting for the extra information provided when logging client connections. (The part in parenthesis after their username.)",
-              "items":{
+              "items": {
                 "type": "string",
                 "enum": [
                   "id",
@@ -284,7 +290,12 @@
                 ]
               },
               "uniqueItems": true,
-              "default": [ "id", "ip", "ping", "room" ]
+              "default": [
+                "id",
+                "ip",
+                "ping",
+                "room"
+              ]
             }
           }
         },
@@ -305,7 +316,12 @@
                 ]
               },
               "uniqueItems": true,
-              "default": [ "players", "map", "issaah", "privacy" ]
+              "default": [
+                "players",
+                "map",
+                "issaah",
+                "privacy"
+              ]
             }
           }
         },
@@ -316,7 +332,7 @@
             "format": {
               "type": "array",
               "description": "Custom formatting for the extra information provided when players are logged. (The part in parenthesis after the player's name.)",
-              "items":  {
+              "items": {
                 "type": "string",
                 "enum": [
                   "id",
@@ -329,7 +345,11 @@
                 ]
               },
               "uniqueItems": true,
-              "default": [ "id", "ping", "ishost" ]
+              "default": [
+                "id",
+                "ping",
+                "ishost"
+              ]
             }
           }
         }
@@ -508,45 +528,47 @@
             }
           }
         },
-        "serverAsHost": {
+        "authoritativeServer": {
           "type": "boolean",
           "description": "Whether the server should act as the host of the room.",
           "default": false
         },
         "advanced": {
-            "type": "object",
-            "description": "Advanced room options for mod and plugin developers, or knowledgeable server owners.",
-            "properties": {
-                "unknownObjects": {
+          "type": "object",
+          "description": "Advanced room options for mod and plugin developers, or knowledgeable server owners.",
+          "properties": {
+            "unknownObjects": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "Ignore _every_ object type and treat all of them as uknown, including standard Among Us objects.",
+                  "enum": [
+                    "all"
+                  ]
+                },
+                {
+                  "type": "boolean",
+                  "description": "Whether or not to allow uknown object types."
+                },
+                {
+                  "type": "array",
+                  "description": "An array of either spawn IDs or spawn types to allow",
+                  "items": {
                     "anyOf": [
-                        {
-                            "type": "string",
-                            "description": "Ignore _every_ object type and treat all of them as uknown, including standard Among Us objects.",
-                            "enum": ["all"]
-                        },
-                        {
-                            "type": "boolean",
-                            "description": "Whether or not to allow uknown object types."
-                        },
-                        {
-                            "type": "array",
-                            "description": "An array of either spawn IDs or spawn types to allow",
-                            "items": {
-                                "anyOf": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "number"
-                                    }
-                                ]
-                            }
-                        }
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
                     ]
+                  }
                 }
+              ]
             }
+          }
         },
-        "serverPlayer":  {
+        "serverPlayer": {
           "type": "object",
           "description": "Default appearance for a message sent by the server in game chat.",
           "properties": {

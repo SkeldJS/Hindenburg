@@ -22,7 +22,7 @@ import { recursiveAssign } from "../src/util/recursiveAssign";
 let Worker = FakeWorker;
 
 type DeepPartial<T> = {
-    [K in keyof T]?: DeepPartial<T[K]>|undefined
+    [K in keyof T]?: DeepPartial<T[K]> | undefined
 };
 
 const configFilename = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
@@ -210,11 +210,11 @@ async function fetchExternalIp(logger: Logger) {
 async function getInternalIp() {
     return new Promise((resolve, reject) => {
         const socket = net.createConnection(80, "api.ipify.org");
-        socket.on("connect", function() {
+        socket.on("connect", function () {
             resolve((socket.address() as net.AddressInfo).address);
             socket.end();
         });
-        socket.on("error", function(e) {
+        socket.on("error", function (e) {
             reject(e);
             socket.end();
         });
@@ -279,7 +279,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
         const compare = compareVersions(latestVersion, process.env.npm_package_version as string);
 
         if (compare === 1) {
-            let changelog: ChangelogJson|undefined;
+            let changelog: ChangelogJson | undefined;
             try {
                 changelog = await getChangelog();
             } catch (e) {
@@ -318,7 +318,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         logger.warn("Config deprecation: 'socket.broadcastUnknownGameData' has been renamed to 'socket.acceptUnknownGameData' to better reflect its purpose");
         flag = true;
     }
-    if (config.rooms.advanced.unknownObjects && config.rooms.serverAsHost) {
+    if (config.rooms.advanced.unknownObjects && config.rooms.authoritativeServer) {
         logger.warn("Server-as-a-Host may not function properly with unknown objects allowed; consider writing object logic with a plugin or remove rooms.advanced.unknownObjects in the config");
     }
     if (flag) {
@@ -356,7 +356,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         await checkForUpdates(logger, workerConfig.autoUpdate);
     }
 
-    const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
+    const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [path.resolve(process.cwd(), "./plugins")];
     const worker = new Worker("TEST", 0, workerConfig, pluginsDirectories);
 
     if (!resolvedConfig) {

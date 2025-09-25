@@ -67,7 +67,7 @@ import {
     PlayerResolvable,
     PlayerJoinEvent,
     PlayerSceneChangeEvent,
-    PlayerSetHostEvent,
+    PlayerSetAuthoritativeEvent,
     RoomEndGameIntentEvent,
     RoomFixedUpdateEvent,
     RoomSetPrivacyEvent,
@@ -119,7 +119,7 @@ Object.defineProperty(Player.prototype, Symbol.for("nodejs.util.inspect.custom")
         const connection = this.room.connections.get(this.clientId);
 
         const isHost = this.room.authorityId === this.clientId;
-        const isActingHost = false;
+        const isActingHost = connection && this.room.actingHosts.has(connection);
 
         const paren = fmtConfigurableLog(
             this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
@@ -214,6 +214,10 @@ export class Room extends StatefulRoom<RoomEvents> {
      * A packet decoder for the room to decode and handle incoming packets.
      */
     decoder: PacketDecoder<PacketContext>;
+    /**
+     * Which clients are acting as hosts, regardless of who is actualyl in authority.
+     */
+    actingHosts: Set<Connection>;
 
     protected roomNameOverride: string;
     protected eventTargets: EventTarget[];
@@ -261,7 +265,8 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         this._incrNetId = 100000;
 
-        this.authorityId = 0;
+        this.authorityId = this.config.authoritativeServer ? SpecialClientId.ServerAuthority : 0;
+        this.actingHosts = new Set;
 
         this.logger = new Logger(() => chalk.yellow(fmtCode(this.code)), this.worker.vorpal);
 
@@ -455,10 +460,18 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.decoder.on(SceneChangeMessage, async message => {
             const player = this.players.get(message.clientId);
 
-            message.cancel();
+            // SceneChange is broadcasted to all players by the joining player. If we're the server, we want to
+            // cancel this and stop it from being broadcasted so that we can spawn the player ourselves.
+            if (this.config.authoritativeServer) {
+                message.cancel();
+            }
 
             if (player) {
                 if (message.scene === "OnlineGame") {
+                    const connection = this.getConnection(player);
+
+                    if (!connection) return;
+
                     player.inScene = true;
 
                     const ev = await this.emit(
@@ -499,6 +512,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                                 }],
                             );
 
+
                             if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
                                 this.playerAuthority?.control?.syncSettings(this.settings);
                             }
@@ -516,6 +530,9 @@ export class Room extends StatefulRoom<RoomEvents> {
                                 puid: player.puid,
                             }], true, true);
                         }
+
+                        // Once the player has changed scene, they can become an acting host if that is their destiny
+                        await this.updateAuthorityForClient(this.getClientAwareAuthorityId(connection), connection);
                     }
                 }
             }
@@ -1094,8 +1111,8 @@ export class Room extends StatefulRoom<RoomEvents> {
      * @param authorityId The host to set.
      * @param recipient The specific client recipient if required.
      */
-    async updateHostForClient(authorityId: number, recipient?: Connection) {
-        await this.broadcast([], [
+    async updateAuthorityForClient(authorityId: number, recipient: Connection) {
+        await this.broadcastMessages([], [
             new JoinGameMessage(
                 this.code,
                 SpecialClientId.Temp,
@@ -1112,41 +1129,127 @@ export class Room extends StatefulRoom<RoomEvents> {
                 DisconnectReason.Error,
                 authorityId
             )
-        ], recipient ? [recipient.getPlayer()!] : undefined);
+        ], [recipient]);
     }
 
     /**
-     * Set the actual host for the room, cannot be used in rooms using SaaH.
-     * @param playerResolvable The player to set as the host.
+     * Set the actual player authority for the room, disabling server authority.
+     * @param playerResolvable The player to set as the player authority.
      */
-    async setHost(playerResolvable: PlayerResolvable) {
+    async setPlayerAuthority(playerResolvable: PlayerResolvable, removeAllActingHosts: boolean) {
         const resolvedId = this.resolvePlayerClientID(playerResolvable);
 
         if (!resolvedId)
             return;
 
-        const remote = this.connections.get(resolvedId);
+        const remoteConnection = this.connections.get(resolvedId);
 
-        if (!remote)
-            throw new Error("Cannot set host without a connection");
+        if (!remoteConnection)
+            throw new Error("Cannot set player authority without a connection");
 
+        const previousAuthorityId = this.authorityId;
+
+        if (removeAllActingHosts) {
+            if (this.actingHosts.size > 0) {
+                this.actingHosts.clear();
+                this.logger.info("Removed %s acting host%s", this.actingHosts.size, this.actingHosts.size === 1 ? "" : "s");
+            }
+        } else {
+            if (this.actingHosts.has(remoteConnection)) {
+                this._removeActingHost(remoteConnection);
+            }
+        }
         this.authorityId = resolvedId;
+        this.config.authoritativeServer = false;
 
         const player = this.players.get(resolvedId);
         if (player) {
-            await player.emit(new PlayerSetHostEvent(this, player));
+            await player.emit(new PlayerSetAuthoritativeEvent(this, player));
         }
 
-        this.logger.info("%s is now the host", player || remote);
+        if (previousAuthorityId === SpecialClientId.ServerAuthority) {
+            this.logger.info("%s is now the player authority, the server was authoritative previously", player || remoteConnection);
+        } else {
+            const previousConnection = this.connections.get(previousAuthorityId);
+            if (previousConnection) {
+                this.logger.info("%s is now the player authority, the previous player authority was %s", player || remoteConnection, previousConnection);
+            } else {
+                this.logger.info("%s is now the player authority, there was no previous authoritative player");
+            }
+        }
 
-        if (this.gameState === GameState.Ended && this.waitingForHost.has(remote)) {
+
+        if (this.gameState === GameState.Ended && this.waitingForHost.has(remoteConnection)) {
             this.gameState = GameState.NotStarted;
             await this._joinOtherClients();
         }
 
         for (const [, connection] of this.connections) {
-            await this.updateHostForClient(this.authorityId, connection);
+            await this.updateAuthorityForClient(this.getClientAwareAuthorityId(connection), connection);
         }
+    }
+
+    async setServerAuthority(requireActingHost: boolean) {
+        if (this.config.authoritativeServer) throw new Error("Server is already authoritative");
+
+        const connection = this.playerAuthority && this.getConnection(this.playerAuthority);
+        if (requireActingHost && this.actingHosts.size === 0) {
+            if (connection) {
+                this._addActingHost(connection);
+            } else {
+                if (this.config.authoritativeServer && this.actingHosts.size === 0) {
+                    const nextHostConnection = [...this.connections.values()][0];
+                    const ev = await this.emit(new RoomSelectHostEvent(this, false, false, nextHostConnection));
+
+                    if (!ev.canceled) {
+                        this._addActingHost(ev.alteredSelected);
+                    }
+                }
+            }
+        }
+
+        this.authorityId = SpecialClientId.ServerAuthority;
+        this.config.authoritativeServer = false;
+
+        // TODO: look at game-end scenarios?
+
+        if (connection) {
+            this.logger.info("The server is now authoritative, the previous player authority was %s", connection);
+        } else {
+            this.logger.info("The server is now authoritative, there was no previous authoritative player");
+        }
+
+
+        for (const [, connection] of this.connections) {
+            await this.updateAuthorityForClient(this.getClientAwareAuthorityId(connection), connection);
+        }
+    }
+
+    getClientAwareAuthorityId(clientPov: Connection) {
+        if (this.actingHosts.has(clientPov)) return clientPov.clientId;
+        return this.authorityId;
+    }
+
+    protected _addActingHost(client: Connection) {
+        this.actingHosts.add(client);
+        this.logger.info("%s is now an acting host", client);
+    }
+
+    protected _removeActingHost(client: Connection) {
+        this.actingHosts.delete(client);
+        this.logger.info("%s is no longer an acting host", client);
+    }
+
+    async addActingHost(client: Connection) {
+        if (this.actingHosts.has(client)) throw new Error("Client is already an acting host");
+        this._addActingHost(client);
+        await this.updateAuthorityForClient(this.getClientAwareAuthorityId(client), client);
+    }
+
+    async removeActingHost(client: Connection) {
+        if (!this.actingHosts.has(client)) throw new Error("Client is not an acting host");
+        this._removeActingHost(client);
+        await this.updateAuthorityForClient(this.getClientAwareAuthorityId(client), client);
     }
 
     async handleJoin(joinInfo: PlayerJoinData): Promise<Player<this>> {
@@ -1178,11 +1281,21 @@ export class Room extends StatefulRoom<RoomEvents> {
         if (!joiningPlayer)
             return;
 
-        if (!this.playerAuthority) {
-            const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
-            if (!ev.canceled) {
-                this.authorityId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
-                await joiningPlayer.emit(new PlayerSetHostEvent(this, joiningPlayer));
+        if (this.config.authoritativeServer) {
+            if (this.actingHosts.size === 0) {
+                const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
+                if (!ev.canceled) {
+                    this._addActingHost(ev.alteredSelected);
+                }
+            }
+        } else {
+            if (!this.playerAuthority) {
+                const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
+                if (!ev.canceled) {
+                    this.authorityId = ev.alteredSelected.clientId; // set player authority manually as the connection has not been created yet
+                    await joiningPlayer.emit(new PlayerSetAuthoritativeEvent(this, joiningPlayer));
+                    this.logger.info("%s is now the player authority as the first player to join", joiningClient);
+                }
             }
         }
 
@@ -1281,6 +1394,8 @@ export class Room extends StatefulRoom<RoomEvents> {
                     new JoinedGameMessage(
                         this.code,
                         joiningClient.clientId,
+                        // For now, the authority belongs to either the actual host or the server when it comes to
+                        // handling the player joining. Once they have changed scene, they will become an acting host.
                         this.authorityId,
                         [...this.connections]
                             .map(([, client]) => new PlayerJoinData(
@@ -1302,16 +1417,16 @@ export class Room extends StatefulRoom<RoomEvents> {
         );
 
         const promises = [];
-        for (const [clientId, connection] of this.connections) {
+        for (const [clientId, otherClient] of this.connections) {
             if (this.players.has(clientId)) {
-                promises.push(connection.sendPacket(
+                promises.push(otherClient.sendPacket(
                     new ReliablePacket(
-                        connection.getNextNonce(),
+                        otherClient.getNextNonce(),
                         [
                             new JoinGameMessage(
                                 this.code,
                                 joiningClient.clientId,
-                                this.authorityId,
+                                this.getClientAwareAuthorityId(otherClient),
                                 joiningClient.username,
                                 joiningClient.platform,
                                 joiningClient.playerLevel,
@@ -1354,15 +1469,15 @@ export class Room extends StatefulRoom<RoomEvents> {
         }
 
         if (this.authorityId === leavingConnection.clientId) {
-            const newHostConn = [...this.connections.values()][0];
-            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, newHostConn));
+            const nextHostConnection = [...this.connections.values()][0];
+            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, nextHostConnection));
 
             if (!ev.canceled) {
                 const player = ev.alteredSelected.getPlayer();
 
                 this.authorityId = SpecialClientId.ServerAuthority; //ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
                 if (player) {
-                    await player.emit(new PlayerSetHostEvent(this, player));
+                    await player.emit(new PlayerSetAuthoritativeEvent(this, player));
                 }
 
                 if (this.gameState === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
@@ -1372,17 +1487,28 @@ export class Room extends StatefulRoom<RoomEvents> {
             }
         }
 
+        this.actingHosts.delete(leavingConnection);
+
+        if (this.config.authoritativeServer && this.actingHosts.size === 0) {
+            const nextHostConnection = [...this.connections.values()][0];
+            const ev = await this.emit(new RoomSelectHostEvent(this, false, false, nextHostConnection));
+
+            if (!ev.canceled) {
+                this._addActingHost(ev.alteredSelected);
+            }
+        }
+
         const promises = [];
-        for (const [, connection] of this.connections) {
-            promises.push(connection.sendPacket(
+        for (const [, otherClient] of this.connections) {
+            promises.push(otherClient.sendPacket(
                 new ReliablePacket(
-                    connection.getNextNonce(),
+                    otherClient.getNextNonce(),
                     [
                         new RemovePlayerMessage(
                             this.code,
                             leavingConnection.clientId,
                             reason,
-                            this.authorityId
+                            this.getClientAwareAuthorityId(otherClient),
                         )
                     ]
                 )

@@ -525,38 +525,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
             });
 
-        // this.vorpal
-        //     .command("setsaah <room code> <on/off>", "Change whether a room is in SaaH mode.")
-        //     .alias("issaah")
-        //     .autocomplete({
-        //         data: async () => {
-        //             return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
-        //         }
-        //     })
-        //     .action(async args => {
-        //         const roomName = args["room code"].toUpperCase();
-        //         const codeId = roomName === "LOCAL"
-        //             ? 0x20
-        //             : GameCode.convertStringToInt(roomName);
-
-        //         const room = this.rooms.get(codeId);
-
-        //         if (!room) {
-        //             this.logger.error("Couldn't find room: %s", roomName);
-        //             return;
-        //         }
-
-        //         if (args["on/off"] !== "on" && args["on/off"] !== "off") {
-        //             this.logger.error("Expected 'on' or 'off' for whether to enable SaaH on that room or not.");
-        //         }
-
-        //         room.setSaaHEnabled(args["on/off"] === "on", true);
-        //     });
-
         this.vorpal
-            .command("sethost <room code> <client id>", "Change the host(s) of a room.")
-            // .option("--acting, -a", "Add the host as an acting host or 'fake' host.")
-            // .option("--remove-acting, -r", "Remove the player as an acting or 'fake' host.")
+            .command("sethost <room code> <client id>", "Change the host(s) of a room. If <client id> is 'server', the server will be the central authority.")
+            .option("--acting, -a", "Add the host as an acting host or 'fake' host.")
+            .option("--remove-acting, -r", "Remove the player as an acting or 'fake' host.")
+            .option("--keep-acting, -k", "Whether or not to retain the current acting hosts, if setting a player as the authority. Default false.")
             .alias("sh")
             .autocomplete({
                 data: async () => {
@@ -570,15 +543,25 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : GameCode.convertStringToInt(roomName);
 
                 const room = this.rooms.get(codeId);
+
+                if (!room) {
+                    this.logger.error("Couldn't find room: %s", roomName);
+                    return;
+                }
+
+                if (args["client id"] === "server") {
+                    if (room.config.authoritativeServer) {
+                        this.logger.error("Room is already server-authoritative.");
+                        return;
+                    }
+                    await room.setServerAuthority(true);
+                    return;
+                }
+
                 const clientId = parseInt(args["client id"]);
 
                 if (isNaN(clientId)) {
                     this.logger.error("Expected a number for the client id: %s", clientId);
-                    return;
-                }
-
-                if (!room) {
-                    this.logger.error("Couldn't find room: %s", roomName);
                     return;
                 }
 
@@ -589,39 +572,44 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     return;
                 }
 
-                // if (args.options.acting) {
-                //     if (room.authorityId === playerConnection.clientId) {
-                //         this.logger.error("%s is already the host.", playerConnection);
-                //         return;
-                //     }
+                if (args.options.acting) {
+                    if (room.authorityId === playerConnection.clientId) {
+                        this.logger.error("%s is already the host.", playerConnection);
+                        return;
+                    }
 
-                //     if (room.actingHostIds.has(playerConnection.clientId)) {
-                //         this.logger.error("%s is already an acting host.", playerConnection);
-                //         return;
-                //     }
+                    if (room.actingHosts.has(playerConnection)) {
+                        this.logger.error("%s is already an acting host.", playerConnection);
+                        return;
+                    }
 
-                //     room.addActingHost(playerConnection);
-                // } else if (args.options["remove-acting"]) {
-                //     if (!room.actingHostIds.has(playerConnection.clientId)) {
-                //         this.logger.error("%s isn't an acting host.", playerConnection);
-                //         return;
-                //     }
-                //     room.removeActingHost(playerConnection);
-                // } else {
-                const player = room.players.get(clientId);
+                    await room.addActingHost(playerConnection);
+                } else if (args.options["remove-acting"]) {
+                    if (room.authorityId === playerConnection.clientId) {
+                        this.logger.error("%s is an actual host.", playerConnection);
+                        return;
+                    }
 
-                if (!player) {
-                    this.logger.error("No player in room with client id: %s", clientId);
-                    return;
+                    if (!room.actingHosts.has(playerConnection)) {
+                        this.logger.error("%s isn't an acting host.", playerConnection);
+                        return;
+                    }
+                    await room.removeActingHost(playerConnection);
+                } else {
+                    const player = room.players.get(clientId);
+
+                    if (!player) {
+                        this.logger.error("No player in room with client id: %s", clientId);
+                        return;
+                    }
+
+                    if (room.authorityId === player.clientId) {
+                        this.logger.error("%s is already the host", playerConnection);
+                        return;
+                    }
+
+                    await room.setPlayerAuthority(player, !args.options["keep-acting"]);
                 }
-
-                // if (room.config.serverAsHost) {
-                //     this.logger.error("Can only set acting hosts with a room in SaaH, try run the command again with the --acting or -a flag.");
-                //     return;
-                // }
-
-                room.setHost(player);
-                // }
             });
 
         this.vorpal
@@ -1010,21 +998,17 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             const connection = player.room.connections.get(message.recipientid);
 
-            console.log(message, ctx.sender, "->", connection);
+            if (!connection) {
+                if (player.room.authorityId === SpecialClientId.ServerAuthority) {
+                    await player.room.processMessagesAndGetNotCanceled(message._children, [], ctx);
+                } else {
+                    player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
+                        ctx.sender, message.recipientid);
+                }
+                return;
+            }
 
-            await player.room.processMessagesAndGetNotCanceled(message._children, [], ctx);
-
-            // if (!connection) {
-            //     if (!(message.recipientid in SpecialClientId)) {
-            //         player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
-            //             ctx.sender, message.recipientid);
-            //     }
-            //     return;
-            // }
-
-            // console.log(message._children);
-
-            // await player.room.broadcastMessages(message._children, [], [connection], undefined, ctx.reliable);
+            await player.room.broadcastMessages(message._children, [], [connection], undefined, ctx.reliable);
         });
 
         this.decoder.on(AlterGameMessage, async (message, direction, ctx) => {

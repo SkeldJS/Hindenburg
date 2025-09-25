@@ -17,7 +17,7 @@ After installing the plugin, the following should appear in your `config.json` i
     "plugins": {
         "hbplugin-reactor": {
             "enabled": true,
-            "serverAsHostSyncer": false,
+            "authoritativeServerSyncer": false,
             "blockClientSideOnly": true,
             "mods": {},
             "allowExtraMods": true,
@@ -31,7 +31,7 @@ After installing the plugin, the following should appear in your `config.json` i
 ### `enabled`
 Whether or not reactor support should be enabled for your server.
 
-### `serverAsHostSyncer`
+### `authoritativeServerSyncer`
 Whether or not the server should use host-based mod syncing.
 
 > This should make virtually no difference to your server.

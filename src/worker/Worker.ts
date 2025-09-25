@@ -1135,7 +1135,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     room.settings.map,
                     room.settings.numImpostors,
                     room.settings.maxPlayers,
-                    room.host?.platform || new PlatformSpecificData(
+                    room.playerAuthority?.platform || new PlatformSpecificData(
                         Platform.Unknown,
                         "UNKNOWN"
                     )
@@ -1266,7 +1266,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         }
 
         if (!ignoreSearchTerms || !ignoreSearchTerms.has("chatType")) {
-            const roomHost = room.host;
+            const roomHost = room.playerAuthority;
             if (roomHost) {
                 const hostChatMode = room.getConnection(roomHost)?.chatMode;
                 if (hostChatMode !== undefined) {
@@ -1643,7 +1643,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             return connection.disconnect(DisconnectReason.GameStarted);
         }
 
-        const roomHost = ev.alteredRoom.host;
+        const roomHost = ev.alteredRoom.playerAuthority;
         if (ev.alteredRoom.config.checkChatMode && roomHost) {
             const hostConnection = ev.alteredRoom.connections.get(roomHost.clientId);
             if (hostConnection && hostConnection.chatMode !== ev.client.chatMode) {

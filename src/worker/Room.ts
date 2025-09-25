@@ -388,7 +388,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.decoder.on(SpawnMessage, async (message, _direction, { sender }) => {
             const ownerClient = this.players.get(message.ownerid);
 
-            if (this.hostIsMe && message.ownerid === SpecialClientId.Temp) {
+            if (this.isAuthoritative && message.ownerid === SpecialClientId.Temp) {
                 if (!sender)
                     return;
 
@@ -472,7 +472,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     if (ev.canceled) {
                         player.inScene = false;
                     } else {
-                        if (this.hostIsMe) {
+                        if (this.isAuthoritative) {
                             await this.broadcast(
                                 this.getExistingObjectSpawn(),
                                 undefined,
@@ -499,8 +499,8 @@ export class Room extends StatefulRoom<RoomEvents> {
                                 }],
                             );
 
-                            if (this.host && this.host.clientId !== message.clientId) {
-                                this.host?.control?.syncSettings(this.settings);
+                            if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
+                                this.playerAuthority?.control?.syncSettings(this.settings);
                             }
                         } else {
                             await this.broadcast(
@@ -600,11 +600,11 @@ export class Room extends StatefulRoom<RoomEvents> {
         return name.replace(/\n/g, "\\n");
     }
 
-    get host(): Player<this> | undefined {
+    get playerAuthority(): Player<this> | undefined {
         return this.players.get(this.authorityId);
     }
 
-    get hostIsMe() {
+    get isAuthoritative() {
         return this.authorityId === SpecialClientId.ServerAuthority;
     }
 
@@ -619,7 +619,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             return this.roomNameOverride;
         }
 
-        const hostConnection = this.host ? this.connections.get(this.host.clientId) : undefined;
+        const hostConnection = this.playerAuthority ? this.connections.get(this.playerAuthority.clientId) : undefined;
 
         return hostConnection?.username || fmtCode(this.code);
     }
@@ -691,7 +691,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         if (this.endGameIntents.length) {
             const endGameIntents = this.endGameIntents;
             this.endGameIntents = [];
-            if (this.hostIsMe) {
+            if (this.isAuthoritative) {
                 for (let i = 0; i < endGameIntents.length; i++) {
                     const intent = endGameIntents[i];
                     const ev = await this.emit(
@@ -1178,7 +1178,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         if (!joiningPlayer)
             return;
 
-        if (!this.host) {
+        if (!this.playerAuthority) {
             const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
             if (!ev.canceled) {
                 this.authorityId = ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
@@ -1454,7 +1454,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         this.logger.info("Game started");
 
-        if (this.hostIsMe) {
+        if (this.isAuthoritative) {
             if (this.lobbyBehaviour)
                 this.despawnComponent(this.lobbyBehaviour);
 

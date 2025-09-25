@@ -1149,17 +1149,6 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         const previousAuthorityId = this.authorityId;
 
-        if (removeAllActingHosts) {
-            if (this.actingHosts.size > 0) {
-                const numActingHosts = this.actingHosts.size;
-                this.actingHosts.clear();
-                this.logger.info("Removed %s acting host%s", numActingHosts, numActingHosts === 1 ? "" : "s");
-            }
-        } else {
-            if (this.actingHosts.has(remoteConnection)) {
-                this._removeActingHost(remoteConnection);
-            }
-        }
         this.authorityId = resolvedId;
         this.config.authoritativeServer = false;
 
@@ -1176,6 +1165,18 @@ export class Room extends StatefulRoom<RoomEvents> {
                 this.logger.info("%s is now the player authority, the previous player authority was %s", remoteConnection, previousConnection);
             } else {
                 this.logger.info("%s is now the player authority, there was no previous authoritative player");
+            }
+        }
+
+        if (removeAllActingHosts) {
+            if (this.actingHosts.size > 0) {
+                const numActingHosts = this.actingHosts.size;
+                this.actingHosts.clear();
+                this.logger.info("Removed %s acting host%s", numActingHosts, numActingHosts === 1 ? "" : "s");
+            }
+        } else {
+            if (this.actingHosts.has(remoteConnection)) {
+                this._removeActingHost(remoteConnection);
             }
         }
 

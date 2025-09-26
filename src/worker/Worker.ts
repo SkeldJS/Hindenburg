@@ -608,7 +608,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         return;
                     }
 
-                    await room.setPlayerAuthority(player, !args.options["keep-acting"]);
+                    await room.updatePlayerAuthority(player, !args.options["keep-acting"]);
                 }
             });
 

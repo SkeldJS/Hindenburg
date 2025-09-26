@@ -247,7 +247,7 @@ this.jesterPerspective.incomingFilter.on(DataMessage, message => {
     if (!this.jesterPerspective || !this.jester)
         return;
 
-    const obj = this.jesterPerspective.netobjects.get(message.netId);
+    const obj = this.jesterPerspective.networkedObjects.get(message.netId);
 
     if (!obj || !(obj instanceof GameData))
         return;

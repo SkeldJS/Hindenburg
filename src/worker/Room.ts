@@ -50,7 +50,6 @@ import {
     SetVisorMessage,
     SpawnMessage,
     StartGameMessage,
-    SyncSettingsMessage,
     UnreliablePacket,
     WaitForHostMessage
 } from "@skeldjs/protocol";
@@ -263,7 +262,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.roomNameOverride = "";
         this.eventTargets = [];
 
-        this._incrNetId = 100000;
+        this.lastNetId = 100000;
 
         this.authorityId = this.config.authoritativeServer ? SpecialClientId.ServerAuthority : 0;
         this.actingHosts = new Set;
@@ -367,7 +366,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         });
 
         this.decoder.on(DataMessage, (message, _direction, { sender }) => {
-            const component = this.netobjects.get(message.netId);
+            const component = this.networkedObjects.get(message.netId);
 
             if (component) {
                 const reader = HazelReader.from(message.data);
@@ -376,7 +375,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         });
 
         this.decoder.on(RpcMessage, async (message, _direction, { sender }) => {
-            const component = this.netobjects.get(message.netId);
+            const component = this.networkedObjects.get(message.netId);
 
             if (component) {
                 try {
@@ -406,7 +405,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     ),
                 ]);
 
-                this._incrNetId = message.components[message.components.length - 1].netId;
+                this.lastNetId = message.components[message.components.length - 1].netId;
                 return;
             }
 
@@ -450,7 +449,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         });
 
         this.decoder.on(DespawnMessage, message => {
-            const component = this.netobjects.get(message.netId);
+            const component = this.networkedObjects.get(message.netId);
 
             if (component) {
                 this._despawnComponent(component);
@@ -462,7 +461,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
             // SceneChange is broadcasted to all players by the joining player. If we're the server, we want to
             // cancel this and stop it from being broadcasted so that we can spawn the player ourselves.
-            if (this.config.authoritativeServer) {
+            if (this.isAuthoritative) {
                 message.cancel();
             }
 
@@ -549,7 +548,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
     protected _reset() {
         this.players.clear();
-        this.netobjects.clear();
+        this.networkedObjects.clear();
         this.messageStream = [];
         this.code = 0;
         this.authorityId = 0;
@@ -622,7 +621,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     }
 
     get isAuthoritative() {
-        return this.authorityId === SpecialClientId.ServerAuthority;
+        return this.config.authoritativeServer;
     }
 
     /**
@@ -639,13 +638,6 @@ export class Room extends StatefulRoom<RoomEvents> {
         const hostConnection = this.playerAuthority ? this.connections.get(this.playerAuthority.clientId) : undefined;
 
         return hostConnection?.username || fmtCode(this.code);
-    }
-
-    /**
-     * Whether or not this room has been destroyed, and is no longer active on the server.
-     */
-    get destroyed() {
-        return this.gameState === GameState.Destroyed;
     }
 
     /**
@@ -678,16 +670,16 @@ export class Room extends StatefulRoom<RoomEvents> {
 
     async FixedUpdate() {
         const curTime = Date.now();
-        const delta = curTime - this.last_fixed_update;
+        const delta = curTime - this.lastFixedUpdateTimestamp;
 
         if (this.config.createTimeout > 0 && curTime - this.createdAt > this.config.createTimeout * 1000 && !this.playerJoinedFlag) {
             this.destroy(DisconnectReason.ServerRequest);
             this.playerJoinedFlag = true;
         }
 
-        this.last_fixed_update = Date.now();
+        this.lastFixedUpdateTimestamp = Date.now();
 
-        for (const [, component] of this.netobjects) {
+        for (const [, component] of this.networkedObjects) {
             if (!component)
                 continue;
 
@@ -1133,10 +1125,10 @@ export class Room extends StatefulRoom<RoomEvents> {
     }
 
     /**
-     * Set the actual player authority for the room, disabling server authority.
+     * Set a player authority as the actual host for the room, disabling server authority.
      * @param playerResolvable The player to set as the player authority.
      */
-    async setPlayerAuthority(playerResolvable: PlayerResolvable, removeAllActingHosts: boolean) {
+    async updatePlayerAuthority(playerResolvable: PlayerResolvable, removeAllActingHosts: boolean) {
         const resolvedId = this.resolvePlayerClientID(playerResolvable);
 
         if (!resolvedId)
@@ -1148,14 +1140,9 @@ export class Room extends StatefulRoom<RoomEvents> {
             throw new Error("Cannot set player authority without a connection");
 
         const previousAuthorityId = this.authorityId;
-
-        this.authorityId = resolvedId;
         this.config.authoritativeServer = false;
 
-        const player = this.players.get(resolvedId);
-        if (player) {
-            await player.emit(new PlayerSetAuthoritativeEvent(this, player));
-        }
+        await this.setPlayerAuthority(playerResolvable);
 
         if (previousAuthorityId === SpecialClientId.ServerAuthority) {
             this.logger.info("%s is now the player authority, the server was authoritative previously", remoteConnection);
@@ -1192,14 +1179,14 @@ export class Room extends StatefulRoom<RoomEvents> {
     }
 
     async setServerAuthority(requireActingHost: boolean) {
-        if (this.config.authoritativeServer) throw new Error("Server is already authoritative");
+        if (this.isAuthoritative) throw new Error("Server is already authoritative");
 
         const connection = this.playerAuthority && this.getConnection(this.playerAuthority);
         if (requireActingHost && this.actingHosts.size === 0) {
             if (connection) {
                 this._addActingHost(connection);
             } else {
-                if (this.config.authoritativeServer && this.actingHosts.size === 0) {
+                if (this.isAuthoritative && this.actingHosts.size === 0) {
                     const nextHostConnection = [...this.connections.values()][0];
                     const ev = await this.emit(new RoomSelectHostEvent(this, false, false, nextHostConnection));
 
@@ -1283,7 +1270,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         if (!joiningPlayer)
             return;
 
-        if (this.config.authoritativeServer) {
+        if (this.isAuthoritative) {
             if (this.actingHosts.size === 0) {
                 const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
                 if (!ev.canceled) {
@@ -1491,7 +1478,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         this.actingHosts.delete(leavingConnection);
 
-        if (this.config.authoritativeServer && this.actingHosts.size === 0) {
+        if (this.isAuthoritative && this.actingHosts.size === 0) {
             const nextHostConnection = [...this.connections.values()][0];
             const ev = await this.emit(new RoomSelectHostEvent(this, false, false, nextHostConnection));
 
@@ -1670,8 +1657,8 @@ export class Room extends StatefulRoom<RoomEvents> {
             return;
         }
 
-        for (const [, component] of this.netobjects) {
-            component.despawn();
+        for (const [, component] of this.networkedObjects) {
+            this.despawnComponent(component);
         }
 
         await this.broadcast([], [
@@ -1927,9 +1914,7 @@ export class Room extends StatefulRoom<RoomEvents> {
      * ```
      */
     removeFakePlayer(player: Player) {
-        player.control?.despawn();
-        player.physics?.despawn();
-        player.transform?.despawn();
+        player.destroy();
     }
 
     registerEventTarget(observer: EventTarget) {

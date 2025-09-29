@@ -70,7 +70,8 @@ import {
     RoomEndGameIntentEvent,
     RoomFixedUpdateEvent,
     RoomSetPrivacyEvent,
-    SpecialOwnerId
+    SpecialOwnerId,
+    ColorCodes
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
@@ -132,7 +133,10 @@ Object.defineProperty(Player.prototype, Symbol.for("nodejs.util.inspect.custom")
             }
         );
 
-        return chalk.blue(this.username || "<No Name>")
+        const playerInfo = this.getPlayerInfo();
+        const chalkColor = playerInfo?.currentOutfit ? chalk.rgb(...ColorCodes[playerInfo.currentOutfit.color].highlightRGB as [number, number, number]) : chalk.gray;
+
+        return chalkColor(this.username || "<No Name>")
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 });
@@ -609,11 +613,11 @@ export class Room extends StatefulRoom<RoomEvents> {
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtConfigurableLog(
-            this.worker.config.logging.rooms?.format || ["players", "map", "issaah", "privacy"],
+            this.worker.config.logging.rooms?.format || ["players", "map", "host", "privacy"],
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",
                 map: logMaps[this.settings.map],
-                issaah: undefined,
+                host: this.config.authoritativeServer ? "server-authority" : this.playerAuthority || "no host",
                 privacy: this.privacy
             }
         );

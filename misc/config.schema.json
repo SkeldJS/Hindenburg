@@ -311,7 +311,7 @@
                 "enum": [
                   "players",
                   "map",
-                  "issaah",
+                  "host",
                   "privacy"
                 ]
               },
@@ -319,7 +319,7 @@
               "default": [
                 "players",
                 "map",
-                "issaah",
+                "host",
                 "privacy"
               ]
             }

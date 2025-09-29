@@ -104,7 +104,7 @@ export interface AnticheatRuleConfig {
 }
 
 export type ConnectionsFormatOptions = "id" | "ip" | "ping" | "room" | "level" | "version" | "platform" | "language";
-export type RoomFormatOptions = "players" | "map" | "issaah" | "privacy";
+export type RoomFormatOptions = "players" | "map" | "host" | "privacy";
 export type PlayerFormatOptions = "id" | "ping" | "level" | "ishost" | "platform" | "language";
 
 export interface LoggingConfig {
@@ -151,7 +151,7 @@ export interface LoggingConfig {
          *
          * @players The total number of players currently connected to the room.
          * @map The map that the room is currently playing.
-         * @saah Whether or not the room is in SaaH.
+         * @host The host player of the room, or the server.
          *
          * @example
          * ```json
@@ -163,7 +163,7 @@ export interface LoggingConfig {
          * // => ABCDEF
          * ```
          *
-         * @default ["players", "map", "issaah", "privacy"]
+         * @default ["players", "map", "host", "privacy"]
          */
         format?: RoomFormatOptions[]
     };

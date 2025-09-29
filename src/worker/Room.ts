@@ -1251,6 +1251,11 @@ export class Room extends StatefulRoom<RoomEvents> {
         await this.updateAuthorityForClient(this.getClientAwareAuthorityId(client), client);
     }
 
+    canMakeHostChanges(player: Player) {
+        const connection = this.getConnection(player);
+        return this.authorityId === player.clientId || (connection && this.actingHosts.has(connection));
+    }
+
     async handleJoin(joinInfo: PlayerJoinData): Promise<Player<this>> {
         const cachedPlayer = this.players.get(joinInfo.clientId);
         if (cachedPlayer)

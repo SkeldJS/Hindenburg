@@ -1019,7 +1019,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (!player.isHost) {
+            if (!player.room.canMakeHostChanges(player)) {
                 // todo: proper anti-cheat config
                 return ctx.sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1038,7 +1038,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (!player.isHost) {
+            if (!player.room.canMakeHostChanges(player)) {
                 // todo: proper anti-cheat config
                 return ctx.sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1054,7 +1054,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player)
                 return;
 
-            if (!player.isHost) {
+            if (!player.room.canMakeHostChanges(player)) {
                 // todo: proper anti-cheat config
                 return ctx.sender.disconnect(DisconnectReason.Hacking);
             }
@@ -1070,7 +1070,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!player || !sender.room)
                 return;
 
-            if (!player.isHost) {
+            if (!player.room.canMakeHostChanges(player)) {
                 // todo: proper anti-cheat config
                 return sender.disconnect(DisconnectReason.Hacking);
             }

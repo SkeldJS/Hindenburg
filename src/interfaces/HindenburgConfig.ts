@@ -114,6 +114,11 @@ export interface LoggingConfig {
      */
     hideSensitiveInfo: boolean;
     /**
+     * Whether or not player names in logs should be the same color as their actual player in-game.
+     * @default true
+     */
+    playerColors: boolean;
+    /**
      * Logging options for client connections.
      */
     connections: {

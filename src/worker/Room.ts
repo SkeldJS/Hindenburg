@@ -93,7 +93,8 @@ import {
 import {
     SendChatOptions,
     MessageSide,
-    RoomsConfig
+    RoomsConfig,
+    LoggingConfig
 } from "../interfaces";
 
 import {
@@ -114,6 +115,14 @@ import { Logger } from "../logger";
 import { Connection, logLanguages, logPlatforms } from "./Connection";
 import { PacketContext, Worker } from "./Worker";
 
+function getPlayerChalkColor(config: LoggingConfig, player: Player<Room>): chalk.Chalk {
+    if (!config.playerColors) return chalk.cyan;
+
+    const playerInfo = player.getPlayerInfo();
+    if (!playerInfo || !playerInfo.currentOutfit) return chalk.gray;
+    return chalk.rgb(...ColorCodes[playerInfo.currentOutfit.color].highlightRGB as [number, number, number]);
+}
+
 Object.defineProperty(Player.prototype, Symbol.for("nodejs.util.inspect.custom"), {
     value(this: Player<Room>) {
         const connection = this.room.connections.get(this.clientId);
@@ -133,10 +142,8 @@ Object.defineProperty(Player.prototype, Symbol.for("nodejs.util.inspect.custom")
             }
         );
 
-        const playerInfo = this.getPlayerInfo();
-        const chalkColor = playerInfo?.currentOutfit ? chalk.rgb(...ColorCodes[playerInfo.currentOutfit.color].highlightRGB as [number, number, number]) : chalk.gray;
 
-        return chalkColor(this.username || "<No Name>")
+        return getPlayerChalkColor(this.room.worker.config.logging, this)(this.username || "<No Name>")
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 });

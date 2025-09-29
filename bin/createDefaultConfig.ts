@@ -42,11 +42,12 @@ export function createDefaultConfig(): HindenburgConfig {
         },
         logging: {
             hideSensitiveInfo: false,
+            playerColors: true,
             connections: {
                 format: ["id", "ip", "ping", "room"]
             },
             rooms: {
-                format: ["players", "map", "issaah", "privacy"]
+                format: ["players", "map", "host", "privacy"]
             },
             players: {
                 format: ["id", "ping", "ishost"]

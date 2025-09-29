@@ -333,7 +333,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         });
 
         this.decoder.on(StartGameMessage, async () => {
-            this.handleStart();
+            this.startGame();
         });
 
         this.decoder.on(AlterGameMessage, async message => {
@@ -390,9 +390,9 @@ export class Room extends StatefulRoom<RoomEvents> {
         });
 
         this.decoder.on(SpawnMessage, async (message, _direction, { sender }) => {
-            const ownerClient = this.players.get(message.ownerid);
+            const ownerClient = this.players.get(message.ownerId);
 
-            if (this.isAuthoritative && message.ownerid === SpecialClientId.Temp) {
+            if (this.isAuthoritative && message.ownerId === SpecialClientId.Temp) {
                 if (!sender)
                     return;
 
@@ -409,11 +409,11 @@ export class Room extends StatefulRoom<RoomEvents> {
                 return;
             }
 
-            if (message.ownerid > 0 && !ownerClient)
+            if (message.ownerId > 0 && !ownerClient)
                 return;
 
             if (this.config.advanced.unknownObjects === "all") {
-                return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
+                return this.spawnUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components, false, false);
             }
 
             if (
@@ -422,12 +422,12 @@ export class Room extends StatefulRoom<RoomEvents> {
                     this.config.advanced.unknownObjects.includes(message.spawnType) ||
                     this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType])
                 )) {
-                return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
+                return this.spawnUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components, false, false);
             }
 
             if (!this.registeredPrefabs.has(message.spawnType)) {
                 if (this.config.advanced.unknownObjects === true) {
-                    return this.spawnUnknownPrefab(message.spawnType, message.ownerid, message.flags, message.components, false, false);
+                    return this.spawnUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components, false, false);
                 }
 
                 throw new Error("Cannot spawn object of type: " + message.spawnType + " with " + message.components.length + " components (not registered, you might need to add this to config.rooms.advanced.unknownObjects)");
@@ -436,7 +436,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             try {
                 this.spawnPrefabOfType(
                     message.spawnType,
-                    message.ownerid,
+                    message.ownerId,
                     message.flags,
                     message.components,
                     false,
@@ -450,6 +450,8 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         this.decoder.on(DespawnMessage, message => {
             const component = this.networkedObjects.get(message.netId);
+
+            console.log(message);
 
             if (component) {
                 this._despawnComponent(component);
@@ -1553,7 +1555,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.waitingForHost.clear();
     }
 
-    async handleStart() {
+    async startGame() {
         this.gameState = GameState.Started;
 
         const ev = await this.emit(new RoomGameStartEvent(this));
@@ -1614,10 +1616,10 @@ export class Room extends StatefulRoom<RoomEvents> {
             if (removes.length) {
                 await this.broadcast(
                     [],
-                    removes.map((clientid) => {
+                    removes.map((clientId) => {
                         return new RemovePlayerMessage(
                             this.code,
-                            clientid,
+                            clientId,
                             DisconnectReason.Error,
                             this.authorityId
                         );
@@ -1638,10 +1640,6 @@ export class Room extends StatefulRoom<RoomEvents> {
                 }
             }
         }
-    }
-
-    async startGame() {
-        await this.handleStart();
     }
 
     async handleEnd(reason: GameOverReason, intent?: EndGameIntent) {

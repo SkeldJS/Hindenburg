@@ -802,8 +802,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
         if (cached)
             return cached;
 
-        const clientid = this.getNextClientId();
-        const connection = new Connection(this, listenSocket, rinfo, clientid);
+        const clientId = this.getNextClientId();
+        const connection = new Connection(this, listenSocket, rinfo, clientId);
         this.connections.set(fmt, connection);
         return connection;
     }
@@ -983,6 +983,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const notCanceled: BaseGameDataMessage[] = [];
             await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
 
+            console.log(notCanceled);
+
             if (notCanceled.length > 0)
                 await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
         });
@@ -996,14 +998,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             if (!ctx.sender.room || !player)
                 return;
 
-            const connection = player.room.connections.get(message.recipientid);
+            const connection = player.room.connections.get(message.recipientId);
 
             if (!connection) {
                 if (player.room.authorityId === SpecialClientId.ServerAuthority) {
                     await player.room.processMessagesAndGetNotCanceled(message._children, [], ctx);
                 } else {
                     player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
-                        ctx.sender, message.recipientid);
+                        ctx.sender, message.recipientId);
                 }
                 return;
             }

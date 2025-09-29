@@ -304,6 +304,19 @@ export class Room extends StatefulRoom<RoomEvents> {
             }
         });
 
+        // We have to update the client's host here because if we do it too soon, the client will take
+        // control of spawning the lobby and players. This is the last RPC that the client reliably sends
+        // after joining.
+        //
+        // Technically this is a bit of a hack, since clients can choose not to send this RPC. Perhaps
+        // there is a better way?
+        // Look into: despawn all objects created by the acting host
+        this.on("player.setlevel", async ev => {
+            const connection = this.getConnection(ev.player);
+            if (!connection) return;
+            await this.updateAuthorityForClient(this.getClientAwareAuthorityId(connection), connection);
+        });
+
         this.on("player.syncsettings", async ev => {
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
@@ -451,8 +464,6 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.decoder.on(DespawnMessage, message => {
             const component = this.networkedObjects.get(message.netId);
 
-            console.log(message);
-
             if (component) {
                 this._despawnComponent(component);
             }
@@ -485,55 +496,52 @@ export class Room extends StatefulRoom<RoomEvents> {
 
                     if (ev.canceled) {
                         player.inScene = false;
-                    } else {
-                        if (this.isAuthoritative) {
-                            await this.broadcast(
-                                this.getExistingObjectSpawn(),
-                                undefined,
-                                [player]
-                            );
+                        return;
+                    }
 
-                            const playerId = this.getAvailablePlayerID();
+                    if (!this.isAuthoritative) {
+                        await this.broadcast(
+                            this.getServerOwnedObjectSpawn(),
+                            undefined,
+                            [player],
+                        );
 
-                            this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
-                                playerId: playerId,
-                                clientId: player.clientId,
-                                friendCode: player.friendCode,
-                                puid: player.puid,
-                            }], true, true);
+                        this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
+                            playerId: this.getAvailablePlayerID(),
+                            clientId: player.clientId,
+                            friendCode: player.friendCode,
+                            puid: player.puid,
+                        }], true, true);
+                        return;
+                    }
+                    await this.broadcast(
+                        this.getExistingObjectSpawn(),
+                        undefined,
+                        [player]
+                    );
 
-                            this.spawnNecessaryObjects();
+                    const playerId = this.getAvailablePlayerID();
 
-                            this.spawnPrefabOfType(
-                                SpawnType.Player,
-                                player.clientId,
-                                SpawnFlag.IsClientCharacter,
-                                [{
-                                    playerId: playerId,
-                                }],
-                            );
+                    this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
+                        playerId: playerId,
+                        clientId: player.clientId,
+                        friendCode: player.friendCode,
+                        puid: player.puid,
+                    }], true, true);
 
+                    this.spawnNecessaryObjects();
 
-                            if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
-                                this.playerAuthority?.control?.syncSettings(this.settings);
-                            }
-                        } else {
-                            await this.broadcast(
-                                this.getServerOwnedObjectSpawn(),
-                                undefined,
-                                [player],
-                            );
+                    this.spawnPrefabOfType(
+                        SpawnType.Player,
+                        player.clientId,
+                        SpawnFlag.IsClientCharacter,
+                        [{
+                            playerId: playerId,
+                        }],
+                    );
 
-                            this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
-                                playerId: this.getAvailablePlayerID(),
-                                clientId: player.clientId,
-                                friendCode: player.friendCode,
-                                puid: player.puid,
-                            }], true, true);
-                        }
-
-                        // Once the player has changed scene, they can become an acting host if that is their destiny
-                        await this.updateAuthorityForClient(this.getClientAwareAuthorityId(connection), connection);
+                    if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
+                        this.playerAuthority?.control?.syncSettings(this.settings);
                     }
                 }
             }
@@ -1558,6 +1566,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     async startGame() {
         this.gameState = GameState.Started;
 
+        // TODO: "started by" event
         const ev = await this.emit(new RoomGameStartEvent(this));
 
         if (ev.canceled) {

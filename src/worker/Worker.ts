@@ -983,8 +983,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
             const notCanceled: BaseGameDataMessage[] = [];
             await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
 
-            console.log(notCanceled);
-
             if (notCanceled.length > 0)
                 await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
         });

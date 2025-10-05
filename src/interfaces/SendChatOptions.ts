@@ -1,5 +1,6 @@
 import { Player } from "@skeldjs/core";
 import { Color } from "@skeldjs/constant";
+import { Room } from "../worker";
 
 export enum MessageSide {
     Left,
@@ -42,7 +43,7 @@ export interface SendChatOptions {
      * }
      * ```
      */
-    targets: Player[] | undefined;
+    targets: Player<Room>[] | undefined;
     /**
      * The name of the player to appear as.
      * @example

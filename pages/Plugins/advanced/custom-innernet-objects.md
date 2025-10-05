@@ -35,9 +35,9 @@ export class EpicRoleModPlugin extends RoomPlugin {
 ```
 
 ## Spawning Prefabs
-Use {@link BaseRoom.spawnPrefabOfType} to create a new baby into the world:
+Use {@link BaseRoom.spawnObjectOfType} to create a new baby into the world:
 ```ts
-const spawnedButton = this.room.spawnPrefabOfType(MyCustomSpawnType.Button, player /* create the button belonging to the player */);
+const spawnedButton = this.room.spawnObjectOfType(MyCustomSpawnType.Button, player /* create the button belonging to the player */);
 ```
 
 ## Despawning objects

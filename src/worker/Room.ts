@@ -71,7 +71,8 @@ import {
     RoomFixedUpdateEvent,
     RoomSetPrivacyEvent,
     SpecialOwnerId,
-    ColorCodes
+    ColorCodes,
+    NetworkedPlayerInfo
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
@@ -166,7 +167,7 @@ export const logMaps = {
     [GameMap.Polus]: "polus",
     [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
     [GameMap.Airship]: "airship",
-    [GameMap.Fungal]: "fungal",
+    [GameMap.Fungle]: "fungle",
 };
 
 export type RoomEvents = StatefulRoomEvents<Room> & ExtractEventTypes<[
@@ -358,7 +359,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         });
 
         this.decoder.on(StartGameMessage, async () => {
-            this.startGame();
+            await this.startGame();
         });
 
         this.decoder.on(AlterGameMessage, async message => {
@@ -375,7 +376,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 );
 
                 if (ev.alteredPrivacy !== messagePrivacy) {
-                    await this.broadcast([], [
+                    await this.broadcastImmediate([], [
                         new AlterGameMessage(
                             this.code,
                             AlterGameTag.ChangePrivacy,
@@ -421,7 +422,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 if (!sender)
                     return;
 
-                await this.broadcast(message.components.map(comp => new DespawnMessage(comp.netId)), [
+                await this.broadcastImmediate(message.components.map(comp => new DespawnMessage(comp.netId)), [
                     new RemovePlayerMessage(
                         this.code,
                         SpecialClientId.Temp,
@@ -438,7 +439,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 return;
 
             if (this.config.advanced.unknownObjects === "all") {
-                return this.spawnUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components, false, false);
+                return await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
             }
 
             if (
@@ -447,29 +448,42 @@ export class Room extends StatefulRoom<RoomEvents> {
                     this.config.advanced.unknownObjects.includes(message.spawnType) ||
                     this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType])
                 )) {
-                return this.spawnUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components, false, false);
+                return await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
             }
 
-            if (!this.registeredPrefabs.has(message.spawnType)) {
+            const registeredPrefab = this.registeredPrefabs.get(message.spawnType);
+
+            if (!registeredPrefab) {
                 if (this.config.advanced.unknownObjects === true) {
-                    return this.spawnUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components, false, false);
+                    return await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
                 }
 
-                throw new Error("Cannot spawn object of type: " + message.spawnType + " with " + message.components.length + " components (not registered, you might need to add this to config.rooms.advanced.unknownObjects)");
+                this.logger.error("Couldn't spawn object of type: %s with %s component%s (not registered, you might need to add this to config.rooms.advanced.unknownObjects)",
+                    message.spawnType, message.components.length, message.components.length === 1 ? "" : "s");
+                return;
+            }
+
+            if (registeredPrefab.length !== message.components.length) {
+                this.logger.error("Couldn't spawn object type %s with %s component%s, prefab expected %s component%s",
+                    message.spawnType, message.components.length, message.components.length === 1 ? "" : "s", registeredPrefab.length, registeredPrefab.length === 1 ? "" : "s");
+                return;
             }
 
             try {
-                this.spawnPrefabOfType(
+                const object = await this.createObjectWithNetIds(
                     message.spawnType,
+                    registeredPrefab,
                     message.ownerId,
                     message.flags,
-                    message.components,
-                    false,
-                    false
+                    message.components.map(x => x.netId),
                 );
+                for (let i = 0; i < message.components.length; i++) {
+                    object.components[i].deserializeFromReader(HazelReader.from(message.components[i].data), false);
+                }
             } catch (e) {
-
-                this.logger.error("Couldn't spawn object of type: %s (you might need to add it to config.rooms.advanced.unknownObjects)", message.spawnType);
+                this.logger.error("Couldn't spawn object of type: %s with %s component%s (you might need to add it to config.rooms.advanced.unknownObjects)",
+                    message.spawnType, message.components.length, message.components.length === 1 ? "" : "s");
+                throw e;
             }
         });
 
@@ -511,49 +525,34 @@ export class Room extends StatefulRoom<RoomEvents> {
                         return;
                     }
 
-                    if (!this.isAuthoritative) {
-                        await this.broadcast(
+                    if (this.isAuthoritative) {
+                        await this.broadcastImmediate(
+                            this.getExistingObjectSpawn(),
+                            undefined,
+                            [player]
+                        );
+                    } else {
+                        await this.broadcastImmediate(
                             this.getServerOwnedObjectSpawn(),
                             undefined,
                             [player],
                         );
-
-                        this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
-                            playerId: this.getAvailablePlayerID(),
-                            clientId: player.clientId,
-                            friendCode: player.friendCode,
-                            puid: player.puid,
-                        }], true, true);
-                        return;
                     }
-                    await this.broadcast(
-                        this.getExistingObjectSpawn(),
-                        undefined,
-                        [player]
-                    );
 
-                    const playerId = this.getAvailablePlayerID();
+                    const playerInfo = await this.createPlayerInfo(player);
+                    this.broadcastLazy(this.createObjectSpawnMessage(playerInfo));
 
-                    this.spawnPrefabOfType(SpawnType.PlayerInfo, -4, SpawnFlag.None, [{
-                        playerId: playerId,
-                        clientId: player.clientId,
-                        friendCode: player.friendCode,
-                        puid: player.puid,
-                    }], true, true);
+                    if (this.isAuthoritative) {
+                        await this.spawnNecessaryObjects();
 
-                    this.spawnNecessaryObjects();
+                        const playerControl = await this.createObjectOfType(SpawnType.Player, player.clientId, SpawnFlag.IsClientCharacter) as PlayerControl<this>;
+                        playerControl.playerId = playerInfo.playerId;
+                        await playerControl.processAwake();
+                        this.broadcastLazy(this.createObjectSpawnMessage(playerControl));
 
-                    this.spawnPrefabOfType(
-                        SpawnType.Player,
-                        player.clientId,
-                        SpawnFlag.IsClientCharacter,
-                        [{
-                            playerId: playerId,
-                        }],
-                    );
-
-                    if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
-                        this.playerAuthority?.characterControl?.syncSettings(this.settings);
+                        if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
+                            this.playerAuthority?.characterControl?.syncSettings(this.settings);
+                        }
                     }
                 }
             }
@@ -674,7 +673,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         super.destroy();
 
-        await this.broadcast([], [
+        await this.broadcastImmediate([], [
             new RemoveGameMessage(reason)
         ]);
 
@@ -757,17 +756,17 @@ export class Room extends StatefulRoom<RoomEvents> {
         if (!ev.canceled && this.messageStream.length) {
             const stream = this.messageStream;
             this.messageStream = [];
-            await this.broadcast(stream);
+            await this.broadcastImmediate(stream);
         }
     }
 
-    spawnComponent(component: NetworkedObject<any, any, this>): void {
+    spawnComponent(component: NetworkedObject<this>): void {
         if (!this.getOwnerOf(component))
             this.guardObjectAsOwner(component);
         super.spawnComponent(component);
     }
 
-    despawnComponent(component: NetworkedObject<any, any, this>): void {
+    despawnComponent(component: NetworkedObject<this>): void {
         if (this.canManageObject(component))
             this.disownObject(component);
 
@@ -778,6 +777,17 @@ export class Room extends StatefulRoom<RoomEvents> {
         return this.objectList
             .filter(object => object.ownerId === SpecialOwnerId.Server)
             .map(object => this.createObjectSpawnMessage(object));
+    }
+
+    async createPlayerInfo(player: Player<this>) {
+        const playerInfo = await this.createObjectOfType(SpawnType.PlayerInfo, SpecialOwnerId.Server, SpawnFlag.None) as NetworkedPlayerInfo<this>;
+        playerInfo.playerId = this.getAvailablePlayerID();
+        playerInfo.clientId = player.clientId;
+        playerInfo.friendCode = player.friendCode;
+        playerInfo.puid = player.puid;
+        await playerInfo.processAwake();
+        this.broadcastLazy(this.createObjectSpawnMessage(playerInfo));
+        return playerInfo;
     }
 
     /**
@@ -830,7 +840,7 @@ export class Room extends StatefulRoom<RoomEvents> {
      * @param connection The connection or the player that should be banned.
      * @param messages The messages in that the banned player gets displayed.
      */
-    banPlayer(connection: Connection | Player, message?: string): void {
+    banPlayer(connection: Connection | Player<this>, message?: string): void {
         if (connection instanceof Player) {
             return this.banPlayer(this.getConnection(connection) as Connection, message);
         }
@@ -986,10 +996,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         await Promise.all(promises);
     }
 
-    async broadcastMovement(
-        component: CustomNetworkTransform,
-        data: Buffer
-    ) {
+    async broadcastMovement(component: CustomNetworkTransform<this>, data: Buffer) {
         const sender = component.player;
         const movementPacket = new UnreliablePacket(
             [
@@ -1072,7 +1079,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         await Promise.all(promises);
     }
 
-    async broadcast(
+    async broadcastImmediate(
         gameData: BaseGameDataMessage[],
         payloads: BaseRootMessage[] = [],
         include?: PlayerResolvable[],
@@ -1116,7 +1123,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         super.setCode(code);
 
-        await this.broadcast([], [
+        await this.broadcastImmediate([], [
             new HostGameMessage(code)
         ]);
     }
@@ -1264,7 +1271,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         await this.updateAuthorityForClient(this.getClientAwareAuthorityId(client), client);
     }
 
-    canMakeHostChanges(player: Player) {
+    canMakeHostChanges(player: Player<this>) {
         const connection = this.getConnection(player);
         return this.authorityId === player.clientId || (connection && this.actingHosts.has(connection));
     }
@@ -1354,7 +1361,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     )
                 );
 
-                await this.broadcast([], [
+                await this.broadcastImmediate([], [
                     new JoinGameMessage(
                         this.code,
                         joiningClient.clientId,
@@ -1372,7 +1379,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 this.waitingForHost.add(joiningClient);
                 this.connections.set(joiningClient.clientId, joiningClient);
 
-                await this.broadcast([], [
+                await this.broadcastImmediate([], [
                     new JoinGameMessage(
                         this.code,
                         joiningClient.clientId,
@@ -1592,7 +1599,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             return;
         }
 
-        await this.broadcast([], [
+        await this.broadcastImmediate([], [
             new StartGameMessage(this.code)
         ]);
 
@@ -1612,9 +1619,10 @@ export class Room extends StatefulRoom<RoomEvents> {
                 SpawnType.FungleShipStatus,
             ];
 
-            const wait = this.settings.map === GameMap.Airship
+            const wait = this.settings.map === GameMap.Airship || this.settings.map === GameMap.Fungle
+                ? 15 : 10; // seconds
 
-            this.spawnPrefabOfType(shipPrefabs[this.settings.map] || 0, SpecialOwnerId.Global);
+            await this.spawnObjectOfType(shipPrefabs[this.settings.map] || 0, SpecialOwnerId.Global, 0);
 
             this.logger.info("Waiting for players to ready up..");
 
@@ -1630,7 +1638,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                         });
                     })
                 ),
-                sleep(3000),
+                sleep(wait * 1000),
             ]);
 
             const removes = [];
@@ -1644,7 +1652,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             }
 
             if (removes.length) {
-                await this.broadcast(
+                await this.broadcastImmediate(
                     [],
                     removes.map((clientId) => {
                         return new RemovePlayerMessage(
@@ -1657,11 +1665,9 @@ export class Room extends StatefulRoom<RoomEvents> {
                 );
             }
 
-            this.logger.info("Assigning tasks..");
-            await this.shipStatus?.assignTasks();
             this.logger.info("Assigning roles..");
-
             await this.gameManager?.onGameStart();
+            this.logger.info("Assigning tasks..");
             await this.shipStatus?.assignTasks();
 
             if (this.shipStatus) {
@@ -1689,7 +1695,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             this.despawnComponent(component);
         }
 
-        await this.broadcast([], [
+        await this.broadcastImmediate([], [
             new EndGameMessage(this.code, reason, false)
         ]);
 
@@ -1705,24 +1711,25 @@ export class Room extends StatefulRoom<RoomEvents> {
         await this.handleEnd(reason, intent);
     }
 
-    protected spawnUnknownPrefab(
+    protected async createUnknownPrefab(
         spawnType: number,
-        ownerId: number | Player | undefined,
+        ownerId: number,
         flags: number,
-        componentData: (any | ComponentSpawnData)[],
-        doBroadcast = true,
-        doAwake = true
+        componentsData: ComponentSpawnData[],
     ) {
         const _ownerId = ownerId === undefined || ownerId === SpecialOwnerId.Global ? this :
             typeof ownerId === "number"
                 ? this.players.get(ownerId)
                 : ownerId;
 
-        const prefab = new Array(componentData.length).fill(UnknownComponent);
+        const prefab = new Array(componentsData.length).fill(UnknownComponent);
         this.logger.warn("Spawning unknown prefab with spawn id %s, owned by %s, with %s component%s (flags=%s)",
-            spawnType, _ownerId, componentData.length, componentData.length === 1 ? "" : "s", flags);
+            spawnType, _ownerId, componentsData, componentsData.length === 1 ? "" : "s", flags);
 
-        return this.spawnPrefab(spawnType, prefab, ownerId, flags, componentData, doBroadcast, doAwake);
+        const unknownObject = await this.createObjectWithNetIds(spawnType, prefab, ownerId, flags, componentsData.map(x => x.netId));
+        for (let i = 0; i < componentsData.length; i++) {
+            unknownObject.components[i].deserializeFromReader(HazelReader.from(componentsData[i].data), true);
+        }
     }
 
     private getOtherPlayer(base: Player<this>) {
@@ -1757,7 +1764,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         const oldSkin = defaultOutfit.skinId;
         const oldVisor = defaultOutfit.visorId;
 
-        await this.broadcast([
+        await this.broadcastImmediate([
             new RpcMessage(
                 sendPlayer.characterControl.netId,
                 new SetNameMessage(sendPlayer.characterControl.netId, options.name)
@@ -1881,54 +1888,6 @@ export class Room extends StatefulRoom<RoomEvents> {
     }
 
     /**
-     * Creates a fake dummy player without a connected client.
-     * @param isNew Whether or not this player should be considered as "joining" the room,
-     * i.e. whether they should hop off their seat in the lobby.
-     * @param setCosmetics Whether or not default cosmetics should be set for this player,
-     * i.e. whether they should be immediately visible as a player.
-     * @param isRecorded Whether or not the player should appear in {@link GameData}. If not,
-     * they won't count as an actual player and will live (mostly) off-the-grid.
-     * @returns The created player.
-     * @example
-     * ```ts
-     * const player = room.createFakePlayer();
-     *
-     * ...
-     *
-     * room.removeFakePlayer(player);
-     * ```
-     */
-    async createFakePlayer(isNew = false, setCosmetics = true, isRecorded = false) {
-        const fakePlayer = new Player(this, this.worker.getNextClientId(), "dummy");
-        const playerControl = await this.spawnPrefabOfType(SpawnType.Player, SpecialOwnerId.Global, undefined, !isNew ? [{ isNew: false }] : undefined, true, isRecorded) as PlayerControl<this>;
-        playerControl.player = fakePlayer;
-        fakePlayer.characterControl = playerControl;
-
-        if (setCosmetics) {
-            fakePlayer.characterControl?.setName("dummy");
-            fakePlayer.characterControl?.setHat(Hat.NoHat);
-            fakePlayer.characterControl?.setColor(Color.White);
-            fakePlayer.characterControl?.setSkin(Skin.None);
-            fakePlayer.characterControl?.setPet(Pet.EmptyPet);
-            fakePlayer.characterControl?.setVisor(Visor.EmptyVisor);
-            fakePlayer.characterControl?.setNameplate(Nameplate.NoPlate);
-        }
-
-        const offAssignRoles = this.on("room.assignroles", ev => {
-            ev.setAssignment(fakePlayer, CrewmateRole);
-        });
-
-        const offComponentDepawn = this.on("component.despawn", ev => {
-            if (ev.component instanceof PlayerControl && ev.component === fakePlayer.characterControl) {
-                offAssignRoles();
-                offComponentDepawn();
-            }
-        });
-
-        return fakePlayer;
-    }
-
-    /**
      * Short-hand for removing a fake player created with {@link Room.createFakePlayer}. This will
      * despawn the player immediately.
      * @param player The fake player to remove from the game.
@@ -1941,7 +1900,7 @@ export class Room extends StatefulRoom<RoomEvents> {
      * room.removeFakePlayer(player);
      * ```
      */
-    removeFakePlayer(player: Player) {
+    removeFakePlayer(player: Player<this>) {
         player.destroy();
     }
 
@@ -1977,7 +1936,7 @@ export class Room extends StatefulRoom<RoomEvents> {
      * change is that packets won't be managed by rooms that the object does not belong to.
      * @param netObject The object to own
      */
-    guardObjectAsOwner(netObject: NetworkedObject) {
+    guardObjectAsOwner(netObject: NetworkedObject<this>) {
         if (this.ownershipGuards.has(netObject.netId))
             throw new Error("An object with the same network id is already owned; the room must disown it first");
 
@@ -1988,7 +1947,7 @@ export class Room extends StatefulRoom<RoomEvents> {
      * Unknown an object so that all rooms can make changes to it.
      * @param netObject The object to disown
      */
-    disownObject(netObject: NetworkedObject) {
+    disownObject(netObject: NetworkedObject<this>) {
         const ownership = this.ownershipGuards.get(netObject.netId);
         if (!ownership || ownership !== this)
             throw new Error("Cannot disown object; an object with that network id isn't owned by this room");
@@ -2000,11 +1959,11 @@ export class Room extends StatefulRoom<RoomEvents> {
      * Get the owner of an object.
      * @param netObject The object to disown
      */
-    getOwnerOf(netObject: NetworkedObject) {
+    getOwnerOf(netObject: NetworkedObject<this>) {
         return this.ownershipGuards.get(netObject.netId);
     }
 
-    canManageObject(object: NetworkedObject): boolean {
+    canManageObject(object: NetworkedObject<this>): boolean {
         const ownership = this.ownershipGuards.get(object.netId);
         return !ownership || ownership === this;
     }

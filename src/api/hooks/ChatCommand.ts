@@ -1,10 +1,11 @@
 import { Player } from "@skeldjs/core";
 import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
 import { MethodDecorator } from "../types";
+import { Room } from "../../worker";
 
 const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
 
-export type AccessCheckFn = (player: Player) => any;
+export type AccessCheckFn = (player: Player<Room>) => any;
 
 export interface PluginRegisteredChatCommandInfo {
     usage: string;

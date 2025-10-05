@@ -1,6 +1,6 @@
 You can create "fake players" in Hindenburg that aren't connected to any client or connection. These players can be created and destroyed at an instant.
 
-You can, for most tasks, use {@link BaseRoom.createFakePlayer}, as it's a thin wrapper over {@link BaseRoom.spawnPrefabOfType} with some helper options.
+You can, for most tasks, use {@link BaseRoom.createFakePlayer}, as it's a thin wrapper over {@link BaseRoom.spawnObjectOfType} with some helper options.
 
 ## Realistic players
 If you want the fake players to appear like they _are_ connected to a real client to other clients,

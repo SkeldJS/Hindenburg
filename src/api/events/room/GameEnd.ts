@@ -2,7 +2,7 @@ import { EndGameIntent, GameOverReason, RoomGameEndEvent as SkeldjsRoomGameEndEv
 import { CancelableEvent } from "@skeldjs/events";
 import { Room } from "../../../worker";
 
-export class RoomGameEndEvent extends SkeldjsRoomGameEndEvent implements CancelableEvent {
+export class RoomGameEndEvent extends SkeldjsRoomGameEndEvent<Room> implements CancelableEvent {
     canceled: boolean;
 
     constructor(

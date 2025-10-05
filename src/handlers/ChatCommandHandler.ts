@@ -316,7 +316,7 @@ export class ChatCommandHandler {
      * @param player The player to get available cmomands for.
      * @returns All commands that {@link player} can use.
      */
-    getAvailableCommandsForPlayer(player: Player) {
+    getAvailableCommandsForPlayer(player: Player<Room>) {
         return [...this.registeredCommands.values()].filter(command => command.accessCheck(player));
     }
 }

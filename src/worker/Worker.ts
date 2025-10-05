@@ -1025,7 +1025,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             }
 
             ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
-            await ctx.sender.room?.broadcast([], [
+            await ctx.sender.room?.broadcastImmediate([], [
                 new AlterGameMessage(ctx.sender.room.code, message.alterTag, message.value)
             ]);
         });

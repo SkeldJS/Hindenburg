@@ -418,7 +418,7 @@ for (const [ , playerInfo ] of gameDataPlayers) {
     }
 }
 
-this.plugin.room.spawnPrefabOfType(SpawnType.GameData, -2, 0, [
+this.plugin.room.spawnObjectOfType(SpawnType.GameData, -2, 0, [
     {
         players: gameDataPlayers
     }

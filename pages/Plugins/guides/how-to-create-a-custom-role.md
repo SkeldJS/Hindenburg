@@ -213,10 +213,10 @@ const jesterPov = this.jesterPerspective.resolvePlayer(this.jester); // get the 
 if (!jesterPov || !jesterPov.control) // for type safety, check if these two variables actually exist before using them
     return;
 
-jesterPov.control.setName("<color=purple>[Jester]</color> " + this.originalJesterName);
-jesterPov.control.setHat(Hat.Partyhat);
-jesterPov.control.setSkin(Skin.Clown);
-jesterPov.control.setPet(Pet.EmptyPet);
+jesterPov.characterControl.setName("<color=purple>[Jester]</color> " + this.originalJesterName);
+jesterPov.characterControl.setHat(Hat.Partyhat);
+jesterPov.characterControl.setSkin(Skin.Clown);
+jesterPov.characterControl.setPet(Pet.EmptyPet);
 ```
 
 We should now see _two_ changes:
@@ -289,7 +289,7 @@ The idea here is to _cancel_ the message, so as to stop the perspectve from proc
 ```ts
 if (flag) {
     message.cancel();
-    obj.Deserialize(reader, false);
+    obj.deserializeFromReader(reader, false);
 
     jesterPov.playerInfo.setName(PlayerOutfitType.Default, "<color=purple>[Jester]</color> " + this.originalJesterName);
     jesterPov.playerInfo.setHat(PlayerOutfitType.Default, Hat.Partyhat);
@@ -391,9 +391,9 @@ for (const [ , player ] of this.plugin.room.players) {
         continue;
 
     if (player === this.plugin.jester) {
-        player.control.setRole(ImpostorRole);
+        player.characterControl.setRole(ImpostorRole);
     } else {
-        player.control.setRole(CrewmateRole);
+        player.characterControl.setRole(CrewmateRole);
     }
 }
 ```

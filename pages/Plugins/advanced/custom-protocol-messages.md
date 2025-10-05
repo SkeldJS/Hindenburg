@@ -27,7 +27,7 @@ export class SayHelloMessage extends BaseRootMessage {
         super();
     }
 
-    static Deserialize(reader: HazelReader) {
+    static deserializeFromReader(reader: HazelReader) {
         const message = reader.string();
         return new MyRootMessage(message);
     }

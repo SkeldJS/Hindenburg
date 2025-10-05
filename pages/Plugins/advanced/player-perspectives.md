@@ -21,11 +21,11 @@ for (const [, player ] of perspective.players) {
     if (!player.control)
         continue;
 
-    player.control.setName("?????");
-    player.control.setColor(Color.Black);
-    player.control.setHat(Hat.NoHat);
-    player.control.setPet(Skin.None);
-    player.control.setSkin(Skin.None);
+    player.characterControl.setName("?????");
+    player.characterControl.setColor(Color.Black);
+    player.characterControl.setHat(Hat.NoHat);
+    player.characterControl.setPet(Skin.None);
+    player.characterControl.setSkin(Skin.None);
 }
 
 await sleep(10000);

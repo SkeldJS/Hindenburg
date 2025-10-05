@@ -165,7 +165,8 @@ export const logMaps = {
     [GameMap.MiraHQ]: "mira hq",
     [GameMap.Polus]: "polus",
     [GameMap.AprilFoolsTheSkeld]: "skeld april fools",
-    [GameMap.Airship]: "airship"
+    [GameMap.Airship]: "airship",
+    [GameMap.Fungal]: "fungal",
 };
 
 export type RoomEvents = StatefulRoomEvents<Room> & ExtractEventTypes<[
@@ -394,7 +395,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
             if (component) {
                 const reader = HazelReader.from(message.data);
-                component.Deserialize(reader);
+                component.deserializeFromReader(reader, false);
             }
         });
 
@@ -403,7 +404,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
             if (component) {
                 try {
-                    await component.HandleRpc(message.data);
+                    await component.handleRemoteCall(message.data);
                 } catch (e) {
                     this.logger.error("Could not process remote procedure call from client %s (net id %s, %s): %s",
                         sender, component.netId, SpawnType[component.spawnType] || "Unknown", e);
@@ -552,7 +553,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     );
 
                     if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
-                        this.playerAuthority?.control?.syncSettings(this.settings);
+                        this.playerAuthority?.characterControl?.syncSettings(this.settings);
                     }
                 }
             }
@@ -704,14 +705,13 @@ export class Room extends StatefulRoom<RoomEvents> {
             if (!component)
                 continue;
 
-            component.FixedUpdate(delta / 1000);
+            await component.processFixedUpdate(delta / 1000);
 
             if (component.dirtyBit <= 0)
                 continue;
 
-            component.PreSerialize();
             const writer = HazelWriter.alloc(1024);
-            if (component.Serialize(writer, false)) {
+            if (component.serializeToWriter(writer, false)) {
                 writer.realloc(writer.cursor);
                 this.messageStream.push(new DataMessage(component.netId, writer.buffer));
             }
@@ -1036,8 +1036,10 @@ export class Room extends StatefulRoom<RoomEvents> {
             if (player === sender || !connection)
                 continue;
 
-            if (player.transform && this.worker.config.optimizations.movement.visionChecks) {
-                const dist = component.position.dist(player.transform.position);
+            const playerTransform = player.characterControl?.getComponentSafe(2, CustomNetworkTransform);
+
+            if (playerTransform && this.worker.config.optimizations.movement.visionChecks) {
+                const dist = component.position.dist(playerTransform.position);
 
                 if (dist >= 7) // todo: ignore this check if the player is near the admin table
                     continue;
@@ -1600,15 +1602,19 @@ export class Room extends StatefulRoom<RoomEvents> {
             if (this.lobbyBehaviour)
                 this.despawnComponent(this.lobbyBehaviour);
 
-            const ship_prefabs = [
+            // TODO: allow plugins to select map
+            const shipPrefabs = [
                 SpawnType.SkeldShipStatus,
                 SpawnType.MiraShipStatus,
-                SpawnType.Polus,
+                SpawnType.PolusShipStatus,
                 SpawnType.AprilShipStatus,
-                SpawnType.Airship
+                SpawnType.AirshipShipStatus,
+                SpawnType.FungleShipStatus,
             ];
 
-            this.spawnPrefabOfType(ship_prefabs[this.settings?.map] || 0, SpecialOwnerId.Global);
+            const wait = this.settings.map === GameMap.Airship
+
+            this.spawnPrefabOfType(shipPrefabs[this.settings.map] || 0, SpecialOwnerId.Global);
 
             this.logger.info("Waiting for players to ready up..");
 
@@ -1619,9 +1625,8 @@ export class Room extends StatefulRoom<RoomEvents> {
                             return Promise.resolve();
 
                         return new Promise<void>((resolve) => {
-                            player.once("player.ready", () => {
-                                resolve();
-                            });
+                            player.once("player.ready", () => resolve());
+                            player.once("player.leave", () => resolve());
                         });
                     })
                 ),
@@ -1723,7 +1728,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     private getOtherPlayer(base: Player<this>) {
         for (const [, player] of this.players) {
             const playerInfo = player.getPlayerInfo();
-            if (playerInfo?.defaultOutfit && playerInfo.defaultOutfit.color > -1 && player.control && base !== player) {
+            if (playerInfo?.defaultOutfit && playerInfo.defaultOutfit.color > -1 && player.characterControl && base !== player) {
                 return player;
             }
         }
@@ -1736,7 +1741,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             ? this.getOtherPlayer(player) || player
             : player;
 
-        if (!sendPlayer.control)
+        if (!sendPlayer.characterControl)
             return;
 
         const sendPlayerInfo = sendPlayer.getPlayerInfo();
@@ -1754,47 +1759,47 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         await this.broadcast([
             new RpcMessage(
-                sendPlayer.control.netId,
-                new SetNameMessage(sendPlayer.control.netId, options.name)
+                sendPlayer.characterControl.netId,
+                new SetNameMessage(sendPlayer.characterControl.netId, options.name)
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
-                new SetColorMessage(sendPlayer.control.netId, options.color)
+                sendPlayer.characterControl.netId,
+                new SetColorMessage(sendPlayer.characterControl.netId, options.color)
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
+                sendPlayer.characterControl.netId,
                 new SetHatMessage(options.hatId, defaultOutfit.nextHatSequenceId())
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
+                sendPlayer.characterControl.netId,
                 new SetSkinMessage(options.skinId, defaultOutfit.nextSkinSequenceId())
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
+                sendPlayer.characterControl.netId,
                 new SetVisorMessage(options.visorId, defaultOutfit.nextVisorSequenceId())
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
+                sendPlayer.characterControl.netId,
                 new SendChatMessage(message)
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
-                new SetNameMessage(sendPlayer.control.netId, oldName)
+                sendPlayer.characterControl.netId,
+                new SetNameMessage(sendPlayer.characterControl.netId, oldName)
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
-                new SetColorMessage(sendPlayer.control.netId, oldColor)
+                sendPlayer.characterControl.netId,
+                new SetColorMessage(sendPlayer.characterControl.netId, oldColor)
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
+                sendPlayer.characterControl.netId,
                 new SetHatMessage(oldHat, defaultOutfit.nextHatSequenceId())
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
+                sendPlayer.characterControl.netId,
                 new SetSkinMessage(oldSkin, defaultOutfit.nextSkinSequenceId())
             ),
             new RpcMessage(
-                sendPlayer.control.netId,
+                sendPlayer.characterControl.netId,
                 new SetVisorMessage(oldVisor, defaultOutfit.nextVisorSequenceId())
             )
         ], undefined, [player]);
@@ -1893,20 +1898,20 @@ export class Room extends StatefulRoom<RoomEvents> {
      * room.removeFakePlayer(player);
      * ```
      */
-    createFakePlayer(isNew = false, setCosmetics = true, isRecorded = false) {
+    async createFakePlayer(isNew = false, setCosmetics = true, isRecorded = false) {
         const fakePlayer = new Player(this, this.worker.getNextClientId(), "dummy");
-        const playerControl = this.spawnPrefabOfType(SpawnType.Player, SpecialOwnerId.Global, undefined, !isNew ? [{ isNew: false }] : undefined, true, isRecorded) as PlayerControl<this>;
+        const playerControl = await this.spawnPrefabOfType(SpawnType.Player, SpecialOwnerId.Global, undefined, !isNew ? [{ isNew: false }] : undefined, true, isRecorded) as PlayerControl<this>;
         playerControl.player = fakePlayer;
-        fakePlayer.control = playerControl;
+        fakePlayer.characterControl = playerControl;
 
         if (setCosmetics) {
-            fakePlayer.control?.setName("dummy");
-            fakePlayer.control?.setHat(Hat.NoHat);
-            fakePlayer.control?.setColor(Color.White);
-            fakePlayer.control?.setSkin(Skin.None);
-            fakePlayer.control?.setPet(Pet.EmptyPet);
-            fakePlayer.control?.setVisor(Visor.EmptyVisor);
-            fakePlayer.control?.setNameplate(Nameplate.NoPlate);
+            fakePlayer.characterControl?.setName("dummy");
+            fakePlayer.characterControl?.setHat(Hat.NoHat);
+            fakePlayer.characterControl?.setColor(Color.White);
+            fakePlayer.characterControl?.setSkin(Skin.None);
+            fakePlayer.characterControl?.setPet(Pet.EmptyPet);
+            fakePlayer.characterControl?.setVisor(Visor.EmptyVisor);
+            fakePlayer.characterControl?.setNameplate(Nameplate.NoPlate);
         }
 
         const offAssignRoles = this.on("room.assignroles", ev => {
@@ -1914,7 +1919,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         });
 
         const offComponentDepawn = this.on("component.despawn", ev => {
-            if (ev.component instanceof PlayerControl && ev.component === fakePlayer.control) {
+            if (ev.component instanceof PlayerControl && ev.component === fakePlayer.characterControl) {
                 offAssignRoles();
                 offComponentDepawn();
             }

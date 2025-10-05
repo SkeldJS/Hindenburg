@@ -755,9 +755,9 @@ export class PluginLoader {
             [SpawnType.LobbyBehaviour, [LobbyBehaviour]],
             [SpawnType.Player, [PlayerControl, PlayerPhysics, CustomNetworkTransform]],
             [SpawnType.MiraShipStatus, [MiraShipStatus]],
-            [SpawnType.Polus, [PolusShipStatus]],
+            [SpawnType.PolusShipStatus, [PolusShipStatus]],
             [SpawnType.AprilShipStatus, [AprilShipStatus]],
-            [SpawnType.Airship, [AirshipStatus]],
+            [SpawnType.AirshipShipStatus, [AirshipStatus]],
             [SpawnType.HideAndSeekManager, [HideAndSeekManager]],
             [SpawnType.NormalGameManager, [NormalGameManager]],
             [SpawnType.PlayerInfo, [NetworkedPlayerInfo]], // TODO

@@ -24,7 +24,7 @@ You can pass in [any valid protocol message class](https://skeld.js.org/modules/
 
 The body of your method can be marked as [_async_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function), and takes in 2 parameters:
 #### `message`
-This is an instance of the message that you are listening for, after being through the message class' [Deserialize](https://skeld.js.org/classes/protocol.BaseMessage.html#Deserialize) method.
+This is an instance of the message that you are listening for, after being through the message class' [deserializeFromReader](https://skeld.js.org/classes/protocol.BaseMessage.html#deserializeFromReader) method.
 
 In TypeScript, the type of this parameter _must_ be an instance of the message class that you passed into the `@MessageHandler` decorator.
 

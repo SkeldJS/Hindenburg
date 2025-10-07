@@ -16,6 +16,7 @@ import {
     CrewmateRole,
     CustomNetworkTransform,
     EngineerRole,
+    FungleShipStatus,
     GuardianAngelRole,
     HideAndSeekManager,
     ImpostorRole,
@@ -760,9 +761,9 @@ export class PluginLoader {
             [SpawnType.AirshipShipStatus, [AirshipStatus]],
             [SpawnType.HideAndSeekManager, [HideAndSeekManager]],
             [SpawnType.NormalGameManager, [NormalGameManager]],
-            [SpawnType.PlayerInfo, [NetworkedPlayerInfo]], // TODO
+            [SpawnType.PlayerInfo, [NetworkedPlayerInfo]],
             [SpawnType.VoteBanSystem, [VoteBanSystem]],
-            [SpawnType.FungleShipStatus, []], // TODO
+            [SpawnType.FungleShipStatus, [ FungleShipStatus ]],
         ]);
 
         for (const [, loadedPlugin] of room.workerPlugins) {

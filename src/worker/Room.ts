@@ -418,23 +418,6 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.decoder.on(SpawnMessage, async (message, _direction, { sender }) => {
             const ownerClient = this.players.get(message.ownerId);
 
-            if (this.isAuthoritative && message.ownerId === SpecialClientId.Temp) {
-                if (!sender)
-                    return;
-
-                await this.broadcastImmediate(message.components.map(comp => new DespawnMessage(comp.netId)), [
-                    new RemovePlayerMessage(
-                        this.code,
-                        SpecialClientId.Temp,
-                        DisconnectReason.ServerRequest,
-                        sender?.clientId
-                    ),
-                ]);
-
-                this.lastNetId = message.components[message.components.length - 1].netId;
-                return;
-            }
-
             if (message.ownerId > 0 && !ownerClient)
                 return;
 
@@ -478,7 +461,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     message.components.map(x => x.netId),
                 );
                 for (let i = 0; i < message.components.length; i++) {
-                    object.components[i].deserializeFromReader(HazelReader.from(message.components[i].data), false);
+                    object.components[i].deserializeFromReader(HazelReader.from(message.components[i].data), true);
                 }
             } catch (e) {
                 this.logger.error("Couldn't spawn object of type: %s with %s component%s (you might need to add it to config.rooms.advanced.unknownObjects)",
@@ -540,7 +523,6 @@ export class Room extends StatefulRoom<RoomEvents> {
                     }
 
                     const playerInfo = await this.createPlayerInfo(player);
-                    this.broadcastLazy(this.createObjectSpawnMessage(playerInfo));
 
                     if (this.isAuthoritative) {
                         await this.spawnNecessaryObjects();
@@ -553,6 +535,8 @@ export class Room extends StatefulRoom<RoomEvents> {
                         if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
                             this.playerAuthority?.characterControl?.syncSettings(this.settings);
                         }
+                    } else {
+                        this.broadcastLazy(this.createObjectSpawnMessage(playerInfo));
                     }
                 }
             }
@@ -787,6 +771,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         playerInfo.puid = player.puid;
         await playerInfo.processAwake();
         this.broadcastLazy(this.createObjectSpawnMessage(playerInfo));
+        this.playerInfo.set(playerInfo.playerId, playerInfo);
         return playerInfo;
     }
 
@@ -1228,7 +1213,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         }
 
         this.authorityId = SpecialClientId.ServerAuthority;
-        this.config.authoritativeServer = false;
+        this.config.authoritativeServer = true;
 
         // TODO: look at game-end scenarios?
 
@@ -1965,6 +1950,6 @@ export class Room extends StatefulRoom<RoomEvents> {
 
     canManageObject(object: NetworkedObject<this>): boolean {
         const ownership = this.ownershipGuards.get(object.netId);
-        return !ownership || ownership === this;
+        return this.isAuthoritative && (!ownership || ownership === this);
     }
 }

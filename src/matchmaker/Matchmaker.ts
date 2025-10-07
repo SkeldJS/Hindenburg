@@ -96,7 +96,7 @@ export class Matchmaker {
     verifyMatchmakerToken(token: string) {
         const decodedToken = Buffer.from(token, "base64").toString("utf8");
         const json = safeJsonParse(decodedToken) as MatchmakerTokenPayload;
-
+        
         if (!json)
             return new TypeError("Invalid JSON");
 
@@ -238,7 +238,6 @@ export class Matchmaker {
                 ctx.status = 400;
                 return;
             }
-
 
             if (typeof ctx.request.body.Language !== "number") {
                 this.logger.warn("Client failed to get a matchmaker token: No 'Language' provided in body");

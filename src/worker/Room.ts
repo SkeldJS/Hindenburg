@@ -1576,7 +1576,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     async startGame() {
         this.gameState = GameState.Started;
 
-        // TODO: "started by" event
+        // TODO: "started by" event information
         const ev = await this.emit(new RoomGameStartEvent(this));
 
         if (ev.canceled) {
@@ -1588,9 +1588,15 @@ export class Room extends StatefulRoom<RoomEvents> {
             new StartGameMessage(this.code)
         ]);
 
-        this.logger.info("Game started");
+        this.logger.info("Game started, managed by %s", this.isAuthoritative ? "server" : (this.playerAuthority || "unknown player"));
 
         if (this.isAuthoritative) {
+            const promises = [];
+            for (const [ , client ] of this.connections) {
+                promises.push(this.updateAuthorityForClient(SpecialClientId.ServerAuthority, client));
+            }
+            await Promise.all(promises);
+
             if (this.lobbyBehaviour)
                 this.despawnComponent(this.lobbyBehaviour);
 

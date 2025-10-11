@@ -1,5 +1,6 @@
 import dgram from "dgram";
 import chalk from "chalk";
+import * as util from "util";
 
 import { DisconnectReason, Language, Platform, QuickChatMode } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
@@ -14,7 +15,6 @@ import {
 } from "@skeldjs/protocol";
 
 import { ClientDisconnectEvent, ClientLeaveEvent } from "../api";
-import { fmtCode } from "../util/fmtCode";
 import { fmtConfigurableLog } from "../util/fmtLogFormat";
 
 import { Worker } from "./Worker";
@@ -213,7 +213,7 @@ export class Connection {
                     ? undefined
                     : this.remoteInfo.address,
                 ping: this.roundTripPing + "ms",
-                room: this.room ? fmtCode(this.room.code) : undefined,
+                room: this.room ? util.inspect(this.room.code, true, null, true) : undefined,
                 level: "level " + this.playerLevel,
                 version: this.clientVersion.toString(),
                 platform: (logPlatforms as any)[this.platform.platformTag],

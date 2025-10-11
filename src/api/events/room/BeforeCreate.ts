@@ -1,7 +1,7 @@
 import { CancelableEvent } from "@skeldjs/events";
 import { GameSettings } from "@skeldjs/protocol";
-import { GameCode } from "@skeldjs/util";
-import { Connection } from "../../../worker";
+
+import { Connection, RoomCode } from "../../../worker";
 
 /**
  * Emitted before a player successfully or unsuccessfully creates a room.
@@ -24,7 +24,7 @@ export class RoomBeforeCreateEvent extends CancelableEvent {
     static eventName = "room.beforecreate" as const;
     eventName = "room.beforecreate" as const;
 
-    private _alteredRoomCode: number;
+    private _alteredRoomCode: RoomCode;
 
     constructor(
         /**
@@ -38,7 +38,7 @@ export class RoomBeforeCreateEvent extends CancelableEvent {
         /**
          * The game code of the room that will be created.
          */
-        public readonly roomCode: number
+        public readonly roomCode: RoomCode
     ) {
         super();
 
@@ -56,12 +56,7 @@ export class RoomBeforeCreateEvent extends CancelableEvent {
      * Change the room code for the room.
      * @param roomCode The new room code
      */
-    setCode(roomCode: number | string) {
-        if (typeof roomCode === "string") {
-            this.setCode(GameCode.convertStringToInt(roomCode));
-            return;
-        }
-
+    setCode(roomCode: RoomCode) {
         this._alteredRoomCode = roomCode;
     }
 }

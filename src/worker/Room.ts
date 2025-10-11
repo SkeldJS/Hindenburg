@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import * as util from "util";
 
 import {
     AlterGameTag,
@@ -8,12 +9,11 @@ import {
     GameOverReason,
     GameState,
     Hat,
-    Nameplate,
-    Pet,
     Platform,
     Skin,
     SpawnFlag,
     SpawnType,
+    SystemType,
     Visor
 } from "@skeldjs/constant";
 
@@ -55,7 +55,6 @@ import {
 } from "@skeldjs/protocol";
 
 import {
-    CrewmateRole,
     CustomNetworkTransform,
     EndGameIntent,
     StatefulRoom,
@@ -69,14 +68,14 @@ import {
     PlayerSetAuthoritativeEvent,
     RoomEndGameIntentEvent,
     RoomFixedUpdateEvent,
-    RoomSetPrivacyEvent,
     SpecialOwnerId,
     ColorCodes,
-    NetworkedPlayerInfo
+    NetworkedPlayerInfo,
+    MeetingHud
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
-import { GameCode, HazelReader, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
+import { HazelReader, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
 
 import {
     ClientLeaveEvent,
@@ -109,7 +108,6 @@ import {
 
 import { UnknownComponent } from "../components";
 
-import { fmtCode } from "../util/fmtCode";
 import { fmtConfigurableLog } from "../util/fmtLogFormat";
 import { Logger } from "../logger";
 
@@ -169,6 +167,99 @@ export const logMaps = {
     [GameMap.Airship]: "airship",
     [GameMap.Fungle]: "fungle",
 };
+
+export enum RoomCodeVersion {
+    V1,
+    V2,
+}
+
+export class RoomCode {
+    static characters = "QWXRTYLPESDFGHUJKZOCVBINMA";
+    static indexes = [ 25, 21, 19, 10, 8, 11, 12, 13, 22, 15, 16, 6, 24, 23, 18, 7, 0, 3, 9, 4, 14, 20, 1, 2, 5, 17];
+
+    static nil = new RoomCode(0);
+
+    private static fromV2Parts(a: number, b: number, c: number, d: number, e: number, f: number): RoomCode {
+        const one = (a + 26 * b) & 0x3ff;
+        const two = c + 26 * (d + 26 * (e + 26 * f));
+
+        return new RoomCode(one | ((two << 10) & 0x3ffffc00) | 0x80000000);
+    }
+
+    static fromString(str: string): RoomCode {
+        if (str.length === 6) {
+            const a = RoomCode.indexes[str.charCodeAt(0) - 65];
+            const b = RoomCode.indexes[str.charCodeAt(1) - 65];
+            const c = RoomCode.indexes[str.charCodeAt(2) - 65];
+            const d = RoomCode.indexes[str.charCodeAt(3) - 65];
+            const e = RoomCode.indexes[str.charCodeAt(4) - 65];
+            const f = RoomCode.indexes[str.charCodeAt(5) - 65];
+
+            return RoomCode.fromV2Parts(a, b, c, d, e, f);
+        } else if (str.length === 4) {
+            const a = str.charCodeAt(0) & 0xff;
+            const b = str.charCodeAt(1) & 0xff;
+            const c = str.charCodeAt(2) & 0xff;
+            const d = str.charCodeAt(3) & 0xff;
+
+            return new RoomCode(a | (b << 8) | (c << 16) | (d << 24));
+        } else {
+            throw new Error("Invalid room code, expected '4' or '6' characters long, got string with " + str.length + " characters.");
+        }
+    }
+
+    static generateRandom(version: RoomCodeVersion): RoomCode {
+        switch (version) {
+            case RoomCodeVersion.V1:
+                const a = ~~(Math.random() * 26) + 65;
+                const b = ~~(Math.random() * 26) + 65;
+                const c = ~~(Math.random() * 26) + 65;
+                const d = ~~(Math.random() * 26) + 65;
+
+                return new RoomCode(a | (b << 8) | (c << 16) | (d << 24));
+            case RoomCodeVersion.V2:
+                return RoomCode.fromV2Parts(
+                    ~~(Math.random() * 26),
+                    ~~(Math.random() * 26),
+                    ~~(Math.random() * 26),
+                    ~~(Math.random() * 26),
+                    ~~(Math.random() * 26),
+                    ~~(Math.random() * 26)
+                );
+        }
+    }
+
+    constructor(public readonly id: number) {}
+    
+    [Symbol.for("nodejs.util.inspect.custom")]() {
+        return chalk.yellow(this.toString());
+    }
+
+    get version() {
+        return this.id < 0 ? RoomCodeVersion.V2 : RoomCodeVersion.V1;
+    }
+
+    get isNil() {
+        return this.id === 0;
+    }
+
+    toString(): string {
+        switch (this.version) {
+            case RoomCodeVersion.V1:
+                return String.fromCharCode(this.id & 0xff, (this.id >> 8) & 0xff, (this.id >> 16) & 0xff, (this.id >> 24) & 0xff);
+            case RoomCodeVersion.V2:
+                const a = this.id & 0x3ff;
+                const b = (this.id >> 10) & 0xfffff;
+
+                return RoomCode.characters[a % 26] +
+                    RoomCode.characters[~~(a / 26)] +
+                    RoomCode.characters[b % 26] +
+                    RoomCode.characters[~~((b / 26) % 26)] +
+                    RoomCode.characters[~~((b / (26 * 26)) % 26)] +
+                    RoomCode.characters[~~((b / (26 * 26 * 26)) % 26)];
+        }
+    }
+}
 
 export type RoomEvents = StatefulRoomEvents<Room> & ExtractEventTypes<[
     ClientBroadcastEvent,
@@ -239,6 +330,7 @@ export class Room extends StatefulRoom<RoomEvents> {
          * The worker that instantiated this object.
          */
         public readonly worker: Worker,
+        public code: RoomCode,
         /**
          * The config for the room, the worker uses the worker's {@link HindenburgConfig.rooms} config to initialise it as.
          */
@@ -280,7 +372,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.authorityId = this.config.authoritativeServer ? SpecialClientId.ServerAuthority : 0;
         this.actingHosts = new Set;
 
-        this.logger = new Logger(() => chalk.yellow(fmtCode(this.code)), this.worker.vorpal);
+        this.logger = new Logger(() => util.inspect(this.code, true, null, true), this.worker.vorpal);
 
         this.on("player.setname", async ev => {
             if (ev.oldName) {
@@ -345,11 +437,6 @@ export class Room extends StatefulRoom<RoomEvents> {
             }
         });
 
-        this.on("room.setprivacy", ev => {
-            this.logger.info("Privacy changed to %s",
-                ev.newPrivacy);
-        });
-
         this.registerPacketHandlers();
     }
 
@@ -364,30 +451,41 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         this.decoder.on(AlterGameMessage, async message => {
             if (message.alterTag === AlterGameTag.ChangePrivacy) {
-                const messagePrivacy = message.value ? "public" : "private";
-                const oldPrivacy = this.privacy;
-                const ev = await this.emit(
-                    new RoomSetPrivacyEvent(
-                        this,
-                        message,
-                        oldPrivacy,
-                        messagePrivacy
+                // const messagePrivacy = message.value ? "public" : "private";
+                // const oldPrivacy = this.privacy;
+                // TODO: privacy event again
+                // const ev = await this.emit(
+                //     new RoomSetPrivacyEvent(
+                //         this,
+                //         message,
+                //         oldPrivacy,
+                //         messagePrivacy
+                //     )
+                // );
+
+                // if (ev.alteredPrivacy !== messagePrivacy) {
+                //     await this.broadcastImmediate([], [
+                //         new AlterGameMessage(
+                //             this.code,
+                //             AlterGameTag.ChangePrivacy,
+                //             ev.alteredPrivacy === "public" ? 1 : 0
+                //         )
+                //     ]);
+                // }
+                
+                await this.broadcastImmediate([], [
+                    new AlterGameMessage(
+                        this.code.id,
+                        AlterGameTag.ChangePrivacy,
+                        message.value,
                     )
-                );
+                ]);
 
-                if (ev.alteredPrivacy !== messagePrivacy) {
-                    await this.broadcastImmediate([], [
-                        new AlterGameMessage(
-                            this.code,
-                            AlterGameTag.ChangePrivacy,
-                            ev.alteredPrivacy === "public" ? 1 : 0
-                        )
-                    ]);
-                }
+                this.privacy = message.value === 1 ? "public" : "private";
 
-                if (ev.alteredPrivacy !== oldPrivacy) {
-                    this._setPrivacy(ev.alteredPrivacy);
-                }
+                // if (ev.alteredPrivacy !== oldPrivacy) {
+                //     this._setPrivacy(ev.alteredPrivacy);
+                // }
             }
         });
 
@@ -555,7 +653,6 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.players.clear();
         this.networkedObjects.clear();
         this.messageStream = [];
-        this.code = 0;
         this.authorityId = 0;
         this.settings = new GameSettings;
         this.counter = -1;
@@ -613,7 +710,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             }
         );
 
-        return chalk.yellow(fmtCode(this.code))
+        return util.inspect(this.code, true, null, true)
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 
@@ -642,7 +739,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         const hostConnection = this.playerAuthority ? this.connections.get(this.playerAuthority.clientId) : undefined;
 
-        return hostConnection?.username || fmtCode(this.code);
+        return hostConnection?.username || this.code.toString();
     }
 
     /**
@@ -662,7 +759,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         ]);
 
         this.gameState = GameState.Destroyed;
-        this.worker.rooms.delete(this.code);
+        this.worker.rooms.delete(this.code.id);
 
         this.emit(new RoomDestroyEvent(this));
 
@@ -902,7 +999,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     ...(ev.alteredGameData.length
                         ? [
                             new GameDataToMessage(
-                                this.code,
+                                this.code.id,
                                 singleClient.clientId,
                                 ev.alteredGameData
                             )
@@ -950,12 +1047,12 @@ export class Room extends StatefulRoom<RoomEvents> {
                         ? [
                             include
                                 ? new GameDataToMessage(
-                                    this.code,
+                                    this.code.id,
                                     connection.clientId,
                                     ev.alteredGameData
                                 )
                                 : new GameDataMessage(
-                                    this.code,
+                                    this.code.id,
                                     ev.alteredGameData
                                 )
                         ] : []
@@ -986,7 +1083,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         const movementPacket = new UnreliablePacket(
             [
                 new GameDataMessage(
-                    this.code,
+                    this.code.id,
                     [
                         new DataMessage(
                             component.netId,
@@ -1094,22 +1191,16 @@ export class Room extends StatefulRoom<RoomEvents> {
         }
     }
 
-    async setCode(code: number | string): Promise<void> {
-        if (typeof code === "string") {
-            return this.setCode(GameCode.convertStringToInt(code));
-        }
-
+    async setCode(code: RoomCode): Promise<void> {
         if (this.code) {
             this.logger.info(
-                "Game code changed to [%s]",
-                fmtCode(code)
+                "Game code changed to %s",
+                code
             );
         }
 
-        super.setCode(code);
-
         await this.broadcastImmediate([], [
-            new HostGameMessage(code)
+            new HostGameMessage(code.id)
         ]);
     }
 
@@ -1121,7 +1212,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     async updateAuthorityForClient(authorityId: number, recipient: Connection) {
         await this.broadcastMessages([], [
             new JoinGameMessage(
-                this.code,
+                this.code.id,
                 SpecialClientId.Temp,
                 authorityId,
                 "TEMP",
@@ -1131,7 +1222,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 ""
             ),
             new RemovePlayerMessage(
-                this.code,
+                this.code.id,
                 SpecialClientId.Temp,
                 DisconnectReason.Error,
                 authorityId
@@ -1230,6 +1321,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     }
 
     getClientAwareAuthorityId(clientPov: Connection) {
+        if (this.config.authoritativeServer && this.gameState === GameState.Started) return SpecialClientId.ServerAuthority;
         if (this.actingHosts.has(clientPov)) return clientPov.clientId;
         return this.authorityId;
     }
@@ -1324,7 +1416,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                         joiningClient.getNextNonce(),
                         [
                             new JoinedGameMessage(
-                                this.code,
+                                this.code.id,
                                 joiningClient.clientId,
                                 this.authorityId,
                                 [...this.connections.values()]
@@ -1348,7 +1440,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
                 await this.broadcastImmediate([], [
                     new JoinGameMessage(
-                        this.code,
+                        this.code.id,
                         joiningClient.clientId,
                         this.authorityId,
                         joiningClient.username,
@@ -1366,7 +1458,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
                 await this.broadcastImmediate([], [
                     new JoinGameMessage(
-                        this.code,
+                        this.code.id,
                         joiningClient.clientId,
                         this.authorityId,
                         joiningClient.username,
@@ -1382,7 +1474,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                         joiningClient.getNextNonce(),
                         [
                             new WaitForHostMessage(
-                                this.code,
+                                this.code.id,
                                 joiningClient.clientId
                             )
                         ]
@@ -1401,7 +1493,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 joiningClient.getNextNonce(),
                 [
                     new JoinedGameMessage(
-                        this.code,
+                        this.code.id,
                         joiningClient.clientId,
                         // For now, the authority belongs to either the actual host or the server when it comes to
                         // handling the player joining. Once they have changed scene, they will become an acting host.
@@ -1417,7 +1509,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                             ))
                     ),
                     new AlterGameMessage(
-                        this.code,
+                        this.code.id,
                         AlterGameTag.ChangePrivacy,
                         this.privacy === "public" ? 1 : 0
                     )
@@ -1433,7 +1525,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                         otherClient.getNextNonce(),
                         [
                             new JoinGameMessage(
-                                this.code,
+                                this.code.id,
                                 joiningClient.clientId,
                                 this.getClientAwareAuthorityId(otherClient),
                                 joiningClient.username,
@@ -1514,7 +1606,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     otherClient.getNextNonce(),
                     [
                         new RemovePlayerMessage(
-                            this.code,
+                            this.code.id,
                             leavingConnection.clientId,
                             reason,
                             this.getClientAwareAuthorityId(otherClient),
@@ -1543,7 +1635,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                                 client.getNextNonce(),
                                 [
                                     new JoinedGameMessage(
-                                        this.code,
+                                        this.code.id,
                                         clientId,
                                         this.authorityId,
                                         [...this.connections.values()]
@@ -1585,7 +1677,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         }
 
         await this.broadcastImmediate([], [
-            new StartGameMessage(this.code)
+            new StartGameMessage(this.code.id)
         ]);
 
         this.logger.info("Game started, managed by %s", this.isAuthoritative ? "server" : (this.playerAuthority || "unknown player"));
@@ -1593,7 +1685,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         if (this.isAuthoritative) {
             const promises = [];
             for (const [ , client ] of this.connections) {
-                promises.push(this.updateAuthorityForClient(SpecialClientId.ServerAuthority, client));
+                promises.push(this.updateAuthorityForClient(this.getClientAwareAuthorityId(client), client));
             }
             await Promise.all(promises);
 
@@ -1647,7 +1739,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     [],
                     removes.map((clientId) => {
                         return new RemovePlayerMessage(
-                            this.code,
+                            this.code.id,
                             clientId,
                             DisconnectReason.Error,
                             this.authorityId
@@ -1687,7 +1779,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         }
 
         await this.broadcastImmediate([], [
-            new EndGameMessage(this.code, reason, false)
+            new EndGameMessage(this.code.id, reason, false)
         ]);
 
         this.logger.info("Game ended: %s", GameOverReason[ev.reason]);
@@ -1957,5 +2049,32 @@ export class Room extends StatefulRoom<RoomEvents> {
     canManageObject(object: NetworkedObject<this>): boolean {
         const ownership = this.ownershipGuards.get(object.netId);
         return this.isAuthoritative && (!ownership || ownership === this);
+    }
+
+    // Abstract implementations
+
+    clearMyVote(meetingHud: MeetingHud<this>): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    sendRepairSystem(systemType: SystemType, amount: number): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    async removePlayers(players: Player<this>[], reason: DisconnectReason): Promise<void> {
+        for (const [ , client ] of this.connections) {
+            await this.broadcastMessages([], players.map(player => 
+                new RemovePlayerMessage(this.code.id, player.clientId, reason, this.getClientAwareAuthorityId(client)),
+            ), [ client ]);
+            this.getClientAwareAuthorityId(client)
+        }
+    }
+
+    async playerVoteKicked(player: Player<this>): Promise<void> {
+        await this.removePlayers([ player ], DisconnectReason.Kicked);
+    }
+
+    async removeUnreadiedPlayers(players: Player<this>[]): Promise<void> {
+        await this.removePlayers(players, DisconnectReason.LobbyInactivity);
     }
 }

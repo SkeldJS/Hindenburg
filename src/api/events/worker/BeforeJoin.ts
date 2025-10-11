@@ -1,5 +1,5 @@
 import { CancelableEvent } from "@skeldjs/events";
-import { Connection, Room } from "../../../worker";
+import { Connection, Room, RoomCode } from "../../../worker";
 
 /**
  * Emitted before a player successfully or unsuccessfully joins a room on the
@@ -39,7 +39,7 @@ export class WorkerBeforeJoinEvent extends CancelableEvent {
         /**
          * The game code that the player used to search for a room.
          */
-        public readonly gameCode: number,
+        public readonly roomCode: RoomCode,
         /**
          * The room that was found, or `undefined` if there is no room on the
          * server with the code.

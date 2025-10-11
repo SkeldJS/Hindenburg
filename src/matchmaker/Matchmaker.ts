@@ -1,13 +1,14 @@
 import chalk from "chalk";
 import Koa from "koa";
-import http from "http";
-import KoaRouter from "@koa/router";
-import { GameCode, HazelWriter, VersionInfo } from "@skeldjs/util";
 import koaBody from "koa-body";
+import http from "http";
 import crypto from "crypto";
+
+import KoaRouter from "@koa/router";
+import { HazelWriter, VersionInfo } from "@skeldjs/util";
 import { DisconnectReason, Platform, StringNames } from "@skeldjs/constant";
 
-import { Room, Worker } from "../worker";
+import { Room, RoomCode, Worker } from "../worker";
 import { Logger } from "../logger";
 
 export interface GameListingJson {
@@ -177,7 +178,7 @@ export class Matchmaker {
         const gameListing: GameListingJson = {
             IP: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
             Port: this.getRandomWorkerPort(),
-            GameId: room.code,
+            GameId: room.code.id,
             HostName: room.roomName,
             TrueHostName: room.playerAuthority?.username || "Server",
             PlayerCount: room.players.size,
@@ -400,7 +401,7 @@ export class Matchmaker {
             const gameCode = parseInt(ctx.params.game_id);
             const foundRoom = this.worker.rooms.get(gameCode);
             if (!foundRoom) {
-                this.logger.info("Client failed to find room, game not found: %s", GameCode.convertIntToString(gameCode));
+                this.logger.info("Client failed to find room, game not found: %s", new RoomCode(gameCode));
                 ctx.status = 404;
                 ctx.body = {
                     Errors: [{ Reason: DisconnectReason[DisconnectReason.GameNotFound] }],

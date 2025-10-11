@@ -44,7 +44,6 @@ import {
 } from "@skeldjs/protocol";
 
 import {
-    GameCode,
     HazelWriter,
     VersionInfo
 } from "@skeldjs/util";
@@ -54,12 +53,11 @@ import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
 import { recursiveAssign } from "../util/recursiveAssign";
 import { recursiveCompare } from "../util/recursiveCompare";
 import { recursiveClone } from "../util/recursiveClone";
-import { fmtCode } from "../util/fmtCode";
 
 import { HindenburgConfig, RoomsConfig, MessageSide, ValidSearchTerm } from "../interfaces";
 
 import { Connection, SentPacket } from "./Connection";
-import { Room } from "./Room";
+import { Room, RoomCode, RoomCodeVersion } from "./Room";
 import { RoomEvents, SpecialClientId } from "./Room";
 
 import {
@@ -238,9 +236,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : DisconnectReason[args.options.reason]) || DisconnectReason.Error;
 
                 const roomName = args["room code"]?.toUpperCase();
-                const codeId = roomName && (roomName === "LOCAL"
+                const gameId: number = roomName && (roomName === "LOCAL"
                     ? 0x20
-                    : GameCode.convertStringToInt(roomName));
+                    : RoomCode.fromString(roomName).id);
 
                 let num_disconnected = 0;
 
@@ -253,7 +251,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         ) ||
                         connection.username === args.options.username ||
                         connection.remoteInfo.address === args.options.address ||
-                        connection.room?.code === codeId
+                        connection.room?.code.id === gameId
                     ) {
                         if (args.options.ban) {
                             await this.emit(
@@ -277,7 +275,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--reason, -r <reason>", "reason to destroy this room, see https://hindenburg.js.org/enums/DisconnectReason.html")
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                    return [...this.rooms.values()].map(room => room.code.toString());
                 }
             })
             .action(async args => {
@@ -287,9 +285,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.ServerRequest;
 
-                const codeId = roomName === "LOCAL"
+                const codeId: number = roomName === "LOCAL"
                     ? 0x20
-                    : GameCode.convertStringToInt(roomName);
+                    : RoomCode.fromString(roomName).id;
 
                 const room = this.rooms.get(codeId);
 
@@ -304,15 +302,15 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("start <room code>", "Start a currently playing match.")
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                    return [...this.rooms.values()].map(room => room.code.toString());
                 }
             })
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
 
-                const codeId = roomName === "LOCAL"
+                const codeId: number = roomName === "LOCAL"
                     ? 0x20
-                    : GameCode.convertStringToInt(roomName);
+                    : RoomCode.fromString(roomName).id;
 
                 const room = this.rooms.get(codeId);
 
@@ -333,7 +331,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .option("--reason, -r <reason>", "reason to end the match, see https://hindenburg.js.org/enums/GameOverReason.html")
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                    return [...this.rooms.values()].map(room => room.code.toString());
                 }
             })
             .action(async args => {
@@ -343,9 +341,9 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     ? args.options.reason
                     : GameOverReason[args.options.reason]) || GameOverReason.None;
 
-                const codeId = roomName === "LOCAL"
+                const codeId: number = roomName === "LOCAL"
                     ? 0x20
-                    : GameCode.convertStringToInt(roomName);
+                    : RoomCode.fromString(roomName).id;
 
                 const room = this.rooms.get(codeId);
 
@@ -390,7 +388,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .alias("lspl")
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                    return [...this.rooms.values()].map(room => room.code.toString());
                 }
             })
             .action(async args => {
@@ -399,7 +397,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : "";
 
                 const extendable = roomName
-                    ? this.rooms.get(GameCode.convertStringToInt(roomName))
+                    ? this.rooms.get(RoomCode.fromString(roomName).id)
                     : this;
 
                 if (!extendable) {
@@ -432,7 +430,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : "";
 
                 const extendable = roomName
-                    ? this.rooms.get(GameCode.convertStringToInt(roomName))
+                    ? this.rooms.get(RoomCode.fromString(roomName).id)
                     : this;
 
                 if (!extendable) {
@@ -482,7 +480,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                     : "";
 
                 const extendable = roomName
-                    ? this.rooms.get(GameCode.convertStringToInt(roomName))
+                    ? this.rooms.get(RoomCode.fromString(roomName).id)
                     : this;
 
                 if (!extendable)
@@ -494,7 +492,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 }
 
                 if (roomName) {
-                    const room = this.rooms.get(GameCode.convertStringToInt(roomName));
+                    const room = extendable as Room;
 
                     if (!room) {
                         this.logger.warn("Couldn't find a room with code: %s", roomName);
@@ -533,14 +531,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .alias("sh")
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                    return [...this.rooms.values()].map(room => room.code.toString());
                 }
             })
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
-                const codeId = roomName === "LOCAL"
+                const codeId: number = roomName === "LOCAL"
                     ? 0x20
-                    : GameCode.convertStringToInt(roomName);
+                    : RoomCode.fromString(roomName).id;
 
                 const room = this.rooms.get(codeId);
 
@@ -617,14 +615,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .alias("lsp")
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                    return [...this.rooms.values()].map(room => room.code.toString());
                 }
             })
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
-                const codeId = roomName === "LOCAL"
+                const codeId: number = roomName === "LOCAL"
                     ? 0x20
-                    : GameCode.convertStringToInt(roomName);
+                    : RoomCode.fromString(roomName).id;
 
                 const room = this.rooms.get(codeId);
 
@@ -644,14 +642,14 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .command("settings <room code>", "Get the current game settings for a room.")
             .autocomplete({
                 data: async () => {
-                    return [...this.rooms.keys()].map(room => fmtCode(room).toLowerCase());
+                    return [...this.rooms.values()].map(room => room.code.toString());
                 }
             })
             .action(async args => {
                 const roomName = args["room code"].toUpperCase();
-                const codeId = roomName === "LOCAL"
+                const codeId: number = roomName === "LOCAL"
                     ? 0x20
-                    : GameCode.convertStringToInt(roomName);
+                    : RoomCode.fromString(roomName).id;
 
                 const room = this.rooms.get(codeId);
 
@@ -690,7 +688,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             .action(async args => {
                 const message = args.message.join(" ");
                 const roomCode = args.options.room
-                    ? GameCode.convertStringToInt(args.options.room.toUpperCase?.())
+                    ? RoomCode.fromString(args.options.room.toUpperCase?.()).id
                     : 0;
 
                 const foundRoom = this.rooms.get(roomCode);
@@ -928,7 +926,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 new ReliablePacket(
                     sender.getNextNonce(),
                     [
-                        new HostGameMessage(ev.alteredRoomCode)
+                        new HostGameMessage(ev.alteredRoomCode.id)
                     ]
                 )
             );
@@ -940,12 +938,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             if (
                 sender.room &&
-                sender.room.gameState !== GameState.Ended &&
-                sender.room.code !== message.code // extra checks so you can join back the same game
+                sender.room.gameState !== GameState.Ended && // extra checks so you can join back the same game after it has ended
+                sender.room.code.id !== message.gameId
             )
                 return;
 
-            await this.attemptJoin(sender, message.code);
+            await this.attemptJoin(sender, new RoomCode(message.gameId));
         });
 
         this.decoder.on(QueryPlatformIdsMessage, async (message, _direction, { sender }) => {
@@ -1026,7 +1024,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
             ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
             await ctx.sender.room?.broadcastImmediate([], [
-                new AlterGameMessage(ctx.sender.room.code, message.alterTag, message.value)
+                new AlterGameMessage(ctx.sender.room.code.id, message.alterTag, message.value)
             ]);
         });
 
@@ -1110,7 +1108,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                 const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
                 const gameListing = new GameListing(
-                    room.code,
+                    room.code.id,
                     listingIp,
                     this.config.socket.port,
                     room.roomName,
@@ -1552,34 +1550,33 @@ export class Worker extends EventEmitter<WorkerEvents> {
             throw new RangeError("Expected to generate a 4 or 6 digit room code.");
         }
 
-        let roomCode = len === 4 ? GameCode.generateV1() : GameCode.generateV2();
-        while (this.rooms.get(roomCode))
-            roomCode = len === 4 ? GameCode.generateV1() : GameCode.generateV2();
+        let roomCode = len === 4 ? RoomCode.generateRandom(RoomCodeVersion.V1) : RoomCode.generateRandom(RoomCodeVersion.V2);
+        while (this.rooms.get(roomCode.id))
+            roomCode = len === 4 ? RoomCode.generateRandom(RoomCodeVersion.V1) : RoomCode.generateRandom(RoomCodeVersion.V2);
 
         return roomCode;
     }
 
     /**
      * Create a room on this server.
-     * @param code The game code for the room, see {@link Worker.generateRoomCode}
+     * @param roomCode The game code for the room, see {@link Worker.generateRoomCode}
      * to generate one.
      * @param options Game options for the room.
      * @param createdBy The client who is creating the room, if any.
      * @returns The created room.
      */
-    async createRoom(code: number, options: GameSettings, createdBy: Connection | undefined) {
-        if (this.rooms.has(code))
-            throw new Error("A room with code '" + GameCode.convertIntToString(code) + "' already exists.");
+    async createRoom(roomCode: RoomCode, options: GameSettings, createdBy: Connection | undefined) {
+        if (this.rooms.has(roomCode.id))
+            throw new Error("A room with code '" + roomCode + "' already exists.");
 
         const copyConfiguration: RoomsConfig = {
             ...this.config.rooms
         };
 
-        const createdRoom = new Room(this, copyConfiguration, options, createdBy);
-        await createdRoom.setCode(code);
+        const createdRoom = new Room(this, roomCode, copyConfiguration, options, createdBy);
         createdRoom.workerPlugins = new Map(this.loadedPlugins.entries());
         await this.pluginLoader.loadAllRoomPlugins(createdRoom);
-        this.rooms.set(code, createdRoom);
+        this.rooms.set(roomCode.id, createdRoom);
 
         createdRoom.emit(
             new RoomCreateEvent(createdRoom)
@@ -1588,13 +1585,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
         return createdRoom;
     }
 
-    async attemptJoin(connection: Connection, code: number) {
-        const foundRoom = this.rooms.get(code);
+    async attemptJoin(connection: Connection, roomCode: RoomCode) {
+        const foundRoom = this.rooms.get(roomCode.id);
 
         const ev = await this.emit(
             new WorkerBeforeJoinEvent(
                 connection,
-                code,
+                roomCode,
                 foundRoom
             )
         );
@@ -1604,7 +1601,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
         if (!ev.alteredRoom) {
             this.logger.info("%s attempted to join %s but there was no room with that code",
-                connection, fmtCode(code));
+                connection, roomCode);
 
             return connection.disconnect(DisconnectReason.GameNotFound);
         }

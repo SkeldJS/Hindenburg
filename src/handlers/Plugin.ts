@@ -1,8 +1,8 @@
 import chalk from "chalk";
+import * as util from "util";
 
 import { Logger } from "../logger";
 import { Room, Worker } from "../worker";
-import { fmtCode } from "../util/fmtCode";
 import { PluginPackageJson } from "./PluginLoader";
 
 /**
@@ -220,7 +220,7 @@ export class RoomPlugin extends Plugin {
         super(config);
 
         this.worker = room.worker;
-        this.logger = new Logger(() => `${chalk.yellow(fmtCode(this.room.code))} ${this.meta.id}`, this.worker.vorpal);
+        this.logger = new Logger(() => `${util.inspect(room.code, true, null, true)} ${this.meta.id}`, this.worker.vorpal);
     }
 
     getDependencyUnsafe(pluginId: string): WorkerPlugin|RoomPlugin;

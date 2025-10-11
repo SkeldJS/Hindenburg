@@ -19,9 +19,7 @@ async function doesExist(path: string) {
 }
 
 const defaultPackageJson = {
-    dependencies: {
-        "hbplugin-ban-textfile": "latest"
-    }
+    dependencies: {}
 };
 
 const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [path.resolve(process.cwd(), "./plugins")];

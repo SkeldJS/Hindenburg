@@ -1,8 +1,8 @@
-import { EndGameIntent, GameOverReason, RoomGameEndEvent as SkeldjsRoomGameEndEvent } from "@skeldjs/core";
-import { CancelableEvent } from "@skeldjs/events";
+import { EndGameIntent, GameOverReason } from "@skeldjs/core";
+import { BasicEvent, CancelableEvent } from "@skeldjs/events";
 import { Room } from "../../../worker";
 
-export class RoomGameEndEvent extends SkeldjsRoomGameEndEvent<Room> implements CancelableEvent {
+export class RoomGameEndEvent extends BasicEvent implements CancelableEvent {
     canceled: boolean;
 
     constructor(
@@ -10,7 +10,7 @@ export class RoomGameEndEvent extends SkeldjsRoomGameEndEvent<Room> implements C
         public readonly reason: GameOverReason,
         public readonly intent?: EndGameIntent
     ) {
-        super(room, reason);
+        super();
 
         this.canceled = false;
     }

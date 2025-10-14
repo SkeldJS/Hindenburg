@@ -13,13 +13,16 @@ import {
     SendOption,
     QuickChatMode,
     Platform,
-    GameOverReason
+    GameOverReason,
+    RootMessageTag,
+    GetGameListTag
 } from "@skeldjs/constant";
 
 import {
     AcknowledgePacket,
     AlterGameMessage,
     BaseGameDataMessage,
+    BaseRootMessage,
     BaseRootPacket,
     DisconnectPacket,
     EndGameMessage,
@@ -27,23 +30,34 @@ import {
     GameDataToMessage,
     GameListing,
     GameSettings,
-    GetGameListMessage,
+    C2SGetGameListMessage,
     HelloPacket,
-    HostGameMessage,
-    JoinGameMessage,
+    C2SHostGameMessage,
+    C2SJoinGameMessage,
     KickPlayerMessage,
-    MessageDirection,
     NormalPacket,
-    PacketDecoder,
     PingPacket,
     PlatformSpecificData,
     QueryPlatformIdsMessage,
     ReliablePacket,
     StartGameMessage,
-    UnknownRootMessage
+    UnknownRootMessage,
+    S2CGetGameListMessage,
+    S2CHostGameMessage,
+    UnreliablePacket,
+    DtlsHelloPacket,
+    RemoveGameMessage,
+    JoinedGameMessage,
+    C2SRemovePlayerMessage,
+    C2SReportPlayerMessage,
+    SetGameSessionMessage,
+    RedirectMessage,
+    WaitForHostMessage,
+    SetActivePodTypeMessage
 } from "@skeldjs/protocol";
 
 import {
+    HazelReader,
     HazelWriter,
     VersionInfo
 } from "@skeldjs/util";
@@ -87,24 +101,6 @@ function formatBytes(bytes: number) {
 }
 
 export type ReliableSerializable = BaseRootPacket & { nonce: number };
-
-/**
- * Basic information about a packet received from a client.
- */
-export interface PacketContext {
-    /**
-     * The client who sent the packet.
-     */
-    sender: Connection | undefined;
-    /**
-     * Whether or not the packet was sent reliably.
-     */
-    reliable: boolean;
-    /**
-     * The recipient of this specific message (not whole packet), if any.
-     */
-    recipients: (Connection | "server")[] | undefined;
-}
 
 export type WorkerEvents = RoomEvents
     & ExtractEventTypes<[
@@ -161,11 +157,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
     rooms: Map<number, Room>;
 
     /**
-     * The packet decoder used to decode incoming udp packets.
-     */
-    decoder: PacketDecoder<PacketContext>;
-
-    /**
      * The last client ID that was used.
      *
      * Used for {@link Worker.getNextClientId} to get an incrementing client
@@ -214,12 +205,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.rooms = new Map;
 
         this.acceptedVersions = config.acceptedVersions.map(x => VersionInfo.from(x).encode());
-
-        this.decoder = new PacketDecoder({
-            useDtlsLayout: config.socket.useDtlsLayout,
-            writeUnknownGameData: true,
-            writeUnknownRootMessages: true
-        });
 
         this.vorpal.delimiter(chalk.greenBright("hindenburg~$")).show();
         this.vorpal
@@ -731,9 +716,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
         this.pingInterval = setInterval(() => {
             this.pollClientReliability();
         }, pingInterval);
-
-        this.registerMessages();
-        this.registerPacketHandlers();
     }
 
     protected _listenPort(port: number) {
@@ -819,375 +801,12 @@ export class Worker extends EventEmitter<WorkerEvents> {
         }
     }
 
-    registerMessages() {
-        this.decoder.register(GameDataMessage);
-    }
-
     isVersionAccepted(version: VersionInfo | number): boolean {
         if (typeof version !== "number") {
             return this.isVersionAccepted(version.encode());
         }
 
         return this.acceptedVersions.indexOf(version) !== -1;
-    }
-
-    registerPacketHandlers() {
-        this.decoder.listeners.clear();
-
-        this.decoder.on(HelloPacket, async (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            if (sender.hasIdentified)
-                return;
-
-            sender.receivedPackets.unshift(message.nonce);
-            sender.receivedPackets.splice(8);
-
-            await sender.sendPacket(
-                new AcknowledgePacket(
-                    message.nonce,
-                    []
-                )
-            );
-
-            sender.hasIdentified = true;
-            sender.username = message.username;
-            sender.chatMode = message.chatMode;
-            sender.language = message.language;
-            sender.clientVersion = message.clientVer;
-            sender.platform = message.platform;
-            sender.playerLevel = 0;
-
-            if (!this.isVersionAccepted(sender.clientVersion)) {
-                this.logger.warn("%s connected with invalid client version: %s",
-                    sender, sender.clientVersion.toString());
-                sender.disconnect(DisconnectReason.IncorrectVersion);
-                return;
-            }
-
-            this.logger.info("%s connected, language: %s",
-                sender, Language[sender.language] || "Unknown");
-
-            await this.emit(
-                new ClientConnectEvent(sender)
-            );
-        });
-
-        this.decoder.on(DisconnectPacket, async (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            if (!sender.sentDisconnect)
-                await sender.disconnect(DisconnectReason.ExitGame);
-
-            this.removeConnection(sender);
-        });
-
-        this.decoder.on(AcknowledgePacket, (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            for (const sentPacket of sender.sentPackets) {
-                if (sentPacket.nonce === message.nonce) {
-                    sentPacket.acked = true;
-                    sender.roundTripPing = Date.now() - sentPacket.sentAt;
-                    break;
-                }
-            }
-        });
-
-        this.decoder.on(HostGameMessage, async (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            if (sender.room)
-                return;
-
-            const roomCode = this.generateRoomCode(this.config.rooms.gameCodes === "v1" ? 4 : 6);
-
-            const ev = await this.emit(
-                new RoomBeforeCreateEvent(
-                    sender,
-                    message.gameSettings,
-                    roomCode
-                )
-            );
-
-            if (ev.canceled)
-                return;
-
-            const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings, sender);
-
-            this.logger.info("%s created room %s",
-                sender, room);
-
-            await sender.sendPacket(
-                new ReliablePacket(
-                    sender.getNextNonce(),
-                    [
-                        new HostGameMessage(ev.alteredRoomCode.id)
-                    ]
-                )
-            );
-        });
-
-        this.decoder.on(JoinGameMessage, async (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            if (
-                sender.room &&
-                sender.room.gameState !== GameState.Ended && // extra checks so you can join back the same game after it has ended
-                sender.room.code.id !== message.gameId
-            )
-                return;
-
-            await this.attemptJoin(sender, new RoomCode(message.gameId));
-        });
-
-        this.decoder.on(QueryPlatformIdsMessage, async (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            const room = this.rooms.get(message.gameCode);
-            const playersPlatformSpecificData: PlatformSpecificData[] = [];
-
-            if (room) {
-                room.players.forEach(player => {
-                    playersPlatformSpecificData.push(player.platform);
-                });
-            }
-
-            await sender.sendPacket(
-                new ReliablePacket(
-                    sender.getNextNonce(),
-                    [
-                        new QueryPlatformIdsMessage(message.gameCode, playersPlatformSpecificData)
-                    ]
-                )
-            );
-        });
-
-        this.decoder.on(GameDataMessage, async (message, _direction, ctx) => {
-            if (!ctx.sender)
-                return;
-
-            const player = ctx.sender.getPlayer();
-
-            if (!player || !ctx.sender.room)
-                return;
-
-            const notCanceled: BaseGameDataMessage[] = [];
-            await player.room.processMessagesAndGetNotCanceled(message.children, notCanceled, ctx);
-
-            if (notCanceled.length > 0)
-                await player.room.broadcastMessages(notCanceled, [], undefined, [ctx.sender], ctx.reliable);
-        });
-
-        this.decoder.on(GameDataToMessage, async (message, _direction, ctx) => {
-            if (!ctx.sender)
-                return;
-
-            const player = ctx.sender.getPlayer();
-
-            if (!ctx.sender.room || !player)
-                return;
-
-            const connection = player.room.connections.get(message.recipientId);
-
-            if (!connection) {
-                if (player.room.authorityId === SpecialClientId.ServerAuthority) {
-                    await player.room.processMessagesAndGetNotCanceled(message._children, [], ctx);
-                } else {
-                    player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
-                        ctx.sender, message.recipientId);
-                }
-                return;
-            }
-
-            await player.room.broadcastMessages(message._children, [], [connection], undefined, ctx.reliable);
-        });
-
-        this.decoder.on(AlterGameMessage, async (message, direction, ctx) => {
-            if (!ctx.sender)
-                return;
-
-            const player = ctx.sender.getPlayer();
-            if (!player)
-                return;
-
-            if (!player.room.canMakeHostChanges(player)) {
-                // todo: proper anti-cheat config
-                return ctx.sender.disconnect(DisconnectReason.Hacking);
-            }
-
-            ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
-            await ctx.sender.room?.broadcastImmediate([], [
-                new AlterGameMessage(ctx.sender.room.code.id, message.alterTag, message.value)
-            ]);
-        });
-
-        this.decoder.on(StartGameMessage, async (message, direction, ctx) => {
-            if (!ctx.sender)
-                return;
-
-            const player = ctx.sender.getPlayer();
-            if (!player)
-                return;
-
-            if (!player.room.canMakeHostChanges(player)) {
-                // todo: proper anti-cheat config
-                return ctx.sender.disconnect(DisconnectReason.Hacking);
-            }
-
-            ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
-        });
-
-        this.decoder.on(EndGameMessage, async (message, direction, ctx) => {
-            if (!ctx.sender)
-                return;
-
-            const player = ctx.sender.getPlayer();
-            if (!player)
-                return;
-
-            if (!player.room.canMakeHostChanges(player)) {
-                // todo: proper anti-cheat config
-                return ctx.sender.disconnect(DisconnectReason.Hacking);
-            }
-
-            ctx.sender.room?.decoder.emitDecoded(message, direction, ctx);
-        });
-
-        this.decoder.on(KickPlayerMessage, async (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            const player = sender.getPlayer();
-            if (!player || !sender.room)
-                return;
-
-            if (!player.room.canMakeHostChanges(player)) {
-                // todo: proper anti-cheat config
-                return sender.disconnect(DisconnectReason.Hacking);
-            }
-
-            const targetConnection = sender.room.connections.get(message.clientId);
-
-            if (!targetConnection)
-                return;
-
-            if (message.banned) {
-                sender.room.bannedAddresses.add(targetConnection.remoteInfo.address);
-            }
-
-            await targetConnection.disconnect(message.banned ? DisconnectReason.Banned : DisconnectReason.Kicked);
-        });
-
-        this.decoder.on(GetGameListMessage, async (message, _direction, { sender }) => {
-            if (!sender)
-                return;
-
-            const listingIp = sender.remoteInfo.address === "127.0.0.1"
-                ? "127.0.0.1"
-                : this.config.socket.ip;
-
-            const ignoreSearchTerms = Array.isArray(this.config.gameListing.ignoreSearchTerms)
-                ? new Set(this.config.gameListing.ignoreSearchTerms)
-                : this.config.gameListing.ignoreSearchTerms;
-
-            const gamesAndRelevance: [number, GameListing][] = [];
-            for (const [gameCode, room] of this.rooms) {
-                if (gameCode === 0x20 /* local game */) {
-                    continue;
-                }
-
-                if (!this.config.gameListing.ignorePrivacy && room.privacy === "private")
-                    continue;
-
-                const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
-                const gameListing = new GameListing(
-                    room.code.id,
-                    listingIp,
-                    this.config.socket.port,
-                    room.roomName,
-                    room.players.size,
-                    roomAge,
-                    room.settings.map,
-                    room.settings.numImpostors,
-                    room.settings.maxPlayers,
-                    room.playerAuthority?.platform || new PlatformSpecificData(
-                        Platform.Unknown,
-                        "UNKNOWN"
-                    )
-                );
-
-                if (ignoreSearchTerms === true) {
-                    gamesAndRelevance.push([0, gameListing]);
-                    continue;
-                }
-
-                const relevancy = this.getRoomRelevancy(
-                    room,
-                    message.options.numImpostors,
-                    message.options.keywords,
-                    message.options.map,
-                    message.quickchat === QuickChatMode.FreeChat
-                        ? "FreeChatOrQuickChat"
-                        : "QuickChatOnly",
-                    this.config.gameListing.requirePefectMatches,
-                    ignoreSearchTerms
-                );
-
-                if (relevancy === 0 && this.config.gameListing.requirePefectMatches)
-                    continue;
-
-                gamesAndRelevance.push([
-                    relevancy,
-                    gameListing
-                ]);
-            }
-
-            const sortedResults = gamesAndRelevance.sort((a, b) => {
-                if (a[0] === b[0]) {
-                    return a[1].age - b[1].age;
-                }
-
-                return b[0] - a[0];
-            });
-
-            const topResults = this.config.gameListing.maxResults === "all"
-                || this.config.gameListing.maxResults === 0
-                ? sortedResults
-                : sortedResults.slice(0, this.config.gameListing.maxResults);
-
-            const results = topResults.map(([, gameListing]) => gameListing);
-
-            const ev = await this.emit(
-                new WorkerGetGameListEvent(
-                    sender,
-                    message.options.keywords,
-                    message.options.map,
-                    message.options.numImpostors,
-                    results
-                )
-            );
-
-            if (ev.canceled)
-                return;
-
-            if (ev.alteredGames.length) {
-                await sender.sendPacket(
-                    new ReliablePacket(
-                        sender.getNextNonce(),
-                        [
-                            new GetGameListMessage(ev.alteredGames)
-                        ]
-                    )
-                );
-            }
-        });
     }
 
     async pollClientReliability() {
@@ -1371,7 +990,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
         const start = Date.now();
         const writer = HazelWriter.alloc(1024);
         writer.uint8(packet.messageTag);
-        writer.write(packet, MessageDirection.Clientbound, this.decoder);
+        writer.write(packet);
         writer.realloc(writer.cursor);
 
         const tookMs = Date.now() - start;
@@ -1395,6 +1014,405 @@ export class Worker extends EventEmitter<WorkerEvents> {
         }
     }
 
+    async handleHello(helloPacket: HelloPacket|DtlsHelloPacket, sender: Connection) {
+        if (sender.hasIdentified)
+            return;
+
+        sender.receivedPackets.unshift(helloPacket.nonce);
+        sender.receivedPackets.splice(8);
+
+        await sender.sendPacket(
+            new AcknowledgePacket(
+                helloPacket.nonce,
+                []
+            )
+        );
+
+        sender.hasIdentified = true;
+        sender.username = helloPacket.username;
+        sender.chatMode = helloPacket.chatMode;
+        sender.language = helloPacket.language;
+        sender.clientVersion = helloPacket.clientVer;
+        sender.platform = helloPacket.platform;
+        sender.playerLevel = 0;
+
+        if (!this.isVersionAccepted(sender.clientVersion)) {
+            this.logger.warn("%s connected with invalid client version: %s",
+                sender, sender.clientVersion.toString());
+            sender.disconnect(DisconnectReason.IncorrectVersion);
+            return;
+        }
+
+        this.logger.info("%s connected, language: %s",
+            sender, Language[sender.language] || "Unknown");
+
+        await this.emit(
+            new ClientConnectEvent(sender)
+        );
+    }
+
+    async handleDisconnectPacket(message: DisconnectPacket, sender: Connection) {
+        if (!sender.sentDisconnect)
+            await sender.disconnect(DisconnectReason.ExitGame);
+
+        this.removeConnection(sender);
+    }
+
+    async handleAcknowledgePacket(message: AcknowledgePacket, sender: Connection) {
+        for (const sentPacket of sender.sentPackets) {
+            if (sentPacket.nonce === message.nonce) {
+                sentPacket.acked = true;
+                sender.roundTripPing = Date.now() - sentPacket.sentAt;
+                break;
+            }
+        }
+    }
+
+    async handleHostGameMessage(message: C2SHostGameMessage, sender: Connection) {
+        if (sender.room)
+            return;
+
+        const roomCode = this.generateRoomCode(this.config.rooms.gameCodes === "v1" ? 4 : 6);
+
+        const ev = await this.emit(
+            new RoomBeforeCreateEvent(
+                sender,
+                message.gameSettings,
+                roomCode
+            )
+        );
+
+        if (ev.canceled)
+            return;
+
+        const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings, sender);
+
+        this.logger.info("%s created room %s",
+            sender, room);
+
+        await sender.sendPacket(
+            new ReliablePacket(
+                sender.getNextNonce(),
+                [
+                    new S2CHostGameMessage(ev.alteredRoomCode.id)
+                ]
+            )
+        );
+    }
+
+    async handleJoinGameMessage(message: C2SJoinGameMessage, sender: Connection) {
+        if (
+            sender.room &&
+            sender.room.gameState !== GameState.Ended && // extra checks so you can join back the same game after it has ended
+            sender.room.code.id !== message.gameId
+        )
+            return;
+
+        await this.attemptJoin(sender, new RoomCode(message.gameId));
+    }
+
+    async handleQueryPlatformIdsMessage(message: QueryPlatformIdsMessage, sender: Connection) {
+        const room = this.rooms.get(message.gameCode);
+        const playersPlatformSpecificData: PlatformSpecificData[] = [];
+
+        if (room) {
+            room.players.forEach(player => {
+                playersPlatformSpecificData.push(player.platform);
+            });
+        }
+
+        await sender.sendPacket(
+            new ReliablePacket(
+                sender.getNextNonce(),
+                [
+                    new QueryPlatformIdsMessage(message.gameCode, playersPlatformSpecificData)
+                ]
+            )
+        );
+    }
+
+    async handleGameDataMessage(message: GameDataMessage, isReliable: boolean, sender: Connection) {
+        const player = sender.getPlayer();
+
+        if (!player) return;
+
+        const notCanceled = await player.room.handleMessagesAndGetNotCanceled(message.children, player);
+
+        if (notCanceled.length > 0)
+            await player.room.broadcastMessages(notCanceled, [], undefined, [sender], isReliable);
+    }
+
+    async handleGameDataToMessage(message: GameDataToMessage, isReliable: boolean, sender: Connection) {
+        const player = sender.getPlayer();
+
+        if (!player) return;
+
+        const connection = player.room.connections.get(message.recipientId);
+
+        if (!connection) {
+            if (player.room.authorityId === SpecialClientId.ServerAuthority) {
+                await player.room.handleMessagesAndGetNotCanceled(message.children, player);
+            } else {
+                player.room.logger.warn("Got recipient of game data from %s to a client with id %s who doesn't exist",
+                    sender, message.recipientId);
+            }
+            return;
+        }
+
+        await player.room.broadcastMessages(message.children, [], [connection], undefined, isReliable);
+    }
+    
+    async handleAlterGameMesage(message: AlterGameMessage, sender: Connection) {
+        const player = sender.getPlayer();
+        if (!player) return;
+
+        if (!player.room.canMakeHostChanges(player)) {
+            // todo: proper anti-cheat config
+            return await sender.disconnect(DisconnectReason.Hacking);
+        }
+        
+        await player.room.handleAlterGameMessage(message);
+    }
+
+    async handleStartGameMessage(message: StartGameMessage, sender: Connection) {
+        const player = sender.getPlayer();
+        if (!player) return;
+
+        if (!player.room.canMakeHostChanges(player)) {
+            // todo: proper anti-cheat config
+            return await sender.disconnect(DisconnectReason.Hacking);
+        }
+
+        await player.room.handleStartGameMessage(message);
+    }
+
+    async handleEndGameMessage(message: EndGameMessage, sender: Connection) {
+        const player = sender.getPlayer();
+        if (!player)
+            return;
+
+        if (!player.room.canMakeHostChanges(player)) {
+            // todo: proper anti-cheat config
+            return sender.disconnect(DisconnectReason.Hacking);
+        }
+        
+        await player.room.handleEndGameMessage(message);
+    }
+
+    async handleKickPlayerMessage(message: KickPlayerMessage, sender: Connection) {
+        const player = sender.getPlayer();
+        if (!player || !sender.room)
+            return;
+
+        if (!player.room.canMakeHostChanges(player)) {
+            // todo: proper anti-cheat config
+            return sender.disconnect(DisconnectReason.Hacking);
+        }
+
+        const targetConnection = sender.room.connections.get(message.clientId);
+
+        if (!targetConnection)
+            return;
+
+        if (message.banned) {
+            sender.room.bannedAddresses.add(targetConnection.remoteInfo.address);
+        }
+
+        await targetConnection.disconnect(message.banned ? DisconnectReason.Banned : DisconnectReason.Kicked);
+    }
+
+    async handleGetGameListMessage(message: C2SGetGameListMessage, sender: Connection) {
+        const listingIp = sender.remoteInfo.address === "127.0.0.1"
+            ? "127.0.0.1"
+            : this.config.socket.ip;
+
+        const ignoreSearchTerms = Array.isArray(this.config.gameListing.ignoreSearchTerms)
+            ? new Set(this.config.gameListing.ignoreSearchTerms)
+            : this.config.gameListing.ignoreSearchTerms;
+
+        const gamesAndRelevance: [number, GameListing][] = [];
+        for (const [gameCode, room] of this.rooms) {
+            if (gameCode === 0x20 /* local game */) {
+                continue;
+            }
+
+            if (!this.config.gameListing.ignorePrivacy && room.privacy === "private")
+                continue;
+
+            const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
+            const gameListing = new GameListing(
+                room.code.id,
+                listingIp,
+                this.config.socket.port,
+                room.roomName,
+                room.players.size,
+                roomAge,
+                room.settings.map,
+                room.settings.numImpostors,
+                room.settings.maxPlayers,
+                room.playerAuthority?.platform || new PlatformSpecificData(
+                    Platform.Unknown,
+                    "UNKNOWN"
+                )
+            );
+
+            if (ignoreSearchTerms === true) {
+                gamesAndRelevance.push([0, gameListing]);
+                continue;
+            }
+
+            const relevancy = this.getRoomRelevancy(
+                room,
+                message.options.numImpostors,
+                message.options.keywords,
+                message.options.map,
+                message.quickchat === QuickChatMode.FreeChat
+                    ? "FreeChatOrQuickChat"
+                    : "QuickChatOnly",
+                this.config.gameListing.requirePefectMatches,
+                ignoreSearchTerms
+            );
+
+            if (relevancy === 0 && this.config.gameListing.requirePefectMatches)
+                continue;
+
+            gamesAndRelevance.push([
+                relevancy,
+                gameListing
+            ]);
+        }
+
+        const sortedResults = gamesAndRelevance.sort((a, b) => {
+            if (a[0] === b[0]) {
+                return a[1].age - b[1].age;
+            }
+
+            return b[0] - a[0];
+        });
+
+        const topResults = this.config.gameListing.maxResults === "all"
+            || this.config.gameListing.maxResults === 0
+            ? sortedResults
+            : sortedResults.slice(0, this.config.gameListing.maxResults);
+
+        const results = topResults.map(([, gameListing]) => gameListing);
+
+        const ev = await this.emit(
+            new WorkerGetGameListEvent(
+                sender,
+                message.options.keywords,
+                message.options.map,
+                message.options.numImpostors,
+                results
+            )
+        );
+
+        if (ev.canceled)
+            return;
+
+        if (ev.alteredGames.length) {
+            await sender.sendPacket(
+                new ReliablePacket(
+                    sender.getNextNonce(),
+                    [
+                        new S2CGetGameListMessage(ev.alteredGames)
+                    ]
+                )
+            );
+        }
+    }
+
+    parseRootMessage(messageTag: RootMessageTag, reader: HazelReader) {
+        switch (messageTag) {
+            case RootMessageTag.HostGame: return C2SHostGameMessage.deserializeFromReader(reader);
+            case RootMessageTag.JoinGame: return C2SJoinGameMessage.deserializeFromReader(reader);
+            case RootMessageTag.StartGame: return StartGameMessage.deserializeFromReader(reader);
+            case RootMessageTag.RemoveGame: return RemoveGameMessage.deserializeFromReader(reader);
+            case RootMessageTag.RemovePlayer: return C2SRemovePlayerMessage.deserializeFromReader(reader);
+            case RootMessageTag.GameData: return GameDataMessage.deserializeFromReader(reader);
+            case RootMessageTag.GameDataTo: return GameDataToMessage.deserializeFromReader(reader);
+            case RootMessageTag.JoinedGame: return JoinedGameMessage.deserializeFromReader(reader);
+            case RootMessageTag.EndGame: return EndGameMessage.deserializeFromReader(reader);
+            case RootMessageTag.AlterGame: return AlterGameMessage.deserializeFromReader(reader);
+            case RootMessageTag.KickPlayer: return KickPlayerMessage.deserializeFromReader(reader);
+            case RootMessageTag.WaitForHost: return WaitForHostMessage.deserializeFromReader(reader);
+            case RootMessageTag.Redirect: return RedirectMessage.deserializeFromReader(reader);
+            case RootMessageTag.GetGameListV2: return C2SGetGameListMessage.deserializeFromReader(reader);
+            case RootMessageTag.ReportPlayer: return C2SReportPlayerMessage.deserializeFromReader(reader);
+            case RootMessageTag.SetGameSession: return SetGameSessionMessage.deserializeFromReader(reader);
+            case RootMessageTag.SetActivePodType: return SetActivePodTypeMessage.deserializeFromReader(reader);
+            case RootMessageTag.QueryPlatformIds: return QueryPlatformIdsMessage.deserializeFromReader(reader);
+            case RootMessageTag.GetGameList:
+            case RootMessageTag.MasterServerList:
+            case RootMessageTag.GetGameListV2:
+            case RootMessageTag.QueryLobbyInfo:
+            default:
+                return undefined;
+        }
+    }
+
+    async handleRootMessage(message: BaseRootMessage, sender: Connection, isReliable: boolean) {
+        if (message instanceof C2SHostGameMessage) return await this.handleHostGameMessage(message, sender);
+        if (message instanceof C2SJoinGameMessage) return await this.handleJoinGameMessage(message, sender);
+        if (message instanceof QueryPlatformIdsMessage) return await this.handleQueryPlatformIdsMessage(message, sender);
+        if (message instanceof GameDataMessage) return await this.handleGameDataMessage(message, isReliable, sender);
+        if (message instanceof GameDataToMessage) return await this.handleGameDataToMessage(message, isReliable, sender);
+        if (message instanceof AlterGameMessage) return await this.handleAlterGameMesage(message, sender);
+        if (message instanceof StartGameMessage) return await this.handleStartGameMessage(message, sender);
+        if (message instanceof EndGameMessage) return await this.handleEndGameMessage(message, sender);
+        if (message instanceof KickPlayerMessage) return await this.handleKickPlayerMessage(message, sender);
+        if (message instanceof C2SGetGameListMessage) return await this.handleGetGameListMessage(message, sender);
+
+        this.logger.error("Unknown root message to handle from client %s, with tag %s",
+            sender, RootMessageTag[message.messageTag] || message.messageTag);
+    }
+
+    protected async handleRootMessageUnknown(message: BaseGameDataMessage, sender: Connection, isReliable: boolean) {
+        if (message instanceof UnknownRootMessage) {
+            const parsedMessage = this.parseRootMessage(message.messageTag, message.dataReader);
+            return await this.handleRootMessage(parsedMessage || message, sender, isReliable);
+        }
+        return await this.handleRootMessage(message, sender, isReliable);
+    }
+
+    parsePacket(reader: HazelReader) {
+        const sendOption: SendOption = reader.uint8();
+        switch (sendOption) {
+            case SendOption.Unreliable: return UnreliablePacket.deserializeFromReader(reader);
+            case SendOption.Reliable: return ReliablePacket.deserializeFromReader(reader);
+            case SendOption.Hello:
+                return this.config.socket.useDtlsLayout
+                    ? DtlsHelloPacket.deserializeFromReader(reader)
+                    : HelloPacket.deserializeFromReader(reader);
+            case SendOption.Disconnect: return DisconnectPacket.deserializeFromReader(reader);
+            case SendOption.Acknowledge: return AcknowledgePacket.deserializeFromReader(reader);
+            case SendOption.Ping: return PingPacket.deserializeFromReader(reader);
+            default:
+                return undefined;
+        }
+    }
+
+    async handlePacket(rootPacket: BaseRootPacket, sender: Connection) {
+        if (rootPacket instanceof UnreliablePacket || rootPacket instanceof ReliablePacket) {
+            for (const message of rootPacket.children) {
+                await this.handleRootMessageUnknown(message, sender, rootPacket instanceof ReliablePacket);
+            }
+            return;
+        }
+        if (rootPacket instanceof HelloPacket || rootPacket instanceof DtlsHelloPacket) {
+            return await this.handleHello(rootPacket, sender);
+        }
+        if (rootPacket instanceof DisconnectPacket) return await this.handleDisconnectPacket(rootPacket, sender);
+        if (rootPacket instanceof AcknowledgePacket) return await this.handleAcknowledgePacket(rootPacket, sender);
+        if (rootPacket instanceof PingPacket) {
+            // we don't actually need to do anything for ping packets sent by the client, lol
+            return;
+        }
+
+        this.logger.error("Unknown send option to handle, with tag %s",
+            SendOption[rootPacket.messageTag] || rootPacket.messageTag);
+    }
+
     /**
      * Handle a message being received via the udp socket.
      * @param buffer The raw data buffer that was received.
@@ -1402,7 +1420,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
      */
     async handleMessage(listenSocket: dgram.Socket, buffer: Buffer, rinfo: dgram.RemoteInfo) {
         try {
-            const parsedPacket = this.decoder.parse(buffer, MessageDirection.Serverbound);
+            const parsedPacket = this.parsePacket(HazelReader.from(buffer));
 
             if (!parsedPacket) {
                 const connection = this.getOrCreateConnection(listenSocket, rinfo);
@@ -1427,19 +1445,6 @@ export class Worker extends EventEmitter<WorkerEvents> {
                                 []
                             )
                         );
-
-                        const isNormal = parsedReliable.messageTag === SendOption.Unreliable ||
-                            parsedReliable.messageTag === SendOption.Reliable;
-                        if (isNormal) {
-                            const parsedNormal = parsedPacket as NormalPacket;
-                            for (let i = 0; i < parsedNormal.children.length; i++) {
-                                const child = parsedNormal.children[i];
-                                if (child instanceof UnknownRootMessage) {
-                                    this.logger.warn("%s sent an unknown root message with tag %s",
-                                        cachedConnection, child.messageTag, child.bytes.toString("hex"));
-                                }
-                            }
-                        }
 
                         /**
                          * Patches a bug with reactor whereby the nonce sent for the mod declaration is 0,
@@ -1474,12 +1479,8 @@ export class Worker extends EventEmitter<WorkerEvents> {
                         //     cachedConnection.nextExpectedNonce++;
                         // }
                     }
-
-                    await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
-                        sender: cachedConnection,
-                        reliable: isReliable,
-                        recipients: undefined
-                    });
+                    
+                    await this.handlePacket(parsedPacket, cachedConnection);
 
                     if (isReliable && this.config.socket.messageOrdering) {
                         // eslint-disable-next-line no-constant-condition
@@ -1488,11 +1489,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
                             if (!nextMessage)
                                 break;
 
-                            await this.decoder.emitDecoded(nextMessage, MessageDirection.Serverbound, {
-                                sender: cachedConnection,
-                                reliable: isReliable,
-                                recipients: undefined
-                            });
+                            await this.handlePacket(parsedPacket, cachedConnection);
 
                             cachedConnection.unorderedMessageMap.delete(cachedConnection.nextExpectedNonce);
                             cachedConnection.nextExpectedNonce++;
@@ -1508,11 +1505,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
 
                     connection.nextExpectedNonce = parsedReliable.nonce + 1;
 
-                    await this.decoder.emitDecoded(parsedPacket, MessageDirection.Serverbound, {
-                        sender: connection,
-                        reliable: true,
-                        recipients: undefined
-                    });
+                    await this.handlePacket(parsedPacket, connection);
                 }
             } catch (e) {
                 const connection = this.getOrCreateConnection(listenSocket, rinfo);

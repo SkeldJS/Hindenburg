@@ -5,11 +5,13 @@ import {
     AlterGameTag,
     Color,
     DisconnectReason,
+    GameDataMessageTag,
     GameMap,
     GameOverReason,
     GameState,
     Hat,
     Platform,
+    RpcMessageTag,
     Skin,
     SpawnFlag,
     SpawnType,
@@ -20,7 +22,6 @@ import {
 import {
     AlterGameMessage,
     BaseGameDataMessage,
-    BaseMessage,
     BaseRootMessage,
     ComponentSpawnData,
     DataMessage,
@@ -29,18 +30,16 @@ import {
     GameDataMessage,
     GameDataToMessage,
     GameSettings,
-    HostGameMessage,
     JoinedGameMessage,
-    JoinGameMessage,
-    MessageDirection,
-    PacketDecoder,
     PlatformSpecificData,
     PlayerJoinData,
     ReadyMessage,
     ReliablePacket,
     RemoveGameMessage,
-    RemovePlayerMessage,
     RpcMessage,
+    S2CHostGameMessage,
+    S2CJoinGameMessage,
+    S2CRemovePlayerMessage,
     SceneChangeMessage,
     SendChatMessage,
     SetColorMessage,
@@ -50,6 +49,8 @@ import {
     SetVisorMessage,
     SpawnMessage,
     StartGameMessage,
+    UnknownGameDataMessage,
+    UnknownRpcMessage,
     UnreliablePacket,
     WaitForHostMessage
 } from "@skeldjs/protocol";
@@ -75,7 +76,7 @@ import {
 } from "@skeldjs/core";
 
 import { BasicEvent, ExtractEventTypes } from "@skeldjs/events";
-import { HazelReader, HazelWriter, sleep, Vector2 } from "@skeldjs/util";
+import { HazelReader, HazelWriter, Vector2 } from "@skeldjs/util";
 
 import {
     ClientLeaveEvent,
@@ -112,7 +113,7 @@ import { fmtConfigurableLog } from "../util/fmtLogFormat";
 import { Logger } from "../logger";
 
 import { Connection, logLanguages, logPlatforms } from "./Connection";
-import { PacketContext, Worker } from "./Worker";
+import { Worker } from "./Worker";
 
 function getPlayerChalkColor(config: LoggingConfig, player: Player<Room>): chalk.Chalk {
     if (!config.playerColors) return chalk.cyan;
@@ -314,10 +315,6 @@ export class Room extends StatefulRoom<RoomEvents> {
      */
     chatCommandHandler: ChatCommandHandler;
     /**
-     * A packet decoder for the room to decode and handle incoming packets.
-     */
-    decoder: PacketDecoder<PacketContext>;
-    /**
      * Which clients are acting as hosts, regardless of who is actualyl in authority.
      */
     actingHosts: Set<Connection>;
@@ -351,9 +348,6 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         this.connections = new Map;
         this.waitingForHost = new Set;
-
-        this.decoder = new PacketDecoder;
-        this.decoder.types = worker.decoder.types;
 
         this.bannedAddresses = new Set;
         this.settings = settings;
@@ -393,7 +387,6 @@ export class Room extends StatefulRoom<RoomEvents> {
                 : "/";
 
             if (this.config.chatCommands && ev.chatMessage.startsWith(prefix)) {
-                ev.message?.cancel(); // Prevent message from being broadcasted
                 const restMessage = ev.chatMessage.substring(prefix.length);
                 const context = new ChatCommandContext(this as any, ev.player, ev.chatMessage);
                 try {
@@ -434,217 +427,6 @@ export class Room extends StatefulRoom<RoomEvents> {
                 this.logger.info("Meeting started (emergency meeting)");
             } else {
                 this.logger.info("Meeting started (%s's body was reported)", ev.body);
-            }
-        });
-
-        this.registerPacketHandlers();
-    }
-
-    registerPacketHandlers() {
-        this.decoder.on(EndGameMessage, message => {
-            this.handleEnd(message.reason);
-        });
-
-        this.decoder.on(StartGameMessage, async () => {
-            await this.startGame();
-        });
-
-        this.decoder.on(AlterGameMessage, async message => {
-            if (message.alterTag === AlterGameTag.ChangePrivacy) {
-                // const messagePrivacy = message.value ? "public" : "private";
-                // const oldPrivacy = this.privacy;
-                // TODO: privacy event again
-                // const ev = await this.emit(
-                //     new RoomSetPrivacyEvent(
-                //         this,
-                //         message,
-                //         oldPrivacy,
-                //         messagePrivacy
-                //     )
-                // );
-
-                // if (ev.alteredPrivacy !== messagePrivacy) {
-                //     await this.broadcastImmediate([], [
-                //         new AlterGameMessage(
-                //             this.code,
-                //             AlterGameTag.ChangePrivacy,
-                //             ev.alteredPrivacy === "public" ? 1 : 0
-                //         )
-                //     ]);
-                // }
-                
-                await this.broadcastImmediate([], [
-                    new AlterGameMessage(
-                        this.code.id,
-                        AlterGameTag.ChangePrivacy,
-                        message.value,
-                    )
-                ]);
-
-                this.privacy = message.value === 1 ? "public" : "private";
-
-                // if (ev.alteredPrivacy !== oldPrivacy) {
-                //     this._setPrivacy(ev.alteredPrivacy);
-                // }
-            }
-        });
-
-        this.decoder.on(DataMessage, (message, _direction, { sender }) => {
-            const component = this.networkedObjects.get(message.netId);
-
-            if (component) {
-                const reader = HazelReader.from(message.data);
-                component.deserializeFromReader(reader, false);
-            }
-        });
-
-        this.decoder.on(RpcMessage, async (message, _direction, { sender }) => {
-            const component = this.networkedObjects.get(message.netId);
-
-            if (component) {
-                try {
-                    await component.handleRemoteCall(message.data);
-                } catch (e) {
-                    this.logger.error("Could not process remote procedure call from client %s (net id %s, %s): %s",
-                        sender, component.netId, SpawnType[component.spawnType] || "Unknown", e);
-                }
-            } else {
-                this.logger.warn("Got remote procedure call for non-existent component: net id %s", message.netId);
-            }
-        });
-
-        this.decoder.on(SpawnMessage, async (message, _direction, { sender }) => {
-            const ownerClient = this.players.get(message.ownerId);
-
-            if (message.ownerId > 0 && !ownerClient)
-                return;
-
-            if (this.config.advanced.unknownObjects === "all") {
-                return await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
-            }
-
-            if (
-                Array.isArray(this.config.advanced.unknownObjects)
-                && (
-                    this.config.advanced.unknownObjects.includes(message.spawnType) ||
-                    this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType])
-                )) {
-                return await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
-            }
-
-            const registeredPrefab = this.registeredPrefabs.get(message.spawnType);
-
-            if (!registeredPrefab) {
-                if (this.config.advanced.unknownObjects === true) {
-                    return await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
-                }
-
-                this.logger.error("Couldn't spawn object of type: %s with %s component%s (not registered, you might need to add this to config.rooms.advanced.unknownObjects)",
-                    message.spawnType, message.components.length, message.components.length === 1 ? "" : "s");
-                return;
-            }
-
-            if (registeredPrefab.length !== message.components.length) {
-                this.logger.error("Couldn't spawn object type %s with %s component%s, prefab expected %s component%s",
-                    message.spawnType, message.components.length, message.components.length === 1 ? "" : "s", registeredPrefab.length, registeredPrefab.length === 1 ? "" : "s");
-                return;
-            }
-
-            try {
-                const object = await this.createObjectWithNetIds(
-                    message.spawnType,
-                    registeredPrefab,
-                    message.ownerId,
-                    message.flags,
-                    message.components.map(x => x.netId),
-                );
-                for (let i = 0; i < message.components.length; i++) {
-                    object.components[i].deserializeFromReader(HazelReader.from(message.components[i].data), true);
-                }
-            } catch (e) {
-                this.logger.error("Couldn't spawn object of type: %s with %s component%s (you might need to add it to config.rooms.advanced.unknownObjects)",
-                    message.spawnType, message.components.length, message.components.length === 1 ? "" : "s");
-                throw e;
-            }
-        });
-
-        this.decoder.on(DespawnMessage, message => {
-            const component = this.networkedObjects.get(message.netId);
-
-            if (component) {
-                this._despawnComponent(component);
-            }
-        });
-
-        this.decoder.on(SceneChangeMessage, async message => {
-            const player = this.players.get(message.clientId);
-
-            // SceneChange is broadcasted to all players by the joining player. If we're the server, we want to
-            // cancel this and stop it from being broadcasted so that we can spawn the player ourselves.
-            if (this.isAuthoritative) {
-                message.cancel();
-            }
-
-            if (player) {
-                if (message.scene === "OnlineGame") {
-                    const connection = this.getConnection(player);
-
-                    if (!connection) return;
-
-                    player.inScene = true;
-
-                    const ev = await this.emit(
-                        new PlayerSceneChangeEvent(
-                            this,
-                            player,
-                            message
-                        )
-                    );
-
-                    if (ev.canceled) {
-                        player.inScene = false;
-                        return;
-                    }
-
-                    if (this.isAuthoritative) {
-                        await this.broadcastImmediate(
-                            this.getExistingObjectSpawn(),
-                            undefined,
-                            [player]
-                        );
-                    } else {
-                        await this.broadcastImmediate(
-                            this.getServerOwnedObjectSpawn(),
-                            undefined,
-                            [player],
-                        );
-                    }
-
-                    const playerInfo = await this.createPlayerInfo(player);
-
-                    if (this.isAuthoritative) {
-                        await this.spawnNecessaryObjects();
-
-                        const playerControl = await this.createObjectOfType(SpawnType.Player, player.clientId, SpawnFlag.IsClientCharacter) as PlayerControl<this>;
-                        playerControl.playerId = playerInfo.playerId;
-                        await playerControl.processAwake();
-                        this.broadcastLazy(this.createObjectSpawnMessage(playerControl));
-
-                        if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
-                            this.playerAuthority?.characterControl?.syncSettings(this.settings);
-                        }
-                    } else {
-                        this.broadcastLazy(this.createObjectSpawnMessage(playerInfo));
-                    }
-                }
-            }
-        });
-
-        this.decoder.on(ReadyMessage, message => {
-            const player = this.players.get(message.clientId);
-
-            if (player) {
-                player.setReady();
             }
         });
     }
@@ -770,7 +552,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.logger.info("Room was destroyed (%s).", DisconnectReason[reason]);
     }
 
-    async FixedUpdate() {
+    async processFixedUpdate() {
         const curTime = Date.now();
         const delta = curTime - this.lastFixedUpdateTimestamp;
 
@@ -833,8 +615,13 @@ export class Room extends StatefulRoom<RoomEvents> {
             )
         );
 
-
         if (!ev.canceled && this.messageStream.length) {
+            await this.flushMessages();
+        }
+    }
+
+    async flushMessages() {
+        if (this.messageStream.length > 0) {
             const stream = this.messageStream;
             this.messageStream = [];
             await this.broadcastImmediate(stream);
@@ -940,6 +727,277 @@ export class Room extends StatefulRoom<RoomEvents> {
         connection.disconnect(message ?? DisconnectReason.Banned);
 
         this.logger.info("%s was banned from the room by the server" + message ? ". Message: " + message : "", player);
+    }
+    
+
+    async handleEndGameMessage(message: EndGameMessage) {
+        await this.endGame(message.reason);
+    }
+
+    async handleStartGameMessage(message: StartGameMessage, senderPlayer: Player<Room>) {
+        await this.handleStartGame(senderPlayer);
+    }
+
+    async handleAlterGameMessage(message: AlterGameMessage) {
+        if (message.alterTag === AlterGameTag.ChangePrivacy) {
+            // const messagePrivacy = message.value ? "public" : "private";
+            // const oldPrivacy = this.privacy;
+            // TODO: privacy event again
+            // const ev = await this.emit(
+            //     new RoomSetPrivacyEvent(
+            //         this,
+            //         message,
+            //         oldPrivacy,
+            //         messagePrivacy
+            //     )
+            // );
+
+            // if (ev.alteredPrivacy !== messagePrivacy) {
+            //     await this.broadcastImmediate([], [
+            //         new AlterGameMessage(
+            //             this.code,
+            //             AlterGameTag.ChangePrivacy,
+            //             ev.alteredPrivacy === "public" ? 1 : 0
+            //         )
+            //     ]);
+            // }
+            
+            await this.broadcastImmediate([], [
+                new AlterGameMessage(
+                    this.code.id,
+                    AlterGameTag.ChangePrivacy,
+                    message.value,
+                )
+            ]);
+
+            this.privacy = message.value === 1 ? "public" : "private";
+
+            // if (ev.alteredPrivacy !== oldPrivacy) {
+            //     this._setPrivacy(ev.alteredPrivacy);
+            // }
+        } else {
+            this.logger.error("Unknown alter game tag: %s with value %s", message.alterTag, message.value);
+        }
+    }
+
+    async handleDataMessage(message: DataMessage, senderPlayer: Player<Room>) {
+        const component = this.networkedObjects.get(message.netId);
+
+        if (component) {
+            const reader = HazelReader.from(message.data);
+            component.deserializeFromReader(reader, false);
+        }
+        return true;
+    }
+
+    async handleRpcMessage(message: RpcMessage, senderPlayer: Player<Room>) {
+        const component = this.networkedObjects.get(message.netId);
+
+        if (component) {
+            try {
+                if (message.child instanceof UnknownRpcMessage) {
+                    const parsedRpc = component.parseRemoteCall(message.child.messageTag, message.child.dataReader);
+                    if (!parsedRpc) {
+                        this.logger.error("Unknown remote procedure call from player %s (net id %s, %s): message tag %s",
+                            senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", RpcMessageTag[message.child.messageTag] || message.child.messageTag);
+                        return this.worker.config.socket.acceptUnknownGameData;
+                    }
+                    await component.handleRemoteCall(parsedRpc);
+                } else {
+                    await component.handleRemoteCall(message.child);
+                }
+            } catch (e) {
+                this.logger.error("Could not process remote procedure call from player %s (net id %s, %s): %s",
+                    senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", e);
+                return false;
+            }
+        } else {
+            this.logger.warn("Got remote procedure call for non-existent component: net id %s", message.netId);
+        }
+        return true;
+    }
+
+    async handleSpawnMessage(message: SpawnMessage, senderPlayer: Player<Room>) {
+        const ownerClient = this.players.get(message.ownerId);
+
+        if (message.ownerId > 0 && !ownerClient)
+            return;
+
+        if (this.config.advanced.unknownObjects === "all") {
+            await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
+            return true;
+        }
+
+        if (
+            Array.isArray(this.config.advanced.unknownObjects)
+            && (
+                this.config.advanced.unknownObjects.includes(message.spawnType) ||
+                this.config.advanced.unknownObjects.includes(SpawnType[message.spawnType])
+            )) {
+            await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
+            return true;
+        }
+
+        const registeredPrefab = this.registeredPrefabs.get(message.spawnType);
+
+        if (!registeredPrefab) {
+            if (this.config.advanced.unknownObjects === true) {
+                return await this.createUnknownPrefab(message.spawnType, message.ownerId, message.flags, message.components);
+            }
+
+            this.logger.error("Couldn't spawn object of type: %s with %s component%s (not registered, you might need to add this to config.rooms.advanced.unknownObjects)",
+                message.spawnType, message.components.length, message.components.length === 1 ? "" : "s");
+            return false;
+        }
+
+        if (registeredPrefab.length !== message.components.length) {
+            this.logger.error("Couldn't spawn object type %s with %s component%s, prefab expected %s component%s",
+                message.spawnType, message.components.length, message.components.length === 1 ? "" : "s", registeredPrefab.length, registeredPrefab.length === 1 ? "" : "s");
+            return false;
+        }
+
+        try {
+            const object = await this.createObjectWithNetIds(
+                message.spawnType,
+                registeredPrefab,
+                message.ownerId,
+                message.flags,
+                message.components.map(x => x.netId),
+            );
+            for (let i = 0; i < message.components.length; i++) {
+                object.components[i].deserializeFromReader(HazelReader.from(message.components[i].data), true);
+            }
+        } catch (e) {
+            this.logger.error("Couldn't spawn object of type: %s with %s component%s (you might need to add it to config.rooms.advanced.unknownObjects)",
+                message.spawnType, message.components.length, message.components.length === 1 ? "" : "s");
+            throw e;
+        }
+        return true;
+    }
+
+    async handleDespawnMessage(message: DespawnMessage) {
+        const component = this.networkedObjects.get(message.netId);
+
+        if (component) {
+            this._despawnComponent(component);
+        }
+        return true;
+    }
+
+    async handleSceneChangeMessage(message: SceneChangeMessage) {
+        const player = this.players.get(message.clientId);
+
+        if (player) {
+            if (message.scene === "OnlineGame") {
+                const connection = this.getConnection(player);
+
+                if (!connection) return;
+
+                player.inScene = true;
+
+                const ev = await this.emit(
+                    new PlayerSceneChangeEvent(
+                        this,
+                        player,
+                        message
+                    )
+                );
+
+                if (ev.canceled) {
+                    player.inScene = false;
+                    return;
+                }
+
+                if (this.isAuthoritative) {
+                    await this.broadcastImmediate(
+                        this.getExistingObjectSpawn(),
+                        undefined,
+                        [player]
+                    );
+                } else {
+                    await this.broadcastImmediate(
+                        this.getServerOwnedObjectSpawn(),
+                        undefined,
+                        [player],
+                    );
+                }
+
+                const playerInfo = await this.createPlayerInfo(player);
+
+                if (this.isAuthoritative) {
+                    await this.spawnNecessaryObjects();
+
+                    const playerControl = await this.createObjectOfType(SpawnType.Player, player.clientId, SpawnFlag.IsClientCharacter) as PlayerControl<this>;
+                    playerControl.playerId = playerInfo.playerId;
+                    await playerControl.processAwake();
+                    this.broadcastLazy(this.createObjectSpawnMessage(playerControl));
+
+                    if (this.playerAuthority && this.playerAuthority.clientId !== message.clientId) {
+                        this.playerAuthority?.characterControl?.syncSettings(this.settings);
+                    }
+                } else {
+                    this.broadcastLazy(this.createObjectSpawnMessage(playerInfo));
+                }
+            }
+        }
+
+        // SceneChange is broadcasted to all players by the joining player. If we're the server, we want to
+        // cancel this and stop it from being broadcasted so that we can spawn the player ourselves.
+        return !this.isAuthoritative;
+    }
+
+    async handleReadyMessage(message: ReadyMessage) {
+        const player = this.players.get(message.clientId);
+
+        if (player) {
+            player.setReady();
+        }
+        return true;
+    }
+
+    parseGameDataMessage(messageTag: GameDataMessageTag, dataReader: HazelReader) {
+        switch (messageTag as GameDataMessageTag) {
+            case GameDataMessageTag.Data: return DataMessage.deserializeFromReader(dataReader);
+            case GameDataMessageTag.Rpc: return RpcMessage.deserializeFromReader(dataReader);
+            case GameDataMessageTag.Spawn: return SpawnMessage.deserializeFromReader(dataReader);
+            case GameDataMessageTag.Despawn: return DespawnMessage.deserializeFromReader(dataReader);
+            case GameDataMessageTag.SceneChange: return SceneChangeMessage.deserializeFromReader(dataReader);
+            case GameDataMessageTag.Ready: return ReadyMessage.deserializeFromReader(dataReader);
+            case GameDataMessageTag.ChangeSettings:
+            case GameDataMessageTag.ClientInfo:
+            default:
+                return undefined;
+        }
+    }
+
+    async handleGameDataMessage(message: BaseGameDataMessage, senderPlayer: Player<Room>) {
+        if (message instanceof DataMessage) return await this.handleDataMessage(message, senderPlayer);
+        if (message instanceof RpcMessage) return await this.handleRpcMessage(message, senderPlayer);
+        if (message instanceof SpawnMessage) return await this.handleSpawnMessage(message, senderPlayer);
+        if (message instanceof DespawnMessage) return await this.handleDespawnMessage(message);
+        if (message instanceof SceneChangeMessage) return await this.handleSceneChangeMessage(message);
+        if (message instanceof ReadyMessage) return await this.handleReadyMessage(message);
+
+        this.logger.error("Unknown game data message to handle, with tag %s",
+            GameDataMessageTag[message.messageTag] || message.messageTag);
+        return this.worker.config.socket.acceptUnknownGameData;
+    }
+
+    protected async handleGameDataMessageUnknown(message: BaseGameDataMessage, senderPlayer: Player<Room>) {
+        if (message instanceof UnknownGameDataMessage) {
+            const parsedMessage = this.parseGameDataMessage(message.messageTag, message.dataReader);
+            return await this.handleGameDataMessage(parsedMessage || message, senderPlayer);
+        }
+        return await this.handleGameDataMessage(message, senderPlayer);
+    }
+
+    async handleMessagesAndGetNotCanceled(messages: BaseGameDataMessage[], senderPlayer: Player<Room>): Promise<BaseGameDataMessage[]> {
+        const notCanceled = [];
+        for (const message of messages) {
+            const doBroadcast = await this.handleGameDataMessageUnknown(message, senderPlayer);
+            if (doBroadcast) notCanceled.push(message);
+        }
+        return notCanceled;
     }
 
     /**
@@ -1114,7 +1172,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         const writer = this.worker.config.optimizations.movement.reuseBuffer
             ? HazelWriter.alloc(22)
                 .uint8(0)
-                .write(movementPacket, MessageDirection.Clientbound, this.decoder)
+                .write(movementPacket)
             : undefined;
 
         const promises = [];
@@ -1174,23 +1232,6 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.broadcastMessages(gameData, payloads, includedConnections, excludedConnections, reliable);
     }
 
-    async processMessagesAndGetNotCanceled(messages: BaseMessage[], notCanceled: BaseMessage[], ctx: PacketContext) {
-        for (const message of messages) {
-            const canceledBefore = message["_canceled"];
-            message["_canceled"] = false;
-
-            await this.decoder.emit(message, MessageDirection.Clientbound, ctx);
-
-            if (message["_canceled"]) {
-                message["_canceled"] = canceledBefore;
-                continue;
-            }
-            message["_canceled"] = canceledBefore;
-
-            notCanceled.push(message);
-        }
-    }
-
     async setCode(code: RoomCode): Promise<void> {
         if (this.code) {
             this.logger.info(
@@ -1200,7 +1241,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         }
 
         await this.broadcastImmediate([], [
-            new HostGameMessage(code.id)
+            new S2CHostGameMessage(code.id)
         ]);
     }
 
@@ -1211,7 +1252,7 @@ export class Room extends StatefulRoom<RoomEvents> {
      */
     async updateAuthorityForClient(authorityId: number, recipient: Connection) {
         await this.broadcastMessages([], [
-            new JoinGameMessage(
+            new S2CJoinGameMessage(
                 this.code.id,
                 SpecialClientId.Temp,
                 authorityId,
@@ -1221,7 +1262,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 "",
                 ""
             ),
-            new RemovePlayerMessage(
+            new S2CRemovePlayerMessage(
                 this.code.id,
                 SpecialClientId.Temp,
                 DisconnectReason.Error,
@@ -1439,7 +1480,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 );
 
                 await this.broadcastImmediate([], [
-                    new JoinGameMessage(
+                    new S2CJoinGameMessage(
                         this.code.id,
                         joiningClient.clientId,
                         this.authorityId,
@@ -1457,7 +1498,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 this.connections.set(joiningClient.clientId, joiningClient);
 
                 await this.broadcastImmediate([], [
-                    new JoinGameMessage(
+                    new S2CJoinGameMessage(
                         this.code.id,
                         joiningClient.clientId,
                         this.authorityId,
@@ -1524,7 +1565,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     new ReliablePacket(
                         otherClient.getNextNonce(),
                         [
-                            new JoinGameMessage(
+                            new S2CJoinGameMessage(
                                 this.code.id,
                                 joiningClient.clientId,
                                 this.getClientAwareAuthorityId(otherClient),
@@ -1605,7 +1646,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 new ReliablePacket(
                     otherClient.getNextNonce(),
                     [
-                        new RemovePlayerMessage(
+                        new S2CRemovePlayerMessage(
                             this.code.id,
                             leavingConnection.clientId,
                             reason,
@@ -1665,22 +1706,29 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.waitingForHost.clear();
     }
 
-    async startGame() {
-        this.gameState = GameState.Started;
+    waitingForReady(player: Player<this>): boolean {
+        return super.waitingForReady(player) && this.getConnection(player) !== undefined;
+    }
 
-        // TODO: "started by" event information
-        const ev = await this.emit(new RoomGameStartEvent(this));
+    async handleStartGame(startedBy?: Player<Room>) {
+        this.gameState = GameState.Started;
+        
+        if (startedBy) {
+            this.logger.info("Player %s requested game start, to be managed by %s",
+                startedBy, this.isAuthoritative ? "server" : (this.playerAuthority || "unknown player"));
+        } else {
+            this.logger.info("Server started game start, to be managed by %s",
+                this.isAuthoritative ? "server" : (this.playerAuthority || "unknown player"));
+        }
+
+        const ev = await this.emit(new RoomGameStartEvent(this, startedBy));
 
         if (ev.canceled) {
             this.gameState = GameState.NotStarted;
             return;
         }
 
-        await this.broadcastImmediate([], [
-            new StartGameMessage(this.code.id)
-        ]);
-
-        this.logger.info("Game started, managed by %s", this.isAuthoritative ? "server" : (this.playerAuthority || "unknown player"));
+        await this.broadcastImmediate([], [new StartGameMessage(this.code.id)]);
 
         if (this.isAuthoritative) {
             const promises = [];
@@ -1689,109 +1737,27 @@ export class Room extends StatefulRoom<RoomEvents> {
             }
             await Promise.all(promises);
 
-            if (this.lobbyBehaviour)
-                this.despawnComponent(this.lobbyBehaviour);
-
-            // TODO: allow plugins to select map
-            const shipPrefabs = [
-                SpawnType.SkeldShipStatus,
-                SpawnType.MiraShipStatus,
-                SpawnType.PolusShipStatus,
-                SpawnType.AprilShipStatus,
-                SpawnType.AirshipShipStatus,
-                SpawnType.FungleShipStatus,
-            ];
-
-            const wait = this.settings.map === GameMap.Airship || this.settings.map === GameMap.Fungle
-                ? 15 : 10; // seconds
-
-            await this.spawnObjectOfType(shipPrefabs[this.settings.map] || 0, SpecialOwnerId.Global, 0);
-
-            this.logger.info("Waiting for players to ready up..");
-
-            await Promise.race([
-                Promise.all(
-                    [...this.players.values()].map((player) => {
-                        if (player.isReady || !this.getConnection(player.clientId))
-                            return Promise.resolve();
-
-                        return new Promise<void>((resolve) => {
-                            player.once("player.ready", () => resolve());
-                            player.once("player.leave", () => resolve());
-                        });
-                    })
-                ),
-                sleep(wait * 1000),
-            ]);
-
-            const removes = [];
-            for (const [clientId, player] of this.players) {
-                if (!player.isReady) {
-                    this.logger.warn("Player %s failed to ready up, kicking..", player);
-                    await this.handleLeave(player);
-                    removes.push(clientId);
-                }
-                player.isReady = false;
-            }
-
-            if (removes.length) {
-                await this.broadcastImmediate(
-                    [],
-                    removes.map((clientId) => {
-                        return new RemovePlayerMessage(
-                            this.code.id,
-                            clientId,
-                            DisconnectReason.Error,
-                            this.authorityId
-                        );
-                    })
-                );
-            }
-
-            this.logger.info("Assigning roles..");
-            await this.gameManager?.onGameStart();
-            this.logger.info("Assigning tasks..");
-            await this.shipStatus?.assignTasks();
-
-            if (this.shipStatus) {
-                for (const [, player] of this.players) {
-                    this.shipStatus.spawnPlayer(player, true, false);
-                }
-            }
+            await super.handleStartGame();
+            this.logger.info("Game started");
         }
     }
 
-    async handleEnd(reason: GameOverReason, intent?: EndGameIntent) {
-        const waiting = this.waitingForHost;
-        this.waitingForHost = new Set;
-        this.gameState = GameState.Ended;
-
+    async handleEndGame(reason: GameOverReason, intent?: EndGameIntent) {
         const ev = await this.emit(new RoomGameEndEvent(this, reason, intent));
-
-        if (ev.canceled) {
-            this.waitingForHost = waiting;
-            this.gameState = GameState.Started;
-            return;
-        }
-
-        for (const [, component] of this.networkedObjects) {
-            this.despawnComponent(component);
-        }
-
-        await this.broadcastImmediate([], [
-            new EndGameMessage(this.code.id, reason, false)
-        ]);
+        if (ev.canceled) return;
+        
+        await this.broadcastImmediate([], [new EndGameMessage(this.code.id, reason, false)]);
+        await super.handleEndGame(reason);
 
         this.logger.info("Game ended: %s", GameOverReason[ev.reason]);
 
-        setImmediate(() => {
-            this.logger.info("Clearing connections for clients to re-join");
-            this.connections.clear();
-        });
+        this.logger.info("Clearing connections for clients to re-join");
+        await this.flushMessages();
+        this.connections.clear();
     }
 
     async endGame(reason: GameOverReason, intent?: EndGameIntent) {
-        await this.handleEnd(reason, intent);
+        await this.handleEndGame(reason, intent);
     }
 
     protected async createUnknownPrefab(
@@ -2064,7 +2030,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     async removePlayers(players: Player<this>[], reason: DisconnectReason): Promise<void> {
         for (const [ , client ] of this.connections) {
             await this.broadcastMessages([], players.map(player => 
-                new RemovePlayerMessage(this.code.id, player.clientId, reason, this.getClientAwareAuthorityId(client)),
+                new S2CRemovePlayerMessage(this.code.id, player.clientId, reason, this.getClientAwareAuthorityId(client)),
             ), [ client ]);
             this.getClientAwareAuthorityId(client)
         }

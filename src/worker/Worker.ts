@@ -1183,7 +1183,7 @@ export class Worker extends EventEmitter<WorkerEvents> {
             return await sender.disconnect(DisconnectReason.Hacking);
         }
 
-        await player.room.handleStartGameMessage(message);
+        await player.room.handleStartGameMessage(message, player);
     }
 
     async handleEndGameMessage(message: EndGameMessage, sender: Connection) {

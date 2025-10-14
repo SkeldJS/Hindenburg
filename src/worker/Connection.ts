@@ -10,6 +10,7 @@ import {
     BaseRootPacket,
     DisconnectPacket,
     PlatformSpecificData,
+    PlayerJoinData,
     ReliablePacket,
     RemoveGameMessage
 } from "@skeldjs/protocol";
@@ -396,5 +397,16 @@ export class Connection {
         );
         await this.room?.handleRemoteLeave(this, reason);
         this.room = undefined;
+    }
+
+    getJoinData(): PlayerJoinData {
+        return new PlayerJoinData(
+            this.clientId,
+            this.username,
+            this.platform,
+            this.playerLevel,
+            "",
+            ""
+        )
     }
 }

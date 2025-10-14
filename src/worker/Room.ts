@@ -1298,7 +1298,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             if (previousConnection) {
                 this.logger.info("%s is now the player authority, the previous player authority was %s", remoteConnection, previousConnection);
             } else {
-                this.logger.info("%s is now the player authority, there was no previous authoritative player");
+                this.logger.info("%s is now the player authority, there was no previous authoritative player", remoteConnection);
             }
         }
 
@@ -1317,7 +1317,12 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         if (this.gameState === GameState.Ended && this.waitingForHost.has(remoteConnection)) {
             this.gameState = GameState.NotStarted;
-            await this._joinOtherClients();
+            const waitingPromises = [];
+            for (const waitingClient of this.waitingForHost) {
+                waitingPromises.push(this.finishJoiningGame(waitingClient));
+            }
+            await Promise.all(waitingPromises);
+            this.waitingForHost.clear();
         }
 
         for (const [, connection] of this.connections) {
@@ -1355,16 +1360,21 @@ export class Room extends StatefulRoom<RoomEvents> {
             this.logger.info("The server is now authoritative, there was no previous authoritative player");
         }
 
-
-        for (const [, connection] of this.connections) {
-            await this.updateAuthorityForClient(this.getClientAwareAuthorityId(connection), connection);
-        }
+        await this.updateAllClientAwareAuthority();
     }
 
     getClientAwareAuthorityId(clientPov: Connection) {
         if (this.config.authoritativeServer && this.gameState === GameState.Started) return SpecialClientId.ServerAuthority;
         if (this.actingHosts.has(clientPov)) return clientPov.clientId;
         return this.authorityId;
+    }
+
+    async updateAllClientAwareAuthority() {
+        const promises = [];
+        for (const [ , client ] of this.connections) {
+            promises.push(this.updateAuthorityForClient(this.getClientAwareAuthorityId(client), client));
+        }
+        await Promise.all(promises);
     }
 
     protected _addActingHost(client: Connection) {
@@ -1405,10 +1415,39 @@ export class Room extends StatefulRoom<RoomEvents> {
         return player;
     }
 
-    async handleRemoteJoin(joiningClient: Connection) {
-        if (this.connections.get(joiningClient.clientId))
-            return;
+    getOtherClientJoinData(excluding: Connection) {
+        const data: PlayerJoinData[] = [];
+        for (const [ , client ] of this.connections) {
+            if (client.clientId === excluding.clientId) continue;
+            data.push(client.getJoinData());
+        }
+        return data;
+    }
 
+    async finishJoiningGame(joiningClient: Connection) {
+        await joiningClient.sendPacket(
+            new ReliablePacket(
+                joiningClient.getNextNonce(),
+                [
+                    new JoinedGameMessage(
+                        this.code.id,
+                        joiningClient.clientId,
+                        // For now, the authority belongs to either the actual host or the server when it comes to
+                        // handling the player joining. Once they have changed scene, they will become an acting host.
+                        this.authorityId,
+                        this.getOtherClientJoinData(joiningClient),
+                    ),
+                    new AlterGameMessage(
+                        this.code.id,
+                        AlterGameTag.ChangePrivacy,
+                        this.privacy === "public" ? 1 : 0
+                    )
+                ]
+            )
+        );
+    }
+
+    async handleRemoteJoin(joiningClient: Connection) {
         const joinData = new PlayerJoinData(
             joiningClient.clientId,
             joiningClient.username,
@@ -1418,10 +1457,9 @@ export class Room extends StatefulRoom<RoomEvents> {
             ""
         );
 
-        const joiningPlayer = await this.handleJoin(joinData) || this.players.get(joiningClient.clientId);
+        const joiningPlayer = await this.handleJoin(joinData);
 
-        if (!joiningPlayer)
-            return;
+        if (!joiningPlayer) return;
 
         if (this.isAuthoritative) {
             if (this.actingHosts.size === 0) {
@@ -1431,7 +1469,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 }
             }
         } else {
-            if (!this.playerAuthority) {
+            if (this.authorityId === 0) {
                 const ev = await this.emit(new RoomSelectHostEvent(this, false, true, joiningClient));
                 if (!ev.canceled) {
                     this.authorityId = ev.alteredSelected.clientId; // set player authority manually as the connection has not been created yet
@@ -1442,73 +1480,32 @@ export class Room extends StatefulRoom<RoomEvents> {
         }
 
         joiningClient.room = this;
+
+        const promises = [];
+        for (const [, otherClient] of this.connections) {
+            promises.push(otherClient.sendPacket(
+                new ReliablePacket(
+                    otherClient.getNextNonce(),
+                    [
+                        new S2CJoinGameMessage(
+                            this.code.id,
+                            joiningClient.clientId,
+                            this.getClientAwareAuthorityId(otherClient),
+                            joiningClient.username,
+                            joiningClient.platform,
+                            joiningClient.playerLevel,
+                            "",
+                            ""
+                        )
+                    ]
+                )
+            ));
+        }
+        await Promise.all(promises);
+
         if (this.gameState === GameState.Ended) {
-            if (joiningClient.clientId === this.authorityId) {
-                this.gameState = GameState.NotStarted;
-                this.connections.set(joiningClient.clientId, joiningClient);
-
-                this.logger.info("%s joined, joining other clients..",
-                    joiningPlayer);
-
-                this.gameState = GameState.NotStarted;
-
-                await joiningClient.sendPacket(
-                    new ReliablePacket(
-                        joiningClient.getNextNonce(),
-                        [
-                            new JoinedGameMessage(
-                                this.code.id,
-                                joiningClient.clientId,
-                                this.authorityId,
-                                [...this.connections.values()]
-                                    .reduce<PlayerJoinData[]>((prev, cur) => {
-                                        if (cur !== joiningClient) {
-                                            prev.push(new PlayerJoinData(
-                                                cur.clientId,
-                                                cur.username,
-                                                cur.platform,
-                                                cur.playerLevel,
-                                                "",
-                                                ""
-                                            ));
-                                        }
-                                        return prev;
-                                    }, [])
-                            )
-                        ]
-                    )
-                );
-
-                await this.broadcastImmediate([], [
-                    new S2CJoinGameMessage(
-                        this.code.id,
-                        joiningClient.clientId,
-                        this.authorityId,
-                        joiningClient.username,
-                        joiningClient.platform,
-                        joiningClient.playerLevel,
-                        "",
-                        ""
-                    )
-                ], undefined, [joiningClient.getPlayer()!]);
-
-                await this._joinOtherClients();
-            } else {
+            if (!this.isAuthoritative && joiningClient.clientId !== this.authorityId) {
                 this.waitingForHost.add(joiningClient);
-                this.connections.set(joiningClient.clientId, joiningClient);
-
-                await this.broadcastImmediate([], [
-                    new S2CJoinGameMessage(
-                        this.code.id,
-                        joiningClient.clientId,
-                        this.authorityId,
-                        joiningClient.username,
-                        joiningClient.platform,
-                        joiningClient.playerLevel,
-                        "",
-                        ""
-                    )
-                ], undefined, [joiningClient.getPlayer()!]);
 
                 await joiningClient.sendPacket(
                     new ReliablePacket(
@@ -1524,65 +1521,24 @@ export class Room extends StatefulRoom<RoomEvents> {
 
                 this.logger.info("%s joined, waiting for host",
                     joiningPlayer);
-            }
-            this.gameState = GameState.NotStarted;
-            return;
-        }
-
-        await joiningClient.sendPacket(
-            new ReliablePacket(
-                joiningClient.getNextNonce(),
-                [
-                    new JoinedGameMessage(
-                        this.code.id,
-                        joiningClient.clientId,
-                        // For now, the authority belongs to either the actual host or the server when it comes to
-                        // handling the player joining. Once they have changed scene, they will become an acting host.
-                        this.authorityId,
-                        [...this.connections]
-                            .map(([, client]) => new PlayerJoinData(
-                                client.clientId,
-                                client.username,
-                                client.platform,
-                                client.playerLevel,
-                                "",
-                                ""
-                            ))
-                    ),
-                    new AlterGameMessage(
-                        this.code.id,
-                        AlterGameTag.ChangePrivacy,
-                        this.privacy === "public" ? 1 : 0
-                    )
-                ]
-            )
-        );
-
-        const promises = [];
-        for (const [clientId, otherClient] of this.connections) {
-            if (this.players.has(clientId)) {
-                promises.push(otherClient.sendPacket(
-                    new ReliablePacket(
-                        otherClient.getNextNonce(),
-                        [
-                            new S2CJoinGameMessage(
-                                this.code.id,
-                                joiningClient.clientId,
-                                this.getClientAwareAuthorityId(otherClient),
-                                joiningClient.username,
-                                joiningClient.platform,
-                                joiningClient.playerLevel,
-                                "",
-                                ""
-                            )
-                        ]
-                    )
-                ));
+                return;
             }
         }
-        await Promise.all(promises);
 
-        this.connections.set(joiningClient.clientId, joiningClient);
+        this.gameState = GameState.NotStarted;
+
+        await this.finishJoiningGame(joiningClient);
+
+        const waitingPromises = [];
+        for (const waitingClient of this.waitingForHost) {
+            waitingPromises.push(this.finishJoiningGame(waitingClient));
+        }
+        await Promise.all(waitingPromises);
+        this.waitingForHost.clear();
+
+        if (!this.connections.has(joiningClient.clientId)) {
+            this.connections.set(joiningClient.clientId, joiningClient);
+        }
         this.playerJoinedFlag = true;
 
         await this.emit(
@@ -1592,10 +1548,17 @@ export class Room extends StatefulRoom<RoomEvents> {
             )
         );
 
-        this.logger.info(
-            "%s joined the game",
-            joiningClient
-        );
+        if (joiningClient.clientId === this.authorityId) {
+            this.logger.info(
+                "%s joined the game as the room authority",
+                joiningClient
+            );
+        } else {
+            this.logger.info(
+                "%s joined the game",
+                joiningClient
+            );
+        }
     }
 
     async handleRemoteLeave(leavingConnection: Connection, reason: DisconnectReason = DisconnectReason.Error) {
@@ -1603,7 +1566,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.connections.delete(leavingConnection.clientId);
         leavingConnection.room = undefined;
 
-        const playerLeft = await this.handleLeave(leavingConnection.clientId);
+        await this.handleLeave(leavingConnection.clientId);
 
         if (this.connections.size === 0) {
             await this.destroy();
@@ -1617,14 +1580,8 @@ export class Room extends StatefulRoom<RoomEvents> {
             if (!ev.canceled) {
                 const player = ev.alteredSelected.getPlayer();
 
-                this.authorityId = SpecialClientId.ServerAuthority; //ev.alteredSelected.clientId; // set host manually as the connection has not been created yet
                 if (player) {
-                    await player.emit(new PlayerSetAuthoritativeEvent(this, player));
-                }
-
-                if (this.gameState === GameState.Ended && this.waitingForHost.has(ev.alteredSelected)) {
-                    this.gameState = GameState.NotStarted;
-                    await this._joinOtherClients();
+                    await this.updatePlayerAuthority(player, false);
                 }
             }
         }
@@ -1664,48 +1621,6 @@ export class Room extends StatefulRoom<RoomEvents> {
         );
     }
 
-    private async _joinOtherClients() {
-        await Promise.all(
-            [...this.connections]
-                .map(([clientId, client]) => {
-                    if (this.waitingForHost.has(client)) {
-                        this.waitingForHost.delete(client);
-
-                        return client?.sendPacket(
-                            new ReliablePacket(
-                                client.getNextNonce(),
-                                [
-                                    new JoinedGameMessage(
-                                        this.code.id,
-                                        clientId,
-                                        this.authorityId,
-                                        [...this.connections.values()]
-                                            .reduce<PlayerJoinData[]>((prev, cur) => {
-                                                if (cur !== client) {
-                                                    prev.push(new PlayerJoinData(
-                                                        cur.clientId,
-                                                        cur.username,
-                                                        cur.platform,
-                                                        cur.playerLevel,
-                                                        "",
-                                                        ""
-                                                    ));
-                                                }
-                                                return prev;
-                                            }, [])
-                                    )
-                                ]
-                            )
-                        ) || Promise.resolve();
-                    } else {
-                        return Promise.resolve();
-                    }
-                })
-        );
-
-        this.waitingForHost.clear();
-    }
-
     waitingForReady(player: Player<this>): boolean {
         return super.waitingForReady(player) && this.getConnection(player) !== undefined;
     }
@@ -1731,15 +1646,14 @@ export class Room extends StatefulRoom<RoomEvents> {
         await this.broadcastImmediate([], [new StartGameMessage(this.code.id)]);
 
         if (this.isAuthoritative) {
-            const promises = [];
-            for (const [ , client ] of this.connections) {
-                promises.push(this.updateAuthorityForClient(this.getClientAwareAuthorityId(client), client));
-            }
-            await Promise.all(promises);
-
+            await this.updateAllClientAwareAuthority();
             await super.handleStartGame();
             this.logger.info("Game started");
         }
+    }
+
+    async startGame() {
+        await this.handleStartGame(undefined);
     }
 
     async handleEndGame(reason: GameOverReason, intent?: EndGameIntent) {
@@ -1750,10 +1664,8 @@ export class Room extends StatefulRoom<RoomEvents> {
         await super.handleEndGame(reason);
 
         this.logger.info("Game ended: %s", GameOverReason[ev.reason]);
-
-        this.logger.info("Clearing connections for clients to re-join");
         await this.flushMessages();
-        this.connections.clear();
+        await this.updateAllClientAwareAuthority();
     }
 
     async endGame(reason: GameOverReason, intent?: EndGameIntent) {

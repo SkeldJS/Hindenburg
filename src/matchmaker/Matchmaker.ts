@@ -642,7 +642,7 @@ export class Matchmaker {
                     continue;
 
                 gamesAndRelevance.push([
-                    0,
+                    badMatchScore,
                     this.getGameListing(ctx.socket.remoteAddress || "", room),
                 ]);
             }
@@ -652,7 +652,7 @@ export class Matchmaker {
                     return a[1].Age - b[1].Age;
                 }
 
-                return b[0] - a[0];
+                return a[0] - b[0];
             });
 
             const topResults = this.worker.config.gameListing.maxResults === "all"

@@ -150,6 +150,36 @@
             }
           ]
         },
+        "removeExtraFilters": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "Tags",
+                  "PlayerSpeed",
+                  "Roles",
+                  "KillCooldown",
+                  "VotingTime",
+                  "NumImposters",
+                  "VisualTasks",
+                  "AnonymousVotes",
+                  "ConfirmEjects",
+                  "DiscussionTime",
+                  "EmergencyCooldown",
+                  "NumEmergencyMeetings",
+                  "NumCommonTasks",
+                  "NumShortTasks",
+                  "NumLongTasks",
+                  "KillDistance"
+                ]
+              } 
+            }
+          ]
+        },
         "maxResults": {
           "anyOf": [
             {
@@ -162,7 +192,6 @@
               ]
             }
           ],
-          "type": "boolean",
           "description": "The maximum number of results to return to a client at once. Set to `0`or `\"all\"` to return all available rooms.",
           "default": 10
         },

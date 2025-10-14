@@ -1,5 +1,5 @@
 import { AllGameSettings } from "@skeldjs/protocol";
-import { StatefulRoomConfig } from "@skeldjs/core";
+import { Filters, StatefulRoomConfig } from "@skeldjs/core";
 
 export interface PluginConfig {
     /**
@@ -201,7 +201,7 @@ export interface LoggingConfig {
     };
 }
 
-export type ValidSearchTerm = "map" | "impostors" | "chat" | "chatType";
+export type ValidSearchTerm = "map" | "chat" | "chatType";
 
 export interface GameListingConfig {
     /**
@@ -213,11 +213,12 @@ export interface GameListingConfig {
      * Whether to ignore filtering for game listings, and just list every game
      * on the server.
      *
-     * Or specify which search terms (`"map"`, `"impostors"`, `"chat"`, `"chatType"`)
+     * Or specify which search terms (`"map"`, `"chat"`, `"chatType"`)
      * to ignore by passing an array.
      * @default false
      */
     ignoreSearchTerms: boolean | ValidSearchTerm[];
+    removeExtraFilters: boolean | (string & keyof typeof Filters)[];
     /**
      * The maximum number of results to return to a client at once. Set to `0`
      * or `"all"` for this to be infinite

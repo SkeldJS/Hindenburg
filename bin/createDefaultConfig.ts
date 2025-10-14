@@ -25,6 +25,7 @@ export function createDefaultConfig(): HindenburgConfig {
             ignorePrivacy: false,
             ignoreSearchTerms: false,
             maxResults: 10,
+            removeExtraFilters: false,
             requirePefectMatches: false
         },
         plugins: {

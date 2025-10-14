@@ -6,7 +6,7 @@ import crypto from "crypto";
 
 import KoaRouter from "@koa/router";
 import { HazelWriter, VersionInfo } from "@skeldjs/util";
-import { DisconnectReason, Platform, StringNames } from "@skeldjs/constant";
+import { DisconnectReason, Filters, Platform, StringNames } from "@skeldjs/constant";
 
 import { Room, RoomCode, Worker } from "../worker";
 import { Logger } from "../logger";
@@ -295,10 +295,12 @@ export class Matchmaker {
         });
 
         router.get("/api/games/filtered", ctx => {
+            console.log(ctx.query);
             if (!this.verifyRequest(ctx)) {
                 ctx.status = 401;
                 return;
             }
+
 
             // if (!ctx.query.mapId) {
             //     this.logger.warn("Client failed to find games: No 'mapId' provided in query parameters");
@@ -394,6 +396,38 @@ export class Matchmaker {
                     allGamesCount: this.worker.rooms.size,
                     matchingGamesCount: sortedResults.length,
                 }
+            };
+        });
+
+        router.get("/api/filters", ctx => {
+            // Valid values for gameListing.removeExtraFilters:
+            // - true = Remove all additional game filters
+            // - false = Show all additional game filters
+            // - Array<string> = List of game filters to remove
+            if (this.worker.config.gameListing.removeExtraFilters === true) {
+                ctx.status = 200;
+                ctx.body = { filters: [] };
+                return;
+            }
+
+            const allFilters = Object.values(Filters).filter(x => typeof x === "string");
+
+            if (!this.worker.config.gameListing.removeExtraFilters) {
+                ctx.status = 200;
+                ctx.body = { filters: allFilters };
+                return;
+            }
+
+            const remainingFilters = [];
+            const removeFilters: Set<string> = new Set(this.worker.config.gameListing.removeExtraFilters);
+
+            for (const filter of allFilters) {
+                if (!removeFilters.has(filter)) remainingFilters.push(filter);
+            }
+
+            ctx.status = 200;
+            ctx.body = {
+                filters: remainingFilters,
             };
         });
 

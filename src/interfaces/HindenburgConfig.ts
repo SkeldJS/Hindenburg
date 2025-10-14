@@ -231,7 +231,7 @@ export interface GameListingConfig {
      * terms.
      * @default false
      */
-    requirePefectMatches: boolean;
+    requireExactMatches: boolean;
 }
 
 export interface ChatCommandConfig {

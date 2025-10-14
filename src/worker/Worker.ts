@@ -842,13 +842,13 @@ export class Worker extends EventEmitter<WorkerEvents> {
     getRoomRelevancy(room: Room, numImpostors: number, lang: number, mapId: number, quickChat: string, perfectMatches: boolean, ignoreSearchTerms: Set<ValidSearchTerm> | false) {
         let relevancy = 0;
 
-        if (!ignoreSearchTerms || !ignoreSearchTerms.has("impostors")) {
-            if ((numImpostors === 0 || room.settings.numImpostors === numImpostors)) {
-                relevancy++;
-            } else if (perfectMatches) {
-                return 0;
-            }
-        }
+        // if (!ignoreSearchTerms || !ignoreSearchTerms.has("impostors")) {
+        //     if ((numImpostors === 0 || room.settings.numImpostors === numImpostors)) {
+        //         relevancy++;
+        //     } else if (perfectMatches) {
+        //         return 0;
+        //     }
+        // }
 
         if (!ignoreSearchTerms || !ignoreSearchTerms.has("map")) {
             if ((mapId & (1 << room.settings.map)) !== 0) {
@@ -1269,11 +1269,11 @@ export class Worker extends EventEmitter<WorkerEvents> {
                 message.quickchat === QuickChatMode.FreeChat
                     ? "FreeChatOrQuickChat"
                     : "QuickChatOnly",
-                this.config.gameListing.requirePefectMatches,
+                this.config.gameListing.requireExactMatches,
                 ignoreSearchTerms
             );
 
-            if (relevancy === 0 && this.config.gameListing.requirePefectMatches)
+            if (relevancy === 0 && this.config.gameListing.requireExactMatches)
                 continue;
 
             gamesAndRelevance.push([

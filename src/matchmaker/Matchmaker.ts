@@ -6,12 +6,12 @@ import crypto from "crypto";
 
 import KoaRouter from "@koa/router";
 import { HazelWriter, VersionInfo } from "@skeldjs/util";
-import { DisconnectReason, Filters, Platform, StringNames } from "@skeldjs/constant";
+import { DisconnectReason, Filters, GameKeyword, GameMap, GameMode, Platform, QuickChatMode, StringNames } from "@skeldjs/constant";
 
 import { Room, RoomCode, Worker } from "../worker";
 import { Logger } from "../logger";
 
-export interface GameListingJson {
+export type GameListingJson = {
     IP: number;
     Port: number;
     GameId: number;
@@ -28,18 +28,18 @@ export interface GameListingJson {
     Options: string;
 }
 
-export interface ErrorJson {
+export type ErrorJson = {
     Reason: keyof typeof DisconnectReason;
 }
 
-export interface GameFoundByCodeJson {
+export type GameFoundByCodeJson = {
     Errors: ErrorJson[] | null;
     Game: GameListingJson | null;
     Region: number;
     UntranslatedRegion: string;
 }
 
-export interface MatchmakerTokenPayload {
+export type MatchmakerTokenPayload = {
     Content: {
         Puid: string;
         ClientVersion: number;
@@ -48,7 +48,160 @@ export interface MatchmakerTokenPayload {
     Hash: string;
 }
 
-function safeJsonParse(jsonString: string) {
+export type SubFilterJson = {
+    AcceptedValues: number;
+    FilterType: "map";
+}|{
+    AcceptedValues: boolean[];
+    OptionEnum: number;
+    FilterType: "bool";
+}|{
+    AcceptedValues: number;
+    FilterType: "chat";
+}|{
+    AcceptedValues: number;
+    FilterType: "language";
+}|{
+    AcceptedValues: number[];
+    OptionEnum: number;
+    FilterType: "cat";
+}|{
+    AcceptedValues: number[];
+    OptionEnum: number;
+    FilterType: "int";
+};
+
+export type FiltersListJson = {
+    FilterSets: {
+        GameMode: number;
+        Filters: {
+            OptionType: string;
+            Key: string;
+            SubFilterString: string;
+        }[]
+    }[];
+}
+
+export type IntRange = { min: number; max: number; };
+
+export enum FilterPlayerSpeed {
+    Low,
+    Medium,
+    High,
+    VeryHigh,
+}
+
+export const playerSpeedRanges: Record<FilterPlayerSpeed, IntRange> = {
+    [FilterPlayerSpeed.Low]: { min: 0.5, max: 0.75 },
+    [FilterPlayerSpeed.Medium]:{ min: 1, max: 1.5 },
+    [FilterPlayerSpeed.High]: { min: 1.75, max: 2.25 },
+    [FilterPlayerSpeed.VeryHigh]: { min: 2.5, max: 3.0 },
+};
+
+export enum FilterKillCooldown {
+    Low,
+    Medium,
+    High,
+    VeryHigh,
+}
+
+export const killCooldownRanges: Record<FilterKillCooldown, IntRange> = {
+    [FilterKillCooldown.Low]: { min: 10, max: 20 },
+    [FilterKillCooldown.Medium]:{ min: 22.5, max: 35 },
+    [FilterKillCooldown.High]: { min: 37.5, max: 47.5 },
+    [FilterKillCooldown.VeryHigh]: { min: 50, max: 60 },
+};
+
+export enum FilterVotingTime {
+    Low,
+    Medium,
+    High,
+    VeryHigh,
+}
+
+export const votingTimeRanges: Record<FilterVotingTime, IntRange> = {
+    [FilterVotingTime.Low]: { min: 0, max: 80 },
+    [FilterVotingTime.Medium]:{ min: 75, max: 135 },
+    [FilterVotingTime.High]: { min: 150, max: 210 },
+    [FilterVotingTime.VeryHigh]: { min: 225, max: 300 },
+};
+
+export enum FilterHidingTime {
+    Low,
+    Medium,
+    High,
+}
+
+export const hidingTimeRanges: Record<FilterHidingTime, IntRange> = {
+    [FilterHidingTime.Low]: { min: 160, max: 180 },
+    [FilterHidingTime.Medium]:{ min: 200, max: 240 },
+    [FilterHidingTime.High]: { min: 260, max: 300 },
+};
+
+export enum FilterFinalHideTime {
+    Low,
+    Medium,
+    High,
+    VeryHigh
+}
+
+export const finalHideTimeRanges: Record<FilterFinalHideTime, IntRange> = {
+    [FilterFinalHideTime.Low]: { min: 30, max: 45 },
+    [FilterFinalHideTime.Medium]:{ min: 50, max: 70 },
+    [FilterFinalHideTime.High]: { min: 75, max: 95 },
+    [FilterFinalHideTime.VeryHigh]: { min: 100, max: 120 },
+};
+
+export type FilterSets = {
+    gameMap?: GameMap[];
+    chatMode?: QuickChatMode;
+    languages?: GameKeyword;
+
+    impostors?: number[];
+    roles?: boolean;
+    playerSpeeds?: IntRange[];
+    killCooldowns?: IntRange[];
+    votingTimes?: IntRange[];
+    visualTasks?: boolean;
+    anonymousVotes?: boolean;
+    confirmEjects?: boolean;
+
+    flashlightMode?: boolean;
+    hidingTime?: IntRange[];
+    finalHideTime?: IntRange[];
+    maxVentUses?: number[];
+    
+    tag?: number[];
+};
+
+// Why oh why does AU send a list of booleans!!!
+// - A list of [true, false] is the same as the filter
+// not being active!
+function resolveBoolFilter(acceptedValues: boolean[]): boolean|null {
+    const on = acceptedValues.indexOf(true) !== -1;
+    const off = acceptedValues.indexOf(false) !== -1;
+    if (on && off) return null;
+    return on;
+}
+
+function resolveCategoryFilter<T extends string|number|symbol, K>(
+    values: Record<T, K>,
+    acceptedValues: number[]
+): K[] {
+    const resolved = [];
+    for (const killCooldown of acceptedValues) {
+        const range = values[killCooldown as T];
+        if (!range) continue;
+        resolved.push(range);
+    }
+    return resolved;
+}
+
+function withinAnyRange(ranges: IntRange[], val: number): boolean {
+    return ranges.find(range => val >= range.min && val <= range.max) !== undefined;
+}
+
+function silentJsonParse(jsonString: string) {
     try {
         return JSON.parse(jsonString);
     } catch (e) {
@@ -96,7 +249,7 @@ export class Matchmaker {
 
     verifyMatchmakerToken(token: string) {
         const decodedToken = Buffer.from(token, "base64").toString("utf8");
-        const json = safeJsonParse(decodedToken) as MatchmakerTokenPayload;
+        const json = silentJsonParse(decodedToken) as MatchmakerTokenPayload;
         
         if (!json)
             return new TypeError("Invalid JSON");
@@ -295,44 +448,131 @@ export class Matchmaker {
         });
 
         router.get("/api/games/filtered", ctx => {
-            console.log(ctx.query);
             if (!this.verifyRequest(ctx)) {
                 ctx.status = 401;
                 return;
             }
 
+            if (typeof ctx.query.filter !== "string") {
+                this.logger.warn("Client failed to find games: no 'filter' provided in query parameters");
+                ctx.status = 400;
+                return;
+            }
 
-            // if (!ctx.query.mapId) {
-            //     this.logger.warn("Client failed to find games: No 'mapId' provided in query parameters");
-            //     ctx.status = 400;
-            //     return;
-            // }
+            const filtersListData: FiltersListJson = JSON.parse(ctx.query.filter);
 
-            // if (!ctx.query.lang) {
-            //     this.logger.warn("Client failed to find games: No 'lang' provided in query parameters");
-            //     ctx.status = 400;
-            //     return;
-            // }
+            // I'm not exactly sure what the behaviour of the other filter sets would be,
+            // presumably a union. However, this is not relevant because the game does not
+            // use more than one.
+            const primaryFilterSet = filtersListData.FilterSets[0];
 
-            // if (!ctx.query.quickChat) {
-            //     this.logger.warn("Client failed to find games: No 'quickChat' provided in query parameters");
-            //     ctx.status = 400;
-            //     return;
-            // }
-
-            // if (!ctx.query.platformFlags) {
-            //     this.logger.warn("Client failed to find games: No 'platformFlags' provided in query parameters");
-            //     ctx.status = 400;
-            //     return;
-            // }
-
-            // if (!ctx.query.numImpostors) {
-            //     this.logger.warn("Client failed to find games: No 'numImpostors' provided in query parameters");
-            //     ctx.status = 400;
-            //     return;
-            // }
-
-            // TODO: actually use filter. seems complex in latest among us
+            const filterSets: Partial<FilterSets> = {};
+            for (const filter of primaryFilterSet.Filters) {
+                const subFilter: SubFilterJson = JSON.parse(filter.SubFilterString);
+                switch (filter.Key) {
+                    case "Map":
+                        if (subFilter.FilterType === "map") {
+                            filterSets.gameMap = [];
+                            // AU sends a bitfield for maps here. This is legacy, but
+                            // they do this anyway instead of sending an array like a
+                            // normal dev team.
+                            const allGameMaps = Object.values(GameMap).filter(map => typeof map === "number");
+                            for (const gameMap of allGameMaps) {
+                                if (subFilter.AcceptedValues & (1 << gameMap)) {
+                                    filterSets.gameMap.push(gameMap);
+                                }
+                            }
+                        }
+                        break;
+                    case "Roles":
+                        if (subFilter.FilterType === "bool") {
+                            const resolved = resolveBoolFilter(subFilter.AcceptedValues);
+                            if (resolved === null) break;
+                            filterSets.roles = resolved;
+                        }
+                        break;
+                    case "Chat":
+                        if (subFilter.FilterType === "chat") {
+                            filterSets.chatMode = subFilter.AcceptedValues;
+                        }
+                        break;
+                    case "Language":
+                        if (subFilter.FilterType === "language") {
+                            // Game uses GameKeyword instead of Languages enum to fit with
+                            // legacy game options system
+                            filterSets.languages = subFilter.AcceptedValues;
+                        }
+                        break;
+                    case "PlayerSpeed":
+                        if (subFilter.FilterType === "cat") {
+                            filterSets.playerSpeeds = resolveCategoryFilter(playerSpeedRanges, subFilter.AcceptedValues);
+                        }
+                        break;
+                    case "KillCooldown":
+                        if (subFilter.FilterType === "cat") {
+                            filterSets.killCooldowns = resolveCategoryFilter(killCooldownRanges, subFilter.AcceptedValues);
+                        }
+                        break;
+                    case "VisualTasks":
+                        if (subFilter.FilterType === "bool") {
+                            const resolved = resolveBoolFilter(subFilter.AcceptedValues);
+                            if (resolved === null) break;
+                            filterSets.visualTasks = resolved;
+                        }
+                        break;
+                    case "AnonymousVotes":
+                        if (subFilter.FilterType === "bool") {
+                            const resolved = resolveBoolFilter(subFilter.AcceptedValues);
+                            if (resolved === null) break;
+                            filterSets.anonymousVotes = resolved;
+                        }
+                        break;
+                    case "ConfirmEjects":
+                        if (subFilter.FilterType === "bool") {
+                            const resolved = resolveBoolFilter(subFilter.AcceptedValues);
+                            if (resolved === null) break;
+                            filterSets.confirmEjects = resolved;
+                        }
+                        break;
+                    case "Tag":
+                        if (subFilter.FilterType === "int") {
+                            filterSets.tag = subFilter.AcceptedValues;
+                        }
+                        break;
+                    case "VotingTime":
+                        if (subFilter.FilterType === "cat") {
+                            filterSets.votingTimes = resolveCategoryFilter(votingTimeRanges, subFilter.AcceptedValues);
+                        }
+                        break;
+                    case "ImpostorNumber":
+                        if (subFilter.FilterType === "int") {
+                            filterSets.impostors = subFilter.AcceptedValues;
+                        }
+                        break;
+                    case "MaxVentUses":
+                        if (subFilter.FilterType === "int") {
+                            filterSets.maxVentUses = subFilter.AcceptedValues;
+                        }
+                        break;
+                    case "FlashlightMode":
+                        if (subFilter.FilterType === "bool") {
+                            const resolved = resolveBoolFilter(subFilter.AcceptedValues);
+                            if (resolved === null) break;
+                            filterSets.flashlightMode = resolved;
+                        }
+                        break;
+                    case "HidingTime":
+                        if (subFilter.FilterType === "cat") {
+                            filterSets.hidingTime = resolveCategoryFilter(hidingTimeRanges, subFilter.AcceptedValues);
+                        }
+                        break;
+                    case "FinalHideTime":
+                        if (subFilter.FilterType === "cat") {
+                            filterSets.finalHideTime = resolveCategoryFilter(finalHideTimeRanges, subFilter.AcceptedValues);
+                        }
+                        break;
+                }
+            }
 
             const ignoreSearchTerms = Array.isArray(this.worker.config.gameListing.ignoreSearchTerms)
                 ? new Set(this.worker.config.gameListing.ignoreSearchTerms)
@@ -340,39 +580,70 @@ export class Matchmaker {
 
             const gamesAndRelevance: [number, GameListingJson][] = [];
             for (const [gameCode, room] of this.worker.rooms) {
-                if (gameCode === 0x20 /* local game */) {
-                    continue;
-                }
+                // TODO: make this defined somewhere- magic number, scary!
+                if (gameCode === 0x20 /* local game */) continue;
 
                 if (!this.worker.config.gameListing.ignorePrivacy && room.privacy === "private")
                     continue;
 
-
-                const gameListing = this.getGameListing(ctx.socket.remoteAddress || "", room);
-
-                if (ignoreSearchTerms === true) {
+                if (typeof ignoreSearchTerms === "boolean" && ignoreSearchTerms) {
+                    const gameListing = this.getGameListing(ctx.socket.remoteAddress || "", room);
                     gamesAndRelevance.push([0, gameListing]);
                     continue;
                 }
 
-                // const relevancy = this.worker.getRoomRelevancy(
-                //     room,
-                //     parseInt(ctx.query.numImpostors as string),
-                //     parseInt(ctx.query.lang as string),
-                //     parseInt(ctx.query.mapId as string),
-                //     ctx.query.quickChat as string,
-                //     this.worker.config.gameListing.requirePefectMatches,
-                //     ignoreSearchTerms
-                // );
+                if (primaryFilterSet.GameMode !== room.settings.gameMode) continue;
 
-                // if (relevancy === 0 && this.worker.config.gameListing.requirePefectMatches)
-                //     continue;
+                // How BAD of a match this is!
+                var badMatchScore = 0;
 
-                // TODO: actually use filter. seems complex in latest among us
+                if (filterSets.gameMap && !filterSets.gameMap.includes(room.settings.map)) badMatchScore++;
+                if (filterSets.chatMode !== undefined && filterSets.chatMode !== room.createdBy?.chatMode) badMatchScore++;
+                if (filterSets.languages !== undefined && filterSets.languages !== room.settings.keywords) badMatchScore++;
+
+                switch (primaryFilterSet.GameMode) {
+                case GameMode.None: continue;
+                case GameMode.Normal:
+                case GameMode.NormalFools:
+                    if (filterSets.impostors && !filterSets.impostors.includes(room.settings.numImpostors)) badMatchScore++;
+                    if (filterSets.roles !== undefined) {
+                        const roomHasRoles = Object.values(room.settings.roleSettings.roleChances)
+                            .find(role => role.chance > 0) !== undefined;
+
+                        if (roomHasRoles !== filterSets.roles) badMatchScore++;
+                    }
+                    if (filterSets.playerSpeeds) {
+                        if (!withinAnyRange(filterSets.playerSpeeds, room.settings.playerSpeed)) badMatchScore++;
+                    }
+                    if (filterSets.killCooldowns) {
+                        if (!withinAnyRange(filterSets.killCooldowns, room.settings.killCooldown)) badMatchScore++;
+                    }
+                    if (filterSets.votingTimes) {
+                        if (!withinAnyRange(filterSets.votingTimes, room.settings.votingTime)) badMatchScore++;
+                    }
+                    if (filterSets.visualTasks !== undefined && filterSets.visualTasks !== room.settings.visualTasks) badMatchScore++;
+                    if (filterSets.anonymousVotes !== undefined && filterSets.anonymousVotes !== room.settings.anonymousVotes) badMatchScore++;
+                    if (filterSets.confirmEjects !== undefined && filterSets.confirmEjects !== room.settings.confirmEjects) badMatchScore++;
+                    break;
+                case GameMode.HideNSeek:
+                case GameMode.HideNSeekFools:
+                    if (filterSets.flashlightMode !== undefined && filterSets.flashlightMode !== room.settings.useFlashlight) badMatchScore++;
+                    if (filterSets.hidingTime) {
+                        if (!withinAnyRange(filterSets.hidingTime, room.settings.hidingTime)) badMatchScore++;
+                    }
+                    if (filterSets.finalHideTime) {
+                        if (!withinAnyRange(filterSets.finalHideTime, room.settings.finalHideTime)) badMatchScore++;
+                    }
+                    if (filterSets.maxVentUses && !filterSets.maxVentUses.includes(room.settings.crewmateVentUses)) badMatchScore++;
+                    break;
+                }
+
+                if (badMatchScore > 0 && this.worker.config.gameListing.requireExactMatches)
+                    continue;
 
                 gamesAndRelevance.push([
                     0,
-                    gameListing
+                    this.getGameListing(ctx.socket.remoteAddress || "", room),
                 ]);
             }
 
@@ -400,11 +671,12 @@ export class Matchmaker {
         });
 
         router.get("/api/filters", ctx => {
+            const removeExtraFilters = this.worker.config.gameListing.removeExtraFilters;
             // Valid values for gameListing.removeExtraFilters:
             // - true = Remove all additional game filters
             // - false = Show all additional game filters
             // - Array<string> = List of game filters to remove
-            if (this.worker.config.gameListing.removeExtraFilters === true) {
+            if (typeof removeExtraFilters === "boolean" && removeExtraFilters) {
                 ctx.status = 200;
                 ctx.body = { filters: [] };
                 return;
@@ -412,14 +684,14 @@ export class Matchmaker {
 
             const allFilters = Object.values(Filters).filter(x => typeof x === "string");
 
-            if (!this.worker.config.gameListing.removeExtraFilters) {
+            if (!removeExtraFilters) {
                 ctx.status = 200;
                 ctx.body = { filters: allFilters };
                 return;
             }
 
             const remainingFilters = [];
-            const removeFilters: Set<string> = new Set(this.worker.config.gameListing.removeExtraFilters);
+            const removeFilters: Set<string> = new Set(removeExtraFilters);
 
             for (const filter of allFilters) {
                 if (!removeFilters.has(filter)) remainingFilters.push(filter);
@@ -429,6 +701,12 @@ export class Matchmaker {
             ctx.body = {
                 filters: remainingFilters,
             };
+        });
+
+        router.get("/api/filtertags", ctx => {
+            // TODO: when does this get called?
+            ctx.status = 200;
+            ctx.body = [];
         });
 
         router.get("/api/games/:game_id", ctx => {

@@ -142,7 +142,6 @@
               "items": {
                 "enum": [
                   "map",
-                  "impostors",
                   "chat",
                   "chatType"
                 ]

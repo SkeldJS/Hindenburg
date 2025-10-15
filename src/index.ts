@@ -1,5 +1,5 @@
 /**
- * @module Plugin Documentation
+ * @module @skeldjs/waterway
  */
 
 export * from "./api";

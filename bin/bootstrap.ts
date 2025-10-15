@@ -365,7 +365,7 @@ async function checkConfigDeprecations(config: WaterwayConfig, configFilename: s
 
     worker.listen();
     worker.logger.info("");
-    worker.logger.info("Listening on:");
+    worker.logger.info("Connect to:");
 
     const listeningPort = worker.matchmaker?.port || worker.config.socket.port;
     if (!worker.config.logging.hideSensitiveInfo) {

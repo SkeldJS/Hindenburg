@@ -751,7 +751,7 @@ export class Matchmaker {
 
         const koaServer = this.createKoaServer();
         this.httpServer = koaServer.listen(this.port);
-        this.logger.info("HTTP matchmaker on *:%s", this.port);
+        this.logger.info("Http server listening on *:%s", this.port);
     }
 
     destroy() {

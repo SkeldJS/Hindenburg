@@ -1202,7 +1202,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
         socket.bind(port);
 
         this.listenSockets.set(port, socket);
-        this.logger.info("UDP server on *:" + port);
+        this.logger.info("Udp server listening on *:" + port);
 
         return socket;
     }

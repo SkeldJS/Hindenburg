@@ -15,15 +15,15 @@ export interface CliCommandInformation extends CliCommandOptionInformation {
 }
 
 export interface PluginRegisteredCliCommandInfo {
-    handler: (args: vorpal.Args) => Promise<any>;
+    handler: (args: vorpal.Args|string) => Promise<any>;
     command: CliCommandInformation;
 }
 
-export function CliCommand(command: CliCommandInformation): MethodDecorator<(args: vorpal.Args) => Promise<any>> {
+export function CliCommand(command: CliCommandInformation): MethodDecorator<(args: vorpal.Args|string) => Promise<any>> {
     return function(
         target: any,
         propertyKey: string,
-        descriptor: TypedPropertyDescriptor<(args: vorpal.Args) => Promise<any>> // basically has to be a promise else vorpal won't complete without a callback
+        descriptor: TypedPropertyDescriptor<(args: vorpal.Args|string) => Promise<any>> // basically has to be a promise else vorpal won't complete without a callback
     ) {
         if (!descriptor.value)
             return;

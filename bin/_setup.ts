@@ -5,7 +5,7 @@ import prompts from "prompts";
 
 import { Spinner } from "./util/Spinner";
 import { runCommandInDir } from "./util/runCommandInDir";
-import { Logger } from "../src/logger";
+import { Logger } from "../src/Logger";
 import { createDefaultConfig } from "./createDefaultConfig";
 import createSchema from "./createSchema";
 

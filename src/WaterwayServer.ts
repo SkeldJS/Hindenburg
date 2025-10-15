@@ -88,9 +88,9 @@ import {
 import { LoadedPlugin, PluginLoader, WorkerPlugin } from "./handlers";
 
 import i18n from "./i18n";
-import { Logger } from "./Logger";
 import { Matchmaker } from "./Matchmaker";
 import { StatefulRoomConfig } from "@skeldjs/core";
+import { Logger } from "./Logger";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -228,11 +228,11 @@ export type LoggingConfig = {
          * Custom formatting for the extra information provided when logging
          * client connections. (The part in parenthesis after their username.)
          *
-         * @id The client's client id.
-         * @ip The client's ip address.
-         * @ping The client's round-trip ping.
-         * @room The client's current room code.
-         * @language The client's language.
+         * @param id The client's client id.
+         * @param ip The client's ip address.
+         * @param ping The client's round-trip ping.
+         * @param room The client's current room code.
+         * @param language The client's language.
          *
          * @example
          * ```json
@@ -256,9 +256,9 @@ export type LoggingConfig = {
          * Custom formatting for the extra information provided when rooms are
          * logged. (The part in parenthesis after the game code.)
          *
-         * @players The total number of players currently connected to the room.
-         * @map The map that the room is currently playing.
-         * @host The host player of the room, or the server.
+         * @param players The total number of players currently connected to the room.
+         * @param map The map that the room is currently playing.
+         * @param host The host player of the room, or the server.
          *
          * @example
          * ```json
@@ -282,9 +282,9 @@ export type LoggingConfig = {
          * Custom formatting for the extra information provided when players are
          * logged. (The part in parenthesis after the player's name.)
          *
-         * @id The client ID of the player.
-         * @ping The player's round-trip ping.
-         * @ishost Whether this player is host. (Not displayed if the player is
+         * @param id The client ID of the player.
+         * @param ping The player's round-trip ping.
+         * @param ishost Whether this player is host. (Not displayed if the player is
          * not host.)
          *
          * @example
@@ -693,6 +693,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
             .option("--reason, -r <reason>", "reason for why to disconnect the client, see https://waterway.js.org/enums/DisconnectReason.html")
             .option("--ban, -b [duration]", "ban this client, duration in seconds")
             .action(async args => {
+                if (typeof args === "string") return;
                 const reason = (!isNaN(parseInt(args.options.reason))
                     ? args.options.reason
                     : DisconnectReason[args.options.reason]) || DisconnectReason.Error;
@@ -741,6 +742,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"].toUpperCase();
 
                 const reason = (!isNaN(parseInt(args.options.reason))
@@ -768,6 +770,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"].toUpperCase();
 
                 const codeId: number = roomName === "LOCAL"
@@ -797,6 +800,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"].toUpperCase();
 
                 const reason = (!isNaN(parseInt(args.options.reason))
@@ -854,6 +858,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"]
                     ? args["room code"].toUpperCase()
                     : "";
@@ -887,6 +892,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"]
                     ? args["room code"].toUpperCase()
                     : "";
@@ -937,6 +943,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"]
                     ? args["room code"].toUpperCase()
                     : "";
@@ -997,6 +1004,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"].toUpperCase();
                 const codeId: number = roomName === "LOCAL"
                     ? 0x20
@@ -1081,6 +1089,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"].toUpperCase();
                 const codeId: number = roomName === "LOCAL"
                     ? 0x20
@@ -1108,6 +1117,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 }
             })
             .action(async args => {
+                if (typeof args === "string") return;
                 const roomName = args["room code"].toUpperCase();
                 const codeId: number = roomName === "LOCAL"
                     ? 0x20
@@ -1148,6 +1158,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
             .command("broadcast <message...>", "Broadcast a message to all rooms, or a specific room.")
             .option("--room, -c <room code>", "the room to send a message to")
             .action(async args => {
+                if (typeof args === "string") return;
                 const message = args.message.join(" ");
                 const roomCode = args.options.room
                     ? RoomCode.fromString(args.options.room.toUpperCase?.()).id

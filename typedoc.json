@@ -1,226 +1,23 @@
 {
     "theme": "default",
+    "name": "Waterway",
+    "entryPoints": ["./src"],
+    "entryPointStrategy": "resolve",
     "sort": [
         "enum-value-ascending",
         "static-first",
-        "alphabetical"
+        "kind",
+		"instance-first",
+		"alphabetical-ignoring-documents"
     ],
+    "searchGroupBoosts": {
+        "Classes": 1.5
+    },
+    "categorizeByGroup": false,
     "excludePrivate": true,
     "excludeProtected": true,
     "excludeInternal": true,
-    "pluginPages": {
-        "pages": [
-            {
-                "title": "Getting Started",
-                "childrenDir": "getting-started",
-                "children": [
-                    {
-                        "title": "Installation",
-                        "source": "installation.md"
-                    },
-                    {
-                        "title": "Connecting to your server",
-                        "source": "connecting-to-your-server.md"
-                    },
-                    {
-                        "title": "Configuration",
-                        "source": "configuration.md",
-                        "childrenDir": "configuration",
-                        "children": [
-                            {
-                                "title": "Environment Variables",
-                                "source": "environment-variables.md"
-                            },
-                            {
-                                "title": "Logging Config",
-                                "source": "logging-config.md"
-                            },
-                            {
-                                "title": "Reactor Support",
-                                "source": "reactor-support.md"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Using Waterway",
-                        "childrenDir": "using-waterway",
-                        "children": [
-                            {
-                                "title": "Installing Plugins",
-                                "source": "installing-plugins.md"
-                            },
-                            {
-                                "title": "Server-as-a-Host",
-                                "source": "server-as-a-host.md"
-                            },
-                            {
-                                "title": "Interactive CLI",
-                                "source": "interactive-cli.md"
-                            },
-                            {
-                                "title": "Chat Commands",
-                                "source": "chat-commands.md"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Advanced Usage",
-                        "childrenDir": "advanced-usage",
-                        "children": [
-                            {
-                                "title": "Unknown Innernet Objects",
-                                "source": "unknown-innernet-objects.md"
-                            },
-                            {
-                                "title": "Message Ordering",
-                                "source": "message-ordering.md"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Contributing",
-                        "source": "contributing.md"
-                    },
-                    {
-                        "title": "Comparison with Impostor",
-                        "source": "comparison-with-impostor.md"
-                    }
-                ]
-            },
-            {
-                "title": "Plugins",
-                "childrenDir": "plugins",
-                "children": [
-                    {
-                        "title": "Creating a Plugin",
-                        "source": "/creating-a-plugin.md"
-                    },
-                    {
-                        "title": "Developing Plugins",
-                        "source": "developing-plugins.md"
-                    },
-                    {
-                        "title": "Publishing Plugins",
-                        "source": "publishing-plugins.md"
-                    },
-                    {
-                        "title": "Compatible Waterway API Versions",
-                        "source": "compatible-waterway-api-versions.md"
-                    },
-                    {
-                        "title": "Worker and Room Plugins",
-                        "source": "worker-and-room-plugins.md"
-                    },
-                    {
-                        "title": "Load Ordering",
-                        "source": "load-ordering.md"
-                    },
-                    {
-                        "title": "Dependencies",
-                        "source": "dependencies.md"
-                    },
-                    {
-                        "title": "Configuration",
-                        "source": "configuration.md"
-                    },
-                    {
-                        "title": "Lifecycle Methods",
-                        "source": "lifecycle-methods.md"
-                    },
-                    {
-                        "title": "API",
-                        "childrenDir": "api",
-                        "children": [
-                            {
-                                "title": "Event Listeners",
-                                "source": "event-listeners.md"
-                            },
-                            {
-                                "title": "Chat Commands",
-                                "source": "chat-commands.md"
-                            },
-                            {
-                                "title": "CLI Commands",
-                                "source": "cli-commands.md"
-                            },
-                            {
-                                "title": "Event Targets",
-                                "source": "event-targets.md"
-                            },
-                            {
-                                "title": "End Game Intents",
-                                "source": "end-game-intents.md"
-                            },
-                            {
-                                "title": "Server Broadcast",
-                                "source": "server-broadcast.md"
-                            },
-                            {
-                                "title": "Game Codes",
-                                "source": "game-codes.md"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Advanced",
-                        "childrenDir": "advanced",
-                        "children": [
-                            {
-                                "title": "Custom Innernet Objects",
-                                "source": "custom-innernet-objects.md"
-                            },
-                            {
-                                "title": "Handling Custom RPCs",
-                                "source": "handling-custom-rpcs.md"
-                            },
-                            {
-                                "title": "Custom Protocol Messages",
-                                "source": "custom-protocol-messages.md"
-                            },
-                            {
-                                "title": "Receiving Protocol Messages",
-                                "source": "receiving-protocol-messages.md"
-                            },
-                            {
-                                "title": "Custom Roles",
-                                "source": "custom-roles.md"
-                            },
-                            {
-                                "title": "Player Perspectives",
-                                "source": "player-perspectives.md"
-                            },
-                            {
-                                "title": "Reactor Integration",
-                                "source": "reactor-integration.md"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Guides",
-                        "childrenDir": "guides",
-                        "children": [
-                            {
-                                "title": "How to create a custom role",
-                                "source": "how-to-create-a-custom-role.md"
-                            },
-                            {
-                                "title": "How to display floating text",
-                                "source": "how-to-display-floating-text.md"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Topics",
-                        "childrenDir": "topics",
-                        "children": [
-                            {
-                                "title": "Object Ownership Guards",
-                                "source": "object-ownership-guards.md"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+    "projectDocuments": [
+        "pages/plugins.md"
+    ]
 }

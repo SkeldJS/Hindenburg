@@ -287,7 +287,7 @@ export class Matchmaker {
         return new Error("Invalid payload content hash ");
     }
 
-    verifyRequest(ctx: Koa.Context) {
+    verifyRequest(ctx: KoaRouter.RouterContext) {
         const authorization = ctx.headers.authorization;
 
         if (!authorization)
@@ -362,39 +362,40 @@ export class Matchmaker {
         }
 
         router.post("/api/user", async (ctx) => {
+            const body = (ctx.request as any).body;
             if (ctx.req.headers["content-type"] !== "application/json") {
                 this.logger.warn("Client failed to get a matchmaker token: Invalid Content-Type header (%s)", ctx.headers["content-type"]);
                 ctx.status = 400;
                 return;
             }
 
-            if (typeof ctx.request.body.Puid !== "string") {
+            if (typeof body.Puid !== "string") {
                 this.logger.warn("Client failed to get a matchmaker token: No 'Puid' provided in body");
                 ctx.status = 400;
                 return;
             }
 
-            if (typeof ctx.request.body.Username !== "string") {
+            if (typeof body.Username !== "string") {
                 this.logger.warn("Client failed to get a matchmaker token: No 'Username' provided in body");
                 ctx.status = 400;
                 return;
             }
 
-            if (typeof ctx.request.body.ClientVersion !== "number") {
-                this.logger.warn("Client %s failed to get a matchmaker token: No 'ClientVersion' provided in body", chalk.blue(ctx.request.body.Username));
+            if (typeof body.ClientVersion !== "number") {
+                this.logger.warn("Client %s failed to get a matchmaker token: No 'ClientVersion' provided in body", chalk.blue(body.Username));
                 ctx.status = 400;
                 ctx.body = "";
                 return;
             }
 
-            if (!this.server.isVersionAccepted(ctx.request.body.ClientVersion)) {
+            if (!this.server.isVersionAccepted(body.ClientVersion)) {
                 this.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
-                    chalk.blue(ctx.request.body.Username), VersionInfo.from(ctx.request.body.ClientVersion).toString(), chalk.grey("(" + ctx.request.body.ClientVersion + ")"));
+                    chalk.blue(body.Username), VersionInfo.from(body.ClientVersion).toString(), chalk.grey("(" + body.ClientVersion + ")"));
                 ctx.status = 400;
                 return;
             }
 
-            if (typeof ctx.request.body.Language !== "number") {
+            if (typeof body.Language !== "number") {
                 this.logger.warn("Client failed to get a matchmaker token: No 'Language' provided in body");
                 ctx.status = 400;
                 return;
@@ -402,12 +403,12 @@ export class Matchmaker {
 
             // todo: record matchmaking tokens used
             if (this.server.config.logging.hideSensitiveInfo) {
-                this.logger.info("Client %s got a matchmaker token", chalk.blue(ctx.request.body.Username));
+                this.logger.info("Client %s got a matchmaker token", chalk.blue(body.Username));
             } else {
-                this.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(ctx.request.body.Username), chalk.grey(ctx.request.body.Puid));
+                this.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(body.Username), chalk.grey(body.Puid));
             }
 
-            const mmToken = this.generateMatchmakerToken(ctx.request.body.Puid, ctx.request.body.ClientVersion);
+            const mmToken = this.generateMatchmakerToken(body.Puid, body.ClientVersion);
             ctx.status = 200;
             ctx.body = mmToken;
         });

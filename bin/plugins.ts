@@ -10,7 +10,7 @@ import * as queryRegistry from "query-registry";
 
 import pluginGitignore from "./resources/plugin-gitignore";
 
-import { Logger } from "../src/logger";
+import { Logger } from "../src/Logger";
 import { PluginLoader } from "../src/handlers";
 import { runCommandInDir } from "./util/runCommandInDir";
 import { Spinner } from "./util/Spinner";

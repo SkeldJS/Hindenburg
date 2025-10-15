@@ -5,11 +5,12 @@ import http from "http";
 import crypto from "crypto";
 
 import KoaRouter from "@koa/router";
-import { HazelWriter, VersionInfo } from "@skeldjs/util";
+import { HazelWriter } from "@skeldjs/hazel";
+import { RoomCode, Version } from "@skeldjs/client";
 import { DisconnectReason, Filters, GameKeyword, GameMap, GameMode, Platform, QuickChatMode, StringNames } from "@skeldjs/constant";
 
 import { WaterwayServer } from "./WaterwayServer";
-import { Room, RoomCode } from "./Room";
+import { Room, RoomPrivacy } from "./Room";
 import { Logger } from "./Logger";
 
 export type GameListingJson = {
@@ -390,7 +391,7 @@ export class Matchmaker {
 
             if (!this.server.isVersionAccepted(body.ClientVersion)) {
                 this.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
-                    chalk.blue(body.Username), VersionInfo.from(body.ClientVersion).toString(), chalk.grey("(" + body.ClientVersion + ")"));
+                    chalk.blue(body.Username), Version.fromEncoded(body.ClientVersion).toString(), chalk.grey("(" + body.ClientVersion + ")"));
                 ctx.status = 400;
                 return;
             }
@@ -585,7 +586,7 @@ export class Matchmaker {
                 // TODO: make this defined somewhere- magic number, scary!
                 if (gameCode === 0x20 /* local game */) continue;
 
-                if (!this.server.config.gameListing.ignorePrivacy && room.privacy === "private")
+                if (!this.server.config.gameListing.ignorePrivacy && room.privacy === RoomPrivacy.Private)
                     continue;
 
                 if (typeof ignoreSearchTerms === "boolean" && ignoreSearchTerms) {

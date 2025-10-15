@@ -16,4 +16,4 @@ export * from "./i18n";
 
 export * from "@skeldjs/core";
 export * from "@skeldjs/protocol";
-export * from "@skeldjs/util";
+export * from "@skeldjs/hazel";

@@ -4,7 +4,7 @@ import * as util from "util";
 
 import { DisconnectReason, Language, Platform, QuickChatMode } from "@skeldjs/constant";
 import { DisconnectMessages } from "@skeldjs/data";
-import { VersionInfo } from "@skeldjs/util";
+import { Version } from "@skeldjs/client";
 
 import {
     BaseRootPacket,
@@ -119,7 +119,7 @@ export class Connection {
      * The version of the client's game. Sent with the {@link Connection.hasIdentified identify}
      * packet.
      */
-    clientVersion: VersionInfo;
+    clientVersion: Version;
 
     /**
      * The specific platform that this client is playing on.
@@ -191,7 +191,7 @@ export class Connection {
         this.username = "";
         this.chatMode = QuickChatMode.FreeChat;
         this.language = Language.English;
-        this.clientVersion = new VersionInfo(2021, 11, 9);
+        this.clientVersion = new Version(2021, 11, 9);
         this.platform = new PlatformSpecificData(Platform.Unknown, "Unknown");
         this.playerLevel = 0;
 
@@ -352,7 +352,7 @@ export class Connection {
         this.hasIdentified = false;
         this.username = "";
         this.language = Language.English;
-        this.clientVersion = new VersionInfo(2021, 11, 9);
+        this.clientVersion = new Version(2021, 11, 9);
         this.platform = new PlatformSpecificData(Platform.Unknown, "Unknown");
         this.playerLevel = 0;
 

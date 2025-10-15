@@ -1,6 +1,6 @@
 import { StatefulRoom, NetworkedObject, SpawnType } from "@skeldjs/core";
 import { BaseRpcMessage } from "@skeldjs/protocol";
-import { HazelReader, HazelWriter } from "@skeldjs/util";
+import { HazelReader, HazelWriter } from "@skeldjs/hazel";
 
 export class UnknownComponent<RoomType extends StatefulRoom> extends NetworkedObject<RoomType> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function

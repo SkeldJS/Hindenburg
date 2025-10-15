@@ -15,7 +15,6 @@ import {
     Platform,
     GameOverReason,
     RootMessageTag,
-    GetGameListTag,
     Filters
 } from "@skeldjs/constant";
 
@@ -58,20 +57,16 @@ import {
     AllGameSettings
 } from "@skeldjs/protocol";
 
-import {
-    HazelReader,
-    HazelWriter,
-    VersionInfo
-} from "@skeldjs/util";
-
+import { HazelReader, HazelWriter } from "@skeldjs/hazel";
 import { EventEmitter, ExtractEventTypes } from "@skeldjs/events";
+import { RoomCode, RoomCodeVersion, Version } from "@skeldjs/client";
 
 import { recursiveAssign } from "./util/recursiveAssign";
 import { recursiveCompare } from "./util/recursiveCompare";
 import { recursiveClone } from "./util/recursiveClone";
 
 import { Connection, SentPacket } from "./Connection";
-import { MessageSide, Room, RoomCode, RoomCodeVersion } from "./Room";
+import { MessageSide, Room, RoomPrivacy } from "./Room";
 import { RoomEvents, SpecialClientId } from "./Room";
 
 import {
@@ -681,7 +676,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
         this.connections = new Map;
         this.rooms = new Map;
 
-        this.acceptedVersions = config.acceptedVersions.map(x => VersionInfo.from(x).encode());
+        this.acceptedVersions = config.acceptedVersions.map(x => Version.fromString(x).toEncoded());
 
         this.vorpal.delimiter(chalk.greenBright("waterway~$")).show();
         this.vorpal
@@ -1289,12 +1284,8 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
         }
     }
 
-    isVersionAccepted(version: VersionInfo | number): boolean {
-        if (typeof version !== "number") {
-            return this.isVersionAccepted(version.encode());
-        }
-
-        return this.acceptedVersions.indexOf(version) !== -1;
+    isVersionAccepted(version: Version): boolean {
+        return this.acceptedVersions.indexOf(version.toEncoded()) !== -1;
     }
 
     async pollClientReliability() {
@@ -1520,7 +1511,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
         sender.username = helloPacket.username;
         sender.chatMode = helloPacket.chatMode;
         sender.language = helloPacket.language;
-        sender.clientVersion = helloPacket.clientVer;
+        sender.clientVersion = Version.fromEncoded(helloPacket.encodedVersion);
         sender.platform = helloPacket.platform;
         sender.playerLevel = 0;
 
@@ -1724,7 +1715,7 @@ export class WaterwayServer extends EventEmitter<WorkerEvents> {
                 continue;
             }
 
-            if (!this.config.gameListing.ignorePrivacy && room.privacy === "private")
+            if (!this.config.gameListing.ignorePrivacy && room.privacy === RoomPrivacy.Private)
                 continue;
 
             const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);

@@ -81,33 +81,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@knodes/typedoc-plugin-pages@npm:^0.23.1":
-  version: 0.23.4
-  resolution: "@knodes/typedoc-plugin-pages@npm:0.23.4"
-  dependencies:
-    "@knodes/typedoc-pluginutils": "npm:~0.23.4"
-    lodash: "npm:^4.17.21"
-  peerDependencies:
-    lunr: ^2.3.0
-    typedoc: ^0.23.0
-  checksum: 10/2edb9a58d04dea99779f519ea5ee8848829a6d6457b2a1328e58dc7e73a7d26deff4ef7f34aaeecc1c535809dc515446ed29134606b75d6b86a414d74ff88e9a
-  languageName: node
-  linkType: hard
-
-"@knodes/typedoc-pluginutils@npm:~0.23.4":
-  version: 0.23.4
-  resolution: "@knodes/typedoc-pluginutils@npm:0.23.4"
-  dependencies:
-    fastest-levenshtein: "npm:^1.0.16"
-    lodash: "npm:^4.17.21"
-    pkg-up: "npm:^3.1.0"
-    semver: "npm:^7.3.5"
-  peerDependencies:
-    typedoc: ^0.23.0
-  checksum: 10/63410aae550bc969ffc2a66cd714512a5d1522df1e2ab56076a2bf4bf099a16608c2a12d20b3fcd4d2578d365de08fb30cbc8ae1ad2c130f53ca12709ab80b97
-  languageName: node
-  linkType: hard
-
 "@koa/router@npm:^14.0.0":
   version: 14.0.0
   resolution: "@koa/router@npm:14.0.0"
@@ -217,66 +190,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skeldjs/constant@npm:2.15.49, @skeldjs/constant@npm:^2.15.44":
-  version: 2.15.49
-  resolution: "@skeldjs/constant@npm:2.15.49"
+"@skeldjs/client@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/client@npm:3.0.0"
   dependencies:
-    "@skeldjs/util": "npm:2.15.49"
-  checksum: 10/e0bc0dc647fb13dd29b700e6a8b11505033f1d73151cbde2b1eeee81505fb8782dea3b28649559f42fe9480de955564add1bd22d7160c839ad52219876bbc801
+    "@skeldjs/hazel": "npm:3.0.0"
+  checksum: 10/3c754c6bb6b5baa245645cafeb44f84dd3d628ba8715d45ca6aeae7252ab00db5bea61aa42acac75aa11cec8e2f040b1f9bc551e3385095b8384365444c7cbde
   languageName: node
   linkType: hard
 
-"@skeldjs/core@npm:^2.15.44":
-  version: 2.15.49
-  resolution: "@skeldjs/core@npm:2.15.49"
+"@skeldjs/constant@npm:3.0.0, @skeldjs/constant@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/constant@npm:3.0.0"
+  checksum: 10/7df86ea42daa77cb51e1df108ec5f0adfcba08a25538c651963afabec25fd2a3ebbff06d836b28e9dbcde97d8d131de9538d8e812200c6085070e1bf6d831918
+  languageName: node
+  linkType: hard
+
+"@skeldjs/core@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/core@npm:3.0.0"
   dependencies:
-    "@skeldjs/constant": "npm:2.15.49"
-    "@skeldjs/data": "npm:2.15.49"
-    "@skeldjs/events": "npm:2.15.49"
-    "@skeldjs/protocol": "npm:2.15.49"
-    "@skeldjs/util": "npm:2.15.49"
-  checksum: 10/085d0cbdde6bc5a577d8ad2351e090d80e9c68c44bf29ab539c727eb7c55f096c0e2c0e352543ad62743357513e690cff22a278fb7aeb8e22c0c301d3e6feed2
+    "@skeldjs/constant": "npm:3.0.0"
+    "@skeldjs/data": "npm:3.0.0"
+    "@skeldjs/events": "npm:3.0.0"
+    "@skeldjs/hazel": "npm:3.0.0"
+    "@skeldjs/protocol": "npm:3.0.0"
+  checksum: 10/c12c17d3dbecd7ab950b79826d3dcf15af81feb65a859d9485de448c830e72724a3a2f5a61e4ba6fb0f7adf4965e8d0be50c5e877fe3a8e729a5f78d4c707a8f
   languageName: node
   linkType: hard
 
-"@skeldjs/data@npm:2.15.49, @skeldjs/data@npm:^2.15.44":
-  version: 2.15.49
-  resolution: "@skeldjs/data@npm:2.15.49"
+"@skeldjs/data@npm:3.0.0, @skeldjs/data@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/data@npm:3.0.0"
   dependencies:
-    "@skeldjs/constant": "npm:2.15.49"
-    "@skeldjs/util": "npm:2.15.49"
-  checksum: 10/27d2d79bc1e7d5dc7f3f7f60e46ff2bf29bcee3479b9aecdf164d95c0bc40263bac85dc016683c03f3651fc0d9a949aae0df4c749a05b3c044df2923c3ad6c74
+    "@skeldjs/constant": "npm:3.0.0"
+    "@skeldjs/hazel": "npm:3.0.0"
+  checksum: 10/e4667ef79ffdd53b72aa9ab763babf8a20f283dc52403c4fffeef63642795f14da0e54cd35910d3b25880ca26e96077ba0715e62d1ecde923472111a1459e4b7
   languageName: node
   linkType: hard
 
-"@skeldjs/events@npm:2.15.49, @skeldjs/events@npm:^2.15.44":
-  version: 2.15.49
-  resolution: "@skeldjs/events@npm:2.15.49"
-  checksum: 10/fc7f2411c106d88e9dee7a3065d36736ba9b7fccb292bab95e5ee3777473c1c534b8ea9217c0b7f435a5171679056bc9108340ad805464424afef781989b2f48
+"@skeldjs/events@npm:3.0.0, @skeldjs/events@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/events@npm:3.0.0"
+  checksum: 10/3b1ed534ac00cff50864547914c18844eaa8c6ace7e0804aecbafe0e5afb76ea4863370cfde036dff2b1e9ae3a93a946036d836993ece9fa18b82f163a537421
   languageName: node
   linkType: hard
 
-"@skeldjs/protocol@npm:2.15.49, @skeldjs/protocol@npm:^2.15.44":
-  version: 2.15.49
-  resolution: "@skeldjs/protocol@npm:2.15.49"
+"@skeldjs/hazel@npm:3.0.0, @skeldjs/hazel@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/hazel@npm:3.0.0"
+  checksum: 10/aade8645e65c7a94b3c501bdac7327082583962e4cf4773760b614cc745028a6dadcd5a7b4a5429422ab6e5be616bb78ef59d69faa7b31f3a0251f2e464456c6
+  languageName: node
+  linkType: hard
+
+"@skeldjs/protocol@npm:3.0.0, @skeldjs/protocol@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/protocol@npm:3.0.0"
   dependencies:
-    "@skeldjs/constant": "npm:2.15.49"
-    "@skeldjs/util": "npm:2.15.49"
-  checksum: 10/78f50efde7ed266578a37fa17dd0e136b663e68942e346d2c759832d585017f17b648c8362b4c5786bda0dbcce06bb84ff37c9f842bc4fb38de5454b1e6c0473
+    "@skeldjs/constant": "npm:3.0.0"
+    "@skeldjs/hazel": "npm:3.0.0"
+  checksum: 10/b4b69604bc886bf98479fb23857a11c38bccd5cdc9d3cd17d5290a06869efd4a48a4505ba486568008504f5f134ce08dbf3cdad72ab04aa5d567db0ffed8372d
   languageName: node
   linkType: hard
 
-"@skeldjs/text@npm:^2.15.44":
-  version: 2.15.49
-  resolution: "@skeldjs/text@npm:2.15.49"
-  checksum: 10/99ce262df0b2a237a53fe0adb9db544e50ec2e38d063a9fbaaa2b9b9b0e6a0edeedd3ccf7df5ebf60a4e44dc11b2d8883e68e9ee9137515ac844de3c655e094e
-  languageName: node
-  linkType: hard
-
-"@skeldjs/util@npm:2.15.49, @skeldjs/util@npm:^2.15.44":
-  version: 2.15.49
-  resolution: "@skeldjs/util@npm:2.15.49"
-  checksum: 10/35a1637b6d54ff2618de691533d00ca8fb10b6f0bc9b81e2d426817d00b9b8defd510eacccc2ea15d769b69b128e26ea5be25fc5407d2224e6c5a380cf035352
+"@skeldjs/text@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@skeldjs/text@npm:3.0.0"
+  checksum: 10/730bbde666dc7422bd31507396be2714aabd1ad9ce23f2ae6caa937a909b51800fd7cb2634e2ee98be70819e2136b4985af13e76646565cb2d5ce4971645e52b
   languageName: node
   linkType: hard
 
@@ -284,16 +264,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@skeldjs/waterway@workspace:."
   dependencies:
-    "@knodes/typedoc-plugin-pages": "npm:^0.23.1"
     "@koa/router": "npm:^14.0.0"
     "@schemastore/package": "npm:^0.0.6"
-    "@skeldjs/constant": "npm:^2.15.44"
-    "@skeldjs/core": "npm:^2.15.44"
-    "@skeldjs/data": "npm:^2.15.44"
-    "@skeldjs/events": "npm:^2.15.44"
-    "@skeldjs/protocol": "npm:^2.15.44"
-    "@skeldjs/text": "npm:^2.15.44"
-    "@skeldjs/util": "npm:^2.15.44"
+    "@skeldjs/client": "npm:^3.0.0"
+    "@skeldjs/constant": "npm:^3.0.0"
+    "@skeldjs/core": "npm:^3.0.0"
+    "@skeldjs/data": "npm:^3.0.0"
+    "@skeldjs/events": "npm:^3.0.0"
+    "@skeldjs/hazel": "npm:^3.0.0"
+    "@skeldjs/protocol": "npm:^3.0.0"
+    "@skeldjs/text": "npm:^3.0.0"
     "@types/koa": "npm:^2"
     "@types/koa__router": "npm:^12"
     "@types/minimatch": "npm:^3.0.5"
@@ -1267,13 +1247,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastest-levenshtein@npm:^1.0.16":
-  version: 1.0.16
-  resolution: "fastest-levenshtein@npm:1.0.16"
-  checksum: 10/ee85d33b5cef592033f70e1c13ae8624055950b4eb832435099cd56aa313d7f251b873bedbc06a517adfaff7b31756d139535991e2406967438e03a1bf1b008e
-  languageName: node
-  linkType: hard
-
 "fdir@npm:^6.5.0":
   version: 6.5.0
   resolution: "fdir@npm:6.5.0"
@@ -1302,15 +1275,6 @@ __metadata:
   dependencies:
     to-regex-range: "npm:^5.0.1"
   checksum: 10/a7095cb39e5bc32fada2aa7c7249d3f6b01bd1ce461a61b0adabacccabd9198500c6fb1f68a7c851a657e273fce2233ba869638897f3d7ed2e87a2d89b4436ea
-  languageName: node
-  linkType: hard
-
-"find-up@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "find-up@npm:3.0.0"
-  dependencies:
-    locate-path: "npm:^3.0.0"
-  checksum: 10/38eba3fe7a66e4bc7f0f5a1366dc25508b7cfc349f852640e3678d26ad9a6d7e2c43eff0a472287de4a9753ef58f066a0ea892a256fa3636ad51b3fe1e17fae9
   languageName: node
   linkType: hard
 
@@ -1792,16 +1756,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"locate-path@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "locate-path@npm:3.0.0"
-  dependencies:
-    p-locate: "npm:^3.0.0"
-    path-exists: "npm:^3.0.0"
-  checksum: 10/53db3996672f21f8b0bf2a2c645ae2c13ffdae1eeecfcd399a583bce8516c0b88dcb4222ca6efbbbeb6949df7e46860895be2c02e8d3219abd373ace3bfb4e11
-  languageName: node
-  linkType: hard
-
 "lodash@npm:^3.3.1":
   version: 3.10.1
   resolution: "lodash@npm:3.10.1"
@@ -1809,7 +1763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.21, lodash@npm:^4.5.1":
+"lodash@npm:^4.5.1":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10/c08619c038846ea6ac754abd6dd29d2568aa705feb69339e836dfa8d8b09abbb2f859371e86863eda41848221f9af43714491467b5b0299122431e202bb0c532
@@ -2176,35 +2130,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^2.0.0":
-  version: 2.3.0
-  resolution: "p-limit@npm:2.3.0"
-  dependencies:
-    p-try: "npm:^2.0.0"
-  checksum: 10/84ff17f1a38126c3314e91ecfe56aecbf36430940e2873dadaa773ffe072dc23b7af8e46d4b6485d302a11673fe94c6b67ca2cfbb60c989848b02100d0594ac1
-  languageName: node
-  linkType: hard
-
-"p-locate@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "p-locate@npm:3.0.0"
-  dependencies:
-    p-limit: "npm:^2.0.0"
-  checksum: 10/83991734a9854a05fe9dbb29f707ea8a0599391f52daac32b86f08e21415e857ffa60f0e120bfe7ce0cc4faf9274a50239c7895fc0d0579d08411e513b83a4ae
-  languageName: node
-  linkType: hard
-
 "p-map@npm:^7.0.2":
   version: 7.0.3
   resolution: "p-map@npm:7.0.3"
   checksum: 10/2ef48ccfc6dd387253d71bf502604f7893ed62090b2c9d73387f10006c342606b05233da0e4f29388227b61eb5aeface6197e166520c465c234552eeab2fe633
-  languageName: node
-  linkType: hard
-
-"p-try@npm:^2.0.0":
-  version: 2.2.0
-  resolution: "p-try@npm:2.2.0"
-  checksum: 10/f8a8e9a7693659383f06aec604ad5ead237c7a261c18048a6e1b5b85a5f8a067e469aa24f5bc009b991ea3b058a87f5065ef4176793a200d4917349881216cae
   languageName: node
   linkType: hard
 
@@ -2219,13 +2148,6 @@ __metadata:
   version: 1.3.3
   resolution: "parseurl@npm:1.3.3"
   checksum: 10/407cee8e0a3a4c5cd472559bca8b6a45b82c124e9a4703302326e9ab60fc1081442ada4e02628efef1eb16197ddc7f8822f5a91fd7d7c86b51f530aedb17dfa2
-  languageName: node
-  linkType: hard
-
-"path-exists@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "path-exists@npm:3.0.0"
-  checksum: 10/96e92643aa34b4b28d0de1cd2eba52a1c5313a90c6542d03f62750d82480e20bfa62bc865d5cfc6165f5fcd5aeb0851043c40a39be5989646f223300021bae0a
   languageName: node
   linkType: hard
 
@@ -2275,15 +2197,6 @@ __metadata:
   bin:
     pinst: bin.js
   checksum: 10/b6449d527ec6c7b76056a5282a80ff4d2498d4e882e846eb8837ec291ad1b08784756c6d9de0f1d96b70bd657e50b52db3ae2a683c6245690e12c2c7eb199d0f
-  languageName: node
-  linkType: hard
-
-"pkg-up@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "pkg-up@npm:3.1.0"
-  dependencies:
-    find-up: "npm:^3.0.0"
-  checksum: 10/5bac346b7c7c903613c057ae3ab722f320716199d753f4a7d053d38f2b5955460f3e6ab73b4762c62fd3e947f58e04f1343e92089e7bb6091c90877406fcd8c8
   languageName: node
   linkType: hard
 

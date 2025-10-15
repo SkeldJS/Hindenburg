@@ -8,12 +8,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x, 17.x, 18.x]
+        node-version: [24.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,8 +22,5 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
-      run: yarn
-
-    - name: Build Waterway
-      run: yarn build
+    - run: yarn
+    - run: yarn build-all

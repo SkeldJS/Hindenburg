@@ -3,6 +3,7 @@
     "name": "Waterway",
     "entryPoints": ["./src"],
     "entryPointStrategy": "resolve",
+    "alwaysCreateEntryPointModule": true,
     "sort": [
         "enum-value-ascending",
         "static-first",

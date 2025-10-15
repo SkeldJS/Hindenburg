@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs/promises";
 import resolvePkg from "resolve-pkg";
 
-const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
+const pluginsDirectories: string[] = process.env.WATERWAY_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
 
 export async function* iteratePlugins() {
     for (const pluginsDirectory of pluginsDirectories) {
@@ -11,7 +11,7 @@ export async function* iteratePlugins() {
 
         if (packageJson.dependencies) {
             for (const dependencyName in packageJson.dependencies) {
-                if (!dependencyName.startsWith("hbplugin-"))
+                if (!dependencyName.startsWith("waterway-plugin-"))
                     continue;
 
                 const packageLocation = resolvePkg(dependencyName, { cwd: pluginsDirectory });
@@ -25,7 +25,7 @@ export async function* iteratePlugins() {
 
         const filenames = await fs.readdir(pluginsDirectory);
         for (const filename of filenames) {
-            if (!filename.startsWith("hbplugin-"))
+            if (!filename.startsWith("waterway-plugin-"))
                 continue;
 
             const filePath = path.resolve(pluginsDirectory, filename);

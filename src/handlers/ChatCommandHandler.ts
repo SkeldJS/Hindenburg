@@ -2,9 +2,7 @@ import util from "util";
 
 import { Player } from "@skeldjs/core";
 
-import { MessageSide } from "../interfaces";
-
-import { Room } from "../worker";
+import { Room, MessageSide } from "../Room";
 import { AccessCheckFn } from "../api";
 
 function betterSplitOnSpaces(input: string) {

@@ -2,7 +2,7 @@ import koa from "koa";
 import { Plugin } from "../../handlers";
 import { MethodDecorator } from "../types";
 
-const hindenburgMatchmakerEndpointsKey = Symbol("hindenburg:matchmakerendpoints");
+const waterwayMatchmakerEndpointsKey = Symbol("waterway:matchmakerendpoints");
 
 export type HttpMethod = "get"|"post"|"put"|"patch"|"delete";
 
@@ -14,10 +14,10 @@ export interface PluginRegisteredMatchmakerEndpoint {
 
 function RegisterMatchmakerEndpoint(method: HttpMethod, route: string) {
     return function (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: koa.Context) => any>) {
-        const cachedEndpoints: PluginRegisteredMatchmakerEndpoint[] = Reflect.getMetadata(hindenburgMatchmakerEndpointsKey, target);
+        const cachedEndpoints: PluginRegisteredMatchmakerEndpoint[] = Reflect.getMetadata(waterwayMatchmakerEndpointsKey, target);
         const endpoints = cachedEndpoints || [];
         if (!cachedEndpoints)
-            Reflect.defineMetadata(hindenburgMatchmakerEndpointsKey, endpoints, target);
+            Reflect.defineMetadata(waterwayMatchmakerEndpointsKey, endpoints, target);
 
         endpoints.push({
             method,
@@ -28,7 +28,7 @@ function RegisterMatchmakerEndpoint(method: HttpMethod, route: string) {
 }
 
 export function getPluginMatchmakerEndpoints(target: typeof Plugin|Plugin): PluginRegisteredMatchmakerEndpoint[] {
-    return Reflect.getMetadata(hindenburgMatchmakerEndpointsKey, target) || [];
+    return Reflect.getMetadata(waterwayMatchmakerEndpointsKey, target) || [];
 }
 
 export class MatchmakerEndpoint {

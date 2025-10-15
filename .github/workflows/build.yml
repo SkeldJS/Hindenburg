@@ -26,5 +26,5 @@ jobs:
     - name: Install dependencies
       run: yarn
 
-    - name: Build Hindenburg
+    - name: Build Waterway
       run: yarn build

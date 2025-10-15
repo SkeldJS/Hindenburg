@@ -33,7 +33,7 @@ The constructor lets you assign any properties on your plugin that TypeScript or
 Very simply, this method is called when your plugin is first loaded and all events, commands and messages have been attached.
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class MyPlugin extends WorkerPlugin {
     async onPluginLoad() {
 
@@ -41,13 +41,13 @@ export class MyPlugin extends WorkerPlugin {
 }
 ```
 
-Hindenburg will wait for this method to finish if it's marked as asynchronous, so it's useful for connecting to servers or fetching resources before the server starts.
+Waterway will wait for this method to finish if it's marked as asynchronous, so it's useful for connecting to servers or fetching resources before the server starts.
 
 ### `onPluginUnload()`
-Also rather simply, this method is called when your plugin is about to be unloaded, although has not yet actually been unloaded from the server. Hindenburg will not wait for this to complete, but any asynchronous tasks can still run parallel.
+Also rather simply, this method is called when your plugin is about to be unloaded, although has not yet actually been unloaded from the server. Waterway will not wait for this to complete, but any asynchronous tasks can still run parallel.
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class MyPlugin extends WorkerPlugin {
     onPluginUnload() {
 
@@ -61,7 +61,7 @@ Called when your plugin's config in the server's `config.json` is modified, it a
 Useful for verifying the config, or modifying your plugin based on the new configuration.
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class MyPlugin extends WorkerPlugin {
     onConfigUpdate(oldConfig: any, newConfig: any) {
 

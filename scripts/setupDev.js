@@ -62,6 +62,6 @@ async function buildSkeldJs() {
         await buildSkeldJs();
         console.log("Built SkeldJS!");
     } else {
-        console.log("SkeldJS not installed locally; clone SkeldJS into the same parent folder as Hindenburg to setup a dev environment");
+        console.log("SkeldJS not installed locally; clone SkeldJS into the same parent folder as Waterway to setup a dev environment");
     }
 })();

@@ -36,13 +36,14 @@ import {
     VoteBanSystem
 } from "@skeldjs/core";
 
-import { RoomEvents, Room, Worker } from "../worker";
+import { Room, RoomEvents } from "../Room";
+import { WaterwayServer } from "../WaterwayServer";
 
 import {
     getPluginChatCommands,
     getPluginCliCommands,
     getPluginEventListeners,
-    isHindenburgPlugin,
+    isWaterwayPlugin,
     shouldPreventLoading,
     getPluginRegisteredRoles,
     WorkerImportPluginEvent,
@@ -59,7 +60,7 @@ import { recursiveAssign } from "../util/recursiveAssign";
 import { getPluginDependencies, PluginDependencyDeclaration } from "../api/hooks/Dependency";
 import { PluginInstanceType, RoomPlugin, SomePluginCtr, WorkerPlugin } from "./Plugin";
 
-export const hindenburgPluginDirectory = Symbol("hindenburg:plugindirectory");
+export const waterwayPluginDirectory = Symbol("waterway:plugindirectory");
 
 export interface PluginPackageJsonOptions {
     loadOrder?: "first" | "last" | "none" | number;
@@ -100,9 +101,9 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerP
         if (!packageJson)
             throw new Error("No package.json for plugin found");
 
-        if (packageJson.engines && packageJson.engines.hindenburg) {
-            if (!minimatch(Worker.serverVersion, packageJson.engines.hindenburg)) {
-                pluginLoader.worker.logger.warn("Plugin %s build for an incompatible version of Hindenburg; loading anyway", packageJson.name);
+        if (packageJson.engines && packageJson.engines.waterway) {
+            if (!minimatch(WaterwayServer.serverVersion, packageJson.engines.waterway)) {
+                pluginLoader.server.logger.warn("Plugin %s build for an incompatible version of Waterway; loading anyway", packageJson.name);
             }
         }
 
@@ -113,8 +114,8 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerP
         }
         const { default: pluginCtr } = await import(pluginPath) as { default: SomePluginCtr };
 
-        if (!PluginLoader.isHindenburgPlugin(pluginCtr))
-            throw new Error("The imported module wasn't a Hindenburg plugin");
+        if (!PluginLoader.isWaterwayPlugin(pluginCtr))
+            throw new Error("The imported module wasn't a Waterway plugin");
 
         pluginCtr.baseDirectory = pluginPath;
         pluginCtr.packageJson = packageJson;
@@ -159,7 +160,7 @@ export class ImportedPlugin<PluginCtr extends typeof RoomPlugin | typeof WorkerP
         if (shouldPreventLoading(this.pluginCtr))
             return;
 
-        if (this.pluginLoader.worker.config.plugins[this.pluginCtr.meta.id] === false)
+        if (this.pluginLoader.server.config.plugins[this.pluginCtr.meta.id] === false)
             return false;
 
         if (room && !room.config.plugins[this.pluginCtr.meta.id] === false)
@@ -248,19 +249,19 @@ export class PluginLoader {
 
     /**
      * Create a plugin loader. Note that the worker instantiates one itself, see
-     * {@link Worker.pluginLoader}.
-     * @param worker The worker that the plugin loader is for.
+     * {@link WaterwayServer.pluginLoader}.
+     * @param server The worker that the plugin loader is for.
      * @param pluginDirectories The base directory for installed plugins.
      * @example
      * ```ts
-     * const pluginLoader = new PluginLoader(this.worker, "/home/user/hindenburg/plugins");
+     * const pluginLoader = new PluginLoader(this.worker, "/home/user/waterway/plugins");
      * ```
      */
     constructor(
         /**
          * The worker that this plugin loader is for.
          */
-        public readonly worker: Worker,
+        public readonly server: WaterwayServer,
         /**
          * The base directory for installed plugins.
          */
@@ -270,35 +271,35 @@ export class PluginLoader {
     }
 
     /**
-     * Check whether some object is a Hindenburg plugin.
+     * Check whether some object is a Waterway plugin.
      * @param someObject The object to check.
-     * @returns Whether {@link someObject} is a Hindenburg plugin.
+     * @returns Whether {@link someObject} is a Waterway plugin.
      *
      * @example
      * ```ts
-     * console.log(this.worker.pluginLoader.isHindenburgPlugin({})); // false
+     * console.log(this.worker.pluginLoader.isWaterwayPlugin({})); // false
      * ```
      *
      * @example
      * ```ts
      * class MyPlugin extends WorkerPlugin {}
      *
-     * console.log(this.worker.pluginLoader.isHindenburgPlugin(MyPlugin)); // true
+     * console.log(this.worker.pluginLoader.isWaterwayPlugin(MyPlugin)); // true
      * ```
      */
-    static isHindenburgPlugin(someObject: any) {
-        return isHindenburgPlugin(someObject);
+    static isWaterwayPlugin(someObject: any) {
+        return isWaterwayPlugin(someObject);
     }
 
     /**
-     * Check whether an imported Hindenburg plugin is a worker plugin to be loaded
+     * Check whether an imported Waterway plugin is a worker plugin to be loaded
      * globally, extending {@link WorkerPlugin}.
      * @param pluginCtr The plugin to check.
      * @returns Whether {@link pluginCtr} is a global worker plugin.
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things")
+     * .@WaterwayPlugin("waterway-plugin-fun-things")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // false
@@ -306,7 +307,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things")
+     * .@WaterwayPlugin("waterway-plugin-fun-things")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isWorkerPlugin(MyPlugin)); // true
@@ -324,14 +325,14 @@ export class PluginLoader {
     }
 
     /**
-     * Check whether an imported Hindenburg plugin is a room plugin to be loaded
+     * Check whether an imported Waterway plugin is a room plugin to be loaded
      * into rooms, extending {@link RoomPlugin}.
      * @param pluginCtr The plugin to check.
      * @returns Whether {@link pluginCtr} is a room plugin.
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things")
+     * .@WaterwayPlugin("waterway-plugin-fun-things")
      * class MyPlugin extends RoomPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // true
@@ -339,7 +340,7 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-fun-things")
+     * .@WaterwayPlugin("waterway-plugin-fun-things")
      * class MyPlugin extends WorkerPlugin {}
      *
      * console.log(this.worker.pluginLoad.isRoomPlugin(MyPlugin)); // false
@@ -366,7 +367,7 @@ export class PluginLoader {
     static generateRandomPluginId() {
         const colour = colours[Math.random() * colours.length];
         const role = roles[Math.random() * roles.length];
-        return "hbplugin-" + colour + "-" + role;
+        return "waterway-plugin-" + colour + "-" + role;
     }
 
     /**
@@ -374,12 +375,12 @@ export class PluginLoader {
      * local plugin folders.
      * @param id The ID of the plugin to import.
      * @returns The loaded plugin, or 'undefined' if unsuccessful (e.g. the
-     * module could not be found, or it was loaded but it was not a Hindenburg
+     * module could not be found, or it was loaded but it was not a Waterway
      * plugin).
      *
      * @example
      * ```ts
-     * const pluginCtr = await this.worker.pluginLoader.importFromId("hbplugin-fun-things");
+     * const pluginCtr = await this.worker.pluginLoader.importFromId("waterway-plugin-fun-things");
      *
      * if (!pluginCtr) {
      *   console.log("Failed to load my plugin.");
@@ -431,7 +432,7 @@ export class PluginLoader {
                 const json = JSON.parse(packageJson) as { dependencies: Record<string, string> };
 
                 for (const dependencyName in json.dependencies) {
-                    if (dependencyName.startsWith("hbplugin-")) {
+                    if (dependencyName.startsWith("waterway-plugin-")) {
                         const resolvedPkg = resolvePkg(dependencyName, { cwd: pluginDirectory });
                         if (resolvedPkg) {
                             pluginPaths.push(resolvedPkg);
@@ -441,11 +442,11 @@ export class PluginLoader {
             } catch (e) {
                 if ((e as any).code !== undefined) {
                     if ((e as any).code === "ENOENT") {
-                        this.worker.logger.warn("No package.json in plugin directory '%s' - try running 'yarn setup'", chalk.grey(pluginDirectory));
+                        this.server.logger.warn("No package.json in plugin directory '%s' - try running 'yarn setup'", chalk.grey(pluginDirectory));
                         continue;
                     }
 
-                    this.worker.logger.warn("Could not open package.json at '%s': %s", chalk.grey(pluginDirectory), (e as any).code);
+                    this.server.logger.warn("Could not open package.json at '%s': %s", chalk.grey(pluginDirectory), (e as any).code);
                 } else {
                     throw e;
                 }
@@ -453,7 +454,7 @@ export class PluginLoader {
 
             const filesInDir = await fs.readdir(pluginDirectory);
             for (const file of filesInDir) {
-                if (file.startsWith("hbplugin-")) {
+                if (file.startsWith("waterway-plugin-")) {
                     pluginPaths.push(path.resolve(pluginDirectory, file));
                 }
             }
@@ -468,7 +469,7 @@ export class PluginLoader {
 
                 importedPlugins.set(importedPlugin.pluginCtr.meta.id, importedPlugin);
             } catch (e: any) {
-                this.worker.logger.warn("Couldn't import plugin '%s': %s", path.basename(pluginPath), e.message || e);
+                this.server.logger.warn("Couldn't import plugin '%s': %s", path.basename(pluginPath), e.message || e);
             }
         }
 
@@ -567,7 +568,7 @@ export class PluginLoader {
                 if (node.isRoomPlugin()) {
                     const importedPlugin = this.importedPlugins.get(pluginId);
                     if (importedPlugin && importedPlugin.isWorkerPlugin()) {
-                        const loadedPlugin = this.worker.loadedPlugins.get(pluginId);
+                        const loadedPlugin = this.server.loadedPlugins.get(pluginId);
                         if (loadedPlugin)
                             continue;
 
@@ -680,11 +681,11 @@ export class PluginLoader {
      * Import a plugin from its absolute path on the filesystem.
      * @param pluginPath The path of the plugin to import.
      * @returns The imported plugin constructor, or false if the plugin failed
-     * to be imported or was not a Hindenburg plugin.
+     * to be imported or was not a Waterway plugin.
      *
      * @example
      * ```ts
-     * const pluginCtr = await this.worker.pluginLoader.importPlugin("/home/user/hindenburg/plugins/hbplugin-fun-things");
+     * const pluginCtr = await this.worker.pluginLoader.importPlugin("/home/user/waterway/plugins/waterway-plugin-fun-things");
      *
      * if (!pluginCtr) {
      *   console.log("Failed to load my plugin!");
@@ -695,7 +696,7 @@ export class PluginLoader {
     async importPlugin(pluginPath: string): Promise<ImportedPlugin | false> {
         const importedPlugin = await ImportedPlugin.importPlugin(this, pluginPath);
 
-        const ev = await this.worker.emit(
+        const ev = await this.server.emit(
             new WorkerImportPluginEvent(importedPlugin)
         );
 
@@ -707,7 +708,7 @@ export class PluginLoader {
 
         this.importedPlugins.set(ev.alteredPlugin.pluginCtr.meta.id, ev.alteredPlugin);
 
-        Reflect.defineMetadata(hindenburgPluginDirectory, pluginPath, ev.alteredPlugin);
+        Reflect.defineMetadata(waterwayPluginDirectory, pluginPath, ev.alteredPlugin);
 
         return ev.alteredPlugin;
     }
@@ -793,19 +794,19 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-fun-things");
+     * const importedPlugin = await this.worker.workerPlugins.get("waterway-plugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin);
      * ```
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.workerPlugins.get("hbplugin-fun-things");
+     * const importedPlugin = await this.worker.workerPlugins.get("waterway-plugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin, this.room); // !! Attempted to load a worker plugin on a room or other non-worker object
      * ```
      *
      * @example
      * ```ts
-     * await this.worker.pluginLoader.loadPlugin("hbplugin-what-the-hell"); // !! Plugin with ID 'hbplugin-what-the-hell' not imported
+     * await this.worker.pluginLoader.loadPlugin("waterway-plugin-what-the-hell"); // !! Plugin with ID 'waterway-plugin-what-the-hell' not imported
      * ```
      */
     async loadPlugin(pluginCtr: string | ImportedPlugin<typeof WorkerPlugin>): Promise<WorkerPlugin>;
@@ -820,19 +821,19 @@ export class PluginLoader {
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-fun-things");
+     * const importedPlugin = await this.worker.roomPlugins.get("waterway-plugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin, this.room);
      * ```
      *
      * @example
      * ```ts
-     * const importedPlugin = await this.worker.roomPlugins.get("hbplugin-fun-things");
+     * const importedPlugin = await this.worker.roomPlugins.get("waterway-plugin-fun-things");
      * await this.worker.pluginLoader.loadPlugin(importedPlugin); // !! Attempted to load a room plugin on a worker or other non-room object
      * ```
      *
      * @example
      * ```ts
-     * await this.worker.pluginLoader.loadPlugin("hbplugin-what-the-hell", this.room); // !! Plugin with ID 'hbplugin-what-the-hell' not imported
+     * await this.worker.pluginLoader.loadPlugin("waterway-plugin-what-the-hell", this.room); // !! Plugin with ID 'waterway-plugin-what-the-hell' not imported
      * ```
      */
     async loadPlugin(pluginCtr: string | ImportedPlugin<typeof RoomPlugin>, room: Room): Promise<RoomPlugin>;
@@ -852,7 +853,7 @@ export class PluginLoader {
         }
 
         const defaultConfig = recursiveClone(importedPlugin.pluginCtr.meta.defaultConfig || {});
-        recursiveAssign(defaultConfig, this.worker.config.plugins[importedPlugin.pluginCtr.meta.id] || {});
+        recursiveAssign(defaultConfig, this.server.config.plugins[importedPlugin.pluginCtr.meta.id] || {});
 
         if (importedPlugin.isWorkerPlugin() && room) {
             throw new Error("Attempted to load a worker plugin on a room or other non-worker object");
@@ -861,7 +862,7 @@ export class PluginLoader {
         }
 
         const initPlugin = importedPlugin.isWorkerPlugin()
-            ? importedPlugin.pluginCtr.createInstance(this.worker, defaultConfig)
+            ? importedPlugin.pluginCtr.createInstance(this.server, defaultConfig)
             : importedPlugin.isRoomPlugin()
                 ? importedPlugin.pluginCtr.createInstance(room!, defaultConfig)
                 : undefined;
@@ -891,7 +892,7 @@ export class PluginLoader {
             const registeredMatchmakerEndpoints = getPluginMatchmakerEndpoints(initPlugin);
 
             for (const commandInfo of cliCommands) {
-                const command = this.worker.vorpal.command(commandInfo.command.usage, commandInfo.command.description);
+                const command = this.server.vorpal.command(commandInfo.command.usage, commandInfo.command.description);
 
                 if (commandInfo.command.options) {
                     for (let i = 0; i < commandInfo.command.options.length; i++) {
@@ -908,13 +909,13 @@ export class PluginLoader {
 
             loadedPlugin.loadedMatchmakerEndpoints = [...registeredMatchmakerEndpoints];
 
-            this.worker.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, loadedPlugin);
+            this.server.loadedPlugins.set(importedPlugin.pluginCtr.meta.id, loadedPlugin);
 
-            if (loadedPlugin.loadedMatchmakerEndpoints.length && this.worker.matchmaker) {
-                this.worker.matchmaker.restart();
+            if (loadedPlugin.loadedMatchmakerEndpoints.length && this.server.matchmaker) {
+                this.server.matchmaker.restart();
             }
 
-            this.worker.logger.info("Loaded plugin globally: %s", initPlugin);
+            this.server.logger.info("Loaded plugin globally: %s", initPlugin);
         }
 
         const eventListeners = getPluginEventListeners(initPlugin);
@@ -924,7 +925,7 @@ export class PluginLoader {
             if (room) {
                 room.on(eventListenerInfo.eventName, fn);
             } else {
-                this.worker.on(eventListenerInfo.eventName, fn);
+                this.server.on(eventListenerInfo.eventName, fn);
             }
             loadedPlugin.loadedEventListeners.push({
                 eventName: eventListenerInfo.eventName,
@@ -932,7 +933,7 @@ export class PluginLoader {
             });
         }
 
-        const ev = await this.worker.emit(
+        const ev = await this.server.emit(
             new WorkerLoadPluginEvent(
                 initPlugin,
                 room
@@ -959,12 +960,12 @@ export class PluginLoader {
      * @throws If there was an attempt to unload a plugin that isn't loaded.
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-fun-things");
+     * this.worker.pluginLoader.unloadPlugin("waterway-plugin-fun-things");
      * ```
      *
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-what-the-hell"); // !! Plugin with id 'hbplugin-what-the-hell' not loaded
+     * this.worker.pluginLoader.unloadPlugin("waterway-plugin-what-the-hell"); // !! Plugin with id 'waterway-plugin-what-the-hell' not loaded
      * ```
      */
     unloadPlugin(pluginCtr: string | WorkerPlugin | typeof WorkerPlugin): void;
@@ -976,12 +977,12 @@ export class PluginLoader {
      * @throws If there was an attempt to unload a plugin that isn't loaded.
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-fun-things");
+     * this.worker.pluginLoader.unloadPlugin("waterway-plugin-fun-things");
      * ```
      *
      * @example
      * ```ts
-     * this.worker.pluginLoader.unloadPlugin("hbplugin-what-the-hell"); // !! Plugin with id 'hbplugin-what-the-hell' not loaded
+     * this.worker.pluginLoader.unloadPlugin("waterway-plugin-what-the-hell"); // !! Plugin with id 'waterway-plugin-what-the-hell' not loaded
      * ```
      */
     unloadPlugin(pluginCtr: string | RoomPlugin | typeof RoomPlugin, room: Room): void;
@@ -992,7 +993,7 @@ export class PluginLoader {
 
         const loadedPlugin = room
             ? room.loadedPlugins.get(pluginId)
-            : this.worker.loadedPlugins.get(pluginId);
+            : this.server.loadedPlugins.get(pluginId);
 
         if (!loadedPlugin)
             throw new Error("Plugin with id '" + pluginId + "' not loaded");
@@ -1007,18 +1008,18 @@ export class PluginLoader {
 
             room.logger.info("Unloaded plugin: %s", loadedPlugin.pluginInstance);
         } else {
-            this.worker.loadedPlugins.delete(pluginId);
-            if (loadedPlugin.loadedMatchmakerEndpoints.length && this.worker.matchmaker) {
-                this.worker.matchmaker.restart();
+            this.server.loadedPlugins.delete(pluginId);
+            if (loadedPlugin.loadedMatchmakerEndpoints.length && this.server.matchmaker) {
+                this.server.matchmaker.restart();
             }
-            this.worker.logger.info("Unloaded plugin globally: %s", loadedPlugin.pluginInstance);
+            this.server.logger.info("Unloaded plugin globally: %s", loadedPlugin.pluginInstance);
         }
 
         for (const loadedEventListener of loadedPlugin.loadedEventListeners) {
             if (room) {
                 room.off(loadedEventListener.eventName as keyof RoomEvents, loadedEventListener.handler);
             } else {
-                this.worker.off(loadedEventListener.eventName, loadedEventListener.handler);
+                this.server.off(loadedEventListener.eventName, loadedEventListener.handler);
             }
         }
     }

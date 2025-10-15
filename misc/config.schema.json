@@ -4,15 +4,15 @@
       "anyOf": [
         {
           "type": "string",
-          "description": "Relative or absolute path to another Hindenburg config to base this one off, to extend all values from.",
+          "description": "Relative or absolute path to another Waterway config to base this one off, to extend all values from.",
           "default": "(none)"
         },
         {
           "type": "array",
-          "description": "Relative or absolute path to other Hindenburg configs to base this one off, to extend all values from.",
+          "description": "Relative or absolute path to other Waterway configs to base this one off, to extend all values from.",
           "items": {
             "type": "string",
-            "description": "Relative or absolute path to another Hindenburg config to base this one off, to extend all values from."
+            "description": "Relative or absolute path to another Waterway config to base this one off, to extend all values from."
           }
         }
       ]
@@ -34,12 +34,12 @@
     },
     "autoUpdate": {
       "type": "boolean",
-      "description": "Whether or not to auto-update Hindenburg when there is an update available.",
+      "description": "Whether or not to auto-update Waterway when there is an update available.",
       "default": false
     },
     "exitConfirmation": {
       "type": "boolean",
-      "description": "Whether or not to confirm when pressing CTRL+C to close Hindenburg.",
+      "description": "Whether or not to confirm when pressing CTRL+C to close Waterway.",
       "default": true
     },
     "defaultLanuage": {
@@ -74,7 +74,7 @@
     },
     "matchmaker": {
       "type": "object",
-      "description": "Configuration for the included Hindenburg http matchmaker.",
+      "description": "Configuration for the included Waterway http matchmaker.",
       "properties": {
         "port": {
           "type": "number",
@@ -94,7 +94,7 @@
         },
         "additionalPorts": {
           "type": "array",
-          "description": "Any additional ports for Hindenburg to listen on.",
+          "description": "Any additional ports for Waterway to listen on.",
           "items": {
             "type": "number"
           }
@@ -196,7 +196,7 @@
         },
         "requirePerfectMatches": {
           "type": "boolean",
-          "description": "Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Hindenburg will sort results by relevance to the search terms.",
+          "description": "Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Waterway will sort results by relevance to the search terms.",
           "default": false
         }
       }
@@ -228,7 +228,7 @@
     },
     "anticheat": {
       "type": "object",
-      "description": "Advanced options for HACS, Hindenburg's Anti-Cheat System.",
+      "description": "Advanced options for HACS, Waterway's Anti-Cheat System.",
       "properties": {
         "penalty": {
           "type": "object",
@@ -669,7 +669,7 @@
         },
         "disablePerspectives": {
           "type": "boolean",
-          "description": "Whether or not to completely disable the perspective API for Hindenburg."
+          "description": "Whether or not to completely disable the perspective API for Waterway."
         }
       }
     }

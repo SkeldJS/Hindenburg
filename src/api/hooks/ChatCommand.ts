@@ -1,9 +1,9 @@
 import { Player } from "@skeldjs/core";
 import { Plugin, ChatCommandCallback, SomePluginCtr } from "../../handlers";
 import { MethodDecorator } from "../types";
-import { Room } from "../../worker";
+import { Room } from "../../Room";
 
-const hindenburgChatCommandKey = Symbol("hindenburg:chatcommand");
+const waterwayChatCommandKey = Symbol("waterway:chatcommand");
 
 export type AccessCheckFn = (player: Player<Room>) => any;
 
@@ -16,7 +16,7 @@ export interface PluginRegisteredChatCommandInfo {
 
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://waterway.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -26,7 +26,7 @@ export interface PluginRegisteredChatCommandInfo {
 export function ChatCommand(usage: string, description?: string): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://waterway.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -37,7 +37,7 @@ export function ChatCommand(usage: string, description?: string): MethodDecorato
 export function ChatCommand(usage: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://waterway.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -49,7 +49,7 @@ export function ChatCommand(usage: string, accessCheck: AccessCheckFn): MethodDe
 export function ChatCommand(usage: string, description: string, accessCheck: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://waterway.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -60,7 +60,7 @@ export function ChatCommand(usage: string, description: string, accessCheck: Acc
 export function ChatCommand(pluginClass: SomePluginCtr, usage: string, description?: string): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://waterway.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -72,7 +72,7 @@ export function ChatCommand(pluginClass: SomePluginCtr, usage: string, descripti
 export function ChatCommand(pluginClass: SomePluginCtr, usage: string, accessCheck?: AccessCheckFn): MethodDecorator<ChatCommandCallback>;
 /**
  * A decorator to attach to a method in order to register a callback for a command
- * for players to use in the chat box in-game. Check out the [Chat Commands](https://hindenburg.js.org/pages/plugins/api/chat-commands.html)
+ * for players to use in the chat box in-game. Check out the [Chat Commands](https://waterway.js.org/pages/plugins/api/chat-commands.html)
  * page for more information.
  *
  * Can only be used on {@link WorkerPlugin}s.
@@ -104,10 +104,10 @@ export function ChatCommand(...args: any[]) {
             description = undefined;
         }
 
-        const cachedSet: PluginRegisteredChatCommandInfo[] | undefined = Reflect.getMetadata(hindenburgChatCommandKey, actualTarget);
+        const cachedSet: PluginRegisteredChatCommandInfo[] | undefined = Reflect.getMetadata(waterwayChatCommandKey, actualTarget);
         const chatCommands = cachedSet || [];
         if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgChatCommandKey, chatCommands, actualTarget);
+            Reflect.defineMetadata(waterwayChatCommandKey, chatCommands, actualTarget);
         }
 
         chatCommands.push({
@@ -120,5 +120,5 @@ export function ChatCommand(...args: any[]) {
 }
 
 export function getPluginChatCommands(pluginCtr: typeof Plugin | Plugin): PluginRegisteredChatCommandInfo[] {
-    return Reflect.getMetadata(hindenburgChatCommandKey, pluginCtr) || [];
+    return Reflect.getMetadata(waterwayChatCommandKey, pluginCtr) || [];
 }

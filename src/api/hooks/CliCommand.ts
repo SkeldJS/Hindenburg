@@ -3,7 +3,7 @@ import vorpal from "vorpal";
 import { Plugin } from "../../handlers";
 import { MethodDecorator } from "../types";
 
-const hindenburgCliCommandsKey = Symbol("hindenburg:clicommands");
+const waterwayCliCommandsKey = Symbol("waterway:clicommands");
 
 export interface CliCommandOptionInformation {
     usage: string;
@@ -28,10 +28,10 @@ export function CliCommand(command: CliCommandInformation): MethodDecorator<(arg
         if (!descriptor.value)
             return;
 
-        const cachedSet: PluginRegisteredCliCommandInfo[]|undefined = Reflect.getMetadata(hindenburgCliCommandsKey, target);
+        const cachedSet: PluginRegisteredCliCommandInfo[]|undefined = Reflect.getMetadata(waterwayCliCommandsKey, target);
         const cliCommandsToRegister = cachedSet || [];
         if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgCliCommandsKey, cliCommandsToRegister, target);
+            Reflect.defineMetadata(waterwayCliCommandsKey, cliCommandsToRegister, target);
         }
 
         cliCommandsToRegister.push({
@@ -42,5 +42,5 @@ export function CliCommand(command: CliCommandInformation): MethodDecorator<(arg
 }
 
 export function getPluginCliCommands(pluginCtr: typeof Plugin|Plugin): PluginRegisteredCliCommandInfo[] {
-    return Reflect.getMetadata(hindenburgCliCommandsKey, pluginCtr) || [];
+    return Reflect.getMetadata(waterwayCliCommandsKey, pluginCtr) || [];
 }

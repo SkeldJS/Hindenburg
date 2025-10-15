@@ -1,4 +1,4 @@
-End game intents are notifications to Hindenburg/the lobby that the game should end given some condition.
+End game intents are notifications to Waterway/the lobby that the game should end given some condition.
 
 They're used instead of simply calling {@link BaseRoom.endGame} as you can pass metadata and are cancelable by listening for the {@link RoomEndGameIntentEvent | `room.endgameintent`} event.
 

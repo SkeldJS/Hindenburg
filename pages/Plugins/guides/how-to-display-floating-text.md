@@ -16,7 +16,7 @@ In particular, the names can follow [TextMeshPro](http://digitalnativestudios.co
 ## Create the plugin
 Of course, you'll need to create a plugin to write your code. Have a look at the {@page ../creating-a-plugin.md} page to get started.
 
-Or, in your Hindenburg directory, just write `yarn plugins create floating-text` in a command prompt.
+Or, in your Waterway directory, just write `yarn plugins create floating-text` in a command prompt.
 
 ## Creating the event
 If you already know where you want to create your floating text, you can skip this section. Otherwise, a good place to start is simply when the game is created - or, in this case, just before the first player joins.
@@ -25,7 +25,7 @@ If you already know where you want to create your floating text, you can skip th
 So we can destroy the text wherever we want, such as when the game starts, we'll have to create a `textPlayer` property to reference later and assign as the fake player we'll be creating.
 
 ```ts
-@HindenburgPlugin("hbplugin-floating-text")
+@WaterwayPlugin("waterway-plugin-floating-text")
 export class FloatingTextPlugin extends RoomPlugin {
     textPlayer?: PlayerData<Room>;
 
@@ -45,7 +45,7 @@ onPlayerSetNameEvent(ev: PlayerSetNameEvent<Room>) {
 }
 ```
 
-Now, inside that method, we can simply call Hindenburg's handy {@link BaseRoom.createFakePlayer} method:
+Now, inside that method, we can simply call Waterway's handy {@link BaseRoom.createFakePlayer} method:
 ```ts
 if (this.textPlayer)
     return;

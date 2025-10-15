@@ -5,8 +5,8 @@ You can specify plugins that your plugin depends on using the {@link Dependency}
 
 For example, if you want to build a house:
 ```ts
-@Dependency("hbplugin-walls")
-@HindenburgPlugin("hbplugin-roof")
+@Dependency("waterway-plugin-walls")
+@WaterwayPlugin("waterway-plugin-roof")
 export class RoofPlugin extends WorkerPlugin {
     ...
 }
@@ -15,7 +15,7 @@ export class RoofPlugin extends WorkerPlugin {
 Or you can pass the plugin class itself:
 ```ts
 @Dependency(WallsPlugin)
-@HindenburgPlugin("hbplugin-roof")
+@WaterwayPlugin("waterway-plugin-roof")
 export class RoofPlugin extends WorkerPlugin {
     ...
 }
@@ -25,7 +25,7 @@ export class RoofPlugin extends WorkerPlugin {
 If your dependency is optional:
 ```ts
 @Dependency(TablePlugin, { optional: true })
-@HindenburgPlugin("hbplugin-television")
+@WaterwayPlugin("waterway-plugin-television")
 export class TelevisionPlugin extends WorkerPlugin {
     ...
 }
@@ -35,21 +35,21 @@ export class TelevisionPlugin extends WorkerPlugin {
 If a plugin is updating a lot, you might want to ensure that a specific version of a plugin is installed to use it as a dependency:
 ```ts
 @Dependency(BoilerPlugin, { version: "1.0.0" })
-@HindenburgPlugin("hbplugin-radiators")
+@WaterwayPlugin("waterway-plugin-radiators")
 export class RadiatorsPlugin extends WorkerPlugin {
     ...
 }
 ```
 
 ### Circular dependencies
-To avoid paradoxes, Hindenburg will crash if it finds a circle of dependencies in your plugin. If you still want to require that dependency plugins exist circularly, you can do that, but you'll lose the guarantee that the dependency will be loaded before the plugin.
+To avoid paradoxes, Waterway will crash if it finds a circle of dependencies in your plugin. If you still want to require that dependency plugins exist circularly, you can do that, but you'll lose the guarantee that the dependency will be loaded before the plugin.
 
 To do it, you'll need to assign at least one dependency in your chain as not being necessary to be loaded as soon as the plugin starts. That is, it should be loaded at some point, but it's not necessary right now.
 
 You can do that with the `loadedBefore` option:
 ```ts
 @Dependency(InternetPlugin)
-@HindenburgPlugin("hbplugin-router")
+@WaterwayPlugin("waterway-plugin-router")
 export class RouterPlugin extends WorkerPlugin {
     ...
 }
@@ -57,7 +57,7 @@ export class RouterPlugin extends WorkerPlugin {
 
 ```ts
 @Dependency(RouterPlugin, { loadedBefore: false })
-@HindenburgPlugin("hbplugin-internet")
+@WaterwayPlugin("waterway-plugin-internet")
 export class InternetPlugin extends WorkerPlugin {
     ...
 }
@@ -68,17 +68,17 @@ In this example, the internet will be available before you get your router, but 
 ## Accessing dependencies
 Now it's all good knowing that your dependency is loaded before your plugin, but it might not be very useful unless you can actually make use of it. Fairly simply, you can just access the {@link Worker.loadedPlugins} or {@link BaseRoom.loadedPlugins}, for example:
 ```ts
-@Dependency("hbplugin-bad-life-decisions")
-@HindenburgPlugin("hbplugin-hindenburg-disaster")
-export class HindenburgDisasterPlugin extends WorkerPlugin {
+@Dependency("waterway-plugin-bad-life-decisions")
+@WaterwayPlugin("waterway-plugin-waterway-disaster")
+export class WaterwayDisasterPlugin extends WorkerPlugin {
     badLifeDecisions: BadLifeDecisionsPlugin;
 
     constructor(public readonly worker: Worker, public readonly config: any) {
         super(worker, config);
 
-        this.badLifeDecisions = this.worker.loadedPlugins.get("hbplugin-bad-life-decisions")!;
+        this.badLifeDecisions = this.worker.loadedPlugins.get("waterway-plugin-bad-life-decisions")!;
     }
 }
 ```
 
-> Note that the `!` operator is used for _asserting_ that the plugin actually exists. This should be fine as Hindenburg won't load your plugin if it isn't.
+> Note that the `!` operator is used for _asserting_ that the plugin actually exists. This should be fine as Waterway won't load your plugin if it isn't.

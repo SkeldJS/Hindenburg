@@ -1,8 +1,8 @@
 If you don't already know, _Innernet Objects_ in Among Us are used to create state for some aspect of the game, and to network and sync that state between clients. A player, for example, has three innernet objects dedicated to keeping state about various things; `PlayerControl` for general behaviours, `PlayerPhysics` for movement states (e.g. ladders, vent, etc.) and `CustomNetworkTransform` for movement positions.
 
-In Hindenburg, in order to facilitate event safety and clear code flow, has the idea of objects being _owned_ by either perspectives, or main rooms. In this way, for example, if a meeting is started by a player inside a perspective, while the meeting may be synced to every other client, nominally the meeting is said to be _owned_ by that perspective. That means that the server will only perform host operations (i.e. handle votes, spawning, meeting ends, etc.) on that perspective, and the main room will simply listen for changes.
+In Waterway, in order to facilitate event safety and clear code flow, has the idea of objects being _owned_ by either perspectives, or main rooms. In this way, for example, if a meeting is started by a player inside a perspective, while the meeting may be synced to every other client, nominally the meeting is said to be _owned_ by that perspective. That means that the server will only perform host operations (i.e. handle votes, spawning, meeting ends, etc.) on that perspective, and the main room will simply listen for changes.
 
-> Note that this only really applies if the server has SaaH enabled, see {@page ../../getting-started/using-hindenburg/server-as-a-host.md}.
+> Note that this only really applies if the server has SaaH enabled, see {@page ../../getting-started/using-waterway/server-as-a-host.md}.
 
 In practice, this means that certain events that are host-only won't be able to be listened on by the main room, since they don't own the object. This does, fortunately, only applies to a small sub-set of events, for example the {@link PlayerDieEvent | `player.die`} event:
 
@@ -23,7 +23,7 @@ export class ImpostorDieHandler extends EventTarget {
     }
 }
 
-@HindenburgPlugin("hbplugin-role-tags")
+@WaterwayPlugin("waterway-plugin-role-tags")
 export class RoleTagsPlugin extends RoomPlugin {
     @EventListener("player.setrole")
     onPlayerSetRole(ev: PlayerSetRoleEvent<Room>) {

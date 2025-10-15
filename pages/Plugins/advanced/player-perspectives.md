@@ -1,8 +1,8 @@
-> This is an _advanced_ topic. Adequate understand of Hindenburg & the Among Us protocol is recommended.
+> This is an _advanced_ topic. Adequate understand of Waterway & the Among Us protocol is recommended.
 
-> This is a Server-as-a-Host _only_ topic, and although may work to a degree without it, is highily discouraged. See {@page ../../getting-started/using-hindenburg/server-as-a-host.md}.
+> This is a Server-as-a-Host _only_ topic, and although may work to a degree without it, is highily discouraged. See {@page ../../getting-started/using-waterway/server-as-a-host.md}.
 
-Perspectives in Hindenburg allow you to create a virtual "playground" world to isolate players and isolate events. They allow you to run separate, but connected, games that diverge from the main game.
+Perspectives in Waterway allow you to create a virtual "playground" world to isolate players and isolate events. They allow you to run separate, but connected, games that diverge from the main game.
 
 When perspectives are destroyed, players in the perspectives' game states are reverted back to normal.
 
@@ -35,7 +35,7 @@ await perspective.destroyPerspective();
 
 ## System
 ### Creating perspectives
-Creating perspectives work in Hindenburg by first creating an identical, but separate in memory, room that copies all of the same objects, information and config from the original.
+Creating perspectives work in Waterway by first creating an identical, but separate in memory, room that copies all of the same objects, information and config from the original.
 
 From then on, this player is considered to be in their own room on the server, completely separate from the original one - however, it retains a reference to it. This reference is used to pass non-isolated data through the use of "filters" that determine what is isolated and what isn't.
 
@@ -48,7 +48,7 @@ For example, you might have a filter that prevents movement packets being shared
 These filters are also categorised by "incoming" and "outgoing" filters, incoming filters filter messages coming from the room into the perspective, and outgoing filters filter messages coming from the perspective into the room.
 
 ### Destroying perspectives
-To destroy a perspective, Hindenburg must revert all of the changes done in the perspective while it was open. Technically, this is less of a "revert" and more of an overwrite using the original room information.
+To destroy a perspective, Waterway must revert all of the changes done in the perspective while it was open. Technically, this is less of a "revert" and more of an overwrite using the original room information.
 
 ## Creating perspectives
 Creating perspectives can range from being as easy as a single line to being lots more depending on what you need.
@@ -100,7 +100,7 @@ prespective.removeFilter(gameDataFilter);
 > You can also pass a direction, e.g. `perspective.removeFilter(gameDataFilter, MessageFilterDirection.Outgoing);`
 
 ### Custom filters
-Sometimes, the preset filters won't do, so you'll have to fine-tune your filters by extending Hindenburg's {@link PerspectiveFilter} class and using {@link MessageFilter} decorators.
+Sometimes, the preset filters won't do, so you'll have to fine-tune your filters by extending Waterway's {@link PerspectiveFilter} class and using {@link MessageFilter} decorators.
 
 #### Example
 ```ts

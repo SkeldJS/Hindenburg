@@ -1,4 +1,4 @@
-Hindenburg has a great developer experience for developers, meaning you can quickly develop, test and publish plugins.
+Waterway has a great developer experience for developers, meaning you can quickly develop, test and publish plugins.
 
 ## File Structure
 ```
@@ -26,7 +26,7 @@ If your plugin is written in TypeScript, this is where your plugin code, [source
 > While code will appear here, it is _not_ for editing, see the [`/src` folder](#src).
 
 ### `node_modules/`
-This folder keeps all installations of any packages your plugin has installed, including a reference to a local Hindenburg installation for development.
+This folder keeps all installations of any packages your plugin has installed, including a reference to a local Waterway installation for development.
 
 ![image](https://user-images.githubusercontent.com/60631511/171927709-362bf7d7-4817-41e0-9d31-60dee81c41dc.png)
 
@@ -49,23 +49,23 @@ export * from "./events";
 export * from "./services";
 export * from "./plugin";
 ```
-[_(file)_](https://github.com/edqx/MouthwashGG/blob/master/hbplugin-mouthwashgg-api/src/index.ts)
+[_(file)_](https://github.com/edqx/MouthwashGG/blob/master/waterway-plugin-mouthwashgg-api/src/index.ts)
 
 #### `plugin.ts`
 Contains the actual first point of access for your plugin.
 
 For example:
 ```ts
-import { HindenburgPlugin, WorkerPlugin } from "@skeldjs/hindenburg";
+import { WaterwayPlugin, WorkerPlugin } from "@skeldjs/waterway";
 
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class FunThingsPlugin extends WorkerPlugin {
 
 }
 ```
 
 ### `.gitignore`
-If you instructed Hindenburg to create a git repository for your plugin in the template creation setup, this file makes a list of files to completely ignore when commiting changes and pushingto a remote repository.
+If you instructed Waterway to create a git repository for your plugin in the template creation setup, this file makes a list of files to completely ignore when commiting changes and pushingto a remote repository.
 
 > Check out the [Git docs on the `.gitignore` file](https://git-scm.com/docs/gitignore) for more information.
 
@@ -88,11 +88,11 @@ export default FunThingsPlugin;
 > This should _always_ export your plugin as a default export.
 
 ### `package.json`
-Mostly, this is used to define standard information for publishing your package to [NPM](https://npmjs.com), however it also provides Hindenburg with the location of the [entrypoint](#entrypoint) to your plugin, as well as basic plugin information, described below.
+Mostly, this is used to define standard information for publishing your package to [NPM](https://npmjs.com), however it also provides Waterway with the location of the [entrypoint](#entrypoint) to your plugin, as well as basic plugin information, described below.
 
 > Your package name and package version can both be used for metadata about your plugin.
 
-> You don't _have_ to use the `package.json` for plugin metadata, see about passing additional arguments to the {@link HindenburgPlugin | `@HindenburgPlugin`} decorator.
+> You don't _have_ to use the `package.json` for plugin metadata, see about passing additional arguments to the {@link WaterwayPlugin | `@WaterwayPlugin`} decorator.
 
 ```json
 {
@@ -123,7 +123,7 @@ You can use the README as an opportunity to write either a short or extensive do
 ### `tsconfig.json`/`jsconfig.json`
 If you're in TypeScript, this will contain all build instructions for your plugin for TypeScript to work off of.
 
-In both TypeScript and JavaScript, it's also used to enable features such as [Experimental Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) and emitting run-time [type information](https://github.com/rbuckton/reflect-metadata) which Hindenburg uses extensively.
+In both TypeScript and JavaScript, it's also used to enable features such as [Experimental Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) and emitting run-time [type information](https://github.com/rbuckton/reflect-metadata) which Waterway uses extensively.
 
 For example, a `jsconfig.json`:
 ```ts
@@ -143,7 +143,7 @@ This is used as a _lock_ for your installed packages, ensuring that anyone who s
 > Check out the [NPM docs for the `package-lock.json` file](https://docs.npmjs.com/cli/v8/configuring-npm/package-lock-json) for more information.
 
 ## Recommended Editors
-The two recommended editors for development with Hindenburg are [VSCode](https://code.visualstudio.com/) and [WebStorm](https://www.jetbrains.com/webstorm/). Other editors may or may not work fine, but they won't be guaranteed support.
+The two recommended editors for development with Waterway are [VSCode](https://code.visualstudio.com/) and [WebStorm](https://www.jetbrains.com/webstorm/). Other editors may or may not work fine, but they won't be guaranteed support.
 
 ![image](https://user-images.githubusercontent.com/60631511/144727802-3adf2f70-a99d-41cd-b748-47dc791ab651.png)
 _VSCode_
@@ -152,14 +152,14 @@ _VSCode_
 _WebStorm_
 
 ### TypeScript
-If you're using TypeScript for your plugin, make sure to build your plugin before any changes that you make. Hindenburg will import the built `/dist` directory for your plugin; not the TypeScript code.
+If you're using TypeScript for your plugin, make sure to build your plugin before any changes that you make. Waterway will import the built `/dist` directory for your plugin; not the TypeScript code.
 
 If you're going to be making a lot of changes, it may be of use to open a separate temrinal session and use the `yarn watch` script to continuously check for changes and build incrementally:
 
 ![](https://i.imgur.com/PSd6JnS.gif)
 
 ## Plugin Hot-Reloading
-Hindenburg allows you to unload and load plugins, meaning that you don't have to restart your server or even re-create lobbies to test plugin changes.
+Waterway allows you to unload and load plugins, meaning that you don't have to restart your server or even re-create lobbies to test plugin changes.
 
 Check out the load command:
 ```bat
@@ -177,14 +177,14 @@ Usage: load [options] <plugin id> [room code]
 For example:
 
 ```sh
-load -h -r hbplugin-customgamecode
+load -h -r waterway-plugin-customgamecode
 ```
 
 ## Documentation
 For information on specific plugin features, check out the sidebar on these docs.
 
-For information on specific API enums, interfaces, functions, constants, classes, etc., go to the Exports section. The searchbar above can also help you look for functions that you need.
+For information on specific API enums, interfaces, functions, constants, classes, etc., go to the Exports section. The searcwaterway-ar above can also help you look for functions that you need.
 
-> Make sure you have the "Inherited" checkbox checked. If you're looking for Hindenburg-specific classes, make sure the "Externals" checkbox is unchecked.
+> Make sure you have the "Inherited" checkbox checked. If you're looking for Waterway-specific classes, make sure the "Externals" checkbox is unchecked.
 
-And for any questions or issues, feel completely free to join the [discord server](https://discord.gg/8ewNJYmYAU), or file an [issue on the GitHub repo](https://github.com/skeldjs/Hindenburg/issues) - we're more than happy to help :)
+And for any questions or issues, feel completely free to join the [discord server](https://discord.gg/8ewNJYmYAU), or file an [issue on the GitHub repo](https://github.com/skeldjs/Waterway/issues) - we're more than happy to help :)

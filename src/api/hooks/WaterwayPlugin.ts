@@ -7,30 +7,30 @@ export interface DeclaredPlugin {
     new(...args: any[]): Plugin;
 }
 
-const hindenburgPluginKey = Symbol("hindenburg:plugin");
-const hindenburgPreventLoad = Symbol("hindenburg:preventload");
+const waterwayPluginKey = Symbol("waterway:plugin");
+const waterwayPreventLoad = Symbol("waterway:preventload");
 
 /**
- * A decorator to declare a class as being a Hindenburg Plugin. The class must extend
+ * A decorator to declare a class as being a Waterway Plugin. The class must extend
  * either {@link WorkerPlugin} or {@link RoomPlugin} to be successfully loaded. The
  * version and ordering of your plugin will be taken from your plugin's package.json.
- * @param id The id of your plugin, must begin with "hbplugin-".
+ * @param id The id of your plugin, must begin with "waterway-plugin-".
  * @example
  * ```ts
- * .@HindenburgPlugin("hbplugin-fun-things")
+ * .@WaterwayPlugin("waterway-plugin-fun-things")
  * export class FunThingsPlugin extends WorkerPlugin {
  *
  * }
  * ```
  */
-export function HindenburgPlugin(id: string): ClassDecorator;
+export function WaterwayPlugin(id: string): ClassDecorator;
 /**
- * A decorator to declare a class as being a Hindenburg Plugin. The class must extend
+ * A decorator to declare a class as being a Waterway Plugin. The class must extend
  * either {@link WorkerPlugin} or {@link RoomPlugin} to be successfully loaded. The
  * version and ordering of your plugin will be taken from your plugin's package.json.
- * @param id The id of your plugin, must begin with "hbplugin-".
+ * @param id The id of your plugin, must begin with "waterway-plugin-".
  * @param version The version of your plugin. Note that this is superfluous and as of
- * recent Hindenburg versions, can instead be taken from your plugin's package.json.
+ * recent Waterway versions, can instead be taken from your plugin's package.json.
  * @param loadOrder The ordering that your plugin should be loaded in. Replaced by
  * package.json: "plugin.loadOrder".
  * @param defaultConfig The default configuration for your plugin. Replaced by
@@ -38,8 +38,8 @@ export function HindenburgPlugin(id: string): ClassDecorator;
  * @deprecated
  * ```
  */
-export function HindenburgPlugin(id: string, version: string, loadOrder?: "first"|"none"|"last"|number, defaultConfig?: any): ClassDecorator;
-export function HindenburgPlugin(id: string, version?: string, loadOrder?: "first"|"none"|"last"|number, defaultConfig?: any): ClassDecorator {
+export function WaterwayPlugin(id: string, version: string, loadOrder?: "first"|"none"|"last"|number, defaultConfig?: any): ClassDecorator;
+export function WaterwayPlugin(id: string, version?: string, loadOrder?: "first"|"none"|"last"|number, defaultConfig?: any): ClassDecorator {
     if (!id) {
         throw new TypeError("Expected 'id' for plugin metadata.");
     }
@@ -56,7 +56,7 @@ export function HindenburgPlugin(id: string, version?: string, loadOrder?: "firs
     } as PluginMetadata;
 
     return function<T extends DeclaredPlugin>(constructor: T) {
-        Reflect.defineMetadata(hindenburgPluginKey, true, constructor);
+        Reflect.defineMetadata(waterwayPluginKey, true, constructor);
 
         const hookedClass = class extends constructor {
             static meta = metadata;
@@ -67,13 +67,13 @@ export function HindenburgPlugin(id: string, version?: string, loadOrder?: "firs
 }
 
 export function PreventLoad(target: any) {
-    Reflect.defineMetadata(hindenburgPreventLoad, 1, target);
+    Reflect.defineMetadata(waterwayPreventLoad, 1, target);
 }
 
-export function isHindenburgPlugin(object: any)  {
-    return Reflect.hasMetadata(hindenburgPluginKey, object);
+export function isWaterwayPlugin(object: any)  {
+    return Reflect.hasMetadata(waterwayPluginKey, object);
 }
 
 export function shouldPreventLoading(object: any) {
-    return Reflect.hasMetadata(hindenburgPreventLoad, object);
+    return Reflect.hasMetadata(waterwayPreventLoad, object);
 }

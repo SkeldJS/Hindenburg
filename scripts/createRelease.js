@@ -18,10 +18,10 @@ function runCommandInDir(dir, command) {
   });
 }
 
-const baseHindenburgDir = path.resolve(__dirname, "..");
-const baseBuildDir = path.resolve(baseHindenburgDir, "release");
+const baseWaterwayDir = path.resolve(__dirname, "..");
+const baseBuildDir = path.resolve(baseWaterwayDir, "release");
 const buildTargets = [ "latest-win-x64", "latest-linux-x64" ];
-const outputExecutables = [ "hindenburg-win.exe", "hindenburg-linux" ];
+const outputExecutables = [ "waterway-win.exe", "waterway-linux" ];
 
 const yarnVersion = "1.22.19";
 
@@ -35,8 +35,8 @@ const yarnVersion = "1.22.19";
 
   await fs.mkdir(baseBuildDir);
 
-  console.log("Building Hindenburg..");
-  await runCommandInDir(baseHindenburgDir, "yarn build");
+  console.log("Building Waterway..");
+  await runCommandInDir(baseWaterwayDir, "yarn build");
 
   console.log("Installing yarn tarball to bundle..");
   const resultStdout = await runCommandInDir(baseBuildDir, "npm pack yarn@" + yarnVersion + " --json");
@@ -54,7 +54,7 @@ const yarnVersion = "1.22.19";
   await fs.rename(yarnInstallationDir, path.resolve(baseBuildDir, "yarn"));
 
   console.log("Creating releases..");
-  await pkg.exec([ baseHindenburgDir, "--targets", buildTargets.join(","), "--output", path.resolve(baseBuildDir, "hindenburg") ]);
+  await pkg.exec([ baseWaterwayDir, "--targets", buildTargets.join(","), "--output", path.resolve(baseBuildDir, "waterway") ]);
 
   console.log("Cleaning up..");
   const files = await fs.readdir(baseBuildDir);
@@ -66,8 +66,8 @@ const yarnVersion = "1.22.19";
   }
 
   console.log("Creating release body..");
-  const changelogJson = JSON.parse(await fs.readFile(path.resolve(baseHindenburgDir, "changelog.json"), "utf8"));
-  const latestVersionId = (process.argv[2] ? process.argv[2].split("/")[2] : "") || await runCommandInDir(baseHindenburgDir, "git describe --tags --abbrev=0");
+  const changelogJson = JSON.parse(await fs.readFile(path.resolve(baseWaterwayDir, "changelog.json"), "utf8"));
+  const latestVersionId = (process.argv[2] ? process.argv[2].split("/")[2] : "") || await runCommandInDir(baseWaterwayDir, "git describe --tags --abbrev=0");
   const latestChanges = changelogJson[latestVersionId.trim()];
 
   let releaseBody = "";

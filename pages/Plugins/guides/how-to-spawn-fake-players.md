@@ -1,4 +1,4 @@
-You can create "fake players" in Hindenburg that aren't connected to any client or connection. These players can be created and destroyed at an instant.
+You can create "fake players" in Waterway that aren't connected to any client or connection. These players can be created and destroyed at an instant.
 
 You can, for most tasks, use {@link BaseRoom.createFakePlayer}, as it's a thin wrapper over {@link BaseRoom.spawnObjectOfType} with some helper options.
 

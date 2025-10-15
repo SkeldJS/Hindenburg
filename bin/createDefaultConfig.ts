@@ -1,7 +1,7 @@
 import { Hat, Skin, Visor } from "@skeldjs/constant";
-import { HindenburgConfig } from "../src";
+import { WaterwayConfig } from "../src";
 
-export function createDefaultConfig(): HindenburgConfig {
+export function createDefaultConfig(): WaterwayConfig {
     return {
         clusterName: "Capybara",
         nodeId: 0,

@@ -2,7 +2,7 @@ The Among Us protocol stores game codes as integers, as converts them into their
 
 SkeldJS also uses game codes as integers throughout its API, see the [conversion](#conversion) section to read them as a formatting string.
 
-> If you're a server owner looking to set which version of game codes to use, see [Configuration#rooms.gameCodes](https://hindenburg.js.org/pages/getting-started/configuration/index.html#roomsgamecodes).
+> If you're a server owner looking to set which version of game codes to use, see [Configuration#rooms.gameCodes](https://waterway.js.org/pages/getting-started/configuration/index.html#roomsgamecodes).
 
 ## Versions
 There are two versions of games codes used in Among Us:
@@ -36,7 +36,7 @@ const code = generateV2();
 ## Conversion
 You can use {@link GameCode.convertIntToString} to get a string representation of a code to display in the console or to a user, and {@link GameCode.convertStringToInt} to serialize it as a 32-bit integer:
 ```ts
-@HindenburgPlugin("hbplugin-postmodern-lens")
+@WaterwayPlugin("waterway-plugin-postmodern-lens")
 export class PostmodernLensPlugin extends RoomPlugin {
     @ChatCommand("generate-code <version>")
     onGenerateCodeCommand(ctx: ChatCommandContext, args: any) {
@@ -57,7 +57,7 @@ The {@link RoomBeforeCreateEvent} allows you to modify a room's game code before
 
 For example:
 ```ts
-@HindenburgPlugin("hbplugin-postmodern-lens")
+@WaterwayPlugin("waterway-plugin-postmodern-lens")
 export class PostmodernLensPlugin extends RoomPlugin {
     @EventListener("room.beforecreate")
     onRoomCreate(ev: RoomBeforeCreateEvent) {
@@ -67,4 +67,4 @@ export class PostmodernLensPlugin extends RoomPlugin {
 ```
 
 ## LAN games
-The game code used for LAN games always has an integer value of `32`, Hindenburg will render this code as `LOCAL` in the console.
+The game code used for LAN games always has an integer value of `32`, Waterway will render this code as `LOCAL` in the console.

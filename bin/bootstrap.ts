@@ -15,7 +15,7 @@ import chokidar from "chokidar";
 import { Spinner } from "./util/Spinner";
 import { runCommandInDir } from "./util/runCommandInDir";
 
-import { Worker as FakeWorker, HindenburgConfig, Logger } from "../src";
+import { WaterwayServer as FakeWorker, WaterwayConfig, Logger } from "../src";
 import { createDefaultConfig } from "./createDefaultConfig";
 import { recursiveAssign } from "../src/util/recursiveAssign";
 
@@ -25,13 +25,13 @@ type DeepPartial<T> = {
     [K in keyof T]?: DeepPartial<T[K]> | undefined
 };
 
-const configFilename = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
-async function resolveConfig(logger: Logger, configFilename: string, performSetup: boolean): Promise<DeepPartial<HindenburgConfig>> {
+const configFilename = process.env.WATERWAY_CONFIG || path.join(process.cwd(), "./config.json");
+async function resolveConfig(logger: Logger, configFilename: string, performSetup: boolean): Promise<DeepPartial<WaterwayConfig>> {
     try {
-        const configJson: DeepPartial<HindenburgConfig> = JSON.parse(await fs.readFile(configFilename, "utf8"));
+        const configJson: DeepPartial<WaterwayConfig> = JSON.parse(await fs.readFile(configFilename, "utf8"));
 
         if (configJson.extends) {
-            const extendedFrom: DeepPartial<HindenburgConfig> = {};
+            const extendedFrom: DeepPartial<WaterwayConfig> = {};
 
             if (Array.isArray(configJson.extends)) {
                 for (const extendedFilename of configJson.extends) {
@@ -54,7 +54,7 @@ async function resolveConfig(logger: Logger, configFilename: string, performSetu
         const err = e as { code: string };
         if (err.code === "ENOENT" && performSetup) {
             logger.warn("No config file found; performing first-time setup accepting all defaults..");
-            return (await (await import("./_setup")).default(true)) as DeepPartial<HindenburgConfig>;
+            return (await (await import("./_setup")).default(true)) as DeepPartial<WaterwayConfig>;
         }
         logger.error("Failed to read config: %s", err.code || e);
         return {};
@@ -85,9 +85,9 @@ function splitExceptInQuotes(str: string) {
     return out;
 }
 
-function applyCommandLineArgs(config: HindenburgConfig) {
-    const HINDENBURG_CLI_ARGS = process.env.HINDENBURG_CLI_ARGS || "";
-    const argv = [...process.argv.slice(2), ...splitExceptInQuotes(HINDENBURG_CLI_ARGS)];
+function applyCommandLineArgs(config: WaterwayConfig) {
+    const WATERWAY_CLI_ARGS = process.env.WATERWAY_CLI_ARGS || "";
+    const argv = [...process.argv.slice(2), ...splitExceptInQuotes(WATERWAY_CLI_ARGS)];
 
     for (let i = 0; i < argv.length; i++) {
         if (argv[i].startsWith("--")) {
@@ -174,7 +174,7 @@ function makeHttpRequest(url: string) {
 }
 
 async function getLatestVersion() {
-    const fullData = await makeHttpRequest("https://raw.githubusercontent.com/SkeldJS/Hindenburg/master/package.json");
+    const fullData = await makeHttpRequest("https://raw.githubusercontent.com/SkeldJS/Waterway/master/package.json");
     const json = JSON.parse(fullData.toString("utf8"));
     if (json.version) {
         return json.version;
@@ -182,7 +182,7 @@ async function getLatestVersion() {
 }
 
 async function getChangelog() {
-    const fullData = await makeHttpRequest("https://raw.githubusercontent.com/SkeldJS/Hindenburg/master/changelog.json");
+    const fullData = await makeHttpRequest("https://raw.githubusercontent.com/SkeldJS/Waterway/master/changelog.json");
     const json = JSON.parse(fullData.toString("utf8"));
     if (json) {
         return json;
@@ -241,7 +241,7 @@ async function fetchUpdates(logger: Logger) {
                 delete require.cache[require.resolve("../src")];
 
                 // eslint-disable-next-line no-global-assign
-                Worker = (await import("../src")).Worker;
+                Worker = (await import("../src")).WaterwayServer;
             } catch (e) {
                 yarnBuildSpinner.fail();
                 logger.error("Failed to build latest changes, use 'yarn build' to update manually.");
@@ -289,10 +289,10 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
             versionSpinner.success();
 
             if (autoUpdate) {
-                logger.info(chalk.yellow("New version of Hindenburg available: %s, updating.."), latestVersion);
+                logger.info(chalk.yellow("New version of Waterway available: %s, updating.."), latestVersion);
                 await fetchUpdates(logger);
             } else {
-                logger.info(chalk.yellow("New version of Hindenburg available: %s, use 'git pull && yarn build' to update"), latestVersion);
+                logger.info(chalk.yellow("New version of Waterway available: %s, use 'git pull && yarn build' to update"), latestVersion);
             }
 
             if (changelog && changelog[latestVersion]) {
@@ -310,7 +310,7 @@ async function checkForUpdates(logger: Logger, autoUpdate: boolean) {
     }
 }
 
-async function checkConfigDeprecations(config: HindenburgConfig, configFilename: string, logger: Logger) {
+async function checkConfigDeprecations(config: WaterwayConfig, configFilename: string, logger: Logger) {
     let flag = false;
     if ("broadcastUnknownGameData" in config.socket) {
         config.socket.acceptUnknownGameData = (config as any).socket.broadcastUnknownGameData;
@@ -339,7 +339,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
 }
 
 (async () => {
-    const logger = new Logger("Startup");
+    const logger = new Logger(chalk.gray("Bootstrap"));
     const internalIp = await getInternalIp();
 
     const workerConfig = createDefaultConfig();
@@ -356,7 +356,7 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         await checkForUpdates(logger, workerConfig.autoUpdate);
     }
 
-    const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [path.resolve(process.cwd(), "./plugins")];
+    const pluginsDirectories: string[] = process.env.WATERWAY_PLUGINS?.split(",").map(x => x.trim()) || [path.resolve(process.cwd(), "./plugins")];
     const worker = new Worker("TEST", 0, workerConfig, pluginsDirectories);
 
     if (!resolvedConfig) {
@@ -379,6 +379,8 @@ async function checkConfigDeprecations(config: HindenburgConfig, configFilename:
         await worker.pluginLoader.importFromDirectories();
         await worker.pluginLoader.loadAllWorkerPlugins();
     }
+
+    worker.logger.info("Ready to accept connections!");
 
     const configWatch = chokidar.watch(configFilename, {
         persistent: false

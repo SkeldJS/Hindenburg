@@ -1,8 +1,8 @@
 import { BasicEvent } from "@skeldjs/events";
-import { WorkerEvents } from "../../worker";
+import { WorkerEvents } from "../../WaterwayServer";
 import { MethodDecorator } from "../types";
 
-const hindenburgEventListenersKey = Symbol("hindenburg:events");
+const waterwayEventListenersKey = Symbol("waterway:events");
 
 export interface PluginRegisteredEventListenerInfo {
     handler: (ev: BasicEvent) => any;
@@ -65,7 +65,7 @@ export function EventListener(): MethodDecorator<(ev: any) => any>;
  * ```
  */
 export function EventListener(eventTarget: any): MethodDecorator<(ev: any) => any>;
-export function EventListener(eventTargetOrEventName?: any, eventName?: any) {
+export function EventListener(eventTargetOrEventName?: any, eventName?: any): any {
     return function (
         target: any,
         propertyKey: string,
@@ -86,10 +86,10 @@ export function EventListener(eventTargetOrEventName?: any, eventName?: any) {
         if (!actualEventName)
             throw new Error("No event name passed for event emitter, if you're in typescript, make sure 'emitDecoratorMetadata' is enabled in your tsconfig.json");
 
-        const cachedSet: PluginRegisteredEventListenerInfo[]|undefined = Reflect.getMetadata(hindenburgEventListenersKey, actualTarget);
+        const cachedSet: PluginRegisteredEventListenerInfo[]|undefined = Reflect.getMetadata(waterwayEventListenersKey, actualTarget);
         const eventListeners = cachedSet || [];
         if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgEventListenersKey, eventListeners, actualTarget);
+            Reflect.defineMetadata(waterwayEventListenersKey, eventListeners, actualTarget);
         }
 
         eventListeners.push({
@@ -100,5 +100,5 @@ export function EventListener(eventTargetOrEventName?: any, eventName?: any) {
 }
 
 export function getPluginEventListeners(eventTarget: any): PluginRegisteredEventListenerInfo[] {
-    return Reflect.getMetadata(hindenburgEventListenersKey, eventTarget) || [];
+    return Reflect.getMetadata(waterwayEventListenersKey, eventTarget) || [];
 }

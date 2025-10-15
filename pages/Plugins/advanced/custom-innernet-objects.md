@@ -1,17 +1,17 @@
 Innernet objects (INOs, or _components_) in Among Us allow you to netwok state between clients. There are many different INOs that are spawned with prefabs, which define a set of innernet objects to spawn as part of a group.
 
-Some INOs can belong to individual players, and some can belong to the room itself - which can only be controlled by the host (or if in {@page ../../getting-started/using-hindenburg/server-as-a-host.md}, the server).
+Some INOs can belong to individual players, and some can belong to the room itself - which can only be controlled by the host (or if in {@page ../../getting-started/using-waterway/server-as-a-host.md}, the server).
 
 ## Server-side only
-_Note_ that objects defined and registered on Hindenburg _only_ apply to server-side logic, and aren't by default handled on the client in any meaningful way - they'll just be discarded; the client doesn't know what to do with them.
+_Note_ that objects defined and registered on Waterway _only_ apply to server-side logic, and aren't by default handled on the client in any meaningful way - they'll just be discarded; the client doesn't know what to do with them.
 
 Therefore, objects created on the server should simply be a re-creation of the ones on the client so as to provide an API for plugins. You can also implement the host logic for your INOs on the server, to protect some sensitive code that might otherwise be abused for cheating.
 
 ## Defining Innernet Objects
-Since Hindenburg builds on-top of SkeldJS, you can follow the [guide on the SkeldJS docs](https://skeld.js.org/pages/Guides/Creating%20Custom%20INOs.html) to create your own.
+Since Waterway builds on-top of SkeldJS, you can follow the [guide on the SkeldJS docs](https://skeld.js.org/pages/Guides/Creating%20Custom%20INOs.html) to create your own.
 
 ## Registering Prefabs
-Once you've created your innernet objects, you can register them to Hindenburg (either to a room or to the server) with the {@link RegisterPrefab} decorator.
+Once you've created your innernet objects, you can register them to Waterway (either to a room or to the server) with the {@link RegisterPrefab} decorator.
 
 For example, if you had a way to spawn buttons using a prefab, you might have 2 components for graphical rendering and handling clicks, i.e. `GraphicRenderer` and `ClickBehaviour`:
 ```ts
@@ -28,7 +28,7 @@ export enum MyCustomSpawnTypes {
 }
 
 @RegisterPrefab(MyCustomSpawnTypes.Button, [ GraphicRenderer, ClickBehaviour ])
-@HindenburgPlugin("hbplugin-epic-role-mod")
+@WaterwayPlugin("waterway-plugin-epic-role-mod")
 export class EpicRoleModPlugin extends RoomPlugin {
 
 }

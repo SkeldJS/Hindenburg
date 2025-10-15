@@ -1,7 +1,7 @@
 ## Custom Logging Information
-Hindenburg allows you to customise the information displayed about players, connections and rooms in Hindenburg.
+Waterway allows you to customise the information displayed about players, connections and rooms in Waterway.
 
-Located in the {@link HindenburgConfig.logging | `logging`} area of Hindenburg's configuration, you can pass an array of keys to display about each area of Hindenburg. For example:
+Located in the {@link WaterwayConfig.logging | `logging`} area of Waterway's configuration, you can pass an array of keys to display about each area of Waterway. For example:
 ```json
 "logging": {
     "hideSensitiveInfo": true,

@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs/promises";
 import minimatch from "minimatch";
-import { Worker } from "../src/worker";
+import { WaterwayServer } from "../src/WaterwayServer";
 import { PluginLoader, PluginPackageJson, SomePluginCtr } from "../src/handlers";
 
 async function getPluginPackageJson(pluginPath: string): Promise<PluginPackageJson|undefined> {
@@ -26,9 +26,9 @@ export async function importPlugin(pluginPath: string) {
         throw new Error("Expected an absolute path to a plugin but got a relative one.");
 
     const packageJson = await getPluginPackageJson(pluginPath);
-    if (packageJson && packageJson.engines && packageJson.engines.hindenburg)
-        if (!minimatch(Worker.serverVersion, packageJson.engines.hindenburg))
-            throw new Error("Built for an incompatible version of hindenburg");
+    if (packageJson && packageJson.engines && packageJson.engines.waterway)
+        if (!minimatch(WaterwayServer.serverVersion, packageJson.engines.waterway))
+            throw new Error("Built for an incompatible version of waterway");
 
     try {
         delete require.cache[require.resolve(pluginPath)];
@@ -37,8 +37,8 @@ export async function importPlugin(pluginPath: string) {
     }
     const { default: pluginCtr } = await import(pluginPath) as { default: SomePluginCtr };
 
-    if (!PluginLoader.isHindenburgPlugin(pluginCtr))
-        throw new Error("The imported module wasn't a Hindenburg plugin");
+    if (!PluginLoader.isWaterwayPlugin(pluginCtr))
+        throw new Error("The imported module wasn't a Waterway plugin");
 
     const packageJsonMeta = {
         id: packageJson?.name || "no id",

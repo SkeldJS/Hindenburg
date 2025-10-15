@@ -3,7 +3,7 @@ To add customisability to your plugin, consider adding configuration support so 
 ## Reading config
 Use your plugins' {@link Plugin.config} property to access the config that the server owner has given to your plugin:
 ```ts
-@HindenburgPlugin("hbplugin-welcome-message")
+@WaterwayPlugin("waterway-plugin-welcome-message")
 export class WelcomeMessagePlugin extends RoomPlugin {
     @EventListener("player.setname") // use player.setname as a better indiciator for a player being "ready"
     onPlayerSetRole(ev: PlayerSetNameEvent<Room>) {
@@ -25,11 +25,11 @@ export interface WelcomeMessagePlugin {
 ```
 
 ## Config schema
-As some editors support the use of [JSON Schemas](https://json-schema.org), Hindenburg allows you to write your own to allow plugin developers to get intellisense while writing configuration for your plugin:
+As some editors support the use of [JSON Schemas](https://json-schema.org), Waterway allows you to write your own to allow plugin developers to get intellisense while writing configuration for your plugin:
 
 ![](https://i.imgur.com/E8ejhKb.gif)
 
-This is as simple as placing a `config.schema.json` in the root of your plugin directory, and Hindenburg will automatically look for it.
+This is as simple as placing a `config.schema.json` in the root of your plugin directory, and Waterway will automatically look for it.
 
 > Check out https://json-schema.org/understanding-json-schema/ to learn how to write JSON schemas for your plugin.
 
@@ -47,6 +47,6 @@ Use the `"defaultConfig"` in the `"plugin"` object in your plugin's `package.jso
 
 
 ## Listen for config updates
-As the config for Hindenburg can be modified during runtime, it may be of interest to _listen_ for changes as they come through, maybe to re-listen on another port.
+As the config for Waterway can be modified during runtime, it may be of interest to _listen_ for changes as they come through, maybe to re-listen on another port.
 
-See the [Lifecycle Methods](https://hindenburg.js.org/pages/plugins/lifecycle-methods.html#onconfigupdateoldconfig-any-newconfig-any) page for the API reference.
+See the [Lifecycle Methods](https://waterway.js.org/pages/plugins/lifecycle-methods.html#onconfigupdateoldconfig-any-newconfig-any) page for the API reference.

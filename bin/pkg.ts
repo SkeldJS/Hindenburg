@@ -18,13 +18,13 @@ process.env.PKG_EXE_BASENAME = path.basename(process.argv[0]);
         break;
     case "help":
         console.log("Usage: " + process.env.PKG_EXE_BASENAME + " [action]");
-        console.log("       " + process.env.PKG_EXE_BASENAME + " setup   " + chalk.gray("# setup hindenburg initially"));
-        console.log("       " + process.env.PKG_EXE_BASENAME + " plugins " + chalk.gray("# run commands related to managing plugins for hindenburg"));
-        console.log("       " + process.env.PKG_EXE_BASENAME + "         " + chalk.gray("# start a Hindenburg instance"));
+        console.log("       " + process.env.PKG_EXE_BASENAME + " setup   " + chalk.gray("# setup waterway initially"));
+        console.log("       " + process.env.PKG_EXE_BASENAME + " plugins " + chalk.gray("# run commands related to managing plugins for waterway"));
+        console.log("       " + process.env.PKG_EXE_BASENAME + "         " + chalk.gray("# start a Waterway instance"));
         break;
     default:
         process.argv.splice(0, 3, "yarn", "start");
-        await import("./worker");
+        await import("./bootstrap");
         break;
     }
 })();

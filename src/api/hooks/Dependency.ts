@@ -2,9 +2,9 @@ import "reflect-metadata";
 
 import { SomePluginCtr } from "../../handlers";
 import { ClassDecorator } from "../types";
-import { isHindenburgPlugin } from "./HindenburgPlugin";
+import { isWaterwayPlugin } from "./WaterwayPlugin";
 
-const hindenburgDependenciesKey = Symbol("hindenburg:dependencies");
+const waterwayDependenciesKey = Symbol("waterway:dependencies");
 
 export interface PluginDependencyDeclaration {
     /**
@@ -53,17 +53,17 @@ export interface PluginDependencyDeclaration {
 }
 
 export function Dependency(plugin: string|SomePluginCtr, options: Partial<Omit<PluginDependencyDeclaration, "pluginId">> = {}): ClassDecorator {
-    if (typeof plugin !== "string" && !isHindenburgPlugin(plugin)) {
+    if (typeof plugin !== "string" && !isWaterwayPlugin(plugin)) {
         throw new TypeError("Expected 'plugin' to be either a plugin ID or a plugin constructor.");
     }
 
     const pluginId = typeof plugin === "string" ? plugin : plugin.meta.id;
 
     return function(target: any) {
-        const cachedSet: PluginDependencyDeclaration[]|undefined = Reflect.getMetadata(hindenburgDependenciesKey, target);
+        const cachedSet: PluginDependencyDeclaration[]|undefined = Reflect.getMetadata(waterwayDependenciesKey, target);
         const dependencies = cachedSet || [];
         if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgDependenciesKey, dependencies, target);
+            Reflect.defineMetadata(waterwayDependenciesKey, dependencies, target);
         }
 
         dependencies.push({ pluginId, optional: false, loadedBefore: true, version: "*",  ...options });
@@ -71,5 +71,5 @@ export function Dependency(plugin: string|SomePluginCtr, options: Partial<Omit<P
 }
 
 export function getPluginDependencies(pluginCtr: SomePluginCtr): PluginDependencyDeclaration[] {
-    return Reflect.getMetadata(hindenburgDependenciesKey, pluginCtr) || [];
+    return Reflect.getMetadata(waterwayDependenciesKey, pluginCtr) || [];
 }

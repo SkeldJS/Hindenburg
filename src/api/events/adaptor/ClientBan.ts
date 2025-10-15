@@ -1,6 +1,6 @@
 import { BasicEvent } from "@skeldjs/events";
 
-import { Connection } from "../../../worker";
+import { Connection } from "../../../Connection";
 import { ClientEvent } from "../client";
 
 /**

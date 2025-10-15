@@ -1,3 +1,3 @@
-export * from "./Room";
+export * from "../Room";
 export * from "./Connection";
-export * from "./Worker";
+export * from "../WaterwayServer";

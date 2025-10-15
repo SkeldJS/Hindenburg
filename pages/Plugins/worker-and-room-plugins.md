@@ -1,9 +1,9 @@
 ## Worker Plugins
-Worker plugins in Hindenburg are those that are attached to the worker, allowing you to listen for events regarding connections and any features that don't concern rooms rooms, as well as listen for events emitted from all rooms.
+Worker plugins in Waterway are those that are attached to the worker, allowing you to listen for events regarding connections and any features that don't concern rooms rooms, as well as listen for events emitted from all rooms.
 
-You can create a worker plugin by extending the {@link WorkerPlugin} class exported by `@skeldjs/hindenburg`, for example:
+You can create a worker plugin by extending the {@link WorkerPlugin} class exported by `@skeldjs/waterway`, for example:
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class MyPlugin extends WorkerPlugin {
     constructor(
         public readonly worker: Worker,
@@ -25,9 +25,9 @@ Room plugins are plugins that are loaded on specific rooms, being properly scope
 
 The use of room plugins can be very powerful, for instance you could mix and match gamemodes or features for specific rooms.
 
-Room plugins can be created by extending the {@link RoomPlugin} class exported by Hindenburg, for example:
+Room plugins can be created by extending the {@link RoomPlugin} class exported by Waterway, for example:
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class MyPlugin extends RoomPlugin {
     constructor(
         public readonly room: Room,

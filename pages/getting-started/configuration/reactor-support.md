@@ -1,21 +1,21 @@
-Hindenburg provides official plugin support for [Reactor](https://reactor.gg), a client-side modding framework, used by many developers and public mods.
+Waterway provides official plugin support for [Reactor](https://reactor.gg), a client-side modding framework, used by many developers and public mods.
 
 ## Plugin
-There's an official SkeldJS plugin for reactor support at https://github.com/SkeldJS/hbplugin-reactor.
+There's an official SkeldJS plugin for reactor support at https://github.com/SkeldJS/waterway-plugin-reactor.
 
-This can be installed using the {page ../using-hindenburg/installing-plugins `yarn plugins install`} command:
+This can be installed using the {page ../using-waterway/installing-plugins `yarn plugins install`} command:
 ```
-yarn plugins install hbplugin-reactor@3
+yarn plugins install waterway-plugin-reactor@3
 ```
 
-> Install `hbplugin-reactor@2` if your mods are still using the old reactor protocol version.
+> Install `waterway-plugin-reactor@2` if your mods are still using the old reactor protocol version.
 
 ### Configuration
 After installing the plugin, the following should appear in your `config.json` if you have it set up:
 ```json
 {
     "plugins": {
-        "hbplugin-reactor": {
+        "waterway-plugin-reactor": {
             "enabled": true,
             "authoritativeServerSyncer": false,
             "blockClientSideOnly": true,

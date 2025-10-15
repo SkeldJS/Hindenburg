@@ -1,11 +1,11 @@
-Hindenburg has an easy-to-use JSON file for configuring the whole server. Hindenburg will look for a config.json in the current working directory, or if the `HINDENBURG_CONFIGS` environment variable is set to an absolute filename of the config.json to use, check out the [Environment Variables](./Environment%20Variables) page for more information.
+Waterway has an easy-to-use JSON file for configuring the whole server. Waterway will look for a config.json in the current working directory, or if the `WATERWAY_CONFIGS` environment variable is set to an absolute filename of the config.json to use, check out the [Environment Variables](./Environment%20Variables) page for more information.
 
 ## CLI Arguments
-Hindenburg also accepts configuration values as CLI arguments to the start command, either `yarn dev` or `yarn start`.
+Waterway also accepts configuration values as CLI arguments to the start command, either `yarn dev` or `yarn start`.
 
 You can use any of the config keys below preceded with two dashes (`--`) to change the config at runtime.
 
-For eaxmple, you could start Hindenburg with:
+For eaxmple, you could start Waterway with:
 ```sh
 yarn start --socket.port 22023 --reactor.mods["daemon.unify"].optional false
 ```
@@ -31,7 +31,7 @@ Some configuration keys with a wildcard, such as `reactor.mods.*` require a spec
 # Configuration Values
 ## extends
 
-Relative or absolute path to another Hindenburg config to base this one off, to extend all values from.
+Relative or absolute path to another Waterway config to base this one off, to extend all values from.
 
 **Type**: string
 
@@ -42,12 +42,12 @@ Relative or absolute path to another Hindenburg config to base this one off, to 
 _or_
 
 
-Relative or absolute path to other Hindenburg configs to base this one off, to extend all values from.
+Relative or absolute path to other Waterway configs to base this one off, to extend all values from.
 
 **Type**: array
 
 ### **extends[]**
-Relative or absolute path to another Hindenburg config to base this one off, to extend all values from.
+Relative or absolute path to another Waterway config to base this one off, to extend all values from.
 
 **Type**: string
 
@@ -73,12 +73,12 @@ Whether or not to check for updates.
 **Default**: `true`
 
 ## autoUpdate
-Whether or not to auto-update Hindenburg when there is an update available.
+Whether or not to auto-update Waterway when there is an update available.
 
 **Type**: boolean
 
 ## exitConfirmation
-Whether or not to confirm when pressing CTRL+C to close Hindenburg.
+Whether or not to confirm when pressing CTRL+C to close Waterway.
 
 **Type**: boolean
 
@@ -102,7 +102,7 @@ Accepted game versions that clients can connect with.
 **Type**: string
 
 ## matchmaker
-Configuration for the included Hindenburg http matchmaker.
+Configuration for the included Waterway http matchmaker.
 
 **Type**: object
 
@@ -126,7 +126,7 @@ The port to listen on.
 **Default**: `22023`
 
 ### **socket.additionalPorts**
-Any additional ports for Hindenburg to listen on.
+Any additional ports for Waterway to listen on.
 
 **Type**: array
 
@@ -201,7 +201,7 @@ Any of the following: `"all"`
 
 
 ### **gameListing.requirePerfectMatches**
-Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Hindenburg will sort results by relevance to the search terms.
+Whether to only return results that are a perfect match to all of the sort terms. Otherwise, Waterway will sort results by relevance to the search terms.
 
 **Type**: boolean
 
@@ -235,7 +235,7 @@ Enable the plugin and pass any configuration values to it.
 
 
 ## anticheat
-Advanced options for HACS, Hindenburg's Anti-Cheat System.
+Advanced options for HACS, Waterway's Anti-Cheat System.
 
 **Type**: object
 
@@ -360,7 +360,7 @@ Whether to block reactor RPCs from mods that are declared as being client-side-o
 **Default**: `true`
 
 ### **reactor.mods**
-Individual configuration for each mod in regards to how Hindenburg should treat them.
+Individual configuration for each mod in regards to how Waterway should treat them.
 
 **Type**: object
 
@@ -704,7 +704,7 @@ Whether or not to check whether the sender and the reciever are dead so as to no
 **Default**: `true`
 
 ### **optimizations.disablePerspectives**
-Whether or not to completely disable the perspective API for Hindenburg.
+Whether or not to completely disable the perspective API for Waterway.
 
 **Type**: boolean
 

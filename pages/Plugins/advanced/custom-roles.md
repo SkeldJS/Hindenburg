@@ -1,4 +1,4 @@
-Creating a custom role in Hindenburg is a surprisingly light concept, although that's only because most of your role logic (abilities, buttons, etc.) is done in the {@link PlayerControl} innernet object, such as the {@link PlayerControl.shapeshift} method.
+Creating a custom role in Waterway is a surprisingly light concept, although that's only because most of your role logic (abilities, buttons, etc.) is done in the {@link PlayerControl} innernet object, such as the {@link PlayerControl.shapeshift} method.
 
 > Check out the {@page ./custom-innernet-objects.md} or {@page ./handling-custom-rpcs.md} for more information.
 
@@ -24,7 +24,7 @@ Where `roleType` is a unique integer/enum value for your role, `roleTeam` is the
 Registering your role class is as simple as using the {@link RegisterRole} decorator and passing in your role class:
 ```ts
 @RegisterRole(MyRole)
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class FunThingsPlugin extends WorkerPlugin {
 
 }

@@ -1,7 +1,7 @@
-Server-as-a-Host (**SaaH**) in Hindenburg allows you to have ultimate control and bypassing the middle man of having a host, as it is on officials. This doesn't mean that there are no hosts to change settings or to start the game, actually, SaaH allows you to have multiple hosts at once.
+Server-as-a-Host (**SaaH**) in Waterway allows you to have ultimate control and bypassing the middle man of having a host, as it is on officials. This doesn't mean that there are no hosts to change settings or to start the game, actually, SaaH allows you to have multiple hosts at once.
 
 ## Performance
-As SaaH doesn't analyse or process any more that Hindenburg normally does for hosted games, it should result in almost identical performance as if it were disabled.
+As SaaH doesn't analyse or process any more that Waterway normally does for hosted games, it should result in almost identical performance as if it were disabled.
 
 However, there should be a just-barely noticeable difference in high-ping scenarios, as it means that any packets made to the host (such as system sabotages) can instead be done on the server.
 

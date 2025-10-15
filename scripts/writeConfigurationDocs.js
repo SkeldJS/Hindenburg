@@ -39,19 +39,19 @@ const configSchema = require("../misc/config.schema.json");
  * @property {JsonSchema} not
  */
 
-let baseDocs = `Hindenburg has an easy-to-use JSON file for configuring the whole server. \
-Hindenburg will look for a config.json in the current working directory, or if the \
-\`HINDENBURG_CONFIGS\` environment variable is set to an absolute filename of the config.json \
+let baseDocs = `Waterway has an easy-to-use JSON file for configuring the whole server. \
+Waterway will look for a config.json in the current working directory, or if the \
+\`WATERWAY_CONFIGS\` environment variable is set to an absolute filename of the config.json \
 to use, check out the [Environment Variables](./Environment%20Variables) page for more information.
 
 ## CLI Arguments
-Hindenburg also accepts configuration values as CLI arguments to the start command, either \`yarn dev\` \
+Waterway also accepts configuration values as CLI arguments to the start command, either \`yarn dev\` \
 or \`yarn start\`.
 
 You can use any of the config keys below preceded with two dashes (\`--\`) to change the config \
 at runtime.
 
-For eaxmple, you could start Hindenburg with:
+For eaxmple, you could start Waterway with:
 \`\`\`sh
 yarn start --socket.port 22023 --reactor.mods["daemon.unify"].optional false
 \`\`\`

@@ -43,7 +43,7 @@
         "date": "2022-11-24",
         "notes": [
             {
-                "description": "Remove Reactor support from base Hindenburg",
+                "description": "Remove Reactor support from base Waterway",
                 "commits": ["472924aa5a98847d461ecee49af36e62b23bdc00"]
             }
         ]
@@ -318,7 +318,7 @@
       "date": "2022-06-16",
       "notes": [
           {
-              "description": "Package scripts to package Hindenburg as a single distributable executable",
+              "description": "Package scripts to package Waterway as a single distributable executable",
               "commits": ["eeba3b5f1af4c7845e9c087b2a76a535fccff883", "2743fc60ed7318b5f9c67e6bddbb758947e83892", "cddac80898e749f65332189b43262c2ffb018a47"]
           },
           {
@@ -750,7 +750,7 @@
       "date": "2021-10-26",
       "notes": [
         {
-          "description": "Add HINDENBURG_CLI_ARGS environment variable to append cli arguments in a container",
+          "description": "Add WATERWAY_CLI_ARGS environment variable to append cli arguments in a container",
           "commits": ["7e3e1e7c0910ff3f1ffe45591bb14be34c4ab75f"]
         }
       ]

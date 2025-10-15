@@ -17,24 +17,24 @@ import { Spinner } from "./util/Spinner";
 import createSchema from "./createSchema";
 import { importPlugin } from "./importPlugin";
 
-const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
-const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
+const pluginsDirectories: string[] = process.env.WATERWAY_PLUGINS?.split(",").map(x => x.trim()) || [ path.resolve(process.cwd(), "./plugins") ];
+const configFile: string = process.env.WATERWAY_CONFIG || path.join(process.cwd(), "./config.json");
 
 const yarnCommand = process.env.IS_PKG ?
     "node \"" + path.join(__dirname, "../../build/yarn/bin/yarn.js") + "\""
     : "yarn";
 
-const baseHindenburgCommand = process.env.IS_PKG ? process.env.PKG_EXE_BASENAME : "yarn";
+const baseWaterwayCommand = process.env.IS_PKG ? process.env.PKG_EXE_BASENAME : "yarn";
 
-async function buildHindenburg(logger: Logger) {
-    const buildSpinner = new Spinner("Building Hindenburg.. %s").start();
+async function buildWaterway(logger: Logger) {
+    const buildSpinner = new Spinner("Building Waterway.. %s").start();
     try {
         await runCommandInDir(process.cwd(), yarnCommand + " build");
         buildSpinner.success();
         return true;
     } catch (e) {
         buildSpinner.fail();
-        logger.error("Failed to build Hindenburg, you will have to build both Hindenburg and your plugin later");
+        logger.error("Failed to build Waterway, you will have to build both Waterway and your plugin later");
         return false;
     }
 }
@@ -58,16 +58,16 @@ function createHelloWorldPlugin(pluginName: string, isTypescript: boolean, plugi
     const codeFriendlyName = getCodeFriendlyPluginName(pluginName);
 
     return `${isTypescript ? "import" : "const" } {
-    HindenburgPlugin,
+    WaterwayPlugin,
     ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"},
     EventListener${isTypescript ? ",\n    PlayerSetNameEvent,\n    Room" + (pluginType === "worker" ? ",\n    Worker" : "") : ""}
-} ${isTypescript ? "from " : "= require("}"@skeldjs/hindenburg"${isTypescript ? "" : ")"};${isTypescript ? `
+} ${isTypescript ? "from " : "= require("}"@skeldjs/waterway"${isTypescript ? "" : ")"};${isTypescript ? `
 
 export interface ${codeFriendlyName}Config {
     message: string;
 }` : ""}
 
-@HindenburgPlugin("${pluginName}")
+@WaterwayPlugin("${pluginName}")
 export class ${codeFriendlyName} extends ${pluginType === "worker" ? "WorkerPlugin" : "RoomPlugin"} {
     ${isTypescript ? "message: string;\n\n    " : ""}constructor(public readonly ${pluginType}${isTypescript ? ": " + (pluginType === "worker" ? "Worker" : "Room") : ""}, public config${isTypescript ? ": " + codeFriendlyName + "Config" : ""}) {
         super(${pluginType}, config);
@@ -116,7 +116,7 @@ async function getPackageInfo(pluginsDirectory: string, packageName: string, log
     }
 }
 
-async function getHindenburgVersion(): Promise<string> {
+async function getWaterwayVersion(): Promise<string> {
     const packageJsonText = await fs.readFile(path.resolve(__dirname, "../package.json"), "utf8");
     const packageJson = JSON.parse(packageJsonText);
 
@@ -149,13 +149,13 @@ async function runCreatePlugin() {
     const argvPluginName = process.argv[3];
 
     if (!argvPluginName) {
-        logger.error("Expected plugin name as an argument, usage: `" + baseHindenburgCommand + " plugins create <plugiun name>`.");
+        logger.error("Expected plugin name as an argument, usage: `" + baseWaterwayCommand + " plugins create <plugiun name>`.");
         return;
     }
 
-    const pluginName = argvPluginName.startsWith("hbplugin-")
+    const pluginName = argvPluginName.startsWith("waterway-plugin-")
         ? argvPluginName
-        : "hbplugin-" + argvPluginName;
+        : "waterway-plugin-" + argvPluginName;
 
     if (!/^[a-z-]+$/.test(pluginName)) {
         logger.error("Plugin name must contain only lowercase a-z and hyphens (-)");
@@ -168,11 +168,11 @@ async function runCreatePlugin() {
         const stat = await fs.stat(pluginsDirectory);
 
         if (!stat.isDirectory()) {
-            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseHindenburgCommand + " setup'");
+            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseWaterwayCommand + " setup'");
             return;
         }
     } catch (e) {
-        logger.error("Plugins directory not found or inaccessible, please run '" + baseHindenburgCommand + " setup'");
+        logger.error("Plugins directory not found or inaccessible, please run '" + baseWaterwayCommand + " setup'");
         return;
     }
 
@@ -274,7 +274,7 @@ async function runCreatePlugin() {
         }
     }
 
-    const buildSucceeded = process.env.IS_PKG || !useTypescript || await buildHindenburg(logger);
+    const buildSucceeded = process.env.IS_PKG || !useTypescript || await buildWaterway(logger);
 
     const creatingDirectorySpinner = new Spinner("Creating plugins/" + pluginName + ".. %s").start();
     try {
@@ -381,23 +381,23 @@ async function runCreatePlugin() {
 
     const dependenciesSpinner = new Spinner("Installing dependencies.. %s").start();
     try {
-        // const relativeHindenburg = path.relative(pluginDirectory, process.cwd()).replace(/\\/g, path.posix.sep);
+        // const relativeWaterway = path.relative(pluginDirectory, process.cwd()).replace(/\\/g, path.posix.sep);
         if (packageManager === "yarn") {
             await runCommandInDir(
                 pluginDirectory,
-                yarnCommand + " add --dev @skeldjs/hindenburg"
+                yarnCommand + " add --dev @skeldjs/waterway"
                     + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "npm") {
             await runCommandInDir(
                 pluginDirectory,
-                "npm install --save-dev @skeldjs/hindenburg"
+                "npm install --save-dev @skeldjs/waterway"
                     + (useTypescript ? " typescript@latest" : "")
             );
         } else if (packageManager === "pnpm") {
             await runCommandInDir(
                 pluginDirectory,
-                "pnpm install --save-dev @skeldjs/hindenburg"
+                "pnpm install --save-dev @skeldjs/waterway"
                     + (useTypescript ? " typescript@latest" : "")
             );
         }
@@ -451,8 +451,8 @@ async function runCreatePlugin() {
         }
 
         packageJson.version = "1.0.0";
-        packageJson.description = "My cool Hindenburg plugin";
-        packageJson.keywords = [ "hindenburg", "plugin", "among us" ];
+        packageJson.description = "My cool Waterway plugin";
+        packageJson.keywords = [ "waterway", "plugin", "among us" ];
         packageJson.license = "GPL-3.0-only";
         if (localAuthorDetails) {
             packageJson.author = localAuthorDetails;
@@ -483,10 +483,10 @@ async function runCreatePlugin() {
                 packageJson.scripts.prepack = "pnpm run build";
             }
         }
-        const hindenburgVersion = await getHindenburgVersion();
+        const waterwayVersion = await getWaterwayVersion();
         packageJson.engines = {
             node: ">=14",
-            hindenburg: hindenburgVersion.split(".").slice(0, -1).join(".") + ".*"
+            waterway: waterwayVersion.split(".").slice(0, -1).join(".") + ".*"
         };
 
         const devDependencies = packageJson.devDependencies; // dumb thing to make it the last key in the package.json
@@ -613,9 +613,9 @@ async function verifyInstalledPlugin(logger: Logger, pluginsDirectory: string, p
 
         const importedPlugin = await importPlugin(packageLocation);
 
-        if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin)) {
+        if (!importedPlugin || !PluginLoader.isWaterwayPlugin(importedPlugin)) {
             verifySpinner.fail();
-            logger.error("Installed package was not a hindenburg plugin");
+            logger.error("Installed package was not a waterway plugin");
             return false;
         }
 
@@ -681,17 +681,17 @@ async function runInstallPlugin() {
         const stat = await fs.stat(pluginsDirectory);
 
         if (!stat.isDirectory()) {
-            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseHindenburgCommand + " setup'");
+            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseWaterwayCommand + " setup'");
             return;
         }
     } catch (e) {
-        logger.error("Plugins directory not found or inaccessible, please run '" + baseHindenburgCommand + " setup'");
+        logger.error("Plugins directory not found or inaccessible, please run '" + baseWaterwayCommand + " setup'");
         return;
     }
 
-    const pluginName = argvPluginName.startsWith("hbplugin-")
+    const pluginName = argvPluginName.startsWith("waterway-plugin-")
         ? argvPluginName
-        : "hbplugin-" + argvPluginName;
+        : "waterway-plugin-" + argvPluginName;
 
     const pluginDirectory = path.resolve(pluginsDirectory, pluginName);
 
@@ -731,7 +731,7 @@ async function runInstallPlugin() {
             uninstallSpinner.success();
         } catch (e) {
             uninstallSpinner.fail();
-            logger.error("Failed to uninstall package, run either '" + baseHindenburgCommand + " plugins uninstall \"" + packageInfoJson + "\"', or enter the directory manually and run 'yarn remove \"" + packageInfoJson.name + "\"'");
+            logger.error("Failed to uninstall package, run either '" + baseWaterwayCommand + " plugins uninstall \"" + packageInfoJson + "\"', or enter the directory manually and run 'yarn remove \"" + packageInfoJson.name + "\"'");
         }
     }
 }
@@ -752,11 +752,11 @@ async function runImportPlugin() {
         const stat = await fs.stat(pluginsDirectory);
 
         if (!stat.isDirectory()) {
-            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseHindenburgCommand + " setup'");
+            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseWaterwayCommand + " setup'");
             return;
         }
     } catch (e) {
-        logger.error("Plugins directory not found or inaccessible, please run '" + baseHindenburgCommand + " setup'");
+        logger.error("Plugins directory not found or inaccessible, please run '" + baseWaterwayCommand + " setup'");
         return;
     }
 
@@ -918,17 +918,17 @@ async function runUninstallPlugin() {
         const stat = await fs.stat(pluginsDirectory);
 
         if (!stat.isDirectory()) {
-            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseHindenburgCommand + " setup'");
+            logger.error("Plugins directory found but was not a directory, please delete the file and run '" + baseWaterwayCommand + " setup'");
             return;
         }
     } catch (e) {
-        logger.error("Plugins directory not found or inaccessible, please run '" + baseHindenburgCommand + " setup'");
+        logger.error("Plugins directory not found or inaccessible, please run '" + baseWaterwayCommand + " setup'");
         return;
     }
 
-    const pluginName = argvPluginName.startsWith("hbplugin-")
+    const pluginName = argvPluginName.startsWith("waterway-plugin-")
         ? argvPluginName
-        : "hbplugin-" + argvPluginName;
+        : "waterway-plugin-" + argvPluginName;
 
     const resolvingPlugin = new Spinner("Resolving plugin.. %s").start();
 
@@ -1000,9 +1000,9 @@ async function runInfo() {
         return;
     }
 
-    const pluginName = argvPluginName.startsWith("hbplugin-")
+    const pluginName = argvPluginName.startsWith("waterway-plugin-")
         ? argvPluginName
-        : "hbplugin-" + argvPluginName;
+        : "waterway-plugin-" + argvPluginName;
 
     const packageInfoJson = await getPackageInfo(process.cwd(), pluginName, logger);
 
@@ -1022,7 +1022,7 @@ async function runInfo() {
 
             const importedPlugin = await importPlugin(packageLocation);
 
-            if (!importedPlugin || !PluginLoader.isHindenburgPlugin(importedPlugin))
+            if (!importedPlugin || !PluginLoader.isWaterwayPlugin(importedPlugin))
                 continue;
 
             if (PluginLoader.isWorkerPlugin(importedPlugin)) {
@@ -1084,7 +1084,7 @@ async function runList() {
         try {
             const files = await fs.readdir(pluginsDirectory);
             for (const file of files) {
-                if (!file.startsWith("hbplugin-"))
+                if (!file.startsWith("waterway-plugin-"))
                     continue;
 
                 allInstalledPlugins.push({
@@ -1136,13 +1136,13 @@ async function runList() {
         await runList();
         break;
     default:
-        console.log("Usage: " + baseHindenburgCommand + " plugins <action>");
-        console.log("       " + baseHindenburgCommand + " plugins create    <plugin name> " + chalk.gray("# initialise a new plugin"));
-        console.log("       " + baseHindenburgCommand + " plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
-        console.log("       " + baseHindenburgCommand + " plugins import    <plugin repo> " + chalk.gray("# import a plugin from a git repository"));
-        console.log("       " + baseHindenburgCommand + " plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
-        console.log("       " + baseHindenburgCommand + " plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
-        console.log("       " + baseHindenburgCommand + " plugins list                    " + chalk.gray("# list all installed plugins"));
+        console.log("Usage: " + baseWaterwayCommand + " plugins <action>");
+        console.log("       " + baseWaterwayCommand + " plugins create    <plugin name> " + chalk.gray("# initialise a new plugin"));
+        console.log("       " + baseWaterwayCommand + " plugins install   <plugin name> " + chalk.gray("# install a plugin from the npm registry"));
+        console.log("       " + baseWaterwayCommand + " plugins import    <plugin repo> " + chalk.gray("# import a plugin from a git repository"));
+        console.log("       " + baseWaterwayCommand + " plugins uninstall <plugin name> " + chalk.gray("# remove a plugin installed via npm"));
+        console.log("       " + baseWaterwayCommand + " plugins info      <plugin name> " + chalk.gray("# get information about a plugin"));
+        console.log("       " + baseWaterwayCommand + " plugins list                    " + chalk.gray("# list all installed plugins"));
         break;
     }
 

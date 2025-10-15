@@ -1,6 +1,7 @@
 import { BasicEvent } from "@skeldjs/events";
 
-import { Connection, Room } from "../../../worker";
+import { Connection } from "../../../Connection";
+import { Room } from "../../../Room";
 
 /**
  * Emitted when a client leaves the room that they're in, i.e. by disconnecting.

@@ -1,18 +1,19 @@
 import chalk from "chalk";
 import * as util from "util";
 
-import { Logger } from "../logger";
-import { Room, Worker } from "../worker";
+import { Logger } from "../Logger";
+import { Room } from "../Room";
+import { WaterwayServer } from "../WaterwayServer";
 import { PluginPackageJson } from "./PluginLoader";
 
 /**
- * Metadata about a plugin, created with {@link HindenburgPlugin}.
+ * Metadata about a plugin, created with {@link WaterwayPlugin}.
  */
 export interface PluginMetadata {
     /**
-     * The ID of the plugin, beginning with `hbplugin-`.
+     * The ID of the plugin, beginning with `waterway-plugin-`.
      *
-     * @example "hbplugin-my-plugin"
+     * @example "waterway-plugin-my-plugin"
      */
     id: string;
     /**
@@ -50,7 +51,7 @@ export interface PluginMetadata {
     defaultConfig: any;
 }
 
-// this function can't be private on Plugin because HindenburgPlugin starts crying.
+// this function can't be private on Plugin because WaterwayPlugin starts crying.
 
 
 export type PluginInstanceType<K extends typeof WorkerPlugin|typeof RoomPlugin> = K extends { createInstance(...args: any[]): infer X }
@@ -58,16 +59,16 @@ export type PluginInstanceType<K extends typeof WorkerPlugin|typeof RoomPlugin> 
     : never;
 
 /**
- * Represents a base plugin for Hindenburg. Should not be extended directly,
+ * Represents a base plugin for Waterway. Should not be extended directly,
  * see {@link WorkerPlugin} and {@link RoomPlugin} to choose the scope of the
  * plugin.
  *
- * Needs to be decorated with {@link HindenburgPlugin} to actually be able to
+ * Needs to be decorated with {@link WaterwayPlugin} to actually be able to
  * be imported and loaded.
  */
 export abstract class Plugin {
     /**
-     * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
+     * The metadata for the plugin, as passed into {@link WaterwayPlugin}.
      */
     static meta: PluginMetadata;
 
@@ -82,7 +83,7 @@ export abstract class Plugin {
     static packageJson: PluginPackageJson;
 
     /**
-     * The metadata for the plugin, as passed into {@link HindenburgPlugin}.
+     * The metadata for the plugin, as passed into {@link WaterwayPlugin}.
      */
     meta!: PluginMetadata;
 
@@ -129,7 +130,7 @@ export abstract class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin")
+     * .@WaterwayPlugin("waterway-plugin-my-plugin")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginLoad() {
      *     const res = await fetch("https://icanhazip.com/");
@@ -152,7 +153,7 @@ export abstract class Plugin {
      *
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin")
+     * .@WaterwayPlugin("waterway-plugin-my-plugin")
      * export class MyPlugin extends WorkerPlugin {
      *   async onPluginUnload() {
      *     this.logger.info("Closing socket..");
@@ -189,7 +190,7 @@ export class RoomPlugin extends Plugin {
     /**
      * The worker of the room that this plugin is loaded into.
      */
-    public readonly worker: Worker;
+    public readonly server: WaterwayServer;
 
     /**
      * Create a new instance of this plugin.
@@ -204,7 +205,7 @@ export class RoomPlugin extends Plugin {
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin")
+     * .@WaterwayPlugin("waterway-plugin-my-plugin")
      * export class MyPlugin extends RoomPlugin {
      *
      * }
@@ -219,8 +220,8 @@ export class RoomPlugin extends Plugin {
     ) {
         super(config);
 
-        this.worker = room.worker;
-        this.logger = new Logger(() => `${util.inspect(room.code, true, null, true)} ${this.meta.id}`, this.worker.vorpal);
+        this.server = room.server;
+        this.logger = new Logger(() => `${util.inspect(room.code, true, null, true)} ${this.meta.id}`, this.server.vorpal);
     }
 
     getDependencyUnsafe(pluginId: string): WorkerPlugin|RoomPlugin;
@@ -233,7 +234,7 @@ export class RoomPlugin extends Plugin {
             return this.getDependencyUnsafe(pluginId.meta.id);
 
         if (location === "worker") {
-            return this.worker.loadedPlugins.get(pluginId)!.pluginInstance;
+            return this.server.loadedPlugins.get(pluginId)!.pluginInstance;
         }
 
         if (location === "room") {
@@ -260,18 +261,18 @@ export class RoomPlugin extends Plugin {
 export class WorkerPlugin extends Plugin {
     /**
      * Create a new instance of this plugin.
-     * @param worker The Hindenburg worker that this plugin is for.
+     * @param server The Waterway worker that this plugin is for.
      * @param config Configuration for the plugin.
      */
-    static createInstance(worker: Worker, config: any) {
-        const plugin = new this(worker, config);
+    static createInstance(server: WaterwayServer, config: any) {
+        const plugin = new this(server, config);
         return plugin;
     }
 
     /**
      * @example
      * ```ts
-     * .@HindenburgPlugin("hbplugin-my-plugin")
+     * .@WaterwayPlugin("waterway-plugin-my-plugin")
      * export class MyPlugin extends WorkerPlugin {
      *
      * }
@@ -281,12 +282,12 @@ export class WorkerPlugin extends Plugin {
         /**
          * The worker that this plugin is loaded into.
          */
-        public readonly worker: Worker,
+        public readonly server: WaterwayServer,
         public config: any
     ) {
         super(config);
 
-        this.logger = new Logger(() => this.meta.id, this.worker.vorpal);
+        this.logger = new Logger(() => this.meta.id, this.server.vorpal);
     }
 
 
@@ -297,7 +298,7 @@ export class WorkerPlugin extends Plugin {
         if (typeof pluginId !== "string")
             return this.getDependencyUnsafe(pluginId.meta.id);
 
-        return this.worker.loadedPlugins.get(pluginId)!.pluginInstance;
+        return this.server.loadedPlugins.get(pluginId)!.pluginInstance;
     }
 
     assertDependency(pluginId: string): WorkerPlugin;

@@ -2,7 +2,7 @@ import { GameKeyword, GameMap } from "@skeldjs/constant";
 import { CancelableEvent } from "@skeldjs/events";
 import { GameListing } from "@skeldjs/protocol";
 
-import { Connection } from "../../../worker";
+import { Connection } from "../../../Connection";
 
 /**
  * Emitted when a connection enters the "public games" section and begins looking

@@ -1,9 +1,9 @@
 import { NetworkedObject, NetworkedObjectConstructor } from "@skeldjs/core";
 import { SomePluginCtr } from "../../handlers";
 import { ClassDecorator } from "../types";
-import { Room } from "../../worker";
+import { Room } from "../../Room";
 
-const hindenburgRegisterPrefab = Symbol("hindenburg:registerprefab");
+const waterwayRegisterPrefab = Symbol("waterway:registerprefab");
 
 export interface RegisteredPrefab {
     spawnType: number;
@@ -12,10 +12,10 @@ export interface RegisteredPrefab {
 
 export function RegisterPrefab(spawnType: number, components: NetworkedObjectConstructor<NetworkedObject<Room>>[]): ClassDecorator {
     return function (target: any) {
-        const cachedSet: RegisteredPrefab[] | undefined = Reflect.getMetadata(hindenburgRegisterPrefab, target);
+        const cachedSet: RegisteredPrefab[] | undefined = Reflect.getMetadata(waterwayRegisterPrefab, target);
         const prefabsToRegister = cachedSet || [];
         if (!cachedSet) {
-            Reflect.defineMetadata(hindenburgRegisterPrefab, prefabsToRegister, target);
+            Reflect.defineMetadata(waterwayRegisterPrefab, prefabsToRegister, target);
         }
 
         prefabsToRegister.push({
@@ -26,5 +26,5 @@ export function RegisterPrefab(spawnType: number, components: NetworkedObjectCon
 }
 
 export function getPluginRegisteredPrefabs(pluginCtr: SomePluginCtr): RegisteredPrefab[] {
-    return Reflect.getMetadata(hindenburgRegisterPrefab, pluginCtr) || [];
+    return Reflect.getMetadata(waterwayRegisterPrefab, pluginCtr) || [];
 }

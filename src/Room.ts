@@ -89,14 +89,7 @@ import {
     RoomSelectHostEvent,
     getPluginEventListeners,
     EventTarget as EventTarget
-} from "../api";
-
-import {
-    SendChatOptions,
-    MessageSide,
-    RoomsConfig,
-    LoggingConfig
-} from "../interfaces";
+} from "./api";
 
 import {
     CommandCallError,
@@ -105,15 +98,15 @@ import {
     ChatCommandHandler,
     WorkerPlugin,
     LoadedPlugin
-} from "../handlers";
+} from "./handlers";
 
-import { UnknownComponent } from "../components";
+import { UnknownComponent } from "./components";
 
-import { fmtConfigurableLog } from "../util/fmtLogFormat";
-import { Logger } from "../logger";
+import { fmtConfigurableLog } from "./util/fmtLogFormat";
+import { Logger } from "./Logger";
 
 import { Connection, logLanguages, logPlatforms } from "./Connection";
-import { Worker } from "./Worker";
+import { LoggingConfig, RoomsConfig, WaterwayServer } from "./WaterwayServer";
 
 function getPlayerChalkColor(config: LoggingConfig, player: Player<Room>): chalk.Chalk {
     if (!config.playerColors) return chalk.cyan;
@@ -131,7 +124,7 @@ Object.defineProperty(Player.prototype, Symbol.for("nodejs.util.inspect.custom")
         const isActingHost = connection && this.room.actingHosts.has(connection);
 
         const paren = fmtConfigurableLog(
-            this.room.worker.config.logging.players?.format || ["id", "ping", "ishost"],
+            this.room.server.config.logging.players?.format || ["id", "ping", "ishost"],
             {
                 id: this.clientId,
                 ping: connection ? connection.roundTripPing + "ms" : undefined,
@@ -143,7 +136,7 @@ Object.defineProperty(Player.prototype, Symbol.for("nodejs.util.inspect.custom")
         );
 
 
-        return getPlayerChalkColor(this.room.worker.config.logging, this)(this.username || "<No Name>")
+        return getPlayerChalkColor(this.room.server.config.logging, this)(this.username || "<No Name>")
             + (paren ? " " + chalk.grey("(" + paren + ")") : "");
     }
 });
@@ -168,6 +161,105 @@ export const logMaps = {
     [GameMap.Airship]: "airship",
     [GameMap.Fungle]: "fungle",
 };
+
+export enum MessageSide {
+    Left,
+    Right
+}
+
+/**
+ * Options regarding sending a chat message into the room as the server, see
+ * {@link Room.sendChat}
+ */
+export type SendChatOptions = {
+    /**
+     * The side of the chat box for the message to appear on for each player. Can only
+     * send on the left side if there are at least 2 players in the room.
+     * @example
+     * ```ts
+     * room.sendChat("Slide to the left", {
+     *   side: MessageSide.Left
+     * });
+     *
+     * room.sendChat("Slide to the right", {
+     *   side: MessageSide.Right
+     * });
+     * ```
+     */
+    side: MessageSide;
+    /**
+     * The player to send the message to, if omitted, sends to all players.
+     * @example
+     * ```ts
+     * // Alert the host of a hacker
+     * .@EventListener("anticheat.potential")
+     * onPotentialCheater(ev: AnticheatPotentialEvent) {
+     *   if (!ev.player.info)
+     *     return;
+     *
+     *   ev.room.sendChat("<color=red>Potential cheater detected: " + ev.player.info.name + "</color>", {
+     *     targets: [ ev.room.host ]
+     *   });
+     * }
+     * ```
+     */
+    targets: Player<Room>[] | undefined;
+    /**
+     * The name of the player to appear as.
+     * @example
+     * ```ts
+     * ev.room.sendChat("i am the impostor", {
+     *   name: "<color=red>The Impostor</color>",
+     *   color: Color.Red
+     * });
+     * ```
+     */
+    name: string;
+    /**
+     * The color of the player to appear as.
+     * @example
+     * ```ts
+     * ev.room.sendChat("i am the impostor", {
+     *   name: "<color=red>The Impostor</color>",
+     *   color: Color.Red
+     * });
+     * ```
+     */
+    color: Color;
+    /**
+     * The skin that the player should be wearing in the chat message.
+     * @example
+     * ```ts
+     * ev.room.sendChat("looking for salvation in a secular age", {
+     *   name: "the 1975",
+     *   skinId: Skin.Prisoner
+     * })
+     * ```
+     */
+    skinId: string;
+    /**
+     * The hat that the player should be wearing in the chat message.
+     * @example
+     * ```ts
+     * ev.room.sendChat("I'm a cowboy baby", {
+     *   name: "Cowboy",
+     *   hatId: Hat.TenGallonHat
+     * })
+     * ```
+     */
+    hatId: string;
+    /**
+     * The visor that the player should be wearing in the chat message.
+     * @example
+     * ```ts
+     * ev.room.sendChat("wondering how I got this far", {
+     *   name: "scruffpuppie",
+     *   visorId: Hat.PolusIce
+     * })
+     * ```
+     */
+    visorId: string;
+}
 
 export enum RoomCodeVersion {
     V1,
@@ -326,10 +418,10 @@ export class Room extends StatefulRoom<RoomEvents> {
         /**
          * The worker that instantiated this object.
          */
-        public readonly worker: Worker,
+        public readonly server: WaterwayServer,
         public code: RoomCode,
         /**
-         * The config for the room, the worker uses the worker's {@link HindenburgConfig.rooms} config to initialise it as.
+         * The config for the room, the worker uses the worker's {@link WaterwayConfig.rooms} config to initialise it as.
          */
         public readonly config: RoomsConfig,
         /**
@@ -366,7 +458,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         this.authorityId = this.config.authoritativeServer ? SpecialClientId.ServerAuthority : 0;
         this.actingHosts = new Set;
 
-        this.logger = new Logger(() => util.inspect(this.code, true, null, true), this.worker.vorpal);
+        this.logger = new Logger(() => util.inspect(this.code, true, null, true), this.server.vorpal);
 
         this.on("player.setname", async ev => {
             if (ev.oldName) {
@@ -446,7 +538,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     ): Promise<Event>;
     async emit<Event extends BasicEvent>(event: Event): Promise<Event>;
     async emit<Event extends BasicEvent>(event: Event): Promise<Event> {
-        const ev = await this.worker.emit(event);
+        const ev = await this.server.emit(event);
 
         if ((ev as any).canceled || (ev as any).reverted) {
             return ev;
@@ -460,7 +552,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     ): Promise<Event>;
     async emitSerial<Event extends BasicEvent>(event: Event): Promise<Event>;
     async emitSerial<Event extends BasicEvent>(event: Event): Promise<Event> {
-        const ev = await this.worker.emitSerial(event);
+        const ev = await this.server.emitSerial(event);
 
         if ((ev as any).canceled || (ev as any).reverted) {
             return ev;
@@ -472,7 +564,7 @@ export class Room extends StatefulRoom<RoomEvents> {
     emitSync<Event extends RoomEvents[keyof RoomEvents]>(event: Event): Event;
     emitSync<Event extends BasicEvent>(event: Event): Event;
     emitSync<Event extends BasicEvent>(event: Event): Event {
-        const ev = this.worker.emitSync(event);
+        const ev = this.server.emitSync(event);
 
         if ((ev as any).canceled || (ev as any).reverted) {
             return ev;
@@ -483,7 +575,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtConfigurableLog(
-            this.worker.config.logging.rooms?.format || ["players", "map", "host", "privacy"],
+            this.server.config.logging.rooms?.format || ["players", "map", "host", "privacy"],
             {
                 players: this.players.size + "/" + this.settings.maxPlayers + " players",
                 map: logMaps[this.settings.map],
@@ -541,7 +633,7 @@ export class Room extends StatefulRoom<RoomEvents> {
         ]);
 
         this.gameState = GameState.Destroyed;
-        this.worker.rooms.delete(this.code.id);
+        this.server.rooms.delete(this.code.id);
 
         this.emit(new RoomDestroyEvent(this));
 
@@ -800,7 +892,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                     if (!parsedRpc) {
                         this.logger.error("Unknown remote procedure call from player %s (net id %s, %s): message tag %s",
                             senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", RpcMessageTag[message.child.messageTag] || message.child.messageTag);
-                        return this.worker.config.socket.acceptUnknownGameData;
+                        return this.server.config.socket.acceptUnknownGameData;
                     }
                     await component.handleRemoteCall(parsedRpc);
                 } else {
@@ -980,7 +1072,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
         this.logger.error("Unknown game data message to handle, with tag %s",
             GameDataMessageTag[message.messageTag] || message.messageTag);
-        return this.worker.config.socket.acceptUnknownGameData;
+        return this.server.config.socket.acceptUnknownGameData;
     }
 
     protected async handleGameDataMessageUnknown(message: BaseGameDataMessage, senderPlayer: Player<Room>) {
@@ -1152,7 +1244,7 @@ export class Room extends StatefulRoom<RoomEvents> {
             ]
         );
 
-        if (this.worker.config.optimizations.movement.updateRate > 1) {
+        if (this.server.config.optimizations.movement.updateRate > 1) {
             const velx = data.readUInt16LE(6);
             const vely = data.readUInt16LE(8);
             const velocity = new Vector2(Vector2.lerp(velx / 65535), Vector2.lerp(vely / 65535));
@@ -1163,13 +1255,13 @@ export class Room extends StatefulRoom<RoomEvents> {
                 movementTick++;
                 (sender as any)[_movementTick] = movementTick;
 
-                if (movementTick % this.worker.config.optimizations.movement.updateRate !== 0) {
+                if (movementTick % this.server.config.optimizations.movement.updateRate !== 0) {
                     return;
                 }
             }
         }
 
-        const writer = this.worker.config.optimizations.movement.reuseBuffer
+        const writer = this.server.config.optimizations.movement.reuseBuffer
             ? HazelWriter.alloc(22)
                 .uint8(0)
                 .write(movementPacket)
@@ -1185,7 +1277,7 @@ export class Room extends StatefulRoom<RoomEvents> {
 
             const playerTransform = player.characterControl?.getComponentSafe(2, CustomNetworkTransform);
 
-            if (playerTransform && this.worker.config.optimizations.movement.visionChecks) {
+            if (playerTransform && this.server.config.optimizations.movement.visionChecks) {
                 const dist = component.position.dist(playerTransform.position);
 
                 if (dist >= 7) // todo: ignore this check if the player is near the admin table
@@ -1195,12 +1287,12 @@ export class Room extends StatefulRoom<RoomEvents> {
             const playerInfo = player.getPlayerInfo();
             const senderPlayerInfo = sender.getPlayerInfo();
 
-            if (this.worker.config.optimizations.movement.deadChecks && senderPlayerInfo?.isDead && !playerInfo?.isDead)
+            if (this.server.config.optimizations.movement.deadChecks && senderPlayerInfo?.isDead && !playerInfo?.isDead)
                 continue;
 
             if (writer) {
                 promises.push(
-                    this.worker.sendRawPacket(
+                    this.server.sendRawPacket(
                         connection.listenSocket,
                         connection.remoteInfo,
                         writer.buffer
@@ -1208,7 +1300,7 @@ export class Room extends StatefulRoom<RoomEvents> {
                 );
             } else {
                 promises.push(
-                    this.worker.sendPacket(
+                    this.server.sendPacket(
                         connection,
                         movementPacket
                     )

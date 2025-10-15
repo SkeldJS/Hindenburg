@@ -42,8 +42,8 @@
                         ]
                     },
                     {
-                        "title": "Using Hindenburg",
-                        "childrenDir": "using-hindenburg",
+                        "title": "Using Waterway",
+                        "childrenDir": "using-waterway",
                         "children": [
                             {
                                 "title": "Installing Plugins",
@@ -104,8 +104,8 @@
                         "source": "publishing-plugins.md"
                     },
                     {
-                        "title": "Compatible Hindenburg API Versions",
-                        "source": "compatible-hindenburg-api-versions.md"
+                        "title": "Compatible Waterway API Versions",
+                        "source": "compatible-waterway-api-versions.md"
                     },
                     {
                         "title": "Worker and Room Plugins",

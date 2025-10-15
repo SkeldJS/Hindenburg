@@ -1,8 +1,8 @@
 A great and easy way to allow players to communicate with your plugin is through the use of [Chat Commands](../Information/Chat%20Commands.html).
 
-Hindenburg provides a simple, quick way to register your own custom chat commands in your plugins.
+Waterway provides a simple, quick way to register your own custom chat commands in your plugins.
 
-Similar to most things in Hindenburg, there's a special {@link ChatCommand | `@ChatCommand`} decorator you can use, for example:
+Similar to most things in Waterway, there's a special {@link ChatCommand | `@ChatCommand`} decorator you can use, for example:
 ```ts
 @ChatCommand("add <first> <second>", "Add two numbers together")
 onAddCommand(ctx: ChatCommandContext, args: any) {
@@ -90,4 +90,4 @@ _The player on the left screen is the host of the room_
 Any player that attempts to use a command that isn't available to them, will be met with a notice that the command doesn't exist.
 
 ## Notes
-Note that Hindenburg chat commands do not support typical CLI features such as flags (`-p`) or switches (`/p`) or options (`--port`). This is entirely to keep chat commands as simple as possible for players.
+Note that Waterway chat commands do not support typical CLI features such as flags (`-p`) or switches (`/p`) or options (`--port`). This is entirely to keep chat commands as simple as possible for players.

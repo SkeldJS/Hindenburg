@@ -50,10 +50,10 @@ The `messageTag` property should be any unused integer, as long as it's the same
 > Note that other mods may have their own message tags, so make sure that other mods that you use don't conflict with your message tags.
 
 ## Registering custom messages
-Use the {@link RegisterMessage} decorator to register your custom message to be recognised by Hindenburg:
+Use the {@link RegisterMessage} decorator to register your custom message to be recognised by Waterway:
 ```ts
 @RegisterMessage(SayHelloMessage)
-@HindenburgPlugin("hbplugin-mouse-messager-plugin")
+@WaterwayPlugin("waterway-plugin-mouse-messager-plugin")
 export class MouseMessagerPlugin extends WorkerPlugin {
 
 }
@@ -64,7 +64,7 @@ export class MouseMessagerPlugin extends WorkerPlugin {
 > Check out {@page ./receiving-protocol-messages.md} to learn how to handle your custom messages sent by clients.
 
 ## Sending custom messages
-Sending custom messages in Hindenburg is just as simple as instantiating the class, for example:
+Sending custom messages in Waterway is just as simple as instantiating the class, for example:
 ```ts
 connection.sendPacket(
     new ReliablePacket(

@@ -2,14 +2,14 @@ To a degree, it is possible to create entire roles using entirely server code, m
 
 This guide will outline and explain the (general) steps you should take to create your own role.
 
-> Note that this guide _requires_ {@page ../../getting-started/using-hindenburg/server-as-a-host.md} to be enabled.
+> Note that this guide _requires_ {@page ../../getting-started/using-waterway/server-as-a-host.md} to be enabled.
 
 Specifically, we'll be creating the reasonably basic Jester role, and we'll be going through how you can analyse the game's code for yourself to bypass restrictions.
 
 > Only very basic knowledge of programming is required for this guide, although the concepts do get somewhat complicated.
 
 ## Create the plugin
-Obviously, you'll need to actually create the plugin. See {@page ../creating-a-plugin.md} to get started, or you can just run `yarn plugins create my-jester-mod` in your Hindenburg directory for a quick-start.
+Obviously, you'll need to actually create the plugin. See {@page ../creating-a-plugin.md} to get started, or you can just run `yarn plugins create my-jester-mod` in your Waterway directory for a quick-start.
 
 > In this guide we'll be using [TypeScript](https://typescriptlang.org), so make sure you enable that while creating your plugin.
 
@@ -24,7 +24,7 @@ import {
     BaseRole,
     RoleTeamType,
     RoleType
-} from "@skeldjs/hindenburg";
+} from "@skeldjs/waterway";
 
 export class JesterRole extends BaseRole {
     static roleMetadata = {
@@ -60,7 +60,7 @@ onAssignRoles(ev: RoomAssignRolesEvent<Room>) {
 
 > See the page on {@page ../api/event-listeners.md} for more information.
 
-> Note the `<Room>` generic is required to notify SkeldJS' type system that this event should come from one of Hindenburg's rooms.
+> Note the `<Room>` generic is required to notify SkeldJS' type system that this event should come from one of Waterway's rooms.
 
 ### Assign logic
 We don't need to worry about the complexities of assigning roles in Among Us. Instead, we can just write code to first gather all of the crewmates who don't have a role, and pick a random one out of those. There are a few ways to do this, but this is how I did it:
@@ -80,7 +80,7 @@ const crewmate = crewmatePool[randomCrewmateIdx];
 Here, it's probably a good idea to store the jester somewhere to reference in other parts of the code, so try creating a property on the plugin class that should store the jester, like so:
 
 ```ts
-@HindenburgPlugin("hbplugin-bg-gamemodes-jester")
+@WaterwayPlugin("waterway-plugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
     jester?: Player<Room>;
 
@@ -102,7 +102,7 @@ Oh, and since we'll be changing the Jester's name later in the [cosmetics](#sett
 
 Another property on the plugin class is needed:
 ```ts
-@HindenburgPlugin("hbplugin-bg-gamemodes-jester")
+@WaterwayPlugin("waterway-plugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
     jester?: Player<Room>;
     originalJesterName: string = "";
@@ -125,7 +125,7 @@ ev.setAssignment(this.jester, JesterRole as typeof BaseRole);
 
 So, our plugin should look _something_ like this:
 ```ts
-@HindenburgPlugin("hbplugin-bg-gamemodes-jester")
+@WaterwayPlugin("waterway-plugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
     jester?: Player<Room>;
     originalJesterName: string = "";
@@ -161,11 +161,11 @@ export class BgGamemodesJesterPlugin extends RoomPlugin {
 A crucial part of having a custom role is for the player to be able to identify that they have been assigned that role, and since we don't have access to the client to create a mod, we'll have to manually set cosmetics that give the appearance of a jester to make it obvious. More notably, we can set the name _with colours_ to create a "tag" or "role" system in the players' names, for instance `[Jester] weakeyes`.
 
 ### Creating the perspective
-We can use Hindenburg's {@page ../advanced/player-perspectives.md} to create an environment where only the Jester can see their cosmetics, and everyone else sees them as normal. This gives the same effect as how only the Impostor can see their names as red, whereas everyone else sees it as white.
+We can use Waterway's {@page ../advanced/player-perspectives.md} to create an environment where only the Jester can see their cosmetics, and everyone else sees them as normal. This gives the same effect as how only the Impostor can see their names as red, whereas everyone else sees it as white.
 
 First, we'll need to create a `jesterPerspective` property on the class so we can store the perspective and destroy it later, when the jester gets voted out and the game ends:
 ```ts
-@HindenburgPlugin("hbplugin-bg-gamemodes-jester")
+@WaterwayPlugin("waterway-plugin-bg-gamemodes-jester")
 export class BgGamemodesJesterPlugin extends RoomPlugin {
     jester?: Player<Room>;
     jesterPerspective?: Perspective;
@@ -310,7 +310,7 @@ This doesn't have to make perfect sense right now, as it only requires an extra 
 ### Creating the event target
 Either way, we should create an _event target_ to host the events that we need to listen for. This can act as our sort-of "jester behaviour" class, which handles all of the logic for the jester. This warrants a new file in my opinion. This file can initially be simply:
 ```ts
-import { EventTarget } from "@skeldjs/hindenburg";
+import { EventTarget } from "@skeldjs/waterway";
 import { BgGamemodesJesterPlugin } from "./plugin";
 
 export class JesterRoleBehaviour extends EventTarget {

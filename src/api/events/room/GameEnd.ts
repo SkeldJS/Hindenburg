@@ -1,6 +1,6 @@
 import { EndGameIntent, GameOverReason } from "@skeldjs/core";
 import { BasicEvent, CancelableEvent } from "@skeldjs/events";
-import { Room } from "../../../worker";
+import { Room } from "../../../Room";
 
 export class RoomGameEndEvent extends BasicEvent implements CancelableEvent {
     canceled: boolean;

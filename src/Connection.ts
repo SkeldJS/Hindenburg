@@ -15,10 +15,10 @@ import {
     RemoveGameMessage
 } from "@skeldjs/protocol";
 
-import { ClientDisconnectEvent, ClientLeaveEvent } from "../api";
-import { fmtConfigurableLog } from "../util/fmtLogFormat";
+import { ClientDisconnectEvent, ClientLeaveEvent } from "./api";
+import { fmtConfigurableLog } from "./util/fmtLogFormat";
 
-import { Worker } from "./Worker";
+import { WaterwayServer } from "./WaterwayServer";
 import { Room } from "./Room";
 
 export class SentPacket {
@@ -172,7 +172,7 @@ export class Connection {
         /**
          * The server that this client is connected to.
          */
-        public readonly worker: Worker,
+        public readonly server: WaterwayServer,
         /**
          * The socket that this client connected to.
          */
@@ -182,7 +182,7 @@ export class Connection {
          */
         public readonly remoteInfo: dgram.RemoteInfo,
         /**
-         * The server-unique client ID for this client, see {@link Worker.getNextClientId}.
+         * The server-unique client ID for this client, see {@link WaterwayServer.getNextClientId}.
          */
         public readonly clientId: number
     ) {
@@ -207,10 +207,10 @@ export class Connection {
 
     [Symbol.for("nodejs.util.inspect.custom")]() {
         const paren = fmtConfigurableLog(
-            this.worker.config.logging.connections?.format || ["id", "ip", "ping", "room"],
+            this.server.config.logging.connections?.format || ["id", "ip", "ping", "room"],
             {
                 id: this.clientId,
-                ip: this.worker.config.logging.hideSensitiveInfo
+                ip: this.server.config.logging.hideSensitiveInfo
                     ? undefined
                     : this.remoteInfo.address,
                 ping: this.roundTripPing + "ms",
@@ -284,12 +284,12 @@ export class Connection {
      * ```
      */
     async sendPacket(packet: BaseRootPacket) {
-        await this.worker.sendPacket(this, packet);
+        await this.server.sendPacket(this, packet);
     }
 
     getLocale(i18n: Record<typeof locales[keyof typeof locales], string>) {
-        const myLocale = locales[this.language] || this.worker.config.defaultLanguage;
-        const myI18n = i18n[myLocale] || i18n[this.worker.config.defaultLanguage];
+        const myLocale = locales[this.language] || this.server.config.defaultLanguage;
+        const myI18n = i18n[myLocale] || i18n[this.server.config.defaultLanguage];
         if (!myI18n)
             return undefined;
 
@@ -307,7 +307,7 @@ export class Connection {
     /**
      * Gracefully disconnect the client for this connection.
      *
-     * Note that this does not remove this connection from the server, see {@link Worker.removeConnection}.
+     * Note that this does not remove this connection from the server, see {@link WaterwayServer.removeConnection}.
      * @param reason The reason for why the client is being disconnected. Set to
      * a string to use a custom message.
      * @param message If the reason is custom, the message for why the client
@@ -345,7 +345,7 @@ export class Connection {
             )
         );
 
-        this.worker.logger.info("%s disconnected: %s (%s)",
+        this.server.logger.info("%s disconnected: %s (%s)",
             this, reason ? DisconnectReason[reason] : "None", (messageJoined || DisconnectMessages[reason as keyof typeof DisconnectMessages] || "No message."));
 
         this.sentDisconnect = true;
@@ -356,7 +356,7 @@ export class Connection {
         this.platform = new PlatformSpecificData(Platform.Unknown, "Unknown");
         this.playerLevel = 0;
 
-        this.worker.removeConnection(this);
+        this.server.removeConnection(this);
 
         if (this.room) {
             await this.room.emit(
@@ -368,7 +368,7 @@ export class Connection {
             await this.room.handleRemoteLeave(this, reason || DisconnectReason.ExitGame);
         }
 
-        await this.worker.emit(
+        await this.server.emit(
             new ClientDisconnectEvent(
                 this,
                 reason!,

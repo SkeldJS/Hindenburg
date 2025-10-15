@@ -5,7 +5,7 @@ import fs from "fs/promises";
 import { iteratePlugins } from "./util/iteratePlugins";
 import { importPlugin } from "./importPlugin";
 
-const configFile: string = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
+const configFile: string = process.env.WATERWAY_CONFIG || path.join(process.cwd(), "./config.json");
 const configFileDirectory = path.dirname(configFile);
 
 async function findConfigSchemaFilename() {

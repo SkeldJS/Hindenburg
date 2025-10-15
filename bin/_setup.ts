@@ -22,8 +22,8 @@ const defaultPackageJson = {
     dependencies: {}
 };
 
-const pluginsDirectories: string[] = process.env.HINDENBURG_PLUGINS?.split(",").map(x => x.trim()) || [path.resolve(process.cwd(), "./plugins")];
-const configFile = process.env.HINDENBURG_CONFIG || path.join(process.cwd(), "./config.json");
+const pluginsDirectories: string[] = process.env.WATERWAY_PLUGINS?.split(",").map(x => x.trim()) || [path.resolve(process.cwd(), "./plugins")];
+const configFile = process.env.WATERWAY_CONFIG || path.join(process.cwd(), "./config.json");
 
 export default (async (useDefault: boolean) => {
     const logger = new Logger;

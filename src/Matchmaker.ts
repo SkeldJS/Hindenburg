@@ -8,8 +8,9 @@ import KoaRouter from "@koa/router";
 import { HazelWriter, VersionInfo } from "@skeldjs/util";
 import { DisconnectReason, Filters, GameKeyword, GameMap, GameMode, Platform, QuickChatMode, StringNames } from "@skeldjs/constant";
 
-import { Room, RoomCode, Worker } from "../worker";
-import { Logger } from "../logger";
+import { WaterwayServer } from "./WaterwayServer";
+import { Room, RoomCode } from "./Room";
+import { Logger } from "./Logger";
 
 export type GameListingJson = {
     IP: number;
@@ -215,17 +216,17 @@ export class Matchmaker {
     httpServer?: http.Server;
     privateKey: Buffer;
 
-    constructor(protected readonly worker: Worker) {
-        this.logger = new Logger("Matchmaker", this.worker.vorpal);
+    constructor(protected readonly server: WaterwayServer) {
+        this.logger = new Logger(chalk.redBright("Http"), this.server.vorpal);
         this.privateKey = crypto.randomBytes(128);
     }
 
     get port() {
-        return typeof this.worker.config.matchmaker === "boolean" ? 80 : this.worker.config.matchmaker.port;
+        return typeof this.server.config.matchmaker === "boolean" ? 80 : this.server.config.matchmaker.port;
     }
 
     getRandomWorkerPort() {
-        const allPorts = [this.worker.config.socket.port, ...this.worker.config.socket.additionalPorts];
+        const allPorts = [this.server.config.socket.port, ...this.server.config.socket.additionalPorts];
         return allPorts[~~(Math.random() * allPorts.length)];
     }
 
@@ -299,7 +300,7 @@ export class Matchmaker {
 
         const verifyToken = this.verifyMatchmakerToken(token);
         if (verifyToken instanceof Error) {
-            if (this.worker.config.logging.hideSensitiveInfo) {
+            if (this.server.config.logging.hideSensitiveInfo) {
                 this.logger.warn("Invalid request to %s: %s",
                     ctx.originalUrl, verifyToken.message);
             } else {
@@ -322,7 +323,7 @@ export class Matchmaker {
     getGameListing(fromAddress: string, room: Room): GameListingJson {
         const listingIp = fromAddress === "127.0.0.1" || fromAddress === "::ffff:127.0.0.1"
             ? "127.0.0.1"
-            : this.worker.config.socket.ip;
+            : this.server.config.socket.ip;
 
         const settingsWriter = HazelWriter.alloc(256);
         settingsWriter.write(room.settings, false, 10);
@@ -352,7 +353,7 @@ export class Matchmaker {
         koaServer.use(koaBody());
 
         const router = new KoaRouter;
-        for (const [, loadedPlugin] of this.worker.loadedPlugins) {
+        for (const [, loadedPlugin] of this.server.loadedPlugins) {
             for (let i = 0; i < loadedPlugin.loadedMatchmakerEndpoints.length; i++) {
                 const { method, route, body } = loadedPlugin.loadedMatchmakerEndpoints[i];
 
@@ -386,7 +387,7 @@ export class Matchmaker {
                 return;
             }
 
-            if (!this.worker.isVersionAccepted(ctx.request.body.ClientVersion)) {
+            if (!this.server.isVersionAccepted(ctx.request.body.ClientVersion)) {
                 this.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
                     chalk.blue(ctx.request.body.Username), VersionInfo.from(ctx.request.body.ClientVersion).toString(), chalk.grey("(" + ctx.request.body.ClientVersion + ")"));
                 ctx.status = 400;
@@ -400,7 +401,7 @@ export class Matchmaker {
             }
 
             // todo: record matchmaking tokens used
-            if (this.worker.config.logging.hideSensitiveInfo) {
+            if (this.server.config.logging.hideSensitiveInfo) {
                 this.logger.info("Client %s got a matchmaker token", chalk.blue(ctx.request.body.Username));
             } else {
                 this.logger.info("Client %s (%s) got a matchmaker token", chalk.blue(ctx.request.body.Username), chalk.grey(ctx.request.body.Puid));
@@ -423,7 +424,7 @@ export class Matchmaker {
                 return;
             }
 
-            const listingIp = ctx.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
+            const listingIp = ctx.socket.remoteAddress !== "127.0.0.1" ? this.server.config.socket.ip : "127.0.0.1";
 
             ctx.status = 200;
             ctx.body = {
@@ -438,7 +439,7 @@ export class Matchmaker {
                 return;
             }
 
-            const listingIp = ctx.socket.remoteAddress !== "127.0.0.1" ? this.worker.config.socket.ip : "127.0.0.1";
+            const listingIp = ctx.socket.remoteAddress !== "127.0.0.1" ? this.server.config.socket.ip : "127.0.0.1";
 
             ctx.status = 200;
             ctx.body = {
@@ -574,16 +575,16 @@ export class Matchmaker {
                 }
             }
 
-            const ignoreSearchTerms = Array.isArray(this.worker.config.gameListing.ignoreSearchTerms)
-                ? new Set(this.worker.config.gameListing.ignoreSearchTerms)
-                : this.worker.config.gameListing.ignoreSearchTerms;
+            const ignoreSearchTerms = Array.isArray(this.server.config.gameListing.ignoreSearchTerms)
+                ? new Set(this.server.config.gameListing.ignoreSearchTerms)
+                : this.server.config.gameListing.ignoreSearchTerms;
 
             const gamesAndRelevance: [number, GameListingJson][] = [];
-            for (const [gameCode, room] of this.worker.rooms) {
+            for (const [gameCode, room] of this.server.rooms) {
                 // TODO: make this defined somewhere- magic number, scary!
                 if (gameCode === 0x20 /* local game */) continue;
 
-                if (!this.worker.config.gameListing.ignorePrivacy && room.privacy === "private")
+                if (!this.server.config.gameListing.ignorePrivacy && room.privacy === "private")
                     continue;
 
                 if (typeof ignoreSearchTerms === "boolean" && ignoreSearchTerms) {
@@ -638,7 +639,7 @@ export class Matchmaker {
                     break;
                 }
 
-                if (badMatchScore > 0 && this.worker.config.gameListing.requireExactMatches)
+                if (badMatchScore > 0 && this.server.config.gameListing.requireExactMatches)
                     continue;
 
                 gamesAndRelevance.push([
@@ -655,23 +656,23 @@ export class Matchmaker {
                 return a[0] - b[0];
             });
 
-            const topResults = this.worker.config.gameListing.maxResults === "all"
-                || this.worker.config.gameListing.maxResults === 0
+            const topResults = this.server.config.gameListing.maxResults === "all"
+                || this.server.config.gameListing.maxResults === 0
                 ? sortedResults
-                : sortedResults.slice(0, this.worker.config.gameListing.maxResults);
+                : sortedResults.slice(0, this.server.config.gameListing.maxResults);
 
             ctx.status = 200;
             ctx.body = {
                 games: topResults.map(([, gameListing]) => gameListing),
                 metadata: {
-                    allGamesCount: this.worker.rooms.size,
+                    allGamesCount: this.server.rooms.size,
                     matchingGamesCount: sortedResults.length,
                 }
             };
         });
 
         router.get("/api/filters", ctx => {
-            const removeExtraFilters = this.worker.config.gameListing.removeExtraFilters;
+            const removeExtraFilters = this.server.config.gameListing.removeExtraFilters;
             // Valid values for gameListing.removeExtraFilters:
             // - true = Remove all additional game filters
             // - false = Show all additional game filters
@@ -711,7 +712,7 @@ export class Matchmaker {
 
         router.get("/api/games/:game_id", ctx => {
             const gameCode = parseInt(ctx.params.game_id);
-            const foundRoom = this.worker.rooms.get(gameCode);
+            const foundRoom = this.server.rooms.get(gameCode);
             if (!foundRoom) {
                 this.logger.info("Client failed to find room, game not found: %s", new RoomCode(gameCode));
                 ctx.status = 404;
@@ -719,7 +720,7 @@ export class Matchmaker {
                     Errors: [{ Reason: DisconnectReason[DisconnectReason.GameNotFound] }],
                     Game: null,
                     Region: StringNames.NoTranslation,
-                    UntranslatedRegion: this.worker.config.clusterName,
+                    UntranslatedRegion: this.server.config.clusterName,
                 } as GameFoundByCodeJson;
                 return;
             }
@@ -731,7 +732,7 @@ export class Matchmaker {
                 Errors: null,
                 Game: this.getGameListing(ctx.socket.remoteAddress || "", foundRoom),
                 Region: StringNames.NoTranslation,
-                UntranslatedRegion: this.worker.config.clusterName,
+                UntranslatedRegion: this.server.config.clusterName,
             } as GameFoundByCodeJson;
         });
 

@@ -292,9 +292,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skeldjs/hindenburg@workspace:.":
+"@skeldjs/protocol@npm:2.15.44, @skeldjs/protocol@npm:^2.15.44":
+  version: 2.15.44
+  resolution: "@skeldjs/protocol@npm:2.15.44"
+  dependencies:
+    "@skeldjs/constant": 2.15.44
+    "@skeldjs/util": 2.15.44
+  checksum: 72b47f191b59c07b07d63588d993571ac83ee99773940e2b8cbf67923230c4b785c1c6e6cad941defd185deb30e29de5998291a07386de6fbe56c282eae39f39
+  languageName: node
+  linkType: hard
+
+"@skeldjs/state@npm:2.15.44, @skeldjs/state@npm:^2.15.44":
+  version: 2.15.44
+  resolution: "@skeldjs/state@npm:2.15.44"
+  dependencies:
+    "@skeldjs/core": 2.15.44
+    "@skeldjs/protocol": 2.15.44
+    "@skeldjs/util": 2.15.44
+  checksum: d92d3e010c3732cfb2b3ea54c73beacea4a0f1849b58ff629d9317859e4eb04e269262b7fa193ebb03664a2f857e89a236eebcccbee38c8d1521d481270b7368
+  languageName: node
+  linkType: hard
+
+"@skeldjs/text@npm:^2.15.44":
+  version: 2.15.44
+  resolution: "@skeldjs/text@npm:2.15.44"
+  checksum: 5104b948838474594e4af4dc9a08e825572c3b075af65c82733fb01b23dfed0591daddb1f734e22ce5611292c3449ed2a8d9078a57de99a655d947889c2568f4
+  languageName: node
+  linkType: hard
+
+"@skeldjs/util@npm:2.15.44, @skeldjs/util@npm:^2.15.44":
+  version: 2.15.44
+  resolution: "@skeldjs/util@npm:2.15.44"
+  checksum: c5a9c280d1c00eded8d1fa134278c11b75efbc1b1afdafb306ffae3d144842ba944c638b22adce859339460ffacedfa283872e505997e7b82d07ab4fb5ca4e59
+  languageName: node
+  linkType: hard
+
+"@skeldjs/waterway@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@skeldjs/hindenburg@workspace:."
+  resolution: "@skeldjs/waterway@workspace:."
   dependencies:
     "@knodes/typedoc-plugin-pages": ^0.23.1
     "@koa/router": ^12.0.0
@@ -339,44 +374,9 @@ __metadata:
     typescript: ^4.3.2
     vorpal: ^1.12.0
   bin:
-    hindenburg: ./dist/bin/pkg.js
+    waterway: ./dist/bin/pkg.js
   languageName: unknown
   linkType: soft
-
-"@skeldjs/protocol@npm:2.15.44, @skeldjs/protocol@npm:^2.15.44":
-  version: 2.15.44
-  resolution: "@skeldjs/protocol@npm:2.15.44"
-  dependencies:
-    "@skeldjs/constant": 2.15.44
-    "@skeldjs/util": 2.15.44
-  checksum: 72b47f191b59c07b07d63588d993571ac83ee99773940e2b8cbf67923230c4b785c1c6e6cad941defd185deb30e29de5998291a07386de6fbe56c282eae39f39
-  languageName: node
-  linkType: hard
-
-"@skeldjs/state@npm:2.15.44, @skeldjs/state@npm:^2.15.44":
-  version: 2.15.44
-  resolution: "@skeldjs/state@npm:2.15.44"
-  dependencies:
-    "@skeldjs/core": 2.15.44
-    "@skeldjs/protocol": 2.15.44
-    "@skeldjs/util": 2.15.44
-  checksum: d92d3e010c3732cfb2b3ea54c73beacea4a0f1849b58ff629d9317859e4eb04e269262b7fa193ebb03664a2f857e89a236eebcccbee38c8d1521d481270b7368
-  languageName: node
-  linkType: hard
-
-"@skeldjs/text@npm:^2.15.44":
-  version: 2.15.44
-  resolution: "@skeldjs/text@npm:2.15.44"
-  checksum: 5104b948838474594e4af4dc9a08e825572c3b075af65c82733fb01b23dfed0591daddb1f734e22ce5611292c3449ed2a8d9078a57de99a655d947889c2568f4
-  languageName: node
-  linkType: hard
-
-"@skeldjs/util@npm:2.15.44, @skeldjs/util@npm:^2.15.44":
-  version: 2.15.44
-  resolution: "@skeldjs/util@npm:2.15.44"
-  checksum: c5a9c280d1c00eded8d1fa134278c11b75efbc1b1afdafb306ffae3d144842ba944c638b22adce859339460ffacedfa283872e505997e7b82d07ab4fb5ca4e59
-  languageName: node
-  linkType: hard
 
 "@tootallnate/once@npm:2":
   version: 2.0.0

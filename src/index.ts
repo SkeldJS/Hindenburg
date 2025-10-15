@@ -2,9 +2,9 @@ export * from "./api";
 export * from "./components";
 export * from "./handlers";
 export * from "./interfaces";
-export * from "./logger";
+export * from "./Logger";
 
-export * from "./worker";
+export * from "./WaterwayServer";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore typescript doesn't let you re-export

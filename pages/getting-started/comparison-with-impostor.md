@@ -1,4 +1,4 @@
-You can follow the propaganda table below to compare Hindenburg with Impostor
+You can follow the propaganda table below to compare Waterway with Impostor
 based on features, and to help you make your choice:
 
 #### Key
@@ -7,7 +7,7 @@ based on features, and to help you make your choice:
 * 🚧 = Semi-supported
 * ❌ = Not supported
 
-| Feature | Hindenburg | Impostor |
+| Feature | Waterway | Impostor |
 |--|--|--|
 | **Core Features** |  |  |
 | Full replacement for official servers | ✔️ | ✔️ |
@@ -15,14 +15,14 @@ based on features, and to help you make your choice:
 | [Anti-cheat](./HACS) | ✔️ | ✔️ |
 | Server logging | ✔️ | ✔️ |
 | [Plugins](./Installing%20Plugins) | ✔️ | ✔️ |
-| [Reactor support](../Using%20Hindenburg/Reactor%20Support) | 🧩 | 🧩 |
+| [Reactor support](../Using%20Waterway/Reactor%20Support) | 🧩 | 🧩 |
 ||||
 | **Extra Features** |  |  |
-| [Server-as-a-Host](../Using%20Hindenburg/Server-as-a-Host) | ✔️ | ❌ |
+| [Server-as-a-Host](../Using%20Waterway/Server-as-a-Host) | ✔️ | ❌ |
 | Multiple hosts | ✔️ | ❌ |
 | Multiple plugin directories | ✔️ | ✔️ |
-| [Chat commands](../Using%20Hindenburg/Chat%20Commands) | ✔️ | 🧩 |
-| [Interactive CLI](./Using%20Hindenburg/Interactive%20CLI) | ✔️ | 🚧 |
+| [Chat commands](../Using%20Waterway/Chat%20Commands) | ✔️ | 🧩 |
+| [Interactive CLI](./Using%20Waterway/Interactive%20CLI) | ✔️ | 🚧 |
 | Checking for Updates | ✔️ | ❌ |
 | Server broadcast | ✔️ | 🧩 |
 ||||

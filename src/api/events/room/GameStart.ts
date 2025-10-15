@@ -1,6 +1,7 @@
 import { BasicEvent, CancelableEvent } from "@skeldjs/events";
-import { Room } from "../../../worker";
 import { Player } from "@skeldjs/core";
+
+import { Room } from "../../../Room";
 
 export class RoomGameStartEvent extends BasicEvent implements CancelableEvent {
     canceled: boolean;

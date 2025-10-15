@@ -1,11 +1,11 @@
-Hindenburg has support for _message ordering_. Message ordering refers to making sure that packets received by Hindenburg are processed in the correct order. This shouldn't be especially important for most people, as the official servers also don't process messages in a particular order.
+Waterway has support for _message ordering_. Message ordering refers to making sure that packets received by Waterway are processed in the correct order. This shouldn't be especially important for most people, as the official servers also don't process messages in a particular order.
 
 Mod developers, however, may find it useful to enable as it removes the need for using _sequence IDs_ for particular packets.
 
 It also just adds another layer of reliability on top of UDP, which is fundamentally an unreliable communication protocol.
 
-## Configuring Hindenburg for Message Ordering
-Configuring Hindenburg to process reliable packets in the order that they are sent is easy:
+## Configuring Waterway for Message Ordering
+Configuring Waterway to process reliable packets in the order that they are sent is easy:
 ```json
 "socket": {
     "messageOrdering": true

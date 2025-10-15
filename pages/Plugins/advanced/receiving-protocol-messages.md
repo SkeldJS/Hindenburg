@@ -9,7 +9,7 @@ The {@link MessageHandler | `MessageHandler`} decorator can be used with a metho
 
 For example:
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class FunThingsPlugin extends WorkerPlugin {
     @MessageHandler(EndGameMessage)
     async onEndGameMessage(message: EndGameMessage, ctx: PacketContext) {
@@ -20,7 +20,7 @@ export class FunThingsPlugin extends WorkerPlugin {
 
 You can pass in [any valid protocol message class](https://skeld.js.org/modules/protocol.html) as the first argument.
 
-> If you're using custom protocol messages, you may have to register them with Hindenburg; check out the {@page ./custom-protocol-messages.md} page.
+> If you're using custom protocol messages, you may have to register them with Waterway; check out the {@page ./custom-protocol-messages.md} page.
 
 The body of your method can be marked as [_async_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function), and takes in 2 parameters:
 #### `message`
@@ -37,7 +37,7 @@ By default, the `@MessageHandler` decorator will attach a listener on top of any
 If, however, you wanted to override the default behaviour of the message, you can pass in options to `@MessageHandler`:
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class FunThingsPlugin extends WorkerPlugin {
     @MessageHandler(EndGameMessage, { override: true })
     async onEndGameMessage(message: EndGameMessage, { sender }: PacketContext, originalListeners: MessageHandlerCallback<EndGameMessage>[]) {
@@ -62,7 +62,7 @@ Rather annoyingly, due to a [long standing issue with TypeScript](https://github
 One reason you may want to have access to the original listeners of the message may be so you can modify the message, similar to a hook. This can be done fairly simply by looping through the array and calling each listener manually:
 
 ```ts
-@HindenburgPlugin("hbplugin-fun-things")
+@WaterwayPlugin("waterway-plugin-fun-things")
 export class FunThingsPlugin extends WorkerPlugin {
     @MessageHandler(EndGameMessage, { override: true })
     async onEndGameMessage(message: EndGameMessage, ctx: PacketContext, originalListeners: MessageHandlerCallback<EndGameMessage>[]) {

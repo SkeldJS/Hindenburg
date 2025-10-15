@@ -1,6 +1,6 @@
 {
   "name": "scripts",
-  "packageManager": "yarn@3.1.1",
+  "packageManager": "yarn@4.10.3",
   "devDependencies": {
     "@types/tar": "^6",
     "fs-extra": "^10.1.0",

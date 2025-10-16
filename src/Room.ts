@@ -148,6 +148,12 @@ Object.defineProperty(Player.prototype, "isHost", {
     }
 });
 
+Object.defineProperty(RoomCode.prototype, Symbol.for("nodejs.util.inspect.custom"), {
+    value(this: RoomCode) {
+        return chalk.yellow(this.toString());
+    }
+});
+
 export enum SpecialClientId {
     Nil = 2 ** 31 - 1,
     ServerAuthority = 2 ** 31 - 2,

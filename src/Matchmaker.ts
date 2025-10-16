@@ -389,7 +389,7 @@ export class Matchmaker {
                 return;
             }
 
-            if (!this.server.isVersionAccepted(body.ClientVersion)) {
+            if (!this.server.isVersionAccepted(Version.fromEncoded(body.ClientVersion))) {
                 this.logger.warn("Client %s failed to get a matchmaker token: Outdated or invalid client version: %s %s",
                     chalk.blue(body.Username), Version.fromEncoded(body.ClientVersion).toString(), chalk.grey("(" + body.ClientVersion + ")"));
                 ctx.status = 400;

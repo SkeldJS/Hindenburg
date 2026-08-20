@@ -87,6 +87,8 @@ import { LoadedPlugin, PluginLoader, WorkerPlugin } from "./handlers";
 import i18n from "./i18n";
 import { Matchmaker } from "./Matchmaker";
 import { Logger } from "./Logger";
+import { PortPoolService } from "./PortPoolService";
+import { GameOptionsValidator } from "./game/GameOptions";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
 function formatBytes(bytes: number) {
@@ -147,9 +149,15 @@ export type SocketConfig = {
      * @default false
      */
     useDtlsLayout: boolean;
+    /**
+     * Range of dynamic per-player UDP ports, `[start, end]` (like Impostor's
+     * delta ports). Disabled when null/undefined.
+     * @default [22224, 22524]
+     */
+    deltaPortRange?: [number, number] | null;
 }
 
-export type ConnectionsFormatOptions = "id" | "ip" | "ping" | "room" | "level" | "version" | "platform" | "language";
+export type ConnectionsFormatOptions = "id" | "ip" | "ping" | "room" | "level" | "version" | "platform" | "language" | "puid" | "friendcode";
 export type RoomFormatOptions = "players" | "map" | "host" | "privacy";
 export type PlayerFormatOptions = "id" | "ping" | "level" | "ishost" | "platform" | "language";
 
@@ -249,6 +257,21 @@ export type LoggingConfig = {
 
 export type ValidSearchTerm = "map" | "chat" | "chatType";
 
+export type FilterTagConfig = {
+    /**
+     * The internal name/key for this filter tag.
+     */
+    name: string;
+    /**
+     * The display name shown to users.
+     */
+    displayName: string;
+    /**
+     * Optional icon identifier for the tag.
+     */
+    icon?: string;
+};
+
 export type GameListingConfig = {
     /**
      * Whether to ignore the privacy of a room, and return even private ones.
@@ -278,6 +301,12 @@ export type GameListingConfig = {
      * @default false
      */
     requireExactMatches: boolean;
+    /**
+     * Static filter tags to serve via the /api/filtertags endpoint.
+     * These appear as filter buttons in the client UI.
+     * @default []
+     */
+    filterTags: FilterTagConfig[];
 }
 
 export type ChatCommandConfig = {
@@ -373,8 +402,20 @@ export type RoomsConfig = StatefulRoomConfig & {
     gameCodes: "v1" | "v2";
     /**
      * Enforce certain settings, preventing the host from changing them.
+     * These settings are applied on room creation and cannot be overridden.
      */
     enforceSettings: Partial<AllGameSettings>;
+    /**
+     * Allowed game modes for rooms on this server. An empty array means all
+     * game modes are allowed.
+     * @default []
+     */
+    allowedGameModes: number[];
+    /**
+     * The default game mode for new rooms.
+     * @default 1 (Normal)
+     */
+    defaultGameMode: number;
     /**
      * Options regarding room plugins.
      */
@@ -563,6 +604,16 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
     connections: Map<string, Connection>;
 
     /**
+     * Dynamic per-player UDP sockets keyed by delta port, see {@link WaterwayServer.startDeltaListener}.
+     */
+    deltaListeners: Map<number, dgram.Socket>;
+
+    /**
+     * Port pool for dynamic per-player ports, see {@link PortPoolService}.
+     */
+    portPool: PortPoolService|undefined;
+
+    /**
      * All rooms created on this server, mapped by their game code as an integer.
      *
      * See {@link WaterwayServer.createRoom}
@@ -614,6 +665,21 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         this.loadedPlugins = new Map;
 
         this.listenSockets = new Map;
+        this.deltaListeners = new Map;
+
+        const deltaRange = this.config.socket.deltaPortRange;
+        if (deltaRange && deltaRange[0] > 0 && deltaRange[1] >= deltaRange[0]) {
+            // Short lease so delta ports allocated but never connected to (e.g. a
+            // client that connects via the shared socket instead) recycle quickly
+            // and don't exhaust the pool.
+            this.portPool = new PortPoolService(deltaRange[0], deltaRange[1], this.config.socket.port, 60 * 1000);
+            this.portPool.onLeaseExpired = port => {
+                this.returnDeltaPort(port);
+            };
+            this.logger.info("Dynamic delta ports enabled: %s-%s (clients connect to their assigned port)", deltaRange[0], deltaRange[1]);
+        } else {
+            this.logger.info("Dynamic delta ports disabled — using shared socket (%s) with username auth", this.config.socket.port);
+        }
 
         if (this.config.matchmaker)
             this.matchmaker = new Matchmaker(this);
@@ -1147,6 +1213,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
     protected _listenPort(port: number) {
         const socket = dgram.createSocket("udp4");
         socket.on("message", this.handleMessage.bind(this, socket));
+        socket.on("error", err => {
+            this.logger.error("Failed to bind udp port %s: %s (is another server instance already running?)", port, (err as Error).message);
+            process.exit(1);
+        });
 
         socket.bind(port);
 
@@ -1168,6 +1238,69 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         this.logger.warn("Stopped listening on *:" + port);
 
         return socket;
+    }
+
+    /**
+     * Start a dynamic per-player UDP listener on a delta port. Resolves once the
+     * socket is fully bound (so the matchmaker can safely return the port to the
+     * client without racing the bind).
+     * @param port The delta port to listen on.
+     */
+    startDeltaListener(port: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (this.deltaListeners.has(port)) {
+                resolve();
+                return;
+            }
+
+            const socket = dgram.createSocket("udp4");
+            socket.on("message", (buffer, rinfo) => {
+                this.handleMessage(socket, buffer, rinfo, port);
+            });
+            socket.on("error", err => {
+                this.deltaListeners.delete(port);
+                reject(err);
+            });
+            socket.on("listening", () => {
+                this.deltaListeners.set(port, socket);
+                this.logger.info("Delta listener listening on *:" + port);
+                resolve();
+            });
+            socket.bind(port);
+        });
+    }
+
+    /**
+     * Stop and fully dispose a delta listener. Resolves once the socket is closed.
+     * @param port The delta port to stop listening on.
+     */
+    stopDeltaListener(port: number): Promise<void> {
+        return new Promise(resolve => {
+            const socket = this.deltaListeners.get(port);
+            if (!socket) {
+                resolve();
+                return;
+            }
+
+            this.deltaListeners.delete(port);
+            socket.removeAllListeners("message");
+            socket.close(() => resolve());
+        });
+    }
+
+    /**
+     * Return a delta port to the pool. The port is only made available again
+     * after the old socket has been fully disposed, which prevents the re-bind
+     * race when a freshly returned port is re-allocated while the old socket is
+     * still being torn down.
+     * @param port The delta port to return.
+     */
+    async returnDeltaPort(port: number): Promise<void> {
+        if (!this.portPool) return;
+
+        this.portPool.returnPort(port);         // mark draining, remove lease
+        await this.stopDeltaListener(port);     // fully dispose the socket
+        this.portPool.confirmRecycled(port);    // back to available
     }
 
     /**
@@ -1202,14 +1335,16 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
      * Retrieve or create a connection based on its remote information received
      * from a [socket `message` event](https://nodejs.org/api/dgram.html#dgram_event_message).
      */
-    getOrCreateConnection(listenSocket: dgram.Socket, rinfo: dgram.RemoteInfo): Connection {
-        const fmt = rinfo.address + ":" + rinfo.port;
+    getOrCreateConnection(listenSocket: dgram.Socket, rinfo: dgram.RemoteInfo, deltaPort?: number): Connection {
+        const fmt = deltaPort ? "delta:" + deltaPort : rinfo.address + ":" + rinfo.port;
         const cached = this.connections.get(fmt);
         if (cached)
             return cached;
 
         const clientId = this.getNextClientId();
         const connection = new Connection(this, listenSocket, rinfo, clientId);
+        if (deltaPort)
+            connection.deltaPort = deltaPort;
         this.connections.set(fmt, connection);
         return connection;
     }
@@ -1222,8 +1357,15 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
      * @param connection The connection to remove.
      */
     removeConnection(connection: Connection) {
-        if (this.connections.delete(connection.remoteInfo.address + ":" + connection.remoteInfo.port)) {
+        const fmt = connection.deltaPort > 0
+            ? "delta:" + connection.deltaPort
+            : connection.remoteInfo.address + ":" + connection.remoteInfo.port;
+        if (this.connections.delete(fmt)) {
             this.logger.info("Remove %s", connection);
+            if (connection.deltaPort > 0) {
+                // Return the delta port to the pool (fire-and-forget cleanup).
+                this.returnDeltaPort(connection.deltaPort);
+            }
         }
     }
 
@@ -1458,6 +1600,36 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         sender.platform = helloPacket.platform;
         sender.playerLevel = 0;
 
+        // ── Auth matching: delta port (primary) → username (shared-socket fallback) ──
+        // Dynamic per-player ports uniquely identify the session. If the client
+        // connected to the shared socket instead, we fall back to matching by the
+        // session's username (never by IP).
+        if (this.matchmaker && this.matchmaker.authCache) {
+            const cachedAuth = sender.deltaPort > 0
+                ? this.matchmaker.authCache.findByPort(sender.deltaPort)
+                : this.matchmaker.authCache.findByUsername(sender.username);
+            if (cachedAuth) {
+                sender.puid = cachedAuth.puid;
+                sender.friendCode = cachedAuth.friendCode;
+                sender.isAuthenticated = true;
+
+                if (this.config.logging.hideSensitiveInfo) {
+                    this.logger.info("%s authenticated (FriendCode=%s)",
+                        sender, cachedAuth.friendCode);
+                } else {
+                    this.logger.info("%s authenticated (PUID=%s, FriendCode=%s)",
+                        sender, cachedAuth.puid, cachedAuth.friendCode);
+                }
+
+                if (sender.deltaPort > 0) {
+                    // Keep the port-keyed auth alive for the whole session and
+                    // confirm the port lease (cancel the timeout).
+                    this.portPool?.confirmPort(sender.deltaPort);
+                    this.matchmaker.authCache.confirmPort(sender.deltaPort);
+                }
+            }
+        }
+
         if (!this.isVersionAccepted(sender.clientVersion)) {
             this.logger.warn("%s connected with invalid client version: %s",
                 sender, sender.clientVersion.toString());
@@ -1506,6 +1678,14 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
 
         if (ev.canceled)
             return;
+
+        const validationResult = GameOptionsValidator.validateGameSettingsObject(message.gameSettings);
+        if (!validationResult.valid) {
+            this.logger.warn("%s created room with invalid game options: %s",
+                sender, validationResult.errors.join("; "));
+            await sender.disconnect("Invalid game options: " + validationResult.errors.join(", "));
+            return;
+        }
 
         const room = await this.createRoom(ev.alteredRoomCode, message.gameSettings, sender);
 
@@ -1589,8 +1769,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         if (!player) return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return await sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to alter the game but is not the host (ignored)", sender);
+            return;
         }
         
         await player.room.handleAlterGameMessage(message);
@@ -1601,8 +1783,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         if (!player) return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return await sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to start the game but is not the host (ignored)", sender);
+            return;
         }
 
         await player.room.handleStartGameMessage(message, player);
@@ -1614,8 +1798,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
             return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to end the game but is not the host (ignored)", sender);
+            return;
         }
         
         await player.room.handleEndGameMessage(message);
@@ -1627,8 +1813,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
             return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to kick a player but is not the host (ignored)", sender);
+            return;
         }
 
         const targetConnection = sender.room.connections.get(message.clientId);
@@ -1641,6 +1829,19 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         }
 
         await targetConnection.disconnect(message.banned ? DisconnectReason.Banned : DisconnectReason.Kicked);
+    }
+
+    async handleRemovePlayerMessage(message: C2SRemovePlayerMessage, sender: Connection) {
+        // C2SRemovePlayer is sent by the host client to remove a player from the
+        // lobby. Disconnect the target player's connection.
+        if (!sender.room) return;
+
+        const targetConn = sender.room.connections.get(message.clientId);
+        if (!targetConn) return;
+
+        this.logger.info("%s removed %s from the lobby",
+            sender, targetConn);
+        await targetConn.disconnect(message.reason);
     }
 
     async handleGetGameListMessage(message: C2SGetGameListMessage, sender: Connection) {
@@ -1662,7 +1863,9 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
                 continue;
 
             const roomAge = Math.floor((Date.now() - room.createdAt) / 1000);
-            const gameListing = new GameListing(
+            // NOTE: The 11-arg GameListing(language) will work once SkeldJS
+            // with the Language field lands in node_modules (via Docker COPY or npm publish).
+            const gameListing = new (GameListing as any)(
                 room.code.id,
                 listingIp,
                 this.config.socket.port,
@@ -1675,8 +1878,9 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
                 room.playerAuthority?.platform || new PlatformSpecificData(
                     Platform.Unknown,
                     "UNKNOWN"
-                )
-            );
+                ),
+                room.settings.keywords
+            ) as GameListing;
 
             if (ignoreSearchTerms === true) {
                 gamesAndRelevance.push([0, gameListing]);
@@ -1784,6 +1988,7 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         if (message instanceof EndGameMessage) return await this.handleEndGameMessage(message, sender);
         if (message instanceof KickPlayerMessage) return await this.handleKickPlayerMessage(message, sender);
         if (message instanceof C2SGetGameListMessage) return await this.handleGetGameListMessage(message, sender);
+        if (message instanceof C2SRemovePlayerMessage) return await this.handleRemovePlayerMessage(message, sender);
 
         if (message instanceof SetActivePodTypeMessage) {
             // not sure what to do with this..
@@ -1845,19 +2050,20 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
      * @param buffer The raw data buffer that was received.
      * @param rinfo Information about the remote that sent this data.
      */
-    async handleMessage(listenSocket: dgram.Socket, buffer: Buffer, rinfo: dgram.RemoteInfo) {
+    async handleMessage(listenSocket: dgram.Socket, buffer: Buffer, rinfo: dgram.RemoteInfo, deltaPort?: number) {
         try {
             const parsedPacket = this.parsePacket(HazelReader.from(buffer));
 
             if (!parsedPacket) {
-                const connection = this.getOrCreateConnection(listenSocket, rinfo);
+                const connection = this.getOrCreateConnection(listenSocket, rinfo, deltaPort);
                 this.logger.warn("%s sent an unknown root packet (%s)", connection, buffer[0]);
                 return;
             }
 
             const parsedReliable = parsedPacket as ReliableSerializable;
 
-            const cachedConnection = this.connections.get(rinfo.address + ":" + rinfo.port);
+            const connectionKey = deltaPort ? "delta:" + deltaPort : rinfo.address + ":" + rinfo.port;
+            const cachedConnection = this.connections.get(connectionKey);
 
             try {
                 if (cachedConnection) {
@@ -1927,21 +2133,22 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
                         return;
 
                     const connection = cachedConnection || new Connection(this, listenSocket, rinfo, this.getNextClientId());
+                    if (deltaPort) connection.deltaPort = deltaPort;
                     if (!cachedConnection)
-                        this.connections.set(rinfo.address + ":" + rinfo.port, connection);
+                        this.connections.set(connectionKey, connection);
 
                     connection.nextExpectedNonce = parsedReliable.nonce + 1;
 
                     await this.handlePacket(parsedPacket, connection);
                 }
             } catch (e) {
-                const connection = this.getOrCreateConnection(listenSocket, rinfo);
+                const connection = this.getOrCreateConnection(listenSocket, rinfo, deltaPort);
                 this.logger.error("Error occurred while processing packet from %s:",
                     connection);
                 console.log(e);
             }
         } catch (e) {
-            const connection = this.getOrCreateConnection(listenSocket, rinfo);
+            const connection = this.getOrCreateConnection(listenSocket, rinfo, deltaPort);
             this.logger.error("%s sent a malformed packet", connection);
             console.log(e);
         }
@@ -2032,7 +2239,13 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
             return connection.disconnect(DisconnectReason.Banned);
         }
 
-        if (ev.alteredRoom.connections.size >= ev.alteredRoom.settings.maxPlayers) {
+        // Only block if room is actually full with DIFFERENT players.
+        // A player reconnecting after game end should not be blocked by
+        // their own previous Player entry still being in the room.
+        const roomPlayerCount = ev.alteredRoom.players.size;
+        const alreadyInRoom = ev.alteredRoom.players.has(connection.clientId);
+        const effectiveCount = alreadyInRoom ? roomPlayerCount - 1 : roomPlayerCount;
+        if (effectiveCount >= ev.alteredRoom.settings.maxPlayers) {
             this.logger.warn("%s attempted to join %s but it was full",
                 connection, foundRoom);
             return connection.disconnect(DisconnectReason.GameFull);

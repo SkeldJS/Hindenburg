@@ -118,6 +118,15 @@
           "type": "boolean",
           "description": "Whether or not to use the DTLS transport layout when listening for Hello packets.",
           "default": false
+        },
+        "deltaPortRange": {
+          "type": "array",
+          "description": "Range of dynamic per-player UDP ports, [start, end] (like Impostor's delta ports). Disabled when null.",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
         }
       }
     },

@@ -4,4 +4,7 @@ export * from "./Create";
 export * from "./Destroy";
 export * from "./GameEnd";
 export * from "./GameStart";
+export * from "./HideAndSeekEnd";
+export * from "./HideAndSeekStart";
+export * from "./HiderCaught";
 export * from "./SelectHost";

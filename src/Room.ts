@@ -6,6 +6,8 @@ import {
     BaseGameDataMessage,
     BaseRootMessage,
     BaseSystemMessage,
+    AddVoteMessage,
+    CastVoteMessage,
     ComponentSpawnData,
     DataMessage,
     DespawnMessage,
@@ -19,6 +21,7 @@ import {
     ReadyMessage,
     ReliablePacket,
     RemoveGameMessage,
+    ReportDeadBodyMessage,
     RpcMessage,
     S2CHostGameMessage,
     S2CJoinGameMessage,
@@ -49,6 +52,7 @@ import {
     EndGameIntent,
     GameDataMessageTag,
     GameMap,
+    GameMode,
     GameOverReason,
     GameState,
     Hat,
@@ -65,6 +69,7 @@ import {
     RoomEndGameIntentEvent,
     RoomFixedUpdateEvent,
     RpcMessageTag,
+    ShipStatus,
     Skin,
     SpawnFlag,
     SpawnType,
@@ -83,11 +88,19 @@ import {
     ClientBroadcastEvent,
     ClientLeaveEvent,
     EventTarget,
+    PlayerLevelChangedEvent,
+    PlayerMurderFailEvent,
+    PlayerTaskCompletedEvent,
+    PlayerTaskProgressEvent,
+    PlayerTaskStartedEvent,
     RoomBeforeDestroyEvent,
     RoomCreateEvent,
     RoomDestroyEvent,
     RoomGameEndEvent,
     RoomGameStartEvent,
+    RoomHideAndSeekEndEvent,
+    RoomHideAndSeekStartEvent,
+    RoomHiderCaughtEvent,
     RoomSelectHostEvent,
     getPluginEventListeners
 } from "./api";
@@ -100,10 +113,14 @@ import {
     RoomPlugin,
     WorkerPlugin
 } from "./handlers";
+import { CmdHandler } from "./handlers/CmdHandler";
 
 import { UnknownComponent } from "./components";
 
 import { Logger } from "./Logger";
+import { GameOptionsValidator } from "./game/GameOptions";
+import { HideAndSeekManager } from "./game/modes/HideAndSeekManager";
+import { RoleManager } from "./game/roles/RoleManager";
 import { fmtConfigurableLog } from "./util/fmtLogFormat";
 
 import { Connection, logLanguages, logPlatforms } from "./Connection";
@@ -260,13 +277,84 @@ export enum RoomPrivacy {
 export type RoomEvents = EventMapFromList<[
     ClientBroadcastEvent,
     ClientLeaveEvent,
+    PlayerLevelChangedEvent<Room>,
+    PlayerMurderFailEvent<Room>,
+    PlayerTaskCompletedEvent,
+    PlayerTaskProgressEvent<Room>,
+    PlayerTaskStartedEvent<Room>,
     RoomBeforeDestroyEvent,
     RoomCreateEvent,
     RoomDestroyEvent,
     RoomGameEndEvent,
     RoomGameStartEvent,
+    RoomHideAndSeekEndEvent,
+    RoomHideAndSeekStartEvent,
+    RoomHiderCaughtEvent,
     RoomSelectHostEvent
 ]>;
+
+/**
+ * Which sender is allowed to issue each RPC that targets a PlayerControl
+ * component, mirroring Impostor's InnerPlayerControl.HandleRpcAsync
+ * ValidateOwnership/ValidateHost switch. Tags not listed here are left
+ * unchecked at this layer (either not sent on PlayerControl, or handled
+ * elsewhere) - this table only covers what the reference server validates
+ * for InnerPlayerControl.
+ *
+ * "owner" = only the client that owns this PlayerControl (i.e. the player
+ * whose character this is) may send it.
+ * "host" = only the room's (acting) host may send it.
+ */
+const PLAYER_CONTROL_RPC_REQUIREMENT: ReadonlyMap<RpcMessageTag, "owner" | "host"> = new Map([    [RpcMessageTag.PlayAnimation, "owner"],
+    [RpcMessageTag.CompleteTask, "owner"],
+    [RpcMessageTag.SyncSettings, "host"],
+    [RpcMessageTag.CheckName, "owner"],
+    [RpcMessageTag.SetName, "host"],
+    [RpcMessageTag.CheckColor, "owner"],
+    [RpcMessageTag.SetColor, "host"],
+    [RpcMessageTag.ReportDeadBody, "owner"],
+    [RpcMessageTag.MurderPlayer, "host"],
+    [RpcMessageTag.SendChat, "owner"],
+    [RpcMessageTag.StartMeeting, "host"],
+    [RpcMessageTag.SetScanner, "owner"],
+    [RpcMessageTag.SendChatNote, "owner"],
+    [RpcMessageTag.SetStartCounter, "owner"],
+    [RpcMessageTag.UsePlatform, "owner"],
+    [RpcMessageTag.SendQuickChat, "owner"],
+    [RpcMessageTag.SetLevel, "owner"],
+    [RpcMessageTag.SetHat, "owner"],
+    [RpcMessageTag.SetSkin, "owner"],
+    [RpcMessageTag.SetPet, "owner"],
+    [RpcMessageTag.SetVisor, "owner"],
+    [RpcMessageTag.SetNameplate, "owner"],
+    [RpcMessageTag.SetRole, "host"],
+    [RpcMessageTag.ProtectPlayer, "host"],
+    [RpcMessageTag.Shapeshift, "host"],
+    [RpcMessageTag.CheckMurder, "owner"],
+    [RpcMessageTag.CheckProtect, "owner"],
+    [RpcMessageTag.CheckZipline, "owner"],
+    [RpcMessageTag.UseZipline, "host"],
+    [RpcMessageTag.TriggerSpores, "host"],
+    [RpcMessageTag.CheckSporeTrigger, "owner"],
+    [RpcMessageTag.CheckShapeshift, "owner"],
+    [RpcMessageTag.RejectShapeshift, "host"],
+    [RpcMessageTag.CheckVanish, "owner"],
+    [RpcMessageTag.Vanish, "host"],
+    [RpcMessageTag.CheckAppear, "owner"],
+    [RpcMessageTag.Appear, "host"],
+]);
+
+/**
+ * MeetingHud RPCs that only the (acting) host may send, per
+ * InnerMeetingHud.HandleRpcAsync. CastVote is deliberately excluded here -
+ * any player may send it, but it needs payload-level validation (see
+ * handleRpcMessage) rather than a blanket host/owner check.
+ */
+const MEETING_HUD_HOST_ONLY_TAGS: ReadonlySet<RpcMessageTag> = new Set([
+    RpcMessageTag.Close,
+    RpcMessageTag.VotingComplete,
+    RpcMessageTag.ClearVote,
+]);
 
 export class Room extends StatefulRoom<Room, RoomEvents> {
     /**
@@ -314,6 +402,27 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
 
     privacy: RoomPrivacy;
 
+    /**
+     * The active game mode manager, if any (e.g., HideAndSeekManager).
+     */
+    gameModeManager: HideAndSeekManager | null;
+
+    /**
+     * Whether a meeting is currently in progress. Prevents duplicate
+     * meeting starts from PlayerStartMeetingEvent firing multiple times.
+     */
+    meetingInProgress: boolean;
+
+    /**
+     * The role manager for this room, handling role assignment and lifecycle.
+     */
+    roleManager: RoleManager;
+
+    /**
+     * Handler for Among Us vanilla /cmd chat commands.
+     */
+    cmdHandler: CmdHandler;
+
     protected roomNameOverride: string;
     protected eventTargets: EventTarget[];
 
@@ -355,6 +464,10 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
 
         this.roomNameOverride = "";
         this.eventTargets = [];
+        this.gameModeManager = null;
+        this.meetingInProgress = false;
+        this.roleManager = new RoleManager(this);
+        this.cmdHandler = new CmdHandler(this);
 
         this.lastNetId = 100000;
 
@@ -364,6 +477,18 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         this.privacy = RoomPrivacy.Private;
 
         this.logger = new Logger(() => util.inspect(this.code, true, null, true), this.server.vorpal);
+
+        // Apply enforced settings from config (overrides host settings)
+        if (this.config.enforceSettings && Object.keys(this.config.enforceSettings).length > 0) {
+            this.settings.patch(this.config.enforceSettings);
+            this.logger.debug("Applied enforced settings to room");
+        }
+
+        // Apply default game mode if not set
+        const currentMode = this.settings.gameMode;
+        if (currentMode === undefined || currentMode === GameMode.None) {
+            (this.settings as any).gameMode = this.config.defaultGameMode || GameMode.Normal;
+        }
 
         this.on("player.setname", async ev => {
             if (ev.oldName) {
@@ -378,6 +503,13 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         this.on("player.chat", async ev => {
             this.logger.info("%s sent message: %s",
                 ev.player, chalk.red(ev.chatMessage));
+
+            // /cmd messages are handled by the RPC intercept in handleRpcMessage
+            // (suppressed broadcast + CmdHandler processing). Skip them here.
+            if (ev.chatMessage.startsWith("/cmd")) {
+                // Still log, but don't process through regular chat command handler
+                return;
+            }
 
             const prefix = typeof this.config.chatCommands === "object"
                 ? this.config.chatCommands.prefix || "/"
@@ -409,32 +541,140 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         this.on("player.setlevel", async ev => {
             const connection = this.getConnection(ev.player);
             if (!connection) return;
+
+            const oldLevel = connection.playerLevel;
+            connection.playerLevel = (ev as any).newLevel ?? ev.player.playerLevel;
+
+            this.emit(new PlayerLevelChangedEvent(
+                this,
+                ev.player,
+                oldLevel,
+                connection.playerLevel
+            ));
+
             await this.updateAuthorityForClient(this.getClientAwareAuthorityId(connection), connection);
         });
 
         this.on("player.syncsettings", async ev => {
+            if (!this.canMakeHostChanges(ev.player as Player<this>)) {
+                this.logger.warn("%s attempted to change settings but is not the host", ev.player);
+                return;
+            }
+
+            const newSettings = (ev as any).newSettings || ev.settings;
+            if (newSettings) {
+                const validationResult = GameOptionsValidator.validateGameSettings(newSettings);
+                if (!validationResult.valid) {
+                    this.logger.warn("%s sent invalid game settings: %s",
+                        ev.player, validationResult.errors.join("; "));
+                    return;
+                }
+            }
+
             if (this.config.enforceSettings) {
                 ev.setSettings(this.config.enforceSettings);
             }
         });
 
         this.on("player.startmeeting", ev => {
+            if (this.meetingInProgress) {
+                this.logger.warn("Duplicate meeting start suppressed (body: %s, caller: %s)",
+                    ev.body, ev.player);
+                return;
+            }
+            this.meetingInProgress = true;
+
             if (ev.body === "emergency") {
                 this.logger.info("Meeting started (emergency meeting)");
             } else {
                 this.logger.info("Meeting started (%s's body was reported)", ev.body);
             }
+            this.roleManager.handleMeetingStart();
+        });
+
+        this.on("player.completetask", async ev => {
+            const taskType = ev.task?.taskType ?? 0;
+            const taskId = ev.message?.taskIdx ?? 0;
+            this.logger.info("%s completed task (idx: %s)",
+                ev.player, taskId);
+
+            // Route through role manager for role-specific behavior
+            this.roleManager.handleTaskComplete(
+                ev.player,
+                taskId
+            );
+
+            this.emit(new PlayerTaskCompletedEvent(
+                this,
+                ev.player,
+                taskType,
+                taskId,
+                false
+            ));
+        });
+
+        this.on("player.checkmurder", async ev => {
+            if (!ev.isValid) {
+                this.emit(new PlayerMurderFailEvent(
+                    this,
+                    ev.player,
+                    ev.victim,
+                    "cooldown",
+                    "Murder check determined murder is not valid"
+                ));
+            }
+        });
+
+        this.on("player.murder", async ev => {
+            this.logger.info("%s murdered %s",
+                ev.player, ev.victim);
+
+            // Route through role manager for role-specific kill behavior (e.g., Viper)
+            this.roleManager.handleKill(ev.player, ev.victim);
+        });
+
+        this.on("player.die", async ev => {
+            // Route through role manager for role-specific death behavior (e.g., Phantom)
+            this.roleManager.handleDeath(ev.player);
+        });
+
+        // Reset meetingInProgress flag when MeetingHud is despawned
+        this.on("component.despawn", (ev: any) => {
+            if (ev.component && ev.component.spawnType === SpawnType.MeetingHud) {
+                this.meetingInProgress = false;
+            }
         });
     }
 
     protected _reset() {
-        this.players.clear();
-        this.networkedObjects.clear();
+        if (this.gameModeManager) {
+            this.gameModeManager.destroy();
+            this.gameModeManager = null;
+        }
+        this.meetingInProgress = false;
+        this.roleManager.handleGameEnd();
+
+        // Only despawn server-owned objects (PlayerInfo, netId >= 100000).
+        // Client/host-owned objects (PlayerControl, ShipStatus, etc.) have
+        // netIds < 100000 and are managed by the host client in player-authority
+        // mode. Despawning them causes "non-existent component" errors when
+        // the host continues sending RPCs to now-destroyed netIds.
+        const despawning: NetworkedObject<any>[] = [];
+        for (const [, component] of this.networkedObjects) {
+            if (component.netId >= 100000) {
+                despawning.push(component);
+            }
+        }
+        for (const component of despawning) {
+            this.despawnComponent(component);
+        }
+        this.playerInfo.clear();
+        this.objectList.length = 0;
         this.messageStream = [];
-        this.authorityId = 0;
-        this.settings = new GameSettings;
+        // Don't reset settings — preserve host-configured map/mode across rounds
         this.startGameCounter = -1;
-        this.privacy = RoomPrivacy.Private;
+        this.lastNetId = 100000;
+        this.ownershipGuards.clear();
     }
 
     async emit<Event extends RoomEvents[keyof RoomEvents]>(
@@ -541,6 +781,16 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
             this.playerJoinedFlag = true;
         }
 
+        // Tick role cooldowns and timers
+        if (this.gameState === GameState.Started) {
+            this.roleManager.handleFixedUpdate();
+        }
+
+        // Tick game mode-specific logic
+        if (this.gameModeManager && typeof (this.gameModeManager as any).handleFixedUpdate === "function") {
+            (this.gameModeManager as any).handleFixedUpdate();
+        }
+
         await super.processFixedUpdate();
     }
 
@@ -635,7 +885,10 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
     
 
     async handleEndGameMessage(message: EndGameMessage) {
-        await this.handleEndGame(message.reason);
+        // Mirror Impostor/Empostor: relay the host's ORIGINAL EndGameMessage
+        // (byte-exact) to all clients instead of re-constructing one, so clients
+        // receive the exact end signal the host sent.
+        await this.handleEndGame(message.reason, undefined, message);
     }
 
     async handleStartGameMessage(message: StartGameMessage, senderPlayer: Player<Room>) {
@@ -688,6 +941,29 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         const component = this.networkedObjects.get(message.netId);
 
         if (component) {
+            // Same anti-cheat / desync guard as handleRpcMessage, but for Data
+            // messages (full state snapshots - most importantly position via
+            // CustomNetworkTransform/PlayerPhysics). Previously ANY client
+            // could send a Data update for ANY netId and the server would
+            // apply and rebroadcast it unquestioned - meaning a desynced or
+            // malicious client could silently overwrite another player's
+            // position/physics/game data. Player-owned components may only be
+            // updated by their owner; server/global-owned components
+            // (ShipStatus, GameData, etc.) may only be updated by the host.
+            const ownerId = component.ownerId;
+            const isServerOwned = ownerId === SpecialOwnerId.Global || ownerId === SpecialOwnerId.Server;
+            const allowed = isServerOwned
+                ? this.canMakeHostChanges(senderPlayer)
+                : ownerId === senderPlayer.clientId;
+
+            if (!allowed) {
+                this.logger.warn(
+                    "Rejected data message from player %s for component net id %s, %s: not the owner (owned by %s)",
+                    senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", ownerId
+                );
+                return false;
+            }
+
             if (message.data instanceof UnknownDataMessage) {
                 const parsedData = component.parseData(DataState.Update, message.data.dataReader);
                 if (!parsedData) {
@@ -704,20 +980,171 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
     }
 
     async handleRpcMessage(message: RpcMessage, senderPlayer: Player<Room>) {
+        // Route through game mode manager first (may block certain RPCs)
+        if (this.gameModeManager) {
+            const handled = await this.gameModeManager.handleRpc(senderPlayer, message);
+            if (!handled) {
+                // Manager blocked this RPC (e.g., body report in H&S)
+                return true;
+            }
+        }
+
         const component = this.networkedObjects.get(message.netId);
 
         if (component) {
+            // Anti-cheat / desync guard: verify the sender is actually allowed
+            // to issue this RPC on this specific component before touching any
+            // state. The real Impostor server validates every single
+            // PlayerControl RPC this way (ValidateOwnership/ValidateHost in
+            // InnerPlayerControl.HandleRpcAsync) - SkeldJS previously relayed
+            // *any* client's RPC for *any* netId with no check at all, which
+            // let a buggy or malicious client forge another player's cosmetics,
+            // name, murder events, role, etc. and have the server dutifully
+            // broadcast it to everyone ("player data bleeding between
+            // players"). Reject and drop (don't apply, don't broadcast)
+            // anything that fails the check instead of silently trusting it.
+            if (component instanceof PlayerControl) {
+                const requirement = PLAYER_CONTROL_RPC_REQUIREMENT.get(message.child.messageTag);
+                if (requirement === "owner" && component.ownerId !== senderPlayer.clientId) {
+                    this.logger.warn(
+                        "Rejected RPC %s from player %s: sender does not own component net id %s (owned by client %s)",
+                        RpcMessageTag[message.child.messageTag] || message.child.messageTag,
+                        senderPlayer, component.netId, component.ownerId
+                    );
+                    return false;
+                }
+                if (requirement === "host" && !this.canMakeHostChanges(senderPlayer)) {
+                    this.logger.warn(
+                        "Rejected RPC %s from non-host player %s for component net id %s",
+                        RpcMessageTag[message.child.messageTag] || message.child.messageTag,
+                        senderPlayer, component.netId
+                    );
+                    return false;
+                }
+            }
+
+            // MeetingHud: CloseMeeting/VotingComplete/ClearVote are host-only
+            // (InnerMeetingHud.HandleRpcAsync). CastVote is allowed from any
+            // player but is validated separately below, once parsed, because
+            // it needs to check the voter id carried in the RPC payload
+            // rather than the netId's owner (MeetingHud itself is a single
+            // globally-owned object shared by everyone in the meeting).
+            if (component instanceof MeetingHud && MEETING_HUD_HOST_ONLY_TAGS.has(message.child.messageTag) && !this.canMakeHostChanges(senderPlayer)) {
+                this.logger.warn(
+                    "Rejected RPC %s from non-host player %s for MeetingHud net id %s",
+                    RpcMessageTag[message.child.messageTag] || message.child.messageTag,
+                    senderPlayer, component.netId
+                );
+                return false;
+            }
+
+            // ShipStatus: CloseDoorsOfType is a sabotage action - only an
+            // Impostor may trigger it (InnerShipStatus.HandleRpcAsync
+            // ValidateImpostor). Without this a crewmate client could close
+            // doors and lock other players in, which the real client never
+            // permits.
+            if (component instanceof ShipStatus && message.child.messageTag === RpcMessageTag.CloseDoorsOfType) {
+                const senderInfo = senderPlayer.getPlayerInfo();
+                if (!senderInfo || !senderInfo.isImpostor) {
+                    this.logger.warn(
+                        "Rejected CloseDoorsOfType from non-impostor player %s",
+                        senderPlayer
+                    );
+                    return false;
+                }
+            }
+
             try {
                 if (message.child instanceof UnknownRpcMessage) {
                     const parsedRpc = component.parseRemoteCall(message.child.messageTag, message.child.dataReader);
                     if (!parsedRpc) {
-                        this.logger.error("Unknown remote procedure call from player %s for component net id %s, %s: message tag %s",
-                            senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", RpcMessageTag[message.child.messageTag] || message.child.messageTag);
-                        return this.server.config.socket.acceptUnknownGameData;
+                        // The component couldn't parse this RPC (usually a modded/custom RPC
+                        // beyond the vanilla RpcMessageTag range, e.g. Reactor / TOU mods).
+                        // Whether it gets forwarded to other clients depends on
+                        // `socket.acceptUnknownGameData` in the config.
+                        const tagName = RpcMessageTag[message.child.messageTag];
+                        const acceptUnknown = this.server.config.socket.acceptUnknownGameData;
+                        if (acceptUnknown) {
+                            this.logger.info(
+                                "Forwarding unknown RPC %s (%s) from %s for component net id %s, %s (acceptUnknownGameData=true)",
+                                tagName || "tag",
+                                message.child.messageTag,
+                                senderPlayer,
+                                component.netId,
+                                SpawnType[component.spawnType] || "Unknown"
+                            );
+                        } else {
+                            this.logger.error(
+                                "Unknown remote procedure call from player %s for component net id %s, %s: message tag %s (set socket.acceptUnknownGameData=true to forward modded RPCs)",
+                                senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", tagName || message.child.messageTag
+                            );
+                        }
+                        return acceptUnknown;
                     }
+
+                    // CastVote: the payload's votingId must match the sender's own
+                    // player id - otherwise any player could cast a vote on
+                    // someone else's behalf (InnerMeetingHud.HandleCastVoteAsync
+                    // reports this as an ownership cheat).
+                    if (parsedRpc instanceof CastVoteMessage && parsedRpc.votingId !== senderPlayer.getPlayerId()) {
+                        this.logger.warn(
+                            "Rejected CastVote from player %s: voter id %s in payload does not match sender's own player id %s",
+                            senderPlayer, parsedRpc.votingId, senderPlayer.getPlayerId()
+                        );
+                        return false;
+                    }
+
+                    // AddVote (VoteBanSystem kick-vote tracking): the payload's
+                    // votingId is the voting *client* id and must match the
+                    // sender's own client id, mirroring
+                    // InnerVoteBanSystem.HandleRpcAsync's ownership check -
+                    // otherwise a client could register a kick vote as if it
+                    // came from someone else.
+                    if (parsedRpc instanceof AddVoteMessage && parsedRpc.votingId !== senderPlayer.clientId) {
+                        this.logger.warn(
+                            "Rejected AddVote from player %s: voting client id %s in payload does not match sender's own client id %s",
+                            senderPlayer, parsedRpc.votingId, senderPlayer.clientId
+                        );
+                        return false;
+                    }
+
                     await component.handleRemoteCall(parsedRpc);
                 } else {
+                    if (message.child instanceof CastVoteMessage && message.child.votingId !== senderPlayer.getPlayerId()) {
+                        this.logger.warn(
+                            "Rejected CastVote from player %s: voter id %s in payload does not match sender's own player id %s",
+                            senderPlayer, message.child.votingId, senderPlayer.getPlayerId()
+                        );
+                        return false;
+                    }
+                    if (message.child instanceof AddVoteMessage && message.child.votingId !== senderPlayer.clientId) {
+                        this.logger.warn(
+                            "Rejected AddVote from player %s: voting client id %s in payload does not match sender's own client id %s",
+                            senderPlayer, message.child.votingId, senderPlayer.clientId
+                        );
+                        return false;
+                    }
                     await component.handleRemoteCall(message.child);
+                }
+
+                // In SaaH (authoritative) mode, ReportDeadBody is handled by the
+                // server itself — it starts the meeting and broadcasts StartMeeting.
+                // Suppress the original ReportDeadBody broadcast to prevent clients
+                // from showing a duplicate report screen / triggering conflicting meeting starts.
+                if (this.isAuthoritative && message.child instanceof ReportDeadBodyMessage) {
+                    return true;
+                }
+
+                // In SaaH mode, /cmd messages from non-host players should only
+                // be seen by the server (host). Suppress broadcast to other clients.
+                // The server processes the command and responds privately to the caller.
+                if (this.isAuthoritative && message.child instanceof SendChatMessage) {
+                    const msg = message.child.message;
+                    if (msg.startsWith("/cmd") && senderPlayer.clientId !== this.authorityId) {
+                        // Route to cmd handler — don't broadcast to other players
+                        await this.cmdHandler.handleMessage(senderPlayer, msg.substring(5));
+                        return true; // Suppress broadcast
+                    }
                 }
             } catch (e) {
                 this.logger.error("Could not process remote procedure call from player %s for component net id %s, %s: %s",
@@ -777,6 +1204,11 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
                 message.flags,
                 message.components.map(x => x.netId),
             );
+            // Duplicate NetID — the object already exists from a previous spawn.
+            // Silently skip (host may re-send spawns when syncing lobby state).
+            if (!object) {
+                return true;
+            }
             for (let i = 0; i < message.components.length; i++) {
                 const data = message.components[i].data;
                 const component = object.components[i];
@@ -843,8 +1275,13 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
                         [player]
                     );
                 } else {
+                    // In player-authority mode, send ALL existing object spawns
+                    // (not just server-owned). The joining client needs the full
+                    // game state to avoid getting stuck on a black screen.
+                    // The host client will also send its spawn data, but sending
+                    // everything from the server ensures the client doesn't block.
                     await this.broadcastImmediate(
-                        this.getServerOwnedObjectSpawn(),
+                        this.getExistingObjectSpawn(),
                         undefined,
                         [player],
                     );
@@ -1254,7 +1691,15 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         if (cachedPlayer)
             return cachedPlayer;
 
-        const player = new Player(this, joinInfo.clientId, joinInfo.playerName, joinInfo.platform, joinInfo.playerLevel);
+        const player = new Player(
+            this,
+            joinInfo.clientId,
+            joinInfo.playerName,
+            joinInfo.platform,
+            joinInfo.playerLevel,
+            joinInfo.friendCode || "",
+            joinInfo.puid || ""
+        );
         this.players.set(joinInfo.clientId, player);
 
         return player;
@@ -1285,7 +1730,7 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
                     new AlterGameMessage(
                         this.code.id,
                         AlterGameTag.ChangePrivacy,
-                        this.privacy === RoomPrivacy.Private ? 1 : 0
+                        this.privacy === RoomPrivacy.Public ? 1 : 0
                     )
                 ]
             )
@@ -1298,8 +1743,8 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
             joiningClient.username,
             joiningClient.platform,
             joiningClient.playerLevel,
-            "", // todo: combine worker with matchmaker
-            ""
+            joiningClient.puid || "",
+            joiningClient.friendCode || ""
         );
 
         const joiningPlayer = await this.handleJoin(joinData);
@@ -1350,23 +1795,13 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
 
         if (this.gameState === GameState.Ended) {
             if (!this.isAuthoritative && joiningClient.clientId !== this.authorityId) {
-                this.waitingForHost.add(joiningClient);
-
-                await joiningClient.sendPacket(
-                    new ReliablePacket(
-                        joiningClient.getNextNonce(),
-                        [
-                            new WaitForHostMessage(
-                                this.code.id,
-                                joiningClient.clientId
-                            )
-                        ]
-                    )
-                );
-
-                this.logger.info("%s joined, waiting for host",
-                    joiningPlayer);
-                return;
+                // Game is over — the previous host may be gone.
+                // Auto-promote this player as the new authority instead of
+                // making them wait indefinitely.
+                this.logger.info("%s joined after game end, becoming new authority", joiningClient);
+                this.authorityId = joiningClient.clientId;
+                await joiningPlayer.emit(new PlayerSetAuthoritativeEvent(this, joiningPlayer));
+                // Fall through to normal join flow below
             }
         }
 
@@ -1411,6 +1846,26 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         this.connections.delete(leavingConnection.clientId);
         leavingConnection.room = undefined;
 
+        // Notify game mode manager of disconnect
+        const leavingPlayer = this.players.get(leavingConnection.clientId) as Player<Room> | undefined;
+        if (leavingPlayer && this.gameModeManager) {
+            await this.gameModeManager.handlePlayerDisconnect(leavingPlayer);
+        }
+
+        // Collect netIds of objects to despawn BEFORE calling handleLeave
+        // (which removes them from internal maps). These must be broadcast
+        // to all remaining clients so ghost objects don't persist.
+        const despawnNetIds: number[] = [];
+        if (leavingPlayer) {
+            const playerInfo = leavingPlayer.getPlayerInfo();
+            if (playerInfo) {
+                despawnNetIds.push(playerInfo.netId);
+            }
+            if (leavingPlayer.characterControl) {
+                despawnNetIds.push(leavingPlayer.characterControl.netId);
+            }
+        }
+
         await this.handleLeave(leavingConnection.clientId);
 
         if (this.connections.size === 0) {
@@ -1442,19 +1897,31 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
             }
         }
 
+        // Broadcast S2CRemovePlayerMessage to all remaining clients
         const promises = [];
         for (const [, otherClient] of this.connections) {
+            const rootMessages: BaseRootMessage[] = [
+                new S2CRemovePlayerMessage(
+                    this.code.id,
+                    leavingConnection.clientId,
+                    reason,
+                    this.getClientAwareAuthorityId(otherClient),
+                )
+            ];
+
+            // Wrap despawn messages in a GameDataMessage so they reach the
+            // client's game data layer (DespawnMessage is GameData, not Root).
+            if (despawnNetIds.length > 0) {
+                rootMessages.push(new GameDataMessage(
+                    this.code.id,
+                    despawnNetIds.map(netId => new DespawnMessage(netId))
+                ));
+            }
+
             promises.push(otherClient.sendPacket(
                 new ReliablePacket(
                     otherClient.getNextNonce(),
-                    [
-                        new S2CRemovePlayerMessage(
-                            this.code.id,
-                            leavingConnection.clientId,
-                            reason,
-                            this.getClientAwareAuthorityId(otherClient),
-                        )
-                    ]
+                    rootMessages
                 )
             ));
         }
@@ -1471,8 +1938,14 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
     }
 
     async handleStartGame(startedBy?: Player<Room>) {
+        // Only reset if restarting after a previous game.
+        // Don't reset on first start — lobby PlayerInfo objects are needed.
+        if (this.gameState === GameState.Ended) {
+            this._reset();
+        }
+
         this.gameState = GameState.Started;
-        
+
         if (startedBy) {
             this.logger.info("Player %s requested game start, to be managed by %s",
                 startedBy, this.isAuthoritative ? "server" : (this.playerAuthority || "unknown player"));
@@ -1490,10 +1963,25 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
 
         await this.broadcastImmediate([], [new StartGameMessage(this.code.id)]);
 
+        // Initialize game mode-specific manager
+        if ((this.settings as any).gameMode === GameMode.HideNSeek ||
+            (this.settings as any).gameMode === GameMode.HideNSeekFools) {
+            this.gameModeManager = new HideAndSeekManager(this);
+            this.logger.info("Initialized Hide and Seek game mode manager");
+        }
+
         if (this.isAuthoritative) {
             await this.updateAllClientAwareAuthority();
             await super.handleStartGame();
             this.logger.info("Game started");
+
+            // Sync server-side role behaviors from SkeldJS's role assignment
+            await this.roleManager.syncRolesFromCore();
+
+            // Start mode-specific logic after game is fully initialized
+            if (this.gameModeManager instanceof HideAndSeekManager) {
+                await this.gameModeManager.startGame();
+            }
         }
     }
 
@@ -1501,13 +1989,19 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         await this.handleStartGame(undefined);
     }
 
-    async handleEndGame(reason: GameOverReason, intent?: EndGameIntent) {
+    async handleEndGame(reason: GameOverReason, intent?: EndGameIntent, originalMessage?: EndGameMessage) {
+        // Prevent double-processing: flushEndGameIntents (server-side) and
+        // the host client's EndGameMessage may both trigger handleEndGame.
+        if (this.gameState === GameState.Ended) return;
+
         const ev = await this.emit(new RoomGameEndEvent(this, reason, intent));
         if (ev.canceled) return;
-        
+
         await this.flushMessages();
 
-        await this.broadcastImmediate([], [new EndGameMessage(this.code.id, reason, false)]);
+        // Relay the host's original EndGameMessage when available (Impostor-style);
+        // otherwise construct one (e.g. server-initiated end via CLI / game mode).
+        await this.broadcastImmediate([], [originalMessage || new EndGameMessage(this.code.id, reason, false)]);
         await super.handleEndGame(reason);
 
         this.logger.info("Game ended: %s", GameOverReason[ev.reason]);

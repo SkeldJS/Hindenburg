@@ -87,6 +87,7 @@ import { LoadedPlugin, PluginLoader, WorkerPlugin } from "./handlers";
 import i18n from "./i18n";
 import { Matchmaker } from "./Matchmaker";
 import { Logger } from "./Logger";
+import { PortPoolService } from "./PortPoolService";
 import { GameOptionsValidator } from "./game/GameOptions";
 
 const byteSizes = ["bytes", "kb", "mb", "gb", "tb"];
@@ -148,9 +149,15 @@ export type SocketConfig = {
      * @default false
      */
     useDtlsLayout: boolean;
+    /**
+     * Range of dynamic per-player UDP ports, `[start, end]` (like Impostor's
+     * delta ports). Disabled when null/undefined.
+     * @default [22224, 22524]
+     */
+    deltaPortRange?: [number, number] | null;
 }
 
-export type ConnectionsFormatOptions = "id" | "ip" | "ping" | "room" | "level" | "version" | "platform" | "language";
+export type ConnectionsFormatOptions = "id" | "ip" | "ping" | "room" | "level" | "version" | "platform" | "language" | "puid" | "friendcode";
 export type RoomFormatOptions = "players" | "map" | "host" | "privacy";
 export type PlayerFormatOptions = "id" | "ping" | "level" | "ishost" | "platform" | "language";
 
@@ -597,6 +604,16 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
     connections: Map<string, Connection>;
 
     /**
+     * Dynamic per-player UDP sockets keyed by delta port, see {@link WaterwayServer.startDeltaListener}.
+     */
+    deltaListeners: Map<number, dgram.Socket>;
+
+    /**
+     * Port pool for dynamic per-player ports, see {@link PortPoolService}.
+     */
+    portPool: PortPoolService|undefined;
+
+    /**
      * All rooms created on this server, mapped by their game code as an integer.
      *
      * See {@link WaterwayServer.createRoom}
@@ -648,6 +665,21 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         this.loadedPlugins = new Map;
 
         this.listenSockets = new Map;
+        this.deltaListeners = new Map;
+
+        const deltaRange = this.config.socket.deltaPortRange;
+        if (deltaRange && deltaRange[0] > 0 && deltaRange[1] >= deltaRange[0]) {
+            // Short lease so delta ports allocated but never connected to (e.g. a
+            // client that connects via the shared socket instead) recycle quickly
+            // and don't exhaust the pool.
+            this.portPool = new PortPoolService(deltaRange[0], deltaRange[1], this.config.socket.port, 60 * 1000);
+            this.portPool.onLeaseExpired = port => {
+                this.returnDeltaPort(port);
+            };
+            this.logger.info("Dynamic delta ports enabled: %s-%s (clients connect to their assigned port)", deltaRange[0], deltaRange[1]);
+        } else {
+            this.logger.info("Dynamic delta ports disabled — using shared socket (%s) with username auth", this.config.socket.port);
+        }
 
         if (this.config.matchmaker)
             this.matchmaker = new Matchmaker(this);
@@ -1181,6 +1213,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
     protected _listenPort(port: number) {
         const socket = dgram.createSocket("udp4");
         socket.on("message", this.handleMessage.bind(this, socket));
+        socket.on("error", err => {
+            this.logger.error("Failed to bind udp port %s: %s (is another server instance already running?)", port, (err as Error).message);
+            process.exit(1);
+        });
 
         socket.bind(port);
 
@@ -1202,6 +1238,69 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         this.logger.warn("Stopped listening on *:" + port);
 
         return socket;
+    }
+
+    /**
+     * Start a dynamic per-player UDP listener on a delta port. Resolves once the
+     * socket is fully bound (so the matchmaker can safely return the port to the
+     * client without racing the bind).
+     * @param port The delta port to listen on.
+     */
+    startDeltaListener(port: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (this.deltaListeners.has(port)) {
+                resolve();
+                return;
+            }
+
+            const socket = dgram.createSocket("udp4");
+            socket.on("message", (buffer, rinfo) => {
+                this.handleMessage(socket, buffer, rinfo, port);
+            });
+            socket.on("error", err => {
+                this.deltaListeners.delete(port);
+                reject(err);
+            });
+            socket.on("listening", () => {
+                this.deltaListeners.set(port, socket);
+                this.logger.info("Delta listener listening on *:" + port);
+                resolve();
+            });
+            socket.bind(port);
+        });
+    }
+
+    /**
+     * Stop and fully dispose a delta listener. Resolves once the socket is closed.
+     * @param port The delta port to stop listening on.
+     */
+    stopDeltaListener(port: number): Promise<void> {
+        return new Promise(resolve => {
+            const socket = this.deltaListeners.get(port);
+            if (!socket) {
+                resolve();
+                return;
+            }
+
+            this.deltaListeners.delete(port);
+            socket.removeAllListeners("message");
+            socket.close(() => resolve());
+        });
+    }
+
+    /**
+     * Return a delta port to the pool. The port is only made available again
+     * after the old socket has been fully disposed, which prevents the re-bind
+     * race when a freshly returned port is re-allocated while the old socket is
+     * still being torn down.
+     * @param port The delta port to return.
+     */
+    async returnDeltaPort(port: number): Promise<void> {
+        if (!this.portPool) return;
+
+        this.portPool.returnPort(port);         // mark draining, remove lease
+        await this.stopDeltaListener(port);     // fully dispose the socket
+        this.portPool.confirmRecycled(port);    // back to available
     }
 
     /**
@@ -1236,14 +1335,16 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
      * Retrieve or create a connection based on its remote information received
      * from a [socket `message` event](https://nodejs.org/api/dgram.html#dgram_event_message).
      */
-    getOrCreateConnection(listenSocket: dgram.Socket, rinfo: dgram.RemoteInfo): Connection {
-        const fmt = rinfo.address + ":" + rinfo.port;
+    getOrCreateConnection(listenSocket: dgram.Socket, rinfo: dgram.RemoteInfo, deltaPort?: number): Connection {
+        const fmt = deltaPort ? "delta:" + deltaPort : rinfo.address + ":" + rinfo.port;
         const cached = this.connections.get(fmt);
         if (cached)
             return cached;
 
         const clientId = this.getNextClientId();
         const connection = new Connection(this, listenSocket, rinfo, clientId);
+        if (deltaPort)
+            connection.deltaPort = deltaPort;
         this.connections.set(fmt, connection);
         return connection;
     }
@@ -1256,8 +1357,15 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
      * @param connection The connection to remove.
      */
     removeConnection(connection: Connection) {
-        if (this.connections.delete(connection.remoteInfo.address + ":" + connection.remoteInfo.port)) {
+        const fmt = connection.deltaPort > 0
+            ? "delta:" + connection.deltaPort
+            : connection.remoteInfo.address + ":" + connection.remoteInfo.port;
+        if (this.connections.delete(fmt)) {
             this.logger.info("Remove %s", connection);
+            if (connection.deltaPort > 0) {
+                // Return the delta port to the pool (fire-and-forget cleanup).
+                this.returnDeltaPort(connection.deltaPort);
+            }
         }
     }
 
@@ -1492,11 +1600,14 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         sender.platform = helloPacket.platform;
         sender.playerLevel = 0;
 
-        // ── Auth matching: associate UDP connection with prior TCP /api/user auth ──
-        // Strategy: IP + username (primary) → username only → IP only
-        const clientIp = sender.remoteInfo.address;
+        // ── Auth matching: delta port (primary) → username (shared-socket fallback) ──
+        // Dynamic per-player ports uniquely identify the session. If the client
+        // connected to the shared socket instead, we fall back to matching by the
+        // session's username (never by IP).
         if (this.matchmaker && this.matchmaker.authCache) {
-            const cachedAuth = this.matchmaker.authCache.findBestMatch(clientIp, sender.username);
+            const cachedAuth = sender.deltaPort > 0
+                ? this.matchmaker.authCache.findByPort(sender.deltaPort)
+                : this.matchmaker.authCache.findByUsername(sender.username);
             if (cachedAuth) {
                 sender.puid = cachedAuth.puid;
                 sender.friendCode = cachedAuth.friendCode;
@@ -1510,8 +1621,12 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
                         sender, cachedAuth.puid, cachedAuth.friendCode);
                 }
 
-                // Remove from cache after successful association (single-use)
-                this.matchmaker.authCache.remove(clientIp, sender.username);
+                if (sender.deltaPort > 0) {
+                    // Keep the port-keyed auth alive for the whole session and
+                    // confirm the port lease (cancel the timeout).
+                    this.portPool?.confirmPort(sender.deltaPort);
+                    this.matchmaker.authCache.confirmPort(sender.deltaPort);
+                }
             }
         }
 
@@ -1654,8 +1769,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         if (!player) return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return await sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to alter the game but is not the host (ignored)", sender);
+            return;
         }
         
         await player.room.handleAlterGameMessage(message);
@@ -1666,8 +1783,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
         if (!player) return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return await sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to start the game but is not the host (ignored)", sender);
+            return;
         }
 
         await player.room.handleStartGameMessage(message, player);
@@ -1679,8 +1798,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
             return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to end the game but is not the host (ignored)", sender);
+            return;
         }
         
         await player.room.handleEndGameMessage(message);
@@ -1692,8 +1813,10 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
             return;
 
         if (!player.room.canMakeHostChanges(player)) {
-            // todo: proper anti-cheat config
-            return sender.disconnect(DisconnectReason.Hacking);
+            // Lenient for modded servers: warn + ignore instead of kicking a
+            // (possibly recently deposed) host, which would break game flow.
+            player.room.logger.warn("%s tried to kick a player but is not the host (ignored)", sender);
+            return;
         }
 
         const targetConnection = sender.room.connections.get(message.clientId);
@@ -1927,19 +2050,20 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
      * @param buffer The raw data buffer that was received.
      * @param rinfo Information about the remote that sent this data.
      */
-    async handleMessage(listenSocket: dgram.Socket, buffer: Buffer, rinfo: dgram.RemoteInfo) {
+    async handleMessage(listenSocket: dgram.Socket, buffer: Buffer, rinfo: dgram.RemoteInfo, deltaPort?: number) {
         try {
             const parsedPacket = this.parsePacket(HazelReader.from(buffer));
 
             if (!parsedPacket) {
-                const connection = this.getOrCreateConnection(listenSocket, rinfo);
+                const connection = this.getOrCreateConnection(listenSocket, rinfo, deltaPort);
                 this.logger.warn("%s sent an unknown root packet (%s)", connection, buffer[0]);
                 return;
             }
 
             const parsedReliable = parsedPacket as ReliableSerializable;
 
-            const cachedConnection = this.connections.get(rinfo.address + ":" + rinfo.port);
+            const connectionKey = deltaPort ? "delta:" + deltaPort : rinfo.address + ":" + rinfo.port;
+            const cachedConnection = this.connections.get(connectionKey);
 
             try {
                 if (cachedConnection) {
@@ -2009,21 +2133,22 @@ export class WaterwayServer extends EventEmitter<WaterwayServerEvents> {
                         return;
 
                     const connection = cachedConnection || new Connection(this, listenSocket, rinfo, this.getNextClientId());
+                    if (deltaPort) connection.deltaPort = deltaPort;
                     if (!cachedConnection)
-                        this.connections.set(rinfo.address + ":" + rinfo.port, connection);
+                        this.connections.set(connectionKey, connection);
 
                     connection.nextExpectedNonce = parsedReliable.nonce + 1;
 
                     await this.handlePacket(parsedPacket, connection);
                 }
             } catch (e) {
-                const connection = this.getOrCreateConnection(listenSocket, rinfo);
+                const connection = this.getOrCreateConnection(listenSocket, rinfo, deltaPort);
                 this.logger.error("Error occurred while processing packet from %s:",
                     connection);
                 console.log(e);
             }
         } catch (e) {
-            const connection = this.getOrCreateConnection(listenSocket, rinfo);
+            const connection = this.getOrCreateConnection(listenSocket, rinfo, deltaPort);
             this.logger.error("%s sent a malformed packet", connection);
             console.log(e);
         }

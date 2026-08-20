@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -13,8 +13,12 @@ import { BaseRole } from "./BaseRole";
  * This role tracks the remaining vent uses and blocks venting when exhausted.
  */
 export class EngineerRole extends BaseRole {
-    roleType = RoleType.Engineer;
-    teamType = RoleTeamType.Crewmate;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Engineer,
+        roleTeam: RoleTeamType.Crewmate,
+        isGhostRole: false,
+        tasksCountTowardsProgress: true,
+    };
 
     /** Number of vent uses remaining for this Engineer. */
     ventUsesRemaining: number = 0;

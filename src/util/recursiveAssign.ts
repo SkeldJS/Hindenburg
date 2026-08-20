@@ -13,21 +13,28 @@ export interface RecursiveAssignOptions {
  * @param options Options for the assign operation.
  */
 export function recursiveAssign(target: any, source: any, options: RecursiveAssignOptions = {}) {
+    if (source === null || source === undefined || typeof source !== "object") {
+        return;
+    }
+
     const sourceKeys = Object.keys(source);
     for (let i = 0; i < sourceKeys.length; i++) {
         const key = sourceKeys[i];
+        const targetValue = target[key];
+        const sourceValue = source[key];
         if (
-            typeof target[key] === "object" &&
-            typeof source[key] === "object"
+            sourceValue !== null && sourceValue !== undefined &&
+            typeof targetValue === "object" && targetValue !== null &&
+            typeof sourceValue === "object"
         ) {
-            if (Array.isArray(target[key]) || Array.isArray(source[key])) {
-                target[key] = source[key];
+            if (Array.isArray(targetValue) || Array.isArray(sourceValue)) {
+                target[key] = sourceValue;
                 continue;
             }
 
-            recursiveAssign(target[key], source[key], options);
-        } else if (typeof source[key] !== "undefined") {
-            target[key] = source[key];
+            recursiveAssign(targetValue, sourceValue, options);
+        } else if (typeof sourceValue !== "undefined") {
+            target[key] = sourceValue;
         }
     }
 

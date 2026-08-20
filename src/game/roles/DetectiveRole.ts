@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -11,8 +11,12 @@ import { BaseRole } from "./BaseRole";
  * This is a Crewmate role.
  */
 export class DetectiveRole extends BaseRole {
-    roleType = RoleType.Detective;
-    teamType = RoleTeamType.Crewmate;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Detective,
+        roleTeam: RoleTeamType.Crewmate,
+        isGhostRole: false,
+        tasksCountTowardsProgress: true,
+    };
 
     /** How many suspects have been inspected this game. */
     inspectedCount: number = 0;

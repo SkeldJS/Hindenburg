@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -19,8 +19,12 @@ import { BaseRole } from "./BaseRole";
  * Duration and cooldown come from role settings.
  */
 export class ShapeshifterRole extends BaseRole {
-    roleType = RoleType.Shapeshifter;
-    teamType = RoleTeamType.Impostor;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Shapeshifter,
+        roleTeam: RoleTeamType.Impostor,
+        isGhostRole: false,
+        tasksCountTowardsProgress: false,
+    };
 
     /** Whether the SS is currently transformed. */
     isTransformed: boolean = false;

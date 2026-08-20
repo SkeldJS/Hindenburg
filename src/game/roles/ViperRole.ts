@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -13,8 +13,12 @@ import { BaseRole } from "./BaseRole";
  * This is an Impostor role.
  */
 export class ViperRole extends BaseRole {
-    roleType = RoleType.Viper;
-    teamType = RoleTeamType.Impostor;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Viper,
+        roleTeam: RoleTeamType.Impostor,
+        isGhostRole: false,
+        tasksCountTowardsProgress: false,
+    };
 
     /** Set of poisoned player IDs awaiting dissolve. */
     private _poisonedPlayers: Map<number, number> = new Map();

@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -13,8 +13,12 @@ import { BaseRole } from "./BaseRole";
  * No additional server-side RPC handling is needed.
  */
 export class ScientistRole extends BaseRole {
-    roleType = RoleType.Scientist;
-    teamType = RoleTeamType.Crewmate;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Scientist,
+        roleTeam: RoleTeamType.Crewmate,
+        isGhostRole: false,
+        tasksCountTowardsProgress: true,
+    };
 
     onGameStart(): void {
         this.isActive = true;

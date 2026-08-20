@@ -6,6 +6,8 @@ import {
     BaseGameDataMessage,
     BaseRootMessage,
     BaseSystemMessage,
+    AddVoteMessage,
+    CastVoteMessage,
     ComponentSpawnData,
     DataMessage,
     DespawnMessage,
@@ -67,6 +69,7 @@ import {
     RoomEndGameIntentEvent,
     RoomFixedUpdateEvent,
     RpcMessageTag,
+    ShipStatus,
     Skin,
     SpawnFlag,
     SpawnType,
@@ -274,11 +277,11 @@ export enum RoomPrivacy {
 export type RoomEvents = EventMapFromList<[
     ClientBroadcastEvent,
     ClientLeaveEvent,
-    PlayerLevelChangedEvent,
-    PlayerMurderFailEvent,
+    PlayerLevelChangedEvent<Room>,
+    PlayerMurderFailEvent<Room>,
     PlayerTaskCompletedEvent,
-    PlayerTaskProgressEvent,
-    PlayerTaskStartedEvent,
+    PlayerTaskProgressEvent<Room>,
+    PlayerTaskStartedEvent<Room>,
     RoomBeforeDestroyEvent,
     RoomCreateEvent,
     RoomDestroyEvent,
@@ -289,6 +292,69 @@ export type RoomEvents = EventMapFromList<[
     RoomHiderCaughtEvent,
     RoomSelectHostEvent
 ]>;
+
+/**
+ * Which sender is allowed to issue each RPC that targets a PlayerControl
+ * component, mirroring Impostor's InnerPlayerControl.HandleRpcAsync
+ * ValidateOwnership/ValidateHost switch. Tags not listed here are left
+ * unchecked at this layer (either not sent on PlayerControl, or handled
+ * elsewhere) - this table only covers what the reference server validates
+ * for InnerPlayerControl.
+ *
+ * "owner" = only the client that owns this PlayerControl (i.e. the player
+ * whose character this is) may send it.
+ * "host" = only the room's (acting) host may send it.
+ */
+const PLAYER_CONTROL_RPC_REQUIREMENT: ReadonlyMap<RpcMessageTag, "owner" | "host"> = new Map([    [RpcMessageTag.PlayAnimation, "owner"],
+    [RpcMessageTag.CompleteTask, "owner"],
+    [RpcMessageTag.SyncSettings, "host"],
+    [RpcMessageTag.CheckName, "owner"],
+    [RpcMessageTag.SetName, "host"],
+    [RpcMessageTag.CheckColor, "owner"],
+    [RpcMessageTag.SetColor, "host"],
+    [RpcMessageTag.ReportDeadBody, "owner"],
+    [RpcMessageTag.MurderPlayer, "host"],
+    [RpcMessageTag.SendChat, "owner"],
+    [RpcMessageTag.StartMeeting, "host"],
+    [RpcMessageTag.SetScanner, "owner"],
+    [RpcMessageTag.SendChatNote, "owner"],
+    [RpcMessageTag.SetStartCounter, "owner"],
+    [RpcMessageTag.UsePlatform, "owner"],
+    [RpcMessageTag.SendQuickChat, "owner"],
+    [RpcMessageTag.SetLevel, "owner"],
+    [RpcMessageTag.SetHat, "owner"],
+    [RpcMessageTag.SetSkin, "owner"],
+    [RpcMessageTag.SetPet, "owner"],
+    [RpcMessageTag.SetVisor, "owner"],
+    [RpcMessageTag.SetNameplate, "owner"],
+    [RpcMessageTag.SetRole, "host"],
+    [RpcMessageTag.ProtectPlayer, "host"],
+    [RpcMessageTag.Shapeshift, "host"],
+    [RpcMessageTag.CheckMurder, "owner"],
+    [RpcMessageTag.CheckProtect, "owner"],
+    [RpcMessageTag.CheckZipline, "owner"],
+    [RpcMessageTag.UseZipline, "host"],
+    [RpcMessageTag.TriggerSpores, "host"],
+    [RpcMessageTag.CheckSporeTrigger, "owner"],
+    [RpcMessageTag.CheckShapeshift, "owner"],
+    [RpcMessageTag.RejectShapeshift, "host"],
+    [RpcMessageTag.CheckVanish, "owner"],
+    [RpcMessageTag.Vanish, "host"],
+    [RpcMessageTag.CheckAppear, "owner"],
+    [RpcMessageTag.Appear, "host"],
+]);
+
+/**
+ * MeetingHud RPCs that only the (acting) host may send, per
+ * InnerMeetingHud.HandleRpcAsync. CastVote is deliberately excluded here -
+ * any player may send it, but it needs payload-level validation (see
+ * handleRpcMessage) rather than a blanket host/owner check.
+ */
+const MEETING_HUD_HOST_ONLY_TAGS: ReadonlySet<RpcMessageTag> = new Set([
+    RpcMessageTag.Close,
+    RpcMessageTag.VotingComplete,
+    RpcMessageTag.ClearVote,
+]);
 
 export class Room extends StatefulRoom<Room, RoomEvents> {
     /**
@@ -535,7 +601,6 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
             // Route through role manager for role-specific behavior
             this.roleManager.handleTaskComplete(
                 ev.player,
-                taskType,
                 taskId
             );
 
@@ -820,7 +885,10 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
     
 
     async handleEndGameMessage(message: EndGameMessage) {
-        await this.handleEndGame(message.reason);
+        // Mirror Impostor/Empostor: relay the host's ORIGINAL EndGameMessage
+        // (byte-exact) to all clients instead of re-constructing one, so clients
+        // receive the exact end signal the host sent.
+        await this.handleEndGame(message.reason, undefined, message);
     }
 
     async handleStartGameMessage(message: StartGameMessage, senderPlayer: Player<Room>) {
@@ -873,6 +941,29 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         const component = this.networkedObjects.get(message.netId);
 
         if (component) {
+            // Same anti-cheat / desync guard as handleRpcMessage, but for Data
+            // messages (full state snapshots - most importantly position via
+            // CustomNetworkTransform/PlayerPhysics). Previously ANY client
+            // could send a Data update for ANY netId and the server would
+            // apply and rebroadcast it unquestioned - meaning a desynced or
+            // malicious client could silently overwrite another player's
+            // position/physics/game data. Player-owned components may only be
+            // updated by their owner; server/global-owned components
+            // (ShipStatus, GameData, etc.) may only be updated by the host.
+            const ownerId = component.ownerId;
+            const isServerOwned = ownerId === SpecialOwnerId.Global || ownerId === SpecialOwnerId.Server;
+            const allowed = isServerOwned
+                ? this.canMakeHostChanges(senderPlayer)
+                : ownerId === senderPlayer.clientId;
+
+            if (!allowed) {
+                this.logger.warn(
+                    "Rejected data message from player %s for component net id %s, %s: not the owner (owned by %s)",
+                    senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", ownerId
+                );
+                return false;
+            }
+
             if (message.data instanceof UnknownDataMessage) {
                 const parsedData = component.parseData(DataState.Update, message.data.dataReader);
                 if (!parsedData) {
@@ -901,31 +992,138 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         const component = this.networkedObjects.get(message.netId);
 
         if (component) {
+            // Anti-cheat / desync guard: verify the sender is actually allowed
+            // to issue this RPC on this specific component before touching any
+            // state. The real Impostor server validates every single
+            // PlayerControl RPC this way (ValidateOwnership/ValidateHost in
+            // InnerPlayerControl.HandleRpcAsync) - SkeldJS previously relayed
+            // *any* client's RPC for *any* netId with no check at all, which
+            // let a buggy or malicious client forge another player's cosmetics,
+            // name, murder events, role, etc. and have the server dutifully
+            // broadcast it to everyone ("player data bleeding between
+            // players"). Reject and drop (don't apply, don't broadcast)
+            // anything that fails the check instead of silently trusting it.
+            if (component instanceof PlayerControl) {
+                const requirement = PLAYER_CONTROL_RPC_REQUIREMENT.get(message.child.messageTag);
+                if (requirement === "owner" && component.ownerId !== senderPlayer.clientId) {
+                    this.logger.warn(
+                        "Rejected RPC %s from player %s: sender does not own component net id %s (owned by client %s)",
+                        RpcMessageTag[message.child.messageTag] || message.child.messageTag,
+                        senderPlayer, component.netId, component.ownerId
+                    );
+                    return false;
+                }
+                if (requirement === "host" && !this.canMakeHostChanges(senderPlayer)) {
+                    this.logger.warn(
+                        "Rejected RPC %s from non-host player %s for component net id %s",
+                        RpcMessageTag[message.child.messageTag] || message.child.messageTag,
+                        senderPlayer, component.netId
+                    );
+                    return false;
+                }
+            }
+
+            // MeetingHud: CloseMeeting/VotingComplete/ClearVote are host-only
+            // (InnerMeetingHud.HandleRpcAsync). CastVote is allowed from any
+            // player but is validated separately below, once parsed, because
+            // it needs to check the voter id carried in the RPC payload
+            // rather than the netId's owner (MeetingHud itself is a single
+            // globally-owned object shared by everyone in the meeting).
+            if (component instanceof MeetingHud && MEETING_HUD_HOST_ONLY_TAGS.has(message.child.messageTag) && !this.canMakeHostChanges(senderPlayer)) {
+                this.logger.warn(
+                    "Rejected RPC %s from non-host player %s for MeetingHud net id %s",
+                    RpcMessageTag[message.child.messageTag] || message.child.messageTag,
+                    senderPlayer, component.netId
+                );
+                return false;
+            }
+
+            // ShipStatus: CloseDoorsOfType is a sabotage action - only an
+            // Impostor may trigger it (InnerShipStatus.HandleRpcAsync
+            // ValidateImpostor). Without this a crewmate client could close
+            // doors and lock other players in, which the real client never
+            // permits.
+            if (component instanceof ShipStatus && message.child.messageTag === RpcMessageTag.CloseDoorsOfType) {
+                const senderInfo = senderPlayer.getPlayerInfo();
+                if (!senderInfo || !senderInfo.isImpostor) {
+                    this.logger.warn(
+                        "Rejected CloseDoorsOfType from non-impostor player %s",
+                        senderPlayer
+                    );
+                    return false;
+                }
+            }
+
             try {
                 if (message.child instanceof UnknownRpcMessage) {
                     const parsedRpc = component.parseRemoteCall(message.child.messageTag, message.child.dataReader);
                     if (!parsedRpc) {
-                        // If the component couldn't parse this RPC but we know the tag name,
-                        // log a warning and forward it anyway (don't break game flow).
+                        // The component couldn't parse this RPC (usually a modded/custom RPC
+                        // beyond the vanilla RpcMessageTag range, e.g. Reactor / TOU mods).
+                        // Whether it gets forwarded to other clients depends on
+                        // `socket.acceptUnknownGameData` in the config.
                         const tagName = RpcMessageTag[message.child.messageTag];
-                        if (tagName) {
-                            this.logger.warn(
-                                "Component %s (netId=%s) couldn't parse RPC %s (%s) from %s — forwarding as-is",
-                                SpawnType[component.spawnType] || "Unknown",
-                                component.netId,
-                                tagName,
+                        const acceptUnknown = this.server.config.socket.acceptUnknownGameData;
+                        if (acceptUnknown) {
+                            this.logger.info(
+                                "Forwarding unknown RPC %s (%s) from %s for component net id %s, %s (acceptUnknownGameData=true)",
+                                tagName || "tag",
                                 message.child.messageTag,
-                                senderPlayer
+                                senderPlayer,
+                                component.netId,
+                                SpawnType[component.spawnType] || "Unknown"
                             );
-                            // Forward the raw message to clients so game flow isn't broken
-                            return this.server.config.socket.acceptUnknownGameData;
+                        } else {
+                            this.logger.error(
+                                "Unknown remote procedure call from player %s for component net id %s, %s: message tag %s (set socket.acceptUnknownGameData=true to forward modded RPCs)",
+                                senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", tagName || message.child.messageTag
+                            );
                         }
-                        this.logger.error("Unknown remote procedure call from player %s for component net id %s, %s: message tag %s",
-                            senderPlayer, component.netId, SpawnType[component.spawnType] || "Unknown", tagName || message.child.messageTag);
-                        return this.server.config.socket.acceptUnknownGameData;
+                        return acceptUnknown;
                     }
+
+                    // CastVote: the payload's votingId must match the sender's own
+                    // player id - otherwise any player could cast a vote on
+                    // someone else's behalf (InnerMeetingHud.HandleCastVoteAsync
+                    // reports this as an ownership cheat).
+                    if (parsedRpc instanceof CastVoteMessage && parsedRpc.votingId !== senderPlayer.getPlayerId()) {
+                        this.logger.warn(
+                            "Rejected CastVote from player %s: voter id %s in payload does not match sender's own player id %s",
+                            senderPlayer, parsedRpc.votingId, senderPlayer.getPlayerId()
+                        );
+                        return false;
+                    }
+
+                    // AddVote (VoteBanSystem kick-vote tracking): the payload's
+                    // votingId is the voting *client* id and must match the
+                    // sender's own client id, mirroring
+                    // InnerVoteBanSystem.HandleRpcAsync's ownership check -
+                    // otherwise a client could register a kick vote as if it
+                    // came from someone else.
+                    if (parsedRpc instanceof AddVoteMessage && parsedRpc.votingId !== senderPlayer.clientId) {
+                        this.logger.warn(
+                            "Rejected AddVote from player %s: voting client id %s in payload does not match sender's own client id %s",
+                            senderPlayer, parsedRpc.votingId, senderPlayer.clientId
+                        );
+                        return false;
+                    }
+
                     await component.handleRemoteCall(parsedRpc);
                 } else {
+                    if (message.child instanceof CastVoteMessage && message.child.votingId !== senderPlayer.getPlayerId()) {
+                        this.logger.warn(
+                            "Rejected CastVote from player %s: voter id %s in payload does not match sender's own player id %s",
+                            senderPlayer, message.child.votingId, senderPlayer.getPlayerId()
+                        );
+                        return false;
+                    }
+                    if (message.child instanceof AddVoteMessage && message.child.votingId !== senderPlayer.clientId) {
+                        this.logger.warn(
+                            "Rejected AddVote from player %s: voting client id %s in payload does not match sender's own client id %s",
+                            senderPlayer, message.child.votingId, senderPlayer.clientId
+                        );
+                        return false;
+                    }
                     await component.handleRemoteCall(message.child);
                 }
 
@@ -1777,8 +1975,8 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
             await super.handleStartGame();
             this.logger.info("Game started");
 
-            // Assign roles to players
-            await this.roleManager.assignRoles();
+            // Sync server-side role behaviors from SkeldJS's role assignment
+            await this.roleManager.syncRolesFromCore();
 
             // Start mode-specific logic after game is fully initialized
             if (this.gameModeManager instanceof HideAndSeekManager) {
@@ -1791,7 +1989,7 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
         await this.handleStartGame(undefined);
     }
 
-    async handleEndGame(reason: GameOverReason, intent?: EndGameIntent) {
+    async handleEndGame(reason: GameOverReason, intent?: EndGameIntent, originalMessage?: EndGameMessage) {
         // Prevent double-processing: flushEndGameIntents (server-side) and
         // the host client's EndGameMessage may both trigger handleEndGame.
         if (this.gameState === GameState.Ended) return;
@@ -1801,7 +1999,9 @@ export class Room extends StatefulRoom<Room, RoomEvents> {
 
         await this.flushMessages();
 
-        await this.broadcastImmediate([], [new EndGameMessage(this.code.id, reason, false)]);
+        // Relay the host's original EndGameMessage when available (Impostor-style);
+        // otherwise construct one (e.g. server-initiated end via CLI / game mode).
+        await this.broadcastImmediate([], [originalMessage || new EndGameMessage(this.code.id, reason, false)]);
         await super.handleEndGame(reason);
 
         this.logger.info("Game ended: %s", GameOverReason[ev.reason]);

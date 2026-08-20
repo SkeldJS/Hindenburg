@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, BaseRole as CoreBaseRole } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 import { NoisemakerRole } from "./NoisemakerRole";
@@ -40,79 +40,40 @@ export class RoleManager {
     constructor(public readonly room: Room) {}
 
     /**
-     * Assign roles to players based on the room's role settings.
-     * Called when the game starts.
+     * Sync Waterway's server-side role behaviors from SkeldJS's role assignment.
+     *
+     * In Server-as-a-Host mode, SkeldJS (core) assigns roles during
+     * `super.handleStartGame()` (RoleSelection components) and sets
+     * `player.role`. This method creates the matching Waterway behavior role
+     * instance for each player so server-side logic (cooldowns, abilities)
+     * runs. Core is the single source of the role assignment — there is no
+     * second role roll here.
      */
-    async assignRoles(): Promise<void> {
-        const settings = this.room.settings;
-        const roleChances = settings.roleSettings.roleChances;
+    async syncRolesFromCore(): Promise<void> {
+        const assigned: BaseRole[] = [];
 
-        if (!roleChances) return;
+        for (const player of this.room.players.values()) {
+            if (!player.characterControl) continue;
 
-        const availablePlayers = [...this.room.players.values()].filter(
-            p => p.characterControl && p.inScene
-        );
+            const coreRole = player.role;
+            if (!coreRole) continue;
 
-        // Track how many of each role we've assigned
-        const assignedCounts: Partial<Record<RoleType, number>> = {};
+            const roleMetadata = (coreRole.constructor as typeof CoreBaseRole).roleMetadata;
+            if (!roleMetadata) continue;
 
-        for (const [roleTypeStr, roleChance] of Object.entries(roleChances)) {
-            const roleType = parseInt(roleTypeStr) as RoleType;
+            const RoleCtor = ROLE_CONSTRUCTORS[roleMetadata.roleType];
+            if (!RoleCtor) continue;
 
-            // Skip if no chance or no constructor for this role
-            if (roleChance.chance <= 0) continue;
-            if (!ROLE_CONSTRUCTORS[roleType]) continue;
-
-            const RoleCtor = ROLE_CONSTRUCTORS[roleType]!;
-            assignedCounts[roleType] = 0;
-
-            for (const player of availablePlayers) {
-                // Check max players limit for this role
-                if (assignedCounts[roleType]! >= roleChance.maxPlayers) break;
-
-                // Skip players that already have a role
-                if (this.activeRoles.has(player.clientId)) continue;
-
-                // Skip players who are already the standard impostor (for crewmate roles)
-                const playerInfo = player.getPlayerInfo();
-                const isImpostor = playerInfo?.isImpostor || false;
-                const isCrewmateRole = [
-                    RoleType.Crewmate,
-                    RoleType.Scientist,
-                    RoleType.Engineer,
-                    RoleType.GuardianAngel,
-                    RoleType.Noisemaker,
-                    RoleType.Tracker,
-                    RoleType.Detective,
-                ].includes(roleType);
-
-                const isImpostorRole = [
-                    RoleType.Impostor,
-                    RoleType.Shapeshifter,
-                    RoleType.Phantom,
-                    RoleType.Viper,
-                ].includes(roleType);
-
-                // Crewmate roles should not be assigned to impostors
-                if (isCrewmateRole && isImpostor) continue;
-                // Impostor roles should not be assigned to crewmates
-                if (isImpostorRole && !isImpostor) continue;
-
-                // Roll the dice
-                const roll = Math.random() * 100;
-                if (roll <= roleChance.chance) {
-                    await this.assignRoleToPlayer(player, RoleCtor, roleType);
-                    assignedCounts[roleType]!++;
-                }
-            }
+            const role = new RoleCtor(this.room, player);
+            this.activeRoles.set(player.clientId, role);
+            role.onGameStart();
+            assigned.push(role);
         }
 
-        // Log assignment summary
-        const assignedCount = this.activeRoles.size;
-        if (assignedCount > 0) {
-            this.room.logger.info("Assigned %s role(s) to players", assignedCount);
-            for (const [playerId, role] of this.activeRoles) {
-                const player = this.room.players.get(playerId);
+        if (assigned.length > 0) {
+            this.room.logger.info("Synchronized %s role behavior(s) from core assignment", assigned.length);
+            for (const role of assigned) {
+                const player = this.room.players.get(role.player.clientId);
                 this.room.logger.info("  %s → %s", player, role.getRoleName());
             }
         }
@@ -175,11 +136,11 @@ export class RoleManager {
      * Called when a player with a role completes a task.
      * Routes to the appropriate role's onTaskComplete handler.
      */
-    handleTaskComplete(player: Player<Room>, taskType: number, taskId: number): void {
+    handleTaskComplete(player: Player<Room>, taskIdx: number): void {
         const role = this.activeRoles.get(player.clientId);
         if (!role) return;
 
-        role.onTaskComplete(taskType, taskId);
+        role.onTaskComplete(taskIdx);
     }
 
     /**

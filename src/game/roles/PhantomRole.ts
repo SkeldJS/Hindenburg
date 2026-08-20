@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -20,8 +20,12 @@ import { BaseRole } from "./BaseRole";
  * This is an Impostor role.
  */
 export class PhantomRole extends BaseRole {
-    roleType = RoleType.Phantom;
-    teamType = RoleTeamType.Impostor;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Phantom,
+        roleTeam: RoleTeamType.Impostor,
+        isGhostRole: false,
+        tasksCountTowardsProgress: false,
+    };
 
     /** Whether the phantom is currently in the vanished state. */
     isVanished: boolean = false;

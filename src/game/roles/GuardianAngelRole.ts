@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -18,8 +18,12 @@ import { BaseRole } from "./BaseRole";
  * by PlayerControl.processFixedUpdate.
  */
 export class GuardianAngelRole extends BaseRole {
-    roleType = RoleType.GuardianAngel;
-    teamType = RoleTeamType.Crewmate;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.GuardianAngel,
+        roleTeam: RoleTeamType.Crewmate,
+        isGhostRole: false,
+        tasksCountTowardsProgress: true,
+    };
 
     /** Remaining cooldown before GA can protect again (seconds). */
     private _cooldownTimer: number = 0;

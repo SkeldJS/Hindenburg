@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -11,8 +11,12 @@ import { BaseRole } from "./BaseRole";
  * This is a Crewmate role.
  */
 export class NoisemakerRole extends BaseRole {
-    roleType = RoleType.Noisemaker;
-    teamType = RoleTeamType.Crewmate;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Noisemaker,
+        roleTeam: RoleTeamType.Crewmate,
+        isGhostRole: false,
+        tasksCountTowardsProgress: true,
+    };
 
     /** Remaining alert effect time (seconds). */
     private _alertTimer: number = 0;
@@ -37,7 +41,7 @@ export class NoisemakerRole extends BaseRole {
             this.player, this.alertDuration, this.impostorAlert);
     }
 
-    onTaskComplete(_taskType: number, _taskId: number): void {
+    onTaskComplete(_taskIdx: number): void {
         if (!this.isActive) return;
         if (this._cooldownTimer > 0) return;
 

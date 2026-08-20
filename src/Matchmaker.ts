@@ -373,7 +373,95 @@ export class Matchmaker {
         return allPorts[~~(Math.random() * allPorts.length)];
     }
 
-    generateMatchmakerToken(puid: string, clientVersion: number) {
+    /**
+     * Resolve the delta port for the requesting client from its matchmaker token.
+     * If the client was assigned a dynamic port (delta ports enabled), returns it
+     * (making sure its listener is alive and the lease confirmed) — otherwise 0.
+     */
+    private async resolveRequestPort(ctx: KoaRouter.RouterContext): Promise<number> {
+        const deltaPort = this.getRequestDeltaPort(ctx);
+        if (deltaPort > 0 && this.server.portPool) {
+            // Keep the lease alive and the delta listener up until the client connects.
+            this.server.portPool.confirmPort(deltaPort);
+            try {
+                await this.server.startDeltaListener(deltaPort);
+            } catch (e) {
+                this.logger.error("Failed to (re)start delta listener on port %s: %s", deltaPort, (e as Error).message);
+                return 0;
+            }
+        }
+        return deltaPort;
+    }
+
+    /**
+     * Decode the `Port` field from the request's Bearer matchmaker token.
+     * Returns 0 when there is no token / no delta port.
+     */
+    private getRequestDeltaPort(ctx: KoaRouter.RouterContext): number {
+        const authorization = ctx.headers.authorization;
+        if (!authorization) return 0;
+
+        const [tokenType, token] = authorization.split(" ");
+        if (!tokenType || !token || tokenType !== "Bearer") return 0;
+
+        try {
+            const json = JSON.parse(Buffer.from(token, "base64").toString("utf8"));
+            const port = json?.Port;
+            return typeof port === "number" && port > 0 ? port : 0;
+        } catch {
+            return 0;
+        }
+    }
+
+    /**
+     * Store authentication data and, when dynamic delta ports are enabled,
+     * allocate a dedicated per-player port for this session. Awaits the delta
+     * listener to be fully bound before returning, so the client never connects
+     * to a socket that isn't ready yet.
+     *
+     * When delta ports are disabled, the auth is stored by username so the client
+     * (which connects to the shared socket) is still matched — PUID/FriendCode
+     * keep working without dynamic ports.
+     *
+     * @returns `{ deltaPort, isFull }` — `isFull` is true only when the pool is
+     * enabled but exhausted (the caller must reject the client).
+     */
+    private async storeAuthAndAllocatePort(
+        username: string,
+        puid: string,
+        friendCode: string,
+        clientVersion: number
+    ): Promise<{ deltaPort: number; isFull: boolean }> {
+        // No dynamic ports configured → shared socket + username auth.
+        if (!this.server.portPool || !this.server.portPool.isEnabled) {
+            this.authCache.addAuthByUsername(username, puid, friendCode, clientVersion);
+            return { deltaPort: 0, isFull: false };
+        }
+
+        const alloc = this.server.portPool.allocatePort(puid);
+        if (alloc.port === 0) {
+            // Pool exhausted → reject (no IP fallback by design).
+            return { deltaPort: 0, isFull: true };
+        }
+
+        this.authCache.addAuthByPort(alloc.port, username, puid, friendCode, clientVersion);
+
+        // Await the delta listener to be fully bound BEFORE returning the
+        // response, otherwise the client may connect to a socket that isn't
+        // ready yet and its first packets get dropped.
+        try {
+            await this.server.startDeltaListener(alloc.port);
+        } catch (e) {
+            this.logger.error("Failed to start delta listener on port %s: %s", alloc.port, (e as Error).message);
+            this.authCache.removeByPort(alloc.port);
+            await this.server.returnDeltaPort(alloc.port);
+            return { deltaPort: 0, isFull: true };
+        }
+
+        return { deltaPort: alloc.port, isFull: false };
+    }
+
+    generateMatchmakerToken(puid: string, clientVersion: number, deltaPort = 0) {
         const payloadContent = {
             Puid: puid,
             ClientVersion: clientVersion,
@@ -385,7 +473,8 @@ export class Matchmaker {
 
         const payload = {
             Content: payloadContent,
-            Hash: computedHash.toString("base64")
+            Hash: computedHash.toString("base64"),
+            Port: deltaPort
         };
 
         return Buffer.from(JSON.stringify(payload), "utf8").toString("base64");
@@ -791,6 +880,8 @@ export class Matchmaker {
             // Priority: 1) Authorization header (EOS JWT Bearer token)
             //           2) body.Puid field (legacy / direct)
             let puid: string | null = null;
+            let deltaPort = 0;
+            let isFull = false;
 
             const authHeader = ctx.headers.authorization;
             if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -822,8 +913,10 @@ export class Matchmaker {
                         clientIp = clientIp.substring(7);
                     }
 
-                    // Store in AuthCache for later UDP handshake matching
-                    this.authCache.addAuth(clientIp, body.Username, puid, friendCode, body.ClientVersion);
+                    // Store auth (delta port if enabled, else username for shared socket)
+                    const authResult = await this.storeAuthAndAllocatePort(body.Username, puid, friendCode, body.ClientVersion);
+                    deltaPort = authResult.deltaPort;
+                    isFull = authResult.isFull;
 
                     if (this.server.config.logging.hideSensitiveInfo) {
                         this.logger.info("Client %s authenticated (PUID=XXXX, FriendCode=%s)",
@@ -839,16 +932,13 @@ export class Matchmaker {
                 // Legacy path: PUID provided directly in body
                 puid = body.Puid;
 
-                let clientIp = ctx.socket.remoteAddress || "127.0.0.1";
-                const xRealIp = ctx.headers["x-real-ip"] as string;
-                if (xRealIp) clientIp = xRealIp;
-                if (clientIp.startsWith("::ffff:")) clientIp = clientIp.substring(7);
-
                 const friendCode = this.generateFallbackFriendCode(puid!);
-                this.authCache.addAuth(clientIp, body.Username, puid!, friendCode, body.ClientVersion);
+                const authResult = await this.storeAuthAndAllocatePort(body.Username, puid!, friendCode, body.ClientVersion);
+                deltaPort = authResult.deltaPort;
+                isFull = authResult.isFull;
 
-                this.logger.info("Client %s got token via legacy PUID path (FriendCode=%s)",
-                    chalk.blue(body.Username), friendCode);
+                this.logger.info("Client %s got token via legacy PUID path (FriendCode=%s, DeltaPort=%s)",
+                    chalk.blue(body.Username), friendCode, deltaPort);
             }
 
             if (!puid) {
@@ -858,12 +948,20 @@ export class Matchmaker {
                 return;
             }
 
-            const mmToken = this.generateMatchmakerToken(puid, body.ClientVersion);
+            if (isFull) {
+                // Dynamic ports are the only matching mechanism — refuse when the pool is exhausted.
+                this.logger.warn("Client %s rejected: no dynamic port available (pool exhausted)", chalk.blue(body.Username));
+                ctx.status = 503;
+                ctx.body = JSON.stringify({ error: "Server full: no available connection ports" });
+                return;
+            }
+
+            const mmToken = this.generateMatchmakerToken(puid, body.ClientVersion, deltaPort);
             ctx.status = 200;
             ctx.body = mmToken;
         });
 
-        router.post("/api/games", ctx => {
+        router.post("/api/games", async ctx => {
             if (!this.verifyRequest(ctx)) {
                 ctx.status = 401;
                 return;
@@ -875,27 +973,31 @@ export class Matchmaker {
                 return;
             }
 
+            const deltaPort = await this.resolveRequestPort(ctx);
+
             const listingIp = isLoopbackAddress(ctx.socket.remoteAddress) ? "127.0.0.1" : this.server.config.socket.ip;
 
             ctx.status = 200;
             ctx.body = {
                 Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                Port: this.getRandomWorkerPort()
+                Port: deltaPort || this.getRandomWorkerPort()
             };
         });
 
-        router.put("/api/games", ctx => {
+        router.put("/api/games", async ctx => {
             if (!this.verifyRequest(ctx)) {
                 ctx.status = 401;
                 return;
             }
 
+            const deltaPort = await this.resolveRequestPort(ctx);
+
             const listingIp = isLoopbackAddress(ctx.socket.remoteAddress) ? "127.0.0.1" : this.server.config.socket.ip;
 
             ctx.status = 200;
             ctx.body = {
                 Ip: Buffer.from(listingIp.split(".").map(x => parseInt(x))).readUInt32LE(0),
-                Port: this.getRandomWorkerPort()
+                Port: deltaPort || this.getRandomWorkerPort()
             };
         });
 

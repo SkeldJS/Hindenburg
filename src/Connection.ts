@@ -146,6 +146,12 @@ export class Connection {
     isAuthenticated: boolean;
 
     /**
+     * The dynamic delta port this connection was assigned by the matchmaker
+     * (0 when using the shared socket with IP matching).
+     */
+    deltaPort: number;
+
+    /**
      * The last nonce that was received by this client.
      *
      * Used to prevent duplicate packets with the same nonce.
@@ -211,6 +217,7 @@ export class Connection {
         this.puid = "";
         this.friendCode = "";
         this.isAuthenticated = false;
+        this.deltaPort = 0;
 
         this.nextExpectedNonce = 0;
         this._incrNonce = 0;
@@ -235,7 +242,9 @@ export class Connection {
                 level: "level " + this.playerLevel,
                 version: this.clientVersion.toString(),
                 platform: (logPlatforms as any)[this.platform.platformTag],
-                language: (logLanguages as any)[this.language]
+                language: (logLanguages as any)[this.language],
+                puid: this.puid || undefined,
+                friendcode: this.friendCode || undefined
             }
         );
 
@@ -375,6 +384,7 @@ export class Connection {
         this.puid = "";
         this.friendCode = "";
         this.isAuthenticated = false;
+        this.deltaPort = 0;
 
         this.server.removeConnection(this);
 

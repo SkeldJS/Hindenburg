@@ -1,4 +1,4 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleType, RoleTeamType, RoleMetadata } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 import { BaseRole } from "./BaseRole";
 
@@ -11,8 +11,12 @@ import { BaseRole } from "./BaseRole";
  * This is a Crewmate role.
  */
 export class TrackerRole extends BaseRole {
-    roleType = RoleType.Tracker;
-    teamType = RoleTeamType.Crewmate;
+    static roleMetadata: RoleMetadata = {
+        roleType: RoleType.Tracker,
+        roleTeam: RoleTeamType.Crewmate,
+        isGhostRole: false,
+        tasksCountTowardsProgress: true,
+    };
 
     /** The currently tracked player, if any. */
     trackedTarget: Player<Room> | null = null;

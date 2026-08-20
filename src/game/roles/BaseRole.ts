@@ -1,18 +1,30 @@
-import { Player, RoleType, RoleTeamType } from "@skeldjs/au-core";
+import { Player, RoleTeamType, RoleType, RoleMetadata, BaseRole as CoreBaseRole } from "@skeldjs/au-core";
 import { Room } from "../../Room";
 
 /**
  * Base class for all role implementations in Waterway.
  *
- * Each role overrides specific hooks to implement its unique behavior.
- * Roles are assigned to players when a game starts based on role settings.
+ * Extends SkeldJS's {@link BaseRole} — the role contract (identity via
+ * `roleMetadata` and the lifecycle hooks) now lives in the core library.
+ * Waterway adds the server-side runtime behaviors on top: cooldown
+ * management, per-tick updates, and `onGameStart`/`onFixedUpdate`.
+ *
+ * Each concrete role defines `static roleMetadata` (single source of truth
+ * in SkeldJS); `roleType`/`teamType` are convenience getters over it.
  */
-export abstract class BaseRole {
+export abstract class BaseRole extends CoreBaseRole<Room> {
+    /** Role identity, defined once in SkeldJS. */
+    static roleMetadata: RoleMetadata;
+
     /** The unique role type identifier from the Among Us protocol. */
-    abstract roleType: RoleType;
+    get roleType(): RoleType {
+        return (this.constructor as typeof BaseRole).roleMetadata.roleType;
+    }
 
     /** Which team this role belongs to (Crewmate or Impostor). */
-    abstract teamType: RoleTeamType;
+    get teamType(): RoleTeamType {
+        return (this.constructor as typeof BaseRole).roleMetadata.roleTeam;
+    }
 
     /** Whether this role's ability is currently active. */
     isActive: boolean = false;
@@ -28,12 +40,16 @@ export abstract class BaseRole {
         return this.currentCooldown > 0 && (Date.now() - this.lastAbilityUse) < this.currentCooldown;
     }
 
+    /** The room this role exists in. */
+    public readonly room: Room;
+
     constructor(
-        /** The room this role exists in. */
-        public readonly room: Room,
-        /** The player who has this role. */
-        public readonly player: Player<Room>,
-    ) {}
+        room: Room,
+        player: Player<Room>,
+    ) {
+        super(player);
+        this.room = room;
+    }
 
     /**
      * Called once when the role is assigned and the game starts.
@@ -42,36 +58,16 @@ export abstract class BaseRole {
     onGameStart(): void {}
 
     /**
-     * Called when the player with this role kills another player.
-     * Override in imposter roles.
-     *
-     * @param target The player being killed.
-     * @returns Whether the kill should proceed normally (true) or be handled by the role (false).
-     */
-    onKill(target: Player<Room>): boolean {
-        return true; // Allow normal kill behavior
-    }
-
-    /**
      * Called when the player completes a task.
      *
-     * @param taskType The type of task completed.
-     * @param taskId The unique task ID.
+     * @param taskIdx The index of the completed task.
      */
-    onTaskComplete(taskType: number, taskId: number): void {}
+    onTaskComplete(taskIdx: number): void {}
 
     /**
      * Called when a meeting starts.
      */
     onMeetingStart(): void {}
-
-    /**
-     * Called when the player dies.
-     * Return false to prevent the normal death behavior (e.g., Phantom).
-     */
-    onDeath(): boolean {
-        return true; // Allow normal death behavior
-    }
 
     /**
      * Called when the player uses their role ability.
@@ -89,11 +85,6 @@ export abstract class BaseRole {
      * Use for cooldown management, periodic effects, etc.
      */
     onFixedUpdate(): void {}
-
-    /**
-     * Called when the game ends.
-     */
-    onGameEnd(): void {}
 
     /**
      * Start the cooldown for this role's ability.
